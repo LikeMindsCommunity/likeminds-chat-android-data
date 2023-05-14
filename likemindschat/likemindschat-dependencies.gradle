@@ -1,0 +1,20 @@
+dependencies {
+    //android core
+    implementation deps.android_core.core
+    implementation deps.android_core.appcompat
+
+    //internal sdk
+    implementation deps.internal.sdk
+
+    //dagger
+    implementation deps.dagger.main
+    kapt deps.dagger.compiler
+
+    //retrofit gson
+    implementation deps.retrofit.gson
+
+    //testing
+    testImplementation deps.testing.junit
+    androidTestImplementation deps.testing.android_junit
+    androidTestImplementation deps.testing.espresso
+}
