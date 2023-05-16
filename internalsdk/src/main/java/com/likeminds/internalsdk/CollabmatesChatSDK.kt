@@ -1,12 +1,13 @@
 package com.likeminds.internalsdk
 
+import com.likeminds.internalsdk.di.DaggerInternalSDKComponent
 import com.likeminds.internalsdk.di.InternalSDKComponent
 import com.likeminds.internalsdk.di.SDKSharedResources
 import javax.inject.Singleton
 
 @Singleton
 class CollabmatesChatSDK {
-    private var sdkComponent:InternalSDKComponent? = null
+    private var sdkComponent: InternalSDKComponent? = null
 
     companion object {
         private var collabmatesChatSDK: CollabmatesChatSDK? = null
@@ -28,8 +29,11 @@ class CollabmatesChatSDK {
     }
 
     private fun initSDKComponent(sdkSharedResources: SDKSharedResources) {
-        if (sdkComponent == null){
-            sdkComponent
+        if (sdkComponent == null) {
+            sdkComponent = DaggerInternalSDKComponent.builder()
+                .sdkSharedResources(sdkSharedResources)
+                .build()
+            sdkComponent?.inject(this)
         }
     }
 }
