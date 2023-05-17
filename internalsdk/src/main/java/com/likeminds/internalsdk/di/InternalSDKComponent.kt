@@ -1,16 +1,33 @@
 package com.likeminds.internalsdk.di
 
 import com.likeminds.internalsdk.CollabmatesChatSDK
+import com.likeminds.internalsdk.di.modules.CommunityModule
+import com.likeminds.internalsdk.di.modules.GsonModule
+import com.likeminds.internalsdk.di.modules.NetworkModule
+import com.likeminds.internalsdk.di.modules.SDKModule
+import com.likeminds.internalsdk.di.modules.SDKSharedResourcesModule
+import com.likeminds.internalsdk.di.modules.UserModule
 import dagger.BindsInstance
 import dagger.Component
+import javax.inject.Singleton
 
-@Component()
+@Singleton
+@Component(
+    modules = [SDKSharedResourcesModule::class,
+        GsonModule::class,
+        NetworkModule::class,
+        SDKModule::class,
+        UserModule::class,
+        CommunityModule::class
+    ]
+)
 interface InternalSDKComponent {
-    fun inject(collabmatesChatSDK: CollabmatesChatSDK)
 
+    fun inject(collabmatesChatSDK: CollabmatesChatSDK)
 
     @Component.Builder
     interface Builder {
+
         @BindsInstance
         fun sdkSharedResources(sdkSharedResources: SDKSharedResources): Builder
 

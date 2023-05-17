@@ -18,9 +18,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            manifestPlaceholders = [sentryEnvironment: "chatsdk-beta", releaseVersion: "$versions.sdk_version_major.$versions.sdk_version_minor.$versions.sdk_version_patch"]
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            consumerProguardFiles "consumer-rules.pro"
+        }
         release {
+            manifestPlaceholders = [sentryEnvironment: "chatsdk-production", releaseVersion: "$versions.sdk_version_major.$versions.sdk_version_minor.$versions.sdk_version_patch"]
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            consumerProguardFiles "consumer-rules.pro"
         }
     }
     compileOptions {
