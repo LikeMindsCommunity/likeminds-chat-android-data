@@ -1,4 +1,4 @@
-package com.likeminds.likemindschat.di.modules
+package com.likeminds.likemindschat.di.internalsdk
 
 import com.likeminds.internalsdk.di.SDKSharedResources
 import com.likeminds.likemindschat.sdk.util.SDKSharedResourceImpl

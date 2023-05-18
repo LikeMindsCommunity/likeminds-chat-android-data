@@ -7,6 +7,8 @@ import com.likeminds.internalsdk.community.CommunityApiImpl
 import com.likeminds.internalsdk.di.DaggerInternalSDKComponent
 import com.likeminds.internalsdk.di.InternalSDKComponent
 import com.likeminds.internalsdk.di.SDKSharedResources
+import com.likeminds.internalsdk.refreshtoken.RefreshTokenApi
+import com.likeminds.internalsdk.refreshtoken.RefreshTokenApiImpl
 import com.likeminds.internalsdk.sdk.SDKApi
 import com.likeminds.internalsdk.sdk.SDKApiImpl
 import com.likeminds.internalsdk.user.UserApi
@@ -27,6 +29,9 @@ class CollabmatesChatSDK {
 
     @Inject
     lateinit var sdkApiImpl: SDKApiImpl
+
+    @Inject
+    lateinit var refreshTokenApiImpl: RefreshTokenApiImpl
 
     @Inject
     lateinit var userApiImpl: UserApiImpl
@@ -64,6 +69,10 @@ class CollabmatesChatSDK {
 
     fun getSDKApi(): SDKApi {
         return sdkApiImpl
+    }
+
+    fun getRefreshTokenApi(): RefreshTokenApi {
+        return refreshTokenApiImpl
     }
 
     fun getUserApi(): UserApi {

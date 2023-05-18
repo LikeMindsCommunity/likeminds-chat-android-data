@@ -5,6 +5,7 @@ import com.likeminds.internalsdk.CollabmatesChatSDK
 import com.likeminds.internalsdk.di.SDKSharedResources
 import com.likeminds.likemindschat.di.DaggerLikeMindsChatComponent
 import com.likeminds.likemindschat.di.LikeMindsChatComponent
+import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
 import javax.inject.Inject
 
 internal class LikeMindsChatApplication private constructor() {
@@ -17,6 +18,7 @@ internal class LikeMindsChatApplication private constructor() {
     lateinit var sdkSharedResources: SDKSharedResources
 
     var likeMindsChatComponent: LikeMindsChatComponent? = null
+    private var initiateUserSubComponent: InitiateUserSubComponent? = null
 
     companion object {
         private var likeMindsChatApplicationInstance: LikeMindsChatApplication? = null
@@ -46,5 +48,12 @@ internal class LikeMindsChatApplication private constructor() {
                 .build()
         }
         likeMindsChatComponent?.inject(this)
+    }
+
+    fun initiateUserComponent(): InitiateUserSubComponent? {
+        if (initiateUserSubComponent == null) {
+            initiateUserSubComponent = likeMindsChatComponent?.initiateUserComponent()?.create()
+        }
+        return initiateUserSubComponent
     }
 }

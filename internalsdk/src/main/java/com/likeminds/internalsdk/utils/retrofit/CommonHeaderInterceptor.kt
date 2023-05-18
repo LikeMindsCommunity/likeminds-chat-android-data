@@ -9,9 +9,9 @@ import javax.inject.Inject
 class CommonHeaderInterceptor @Inject constructor() : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val requestBuilder = chain.request().newBuilder()
-        val feedTokenManager = ChatTokenManager.getInstance()
-        if (!feedTokenManager.accessToken.isNullOrEmpty()) {
-            requestBuilder.addHeader(AUTH, "Bearer ${feedTokenManager.accessToken}")
+        val chatTokenManager = ChatTokenManager.getInstance()
+        if (!chatTokenManager.accessToken.isNullOrEmpty()) {
+            requestBuilder.addHeader(AUTH, "Bearer ${chatTokenManager.accessToken}")
         }
         requestBuilder.addHeader(X_PLATFORM_CODE, "an")
         requestBuilder.addHeader(X_SDK_SOURCE, "feed")

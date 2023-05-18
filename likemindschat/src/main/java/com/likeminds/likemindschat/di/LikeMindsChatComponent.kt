@@ -2,21 +2,24 @@ package com.likeminds.likemindschat.di
 
 import android.app.Application
 import com.likeminds.likemindschat.LMChatClient
-import com.likeminds.likemindschat.di.modules.SDKModule
-import com.likeminds.likemindschat.di.modules.SharedModule
+import com.likeminds.likemindschat.di.initiateUser.InitiateUserModule
+import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
+import com.likeminds.likemindschat.di.internalsdk.SDKModule
+import com.likeminds.likemindschat.di.internalsdk.SharedModule
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [SDKModule::class, SharedModule::class])
+@Component(modules = [SDKModule::class, SharedModule::class, InitiateUserModule::class])
 internal interface LikeMindsChatComponent {
 
     fun inject(likeMindsChatApplication: LikeMindsChatApplication)
 
     fun inject(lmChatClient: LMChatClient)
 
+    fun initiateUserComponent(): InitiateUserSubComponent.Factory
 
     @Component.Builder
     interface Builder {

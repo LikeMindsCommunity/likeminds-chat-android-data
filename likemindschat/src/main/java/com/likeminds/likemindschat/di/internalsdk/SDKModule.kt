@@ -1,4 +1,4 @@
-package com.likeminds.likemindschat.di.modules
+package com.likeminds.likemindschat.di.internalsdk
 
 import com.google.gson.Gson
 import com.likeminds.internalsdk.CollabmatesChatSDK

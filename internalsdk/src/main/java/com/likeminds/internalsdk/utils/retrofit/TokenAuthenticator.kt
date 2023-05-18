@@ -28,9 +28,9 @@ class TokenAuthenticator @Inject constructor(
 
     private fun getUpdatedRequest(response: Response): Request? {
         val body = response.body?.string()
-        val feedTokenManager = ChatTokenManager.getInstance()
+        val chatTokenManager = ChatTokenManager.getInstance()
         return when {
-            feedTokenManager.refreshToken.isNullOrEmpty() -> {
+            chatTokenManager.refreshToken.isNullOrEmpty() -> {
                 Log.e(LOG_TAG, "refresh token is empty")
                 null
             }
@@ -38,7 +38,7 @@ class TokenAuthenticator @Inject constructor(
             (body?.contains(INVALID_LTM, true) == true) -> {
                 Log.d(LOG_TAG, "refreshing access token")
                 runBlocking {
-                    val refreshToken = feedTokenManager.refreshToken
+                    val refreshToken = chatTokenManager.refreshToken
                     when (val refreshResponse =
                         refreshNetworkApi.refreshAccessToken("Bearer $refreshToken")) {
                         is NetworkResponse.Error -> {
@@ -55,7 +55,7 @@ class TokenAuthenticator @Inject constructor(
                             val newRefreshToken = refreshResponse.body.data?.refreshToken
                             val updatedToken = "Bearer $newAccessToken"
 
-                            feedTokenManager.updateTokens(newAccessToken, newRefreshToken)
+                            chatTokenManager.updateTokens(newAccessToken, newRefreshToken)
                             response.request.newBuilder()
                                 .header(AUTH, updatedToken)
                                 .build()

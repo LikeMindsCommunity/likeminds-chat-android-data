@@ -22,8 +22,8 @@ class RefreshTokenAuthenticator @Inject constructor() : Authenticator {
         )
         return if (body?.contains(INVALID_RTM, true) == true) {
             Log.d(LOG_TAG, "refresh token is expired, clearing tokens")
-            val feedTokenManager = ChatTokenManager.getInstance()
-            feedTokenManager.clear()
+            val chatTokenManager = ChatTokenManager.getInstance()
+            chatTokenManager.clear()
 //            val lmInternalCallback = CollabmatsSDK.getInstance().lmInternalCallback
 //            lmInternalCallback?.login()
             null
