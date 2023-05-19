@@ -9,6 +9,7 @@ versions.sdk_version_patch = '0'
 versions.sdk_version_code = 300 //todo
 versions.core = "1.8.0"
 versions.appcompat = "1.4.2"
+versions.realm = "1.8.0"
 versions.junit = "4.13.2"
 versions.android_junit = "1.1.5"
 versions.espresso_core = "3.5.1"
@@ -56,6 +57,10 @@ def okhttp = [:]
 okhttp.main = "com.squareup.okhttp3:okhttp:$versions.okhttp"
 okhttp.http_interceptor = "com.squareup.okhttp3:logging-interceptor:$versions.okhttp"
 deps.okhttp = okhttp
+
+def realm = [:]
+realm.local = "io.realm.kotlin:library-base:$versions.realm"
+deps.realm = realm
 
 def gson = [:]
 gson.main = "com.google.code.gson:gson:$versions.gson"

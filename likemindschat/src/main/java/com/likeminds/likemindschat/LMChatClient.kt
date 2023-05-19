@@ -4,6 +4,8 @@ import android.app.Application
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
 import com.likeminds.likemindschat.initiateUser.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
+import io.realm.kotlin.Realm
+import io.realm.kotlin.ext.query
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -46,5 +48,9 @@ class LMChatClient private constructor() {
     // Exposed function to process logout request
     suspend fun logout(logoutRequest: LogoutRequest): LMResponse<Nothing> {
         return initiateUserClient.logout(logoutRequest)
+    }
+
+    suspend fun registerDevice(registerDeviceRequest: RegisterDeviceRequest): LMResponse<Nothing> {
+        return initiateUserClient.registerDevice(registerDeviceRequest)
     }
 }

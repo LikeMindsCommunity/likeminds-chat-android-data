@@ -1,8 +1,7 @@
 package com.likeminds.internalsdk.di.modules
 
 import com.google.gson.Gson
-import com.likeminds.internalsdk.sdk.SDKNetworkApi
-import com.likeminds.internalsdk.user.UserNetworkApi
+import com.likeminds.internalsdk.user.api.UserNetworkApi
 import com.likeminds.internalsdk.utils.retrofit.NetworkResponseAdapterFactory
 import com.likeminds.internalsdk.utils.retrofit.model.BaseUrl
 import dagger.Module

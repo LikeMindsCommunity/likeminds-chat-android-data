@@ -4,6 +4,8 @@ import android.app.Application
 import com.google.gson.Gson
 import com.likeminds.internalsdk.community.CommunityApi
 import com.likeminds.internalsdk.community.CommunityApiImpl
+import com.likeminds.internalsdk.db.*
+import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.di.DaggerInternalSDKComponent
 import com.likeminds.internalsdk.di.InternalSDKComponent
 import com.likeminds.internalsdk.di.SDKSharedResources
@@ -11,8 +13,13 @@ import com.likeminds.internalsdk.refreshtoken.RefreshTokenApi
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenApiImpl
 import com.likeminds.internalsdk.sdk.SDKApi
 import com.likeminds.internalsdk.sdk.SDKApiImpl
-import com.likeminds.internalsdk.user.UserApi
-import com.likeminds.internalsdk.user.UserApiImpl
+import com.likeminds.internalsdk.user.api.UserApi
+import com.likeminds.internalsdk.user.api.UserApiImpl
+import com.likeminds.internalsdk.user.db.UserDB
+import com.likeminds.internalsdk.user.db.UserDbImpl
+import io.realm.kotlin.Realm
+import io.realm.kotlin.RealmConfiguration
+import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -37,12 +44,24 @@ class CollabmatesChatSDK {
     lateinit var userApiImpl: UserApiImpl
 
     @Inject
+    lateinit var userDbImpl: UserDbImpl
+
+    @Inject
     lateinit var communityApiImpl: CommunityApiImpl
 
     companion object {
 
         private var collabmatesChatSDK: CollabmatesChatSDK? = null
         const val LOG_TAG = "LikeMindsChat"
+
+        fun getRealmConfiguration(): RealmConfiguration {
+            val schema = setOf(AppConfigRO::class, UserRO::class, SDKClientInfoRO::class)
+            return RealmConfiguration.Builder(schema)
+                .name(DB_SCHEMA_NAME)
+                .schemaVersion(DB_SCHEMA_VERSION)
+                .migration(RealmDBMigration())
+                .build()
+        }
 
         @JvmStatic
         fun getInstance(): CollabmatesChatSDK {
@@ -56,6 +75,14 @@ class CollabmatesChatSDK {
 
     fun initialize(sdkSharedResources: SDKSharedResources) {
         initSDKComponent(sdkSharedResources)
+        initRealmAndMigrateAsync()
+    }
+
+    private fun initRealmAndMigrateAsync() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val realm = Realm.open(getRealmConfiguration())
+            realm.close()
+        }
     }
 
     private fun initSDKComponent(sdkSharedResources: SDKSharedResources) {
@@ -77,6 +104,10 @@ class CollabmatesChatSDK {
 
     fun getUserApi(): UserApi {
         return userApiImpl
+    }
+
+    fun getUserDb(): UserDB {
+        return userDbImpl
     }
 
     fun communityApi(): CommunityApi {
