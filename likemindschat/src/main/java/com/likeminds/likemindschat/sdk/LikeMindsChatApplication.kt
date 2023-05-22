@@ -1,7 +1,7 @@
 package com.likeminds.likemindschat.sdk
 
 import android.app.Application
-import com.likeminds.internalsdk.CollabmatesChatSDK
+import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.di.SDKSharedResources
 import com.likeminds.likemindschat.di.DaggerLikeMindsChatComponent
 import com.likeminds.likemindschat.di.LikeMindsChatComponent
@@ -11,7 +11,7 @@ import javax.inject.Inject
 internal class LikeMindsChatApplication private constructor() {
 
     @Inject
-    lateinit var collabmatesChatSDK: CollabmatesChatSDK
+    lateinit var groupChatSDK: GroupChatSDK
 
 
     @Inject
@@ -38,7 +38,7 @@ internal class LikeMindsChatApplication private constructor() {
         likeMindsChatApplicationInstance = this
 
         initLikeMindsChatComponent(application)
-        collabmatesChatSDK.initialize(sdkSharedResources)
+        groupChatSDK.initialize(sdkSharedResources)
     }
 
     private fun initLikeMindsChatComponent(application: Application) {

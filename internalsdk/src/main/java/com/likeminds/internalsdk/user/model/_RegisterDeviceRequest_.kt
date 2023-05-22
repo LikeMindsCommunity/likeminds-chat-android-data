@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 class _RegisterDeviceRequest_ private constructor(
     @SerializedName("token")
-    var token: String,
+    val token: String,
     @SerializedName("device_id")
-    var deviceId: String?
+    val deviceId: String?
 ) {
     class Builder {
         private var token: String = ""

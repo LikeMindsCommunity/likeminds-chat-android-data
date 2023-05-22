@@ -24,7 +24,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CollabmatesChatSDK {
+class GroupChatSDK {
 
     private var sdkComponent: InternalSDKComponent? = null
 
@@ -51,7 +51,7 @@ class CollabmatesChatSDK {
 
     companion object {
 
-        private var collabmatesChatSDK: CollabmatesChatSDK? = null
+        private var groupChatSDK: GroupChatSDK? = null
         const val LOG_TAG = "LikeMindsChat"
 
         fun getRealmConfiguration(): RealmConfiguration {
@@ -64,12 +64,12 @@ class CollabmatesChatSDK {
         }
 
         @JvmStatic
-        fun getInstance(): CollabmatesChatSDK {
-            if (collabmatesChatSDK == null) {
-                collabmatesChatSDK = CollabmatesChatSDK()
+        fun getInstance(): GroupChatSDK {
+            if (groupChatSDK == null) {
+                groupChatSDK = GroupChatSDK()
             }
 
-            return collabmatesChatSDK!!
+            return groupChatSDK!!
         }
     }
 

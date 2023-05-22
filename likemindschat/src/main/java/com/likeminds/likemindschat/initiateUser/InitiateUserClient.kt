@@ -21,16 +21,16 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
     }
 
     private val sdkApi by lazy {
-        collabmatesChatSDK.getSDKApi()
+        groupChatSDK.getSDKApi()
     }
     private val refreshTokenApi by lazy {
-        collabmatesChatSDK.getRefreshTokenApi()
+        groupChatSDK.getRefreshTokenApi()
     }
     private val userApi by lazy {
-        collabmatesChatSDK.getUserApi()
+        groupChatSDK.getUserApi()
     }
     private val userDb by lazy {
-        collabmatesChatSDK.getUserDb()
+        groupChatSDK.getUserDb()
     }
 
     /**

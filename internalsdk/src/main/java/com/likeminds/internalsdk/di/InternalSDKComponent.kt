@@ -1,6 +1,6 @@
 package com.likeminds.internalsdk.di
 
-import com.likeminds.internalsdk.CollabmatesChatSDK
+import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.di.modules.CommunityModule
 import com.likeminds.internalsdk.di.modules.GsonModule
 import com.likeminds.internalsdk.di.modules.NetworkModule
@@ -23,7 +23,7 @@ import javax.inject.Singleton
 )
 interface InternalSDKComponent {
 
-    fun inject(collabmatesChatSDK: CollabmatesChatSDK)
+    fun inject(groupChatSDK: GroupChatSDK)
 
     @Component.Builder
     interface Builder {

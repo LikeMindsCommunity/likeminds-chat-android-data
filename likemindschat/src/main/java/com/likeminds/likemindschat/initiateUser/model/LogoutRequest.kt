@@ -1,8 +1,8 @@
 package com.likeminds.likemindschat.initiateUser.model
 
 class LogoutRequest private constructor(
-    var refreshToken: String,
-    var deviceId: String
+    val refreshToken: String,
+    val deviceId: String
 ) {
 
     class Builder {

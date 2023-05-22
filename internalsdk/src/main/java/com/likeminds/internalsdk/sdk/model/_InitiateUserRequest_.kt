@@ -4,13 +4,13 @@ import com.google.gson.annotations.SerializedName
 
 class _InitiateUserRequest_ private constructor(
     @SerializedName("api_key")
-    var apiKey: String?,
+    val apiKey: String?,
     @SerializedName("user_name")
-    var userName: String?,
+    val userName: String?,
     @SerializedName("user_unique_id")
-    var userId: String?,
+    val userId: String?,
     @SerializedName("is_guest")
-    var isGuest: Boolean?
+    val isGuest: Boolean?
 ) {
     class Builder {
         private var apiKey: String? = null

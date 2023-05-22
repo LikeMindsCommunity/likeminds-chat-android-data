@@ -14,7 +14,7 @@ class CommonHeaderInterceptor @Inject constructor() : Interceptor {
             requestBuilder.addHeader(AUTH, "Bearer ${chatTokenManager.accessToken}")
         }
         requestBuilder.addHeader(X_PLATFORM_CODE, "an")
-        requestBuilder.addHeader(X_SDK_SOURCE, "feed")
+        requestBuilder.addHeader(X_SDK_SOURCE, "chat")
         requestBuilder.addHeader(X_VERSION_CODE, BuildConfig.APP_VERSION_CODE.toString())
         return chain.proceed(requestBuilder.build())
     }

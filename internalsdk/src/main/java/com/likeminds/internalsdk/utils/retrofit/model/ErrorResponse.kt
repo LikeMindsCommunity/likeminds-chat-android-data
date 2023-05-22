@@ -12,5 +12,4 @@ data class ErrorResponse(
 ) {
 
     fun error() = errorMessage ?: "Unknown error occurred"
-
 }

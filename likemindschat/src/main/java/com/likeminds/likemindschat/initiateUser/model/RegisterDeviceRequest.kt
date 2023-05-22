@@ -1,8 +1,8 @@
 package com.likeminds.likemindschat.initiateUser.model
 
 class RegisterDeviceRequest private constructor(
-    var token: String,
-    var deviceId: String
+    val token: String,
+    val deviceId: String
 ) {
     class Builder {
         private var token: String = ""

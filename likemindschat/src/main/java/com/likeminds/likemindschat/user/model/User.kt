@@ -1,20 +1,20 @@
 package com.likeminds.likemindschat.user.model
 
 data class User(
-    var id: Int,
-    var imageUrl: String,
-    var isGuest: Boolean,
-    var name: String,
-    var organisationName: String?,
-    var sdkClientInfo: SDKClientInfo?,
-    var isDeleted: Boolean?,
-    var customTitle: String?,
-    var updatedAt: Long,
-    var userUniqueId: String
+    val id: Int,
+    val imageUrl: String,
+    val isGuest: Boolean,
+    val name: String,
+    val organisationName: String?,
+    val sdkClientInfo: SDKClientInfo?,
+    val isDeleted: Boolean?,
+    val customTitle: String?,
+    val updatedAt: Long,
+    val userUniqueId: String
 )
 
 data class SDKClientInfo(
-    var community: Int,
-    var user: Int,
-    var userUniqueId: String
+    val community: Int,
+    val user: Int,
+    val userUniqueId: String
 )

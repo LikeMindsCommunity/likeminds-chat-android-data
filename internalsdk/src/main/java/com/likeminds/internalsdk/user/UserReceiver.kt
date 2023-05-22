@@ -1,8 +1,8 @@
 package com.likeminds.internalsdk.user
 
 import android.util.Log
-import com.likeminds.internalsdk.CollabmatesChatSDK
-import com.likeminds.internalsdk.CollabmatesChatSDK.Companion.LOG_TAG
+import com.likeminds.internalsdk.GroupChatSDK
+import com.likeminds.internalsdk.GroupChatSDK.Companion.LOG_TAG
 import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.user.api.UserNetworkApi
 import com.likeminds.internalsdk.user.model._LogoutRequest_
@@ -10,9 +10,6 @@ import com.likeminds.internalsdk.user.model._RegisterDeviceRequest_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.kotlin.Realm
-import io.sentry.protocol.User
-import retrofit2.http.Body
-import retrofit2.http.Header
 import javax.inject.Inject
 
 class UserReceiver @Inject constructor(private val userNetworkApi: UserNetworkApi) {
@@ -39,7 +36,7 @@ class UserReceiver @Inject constructor(private val userNetworkApi: UserNetworkAp
         Db Functions
      */
     suspend fun saveUser(userRO: UserRO) {
-        val realm = Realm.open(CollabmatesChatSDK.getRealmConfiguration())
+        val realm = Realm.open(GroupChatSDK.getRealmConfiguration())
         realm.write {
             val user =
                 this.query(UserRO::class, "userUniqueId == $0", userRO.userUniqueId).first().find()

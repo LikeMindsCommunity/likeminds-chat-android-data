@@ -1,17 +1,15 @@
 package com.likeminds.likemindschat.base
 
-import com.likeminds.internalsdk.CollabmatesChatSDK
+import com.likeminds.internalsdk.GroupChatSDK
 import javax.inject.Inject
 
 abstract class BaseClient {
-
     init {
         attachDagger()
     }
 
-
     @Inject
-    lateinit var collabmatesChatSDK: CollabmatesChatSDK
+    lateinit var groupChatSDK: GroupChatSDK
 
     protected abstract fun attachDagger()
 }
