@@ -1,0 +1,64 @@
+import com.android.build.gradle.api.BaseVariant
+
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+    id 'io.realm.kotlin'
+}
+apply from: "internalsdk-dependencies.gradle"
+android {
+    namespace 'com.likeminds.internalsdk'
+    compileSdk versions.compile_sdk
+
+    defaultConfig {
+        minSdk versions.min_sdk
+        targetSdk versions.target_sdk
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "Integer", "APP_VERSION_CODE", "$versions.sdk_version_code"
+            buildConfigField "java.util.Map<String,String>", "URLS_MAP", getBuildConfigMapEntry(urls)
+        }
+        debug {
+            buildConfigField "Integer", "APP_VERSION_CODE", "$versions.sdk_version_code"
+            buildConfigField "java.util.Map<String,String>", "URLS_MAP", getBuildConfigMapEntry(beta_urls)
+        }
+    }
+    libraryVariants.all {
+        variant ->
+            printBuildConfigKeys(variant, keys)
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+static void printBuildConfigKeys(BaseVariant variant, LinkedHashMap[] maps) {
+    maps.each { map ->
+        map.each { key, value ->
+            variant.buildConfigField "String", "$key", "\"$value\""
+        }
+    }
+}
+
+static String getBuildConfigMapEntry(LinkedHashMap[] maps) {
+    StringBuilder putCommandForAll = new StringBuilder()
+    maps.each { map ->
+        map.each { key, value ->
+            putCommandForAll.append("put(\"$key\",$value);")
+        }
+    }
+    return "new java.util.HashMap() {{${putCommandForAll.toString()}}}"
+}

@@ -1,0 +1,35 @@
+package com.likeminds.internalsdk.user.model
+
+import com.google.gson.annotations.SerializedName
+
+data class _User_(
+    @SerializedName("id")
+    val id: Int,
+    @SerializedName("image_url")
+    val imageUrl: String,
+    @SerializedName("is_guest")
+    val isGuest: Boolean,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("organisation_name")
+    val organisationName: String?,
+    @SerializedName("sdk_client_info")
+    val sdkClientInfo: _SDKClientInfo_?,
+    @SerializedName("is_deleted")
+    val isDeleted: Boolean?,
+    @SerializedName("custom_title")
+    val customTitle: String?,
+    @SerializedName("updated_at")
+    val updatedAt: Long,
+    @SerializedName("user_unique_id")
+    val userUniqueId: String
+)
+
+data class _SDKClientInfo_(
+    @SerializedName("community")
+    val community: Int,
+    @SerializedName("user")
+    val user: Int,
+    @SerializedName("user_unique_id")
+    val userUniqueId: String
+)
