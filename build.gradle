@@ -13,6 +13,8 @@ plugins {
     id 'io.realm.kotlin' version '1.8.0' apply false
 }
 
+apply from: "publish.gradle"
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
