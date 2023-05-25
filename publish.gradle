@@ -1,0 +1,43 @@
+allprojects {
+    group = "com.github.NateshR"
+    version = "v1.0.0"
+}
+
+subprojects {
+    apply plugin: "maven-publish"
+    afterEvaluate {
+        if (!plugins.findPlugin("com.android.application")) {
+            publishing {
+                publications {
+//                    release(MavenPublication) {
+//                        afterEvaluate {
+//                            groupId project.group
+//                            artifactId project.name
+//                            version project.version
+//
+//                            if (project.plugins.findPlugin("com.android.library")) {
+//                                from components.release
+//                            } else {
+//                                from components.java
+//                            }
+//                        }
+//                    }
+
+                    debug(MavenPublication) {
+                        afterEvaluate {
+                            groupId project.group
+                            artifactId project.name
+                            version "$project.version"
+
+                            if (project.plugins.findPlugin("com.android.library")) {
+                                from components.debug
+                            } else {
+                                from components.java
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
