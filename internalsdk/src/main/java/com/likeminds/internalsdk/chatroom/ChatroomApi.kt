@@ -22,5 +22,17 @@ interface ChatroomApi {
     ): NetworkResponse<APIResponse<Nothing>>
 
     // api to mute chatroom
-    suspend fun muteChatroom(request: _MuteChatroomRequest_): NetworkResponse<APIResponse<Nothing>>
+    suspend fun muteChatroom(
+        request: _MuteChatroomRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
+
+    // api to mark chatroom as read
+    suspend fun markReadChatroom(
+        request: _MarkReadChatroomRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
+
+    // api to get chatroom's share url
+    suspend fun shareChatroomUrl(
+        request: _ShareChatroomUrlRequest_
+    ): NetworkResponse<APIResponse<_ShareChatroomUrlResponse_>>
 }

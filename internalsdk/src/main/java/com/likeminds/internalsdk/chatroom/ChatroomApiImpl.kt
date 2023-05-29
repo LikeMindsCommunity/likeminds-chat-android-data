@@ -32,4 +32,16 @@ class ChatroomApiImpl @Inject constructor(
     ): NetworkResponse<APIResponse<Nothing>> {
         return chatroomReceiver.muteChatroom(request)
     }
+
+    override suspend fun markReadChatroom(
+        request: _MarkReadChatroomRequest_
+    ): NetworkResponse<APIResponse<Nothing>> {
+        return chatroomReceiver.markReadChatroom(request)
+    }
+
+    override suspend fun shareChatroomUrl(
+        request: _ShareChatroomUrlRequest_
+    ): NetworkResponse<APIResponse<_ShareChatroomUrlResponse_>> {
+        return chatroomReceiver.shareChatroomUrl(request)
+    }
 }
