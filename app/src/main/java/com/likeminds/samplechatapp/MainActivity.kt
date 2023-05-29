@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
+import com.likeminds.likemindschat.chatroom.model.FollowChatroomRequest
 import com.likeminds.likemindschat.chatroom.model.GetChatroomRequest
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import kotlinx.coroutines.CoroutineScope
@@ -27,8 +28,8 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val initiateUserRequest = InitiateUserRequest.Builder()
                 .apiKey("c4570b5a-46a4-4bb1-b82b-c89f4ea386c5")
-                .userId("1234")
-                .userName("Siddharth Dubey")
+                .userId("123456789")
+                .userName("Sid")
                 .deviceId("123333")
                 .isGuest(false)
                 .build()
@@ -55,6 +56,23 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(
                     this@MainActivity,
                     "chatroom participants: ${getChatroomResponse.data?.participantCount}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val followChatroomRequest = FollowChatroomRequest.Builder()
+                .chatroomId("82825")
+                .memberId("88866")
+                .value(true)
+                .build()
+            val followChatroomResponse = client.followChatroom(followChatroomRequest)
+
+            Log.d(TAG, "followChatroomResponse:${followChatroomResponse.data}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "followChatroomResponse error: ${followChatroomResponse.errorMessage}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

@@ -2,6 +2,7 @@ package com.likeminds.likemindschat
 
 import android.app.Application
 import com.likeminds.likemindschat.chatroom.ChatroomClient
+import com.likeminds.likemindschat.chatroom.model.FollowChatroomRequest
 import com.likeminds.likemindschat.chatroom.model.GetChatroomRequest
 import com.likeminds.likemindschat.chatroom.model.GetChatroomResponse
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
@@ -75,5 +76,10 @@ class LMChatClient private constructor() {
     // Exposed function to get chatroom
     suspend fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
         return chatroomClient.getChatroom(getChatroomRequest)
+    }
+
+    // Exposed function to follow chatroom
+    suspend fun followChatroom(followChatroomRequest: FollowChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.followChatroom(followChatroomRequest)
     }
 }
