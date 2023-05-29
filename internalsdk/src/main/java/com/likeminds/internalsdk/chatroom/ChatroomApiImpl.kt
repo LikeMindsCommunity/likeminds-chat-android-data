@@ -1,5 +1,6 @@
 package com.likeminds.internalsdk.chatroom
 
+import com.likeminds.internalsdk.chatroom.model._FollowChatroomRequest_
 import com.likeminds.internalsdk.chatroom.model._GetChatroomRequest_
 import com.likeminds.internalsdk.chatroom.model._GetChatroomResponse_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
@@ -14,5 +15,11 @@ class ChatroomApiImpl @Inject constructor(
         request: _GetChatroomRequest_
     ): NetworkResponse<APIResponse<_GetChatroomResponse_>> {
         return chatroomReceiver.getChatroom(request)
+    }
+
+    override suspend fun followChatroom(
+        request: _FollowChatroomRequest_
+    ): NetworkResponse<APIResponse<Nothing>> {
+        return chatroomReceiver.followChatroom(request)
     }
 }

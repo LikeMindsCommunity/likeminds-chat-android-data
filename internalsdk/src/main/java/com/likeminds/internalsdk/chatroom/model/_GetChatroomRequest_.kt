@@ -1,6 +1,9 @@
 package com.likeminds.internalsdk.chatroom.model
 
+import com.google.gson.annotations.SerializedName
+
 class _GetChatroomRequest_ private constructor(
+    @SerializedName("chatroom_id")
     val chatroomId: String
 ) {
     class Builder {
@@ -12,6 +15,6 @@ class _GetChatroomRequest_ private constructor(
     }
 
     fun toBuilder(): Builder {
-        return Builder()
+        return Builder().chatroomId(chatroomId)
     }
 }

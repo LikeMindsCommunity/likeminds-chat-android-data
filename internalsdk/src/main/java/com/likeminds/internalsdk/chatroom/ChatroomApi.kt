@@ -1,5 +1,6 @@
 package com.likeminds.internalsdk.chatroom
 
+import com.likeminds.internalsdk.chatroom.model._FollowChatroomRequest_
 import com.likeminds.internalsdk.chatroom.model._GetChatroomRequest_
 import com.likeminds.internalsdk.chatroom.model._GetChatroomResponse_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
@@ -11,4 +12,9 @@ interface ChatroomApi {
     suspend fun getChatroom(
         request: _GetChatroomRequest_
     ): NetworkResponse<APIResponse<_GetChatroomResponse_>>
+
+    // api to follow chatroom
+    suspend fun followChatroom(
+        request: _FollowChatroomRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
 }
