@@ -1,9 +1,6 @@
 package com.likeminds.internalsdk.chatroom
 
-import com.likeminds.internalsdk.chatroom.model._FollowChatroomRequest_
-import com.likeminds.internalsdk.chatroom.model._GetChatroomRequest_
-import com.likeminds.internalsdk.chatroom.model._GetChatroomResponse_
-import com.likeminds.internalsdk.chatroom.model._LeaveSecretChatroomRequest_
+import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 
@@ -23,4 +20,7 @@ interface ChatroomApi {
     suspend fun leaveSecretChatroom(
         request: _LeaveSecretChatroomRequest_
     ): NetworkResponse<APIResponse<Nothing>>
+
+    // api to mute chatroom
+    suspend fun muteChatroom(request: _MuteChatroomRequest_): NetworkResponse<APIResponse<Nothing>>
 }
