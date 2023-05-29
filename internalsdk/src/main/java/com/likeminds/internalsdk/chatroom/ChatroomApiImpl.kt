@@ -44,4 +44,10 @@ class ChatroomApiImpl @Inject constructor(
     ): NetworkResponse<APIResponse<_ShareChatroomUrlResponse_>> {
         return chatroomReceiver.shareChatroomUrl(request)
     }
+
+    override suspend fun setChatroomTopic(
+        request: _SetChatroomTopicRequest_
+    ): NetworkResponse<APIResponse<Nothing>> {
+        return chatroomReceiver.setChatroomTopic(request)
+    }
 }

@@ -38,4 +38,9 @@ interface ChatroomNetworkApi {
         @Query("chatroom_id") chatroomId: String,
         @Query("domain") domain: String
     ): NetworkResponse<APIResponse<_ShareChatroomUrlResponse_>>
+
+    @PUT("conversation/topic")
+    suspend fun setChatroomTopic(
+        @Body request: _SetChatroomTopicRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
 }

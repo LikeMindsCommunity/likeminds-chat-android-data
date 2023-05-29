@@ -44,4 +44,10 @@ class ChatroomReceiver @Inject constructor(private val chatroomNetworkApi: Chatr
         val domain = request.domain
         return chatroomNetworkApi.shareChatroomUrl(chatroomId, domain)
     }
+
+    suspend fun setChatroomTopic(
+        request: _SetChatroomTopicRequest_
+    ): NetworkResponse<APIResponse<Nothing>> {
+        return chatroomNetworkApi.setChatroomTopic(request)
+    }
 }
