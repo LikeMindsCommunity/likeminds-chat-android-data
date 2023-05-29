@@ -1,6 +1,9 @@
 package com.likeminds.likemindschat
 
 import android.app.Application
+import com.likeminds.likemindschat.chatroom.ChatroomClient
+import com.likeminds.likemindschat.chatroom.model.GetChatroomRequest
+import com.likeminds.likemindschat.chatroom.model.GetChatroomResponse
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
@@ -20,6 +23,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var userClient: UserClient
+
+    @Inject
+    lateinit var chatroomClient: ChatroomClient
 
     class Builder(val application: Application) {
 
@@ -64,5 +70,10 @@ class LMChatClient private constructor() {
     // Exposed function to get user from Db
     suspend fun getUser(): LMResponse<User> {
         return userClient.getUser()
+    }
+
+    // Exposed function to get chatroom
+    suspend fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
+        return chatroomClient.getChatroom(getChatroomRequest)
     }
 }

@@ -1,5 +1,7 @@
 package com.likeminds.likemindschat.sdk
 
+import com.likeminds.internalsdk.chatroom.model._ChatroomAction_
+import com.likeminds.internalsdk.chatroom.model._GetChatroomResponse_
 import com.likeminds.internalsdk.community.model._Community_
 import com.likeminds.internalsdk.db.models.SDKClientInfoRO
 import com.likeminds.internalsdk.db.models.UserRO
@@ -8,12 +10,18 @@ import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
+import com.likeminds.likemindschat.chatroom.model.ChatroomAction
+import com.likeminds.likemindschat.chatroom.model.GetChatroomResponse
 import com.likeminds.likemindschat.community.model.Community
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.user.model.SDKClientInfo
 import com.likeminds.likemindschat.user.model.User
 
 object ModelConverter {
+
+    /**--------------------------------
+     * Internal Model -> Client Model
+    --------------------------------*/
 
     // converts api InitiateUserResponse model to LM InitiateUserResponse model
     fun convertInitiateUserResponse(
@@ -81,6 +89,50 @@ object ModelConverter {
             _community_.imageUrl,
             _community_.membersCount,
             _community_.updatedAt,
+        )
+    }
+
+    // converts api GetChatroomResponse model to LM GetChatroomResponse model
+    fun convertGetChatroomResponse(
+        apiResponse: APIResponse<_GetChatroomResponse_>
+    ): LMResponse<GetChatroomResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetChatroomResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal GetChatroomResponse model to client model
+    private fun convertGetChatroomResponse(
+        _getChatroomResponse_: _GetChatroomResponse_?
+    ): GetChatroomResponse? {
+        if (_getChatroomResponse_ == null) return null
+        return GetChatroomResponse(
+            _getChatroomResponse_.canAccessSecretChatroom,
+            convertChatroomActions(_getChatroomResponse_.chatroomActions),
+            _getChatroomResponse_.participantCount,
+            _getChatroomResponse_.placeHolder
+        )
+    }
+
+    // converts internal ChatroomAction model list to client model list
+    private fun convertChatroomActions(
+        _chatroomActions_: List<_ChatroomAction_>
+    ): List<ChatroomAction> {
+        return _chatroomActions_.map {
+            convertChatroomAction(it)
+        }
+    }
+
+    // converts internal ChatroomAction model to client model
+    private fun convertChatroomAction(
+        _chatroomAction_: _ChatroomAction_
+    ): ChatroomAction {
+        return ChatroomAction(
+            _chatroomAction_.id,
+            _chatroomAction_.title,
+            _chatroomAction_.route
         )
     }
 

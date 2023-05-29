@@ -5,6 +5,7 @@ import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.di.SDKSharedResources
 import com.likeminds.likemindschat.di.DaggerLikeMindsChatComponent
 import com.likeminds.likemindschat.di.LikeMindsChatComponent
+import com.likeminds.likemindschat.di.chatroom.ChatroomSubComponent
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
 import com.likeminds.likemindschat.di.user.UserSubComponent
 import javax.inject.Inject
@@ -21,6 +22,7 @@ internal class LikeMindsChatApplication private constructor() {
     var likeMindsChatComponent: LikeMindsChatComponent? = null
     private var initiateUserSubComponent: InitiateUserSubComponent? = null
     private var userSubComponent: UserSubComponent? = null
+    private var chatroomSubComponent: ChatroomSubComponent? = null
 
     companion object {
         private var likeMindsChatApplicationInstance: LikeMindsChatApplication? = null
@@ -64,5 +66,12 @@ internal class LikeMindsChatApplication private constructor() {
             userSubComponent = likeMindsChatComponent?.userComponent()?.create()
         }
         return userSubComponent
+    }
+
+    fun chatroomComponent(): ChatroomSubComponent? {
+        if (chatroomSubComponent == null) {
+            chatroomSubComponent = likeMindsChatComponent?.chatroomSubComponent()?.create()
+        }
+        return chatroomSubComponent
     }
 }
