@@ -8,7 +8,10 @@ import com.likeminds.internalsdk.user.model._RegisterDeviceRequest_
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.initiateUser.model.*
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
+import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
+import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -100,7 +103,7 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateInitiateUserRequest(initiateUserRequest: InitiateUserRequest) {
-        if (initiateUserRequest.userName.isNullOrEmpty()) {
+        if (initiateUserRequest.userName.isEmpty()) {
             RequestUtils.throwException("userName")
         }
 

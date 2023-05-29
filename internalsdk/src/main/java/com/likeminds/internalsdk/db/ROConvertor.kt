@@ -7,6 +7,10 @@ import com.likeminds.internalsdk.user.model._User_
 
 object ROConvertor {
 
+    /**--------------------------------
+     * Internal Model -> Db Model
+    --------------------------------*/
+
     fun convertUser(user: _User_?): UserRO? {
         if (user == null) return null
         return UserRO().apply {
@@ -18,6 +22,8 @@ object ROConvertor {
             organizationName = user.organisationName
             updatedAt = user.updatedAt
             sdkClientInfoRO = convertSDKClientInfo(user.sdkClientInfo)
+            isDeleted = user.isDeleted
+            customTitle = user.customTitle
         }
     }
 

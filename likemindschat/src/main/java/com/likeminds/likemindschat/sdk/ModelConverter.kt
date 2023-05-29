@@ -1,6 +1,8 @@
 package com.likeminds.likemindschat.sdk
 
 import com.likeminds.internalsdk.community.model._Community_
+import com.likeminds.internalsdk.db.models.SDKClientInfoRO
+import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
@@ -80,5 +82,36 @@ object ModelConverter {
             _community_.membersCount,
             _community_.updatedAt,
         )
+    }
+
+    /**--------------------------------
+     * Db Model -> Client Model
+    --------------------------------*/
+
+    // converts User db model to client model
+    fun convertUser(userRO: UserRO): User {
+        return User(
+            userRO.id,
+            userRO.imageUrl,
+            userRO.isGuest,
+            userRO.name,
+            userRO.organizationName,
+            convertSDKClientInfo(userRO.sdkClientInfoRO),
+            userRO.isDeleted,
+            userRO.customTitle,
+            userRO.updatedAt,
+            userRO.userUniqueId
+        )
+    }
+
+    // converts SDKClientInfo db model to client model
+    private fun convertSDKClientInfo(sdkClientInfoRO: SDKClientInfoRO?): SDKClientInfo? {
+        return sdkClientInfoRO?.let {
+            SDKClientInfo(
+                it.community,
+                it.user,
+                it.userUniqueId
+            )
+        }
     }
 }

@@ -6,6 +6,7 @@ import com.likeminds.likemindschat.di.initiateUser.InitiateUserModule
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
 import com.likeminds.likemindschat.di.internalsdk.SDKModule
 import com.likeminds.likemindschat.di.internalsdk.SharedModule
+import com.likeminds.likemindschat.di.user.UserSubComponent
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import dagger.BindsInstance
 import dagger.Component
@@ -20,6 +21,7 @@ internal interface LikeMindsChatComponent {
     fun inject(lmChatClient: LMChatClient)
 
     fun initiateUserComponent(): InitiateUserSubComponent.Factory
+    fun userComponent(): UserSubComponent.Factory
 
     @Component.Builder
     interface Builder {

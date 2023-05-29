@@ -2,10 +2,13 @@ package com.likeminds.likemindschat
 
 import android.app.Application
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.*
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
+import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
+import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
+import com.likeminds.likemindschat.user.UserClient
+import com.likeminds.likemindschat.user.model.User
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,6 +17,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var initiateUserClient: InitiateUserClient
+
+    @Inject
+    lateinit var userClient: UserClient
 
     class Builder(val application: Application) {
 
@@ -50,7 +56,13 @@ class LMChatClient private constructor() {
         return initiateUserClient.logout(logoutRequest)
     }
 
+    // Exposed function to register device
     suspend fun registerDevice(registerDeviceRequest: RegisterDeviceRequest): LMResponse<Nothing> {
         return initiateUserClient.registerDevice(registerDeviceRequest)
+    }
+
+    // Exposed function to get user from Db
+    suspend fun getUser(): LMResponse<User> {
+        return userClient.getUser()
     }
 }
