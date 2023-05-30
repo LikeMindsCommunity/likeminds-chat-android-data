@@ -2,6 +2,8 @@ package com.likeminds.likemindschat.sdk
 
 import com.likeminds.internalsdk.chatroom.model._ChatroomAction_
 import com.likeminds.internalsdk.chatroom.model._GetChatroomResponse_
+import com.likeminds.internalsdk.chatroom.model._ShareChatroomUrlResponse_
+import com.likeminds.internalsdk.chatroom.model._ShareChatroomUrl_
 import com.likeminds.internalsdk.community.model._Community_
 import com.likeminds.internalsdk.db.models.SDKClientInfoRO
 import com.likeminds.internalsdk.db.models.UserRO
@@ -12,6 +14,8 @@ import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.ChatroomAction
 import com.likeminds.likemindschat.chatroom.model.GetChatroomResponse
+import com.likeminds.likemindschat.chatroom.model.ShareChatroomUrl
+import com.likeminds.likemindschat.chatroom.model.ShareChatroomUrlResponse
 import com.likeminds.likemindschat.community.model.Community
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.user.model.SDKClientInfo
@@ -133,6 +137,38 @@ object ModelConverter {
             _chatroomAction_.id,
             _chatroomAction_.title,
             _chatroomAction_.route
+        )
+    }
+
+    // converts api ShareChatroomUrlResponse model to LM ShareChatroomUrlResponse model
+    fun convertShareChatroomUrlResponse(
+        apiResponse: APIResponse<_ShareChatroomUrlResponse_>
+    ): LMResponse<ShareChatroomUrlResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertShareChatroomUrlResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal ShareChatroomUrlResponse model to client model
+    private fun convertShareChatroomUrlResponse(
+        _shareChatroomUrlResponse_: _ShareChatroomUrlResponse_?
+    ): ShareChatroomUrlResponse? {
+        if (_shareChatroomUrlResponse_ == null) return null
+        return ShareChatroomUrlResponse(
+            convertShareChatroomUrl(_shareChatroomUrlResponse_.shareChatroomUrl)
+        )
+    }
+
+    // converts internal convertShareChatroomUrl model to client model
+    private fun convertShareChatroomUrl(
+        _shareChatroomUrl_: _ShareChatroomUrl_
+    ): ShareChatroomUrl {
+        return ShareChatroomUrl(
+            _shareChatroomUrl_.shareUrl,
+            _shareChatroomUrl_.creatorShareUrl,
+            _shareChatroomUrl_.linkCreatedAt
         )
     }
 

@@ -1,11 +1,7 @@
-package com.likeminds.internalsdk.chatroom.model
+package com.likeminds.likemindschat.chatroom.model
 
-import com.google.gson.annotations.SerializedName
-
-class _ShareChatroomUrlRequest_ private constructor(
-    @SerializedName("chatroom_id")
+class ShareChatroomUrlRequest private constructor(
     val chatroomId: String,
-    @SerializedName("domain")
     val domain: String
 ) {
     class Builder {
@@ -15,7 +11,7 @@ class _ShareChatroomUrlRequest_ private constructor(
         fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
         fun domain(domain: String) = apply { this.domain = domain }
 
-        fun build() = _ShareChatroomUrlRequest_(chatroomId, domain)
+        fun build() = ShareChatroomUrlRequest(chatroomId, domain)
     }
 
     fun toBuilder(): Builder {

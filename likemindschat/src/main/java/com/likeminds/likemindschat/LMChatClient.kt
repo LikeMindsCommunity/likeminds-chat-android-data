@@ -2,9 +2,7 @@ package com.likeminds.likemindschat
 
 import android.app.Application
 import com.likeminds.likemindschat.chatroom.ChatroomClient
-import com.likeminds.likemindschat.chatroom.model.FollowChatroomRequest
-import com.likeminds.likemindschat.chatroom.model.GetChatroomRequest
-import com.likeminds.likemindschat.chatroom.model.GetChatroomResponse
+import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
@@ -81,5 +79,30 @@ class LMChatClient private constructor() {
     // Exposed function to follow chatroom
     suspend fun followChatroom(followChatroomRequest: FollowChatroomRequest): LMResponse<Nothing> {
         return chatroomClient.followChatroom(followChatroomRequest)
+    }
+
+    // Exposed function to leave a secret chatroom
+    suspend fun leaveSecretChatroom(leaveSecretChatroomRequest: LeaveSecretChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.leaveSecretChatroom(leaveSecretChatroomRequest)
+    }
+
+    // Exposed function to mute a chatroom
+    suspend fun muteChatroom(muteChatroomRequest: MuteChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.muteChatroom(muteChatroomRequest)
+    }
+
+    // Exposed function to mark a chatroom as read
+    suspend fun markReadChatroom(markReadChatroomRequest: MarkReadChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.markReadChatroom(markReadChatroomRequest)
+    }
+
+    // Exposed function to get chatroom's share url
+    suspend fun shareChatroomUrl(shareChatroomUrlRequest: ShareChatroomUrlRequest): LMResponse<ShareChatroomUrlResponse> {
+        return chatroomClient.shareChatroomUrl(shareChatroomUrlRequest)
+    }
+
+    // Exposed function to set chatroom's topic
+    suspend fun setChatroomTopic(setChatroomTopicRequest: SetChatroomTopicRequest): LMResponse<Nothing> {
+        return chatroomClient.setChatroomTopic(setChatroomTopicRequest)
     }
 }

@@ -1,11 +1,7 @@
-package com.likeminds.internalsdk.chatroom.model
+package com.likeminds.likemindschat.chatroom.model
 
-import com.google.gson.annotations.SerializedName
-
-class _LeaveSecretChatroomRequest_ private constructor(
-    @SerializedName("chatroom_id")
+class LeaveSecretChatroomRequest private constructor(
     val chatroomId: Int,
-    @SerializedName("is_secret")
     val isSecret: Boolean
 ) {
     class Builder {
@@ -15,7 +11,7 @@ class _LeaveSecretChatroomRequest_ private constructor(
         fun chatroomId(chatroomId: Int) = apply { this.chatroomId = chatroomId }
         fun isSecret(isSecret: Boolean) = apply { this.isSecret = isSecret }
 
-        fun build() = _LeaveSecretChatroomRequest_(chatroomId, isSecret)
+        fun build() = LeaveSecretChatroomRequest(chatroomId, isSecret)
     }
 
     fun toBuilder(): Builder {
