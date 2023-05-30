@@ -6,9 +6,9 @@ import com.likeminds.internalsdk.community.CommunityApi
 import com.likeminds.internalsdk.community.CommunityApiImpl
 import com.likeminds.internalsdk.db.*
 import com.likeminds.internalsdk.db.models.*
-import com.likeminds.internalsdk.di.DaggerInternalSDKComponent
-import com.likeminds.internalsdk.di.InternalSDKComponent
-import com.likeminds.internalsdk.di.SDKSharedResources
+import com.likeminds.internalsdk.di.*
+import com.likeminds.internalsdk.homefeed.HomeFeedApi
+import com.likeminds.internalsdk.homefeed.HomeFeedApiImpl
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenApi
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenApiImpl
 import com.likeminds.internalsdk.sdk.SDKApi
@@ -48,6 +48,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var communityApiImpl: CommunityApiImpl
+
+    @Inject
+    lateinit var homeFeedApi: HomeFeedApiImpl
 
     companion object {
 
@@ -112,5 +115,9 @@ class GroupChatSDK {
 
     fun communityApi(): CommunityApi {
         return communityApiImpl
+    }
+
+    fun homeFeedApi(): HomeFeedApi {
+        return homeFeedApi
     }
 }

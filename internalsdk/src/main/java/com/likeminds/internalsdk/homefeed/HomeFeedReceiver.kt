@@ -1,13 +1,13 @@
 package com.likeminds.internalsdk.homefeed
 
-import com.likeminds.internalsdk.homefeed.model.GetExploreTabCountResponse
+import com.likeminds.internalsdk.homefeed.model._GetExploreTabCountResponse_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import javax.inject.Inject
 
 class HomeFeedReceiver @Inject constructor(private val homeFeedNetworkApi: HomeFeedNetworkApi) {
 
-    suspend fun getExploreTabCount(): NetworkResponse<APIResponse<GetExploreTabCountResponse>> {
+    suspend fun getExploreTabCount(): NetworkResponse<APIResponse<_GetExploreTabCountResponse_>> {
         return homeFeedNetworkApi.getExploreTabCount()
     }
 }

@@ -1,12 +1,14 @@
 package com.likeminds.likemindschat.sdk
 
 import com.likeminds.internalsdk.community.model._Community_
+import com.likeminds.internalsdk.homefeed.model._GetExploreTabCountResponse_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.community.model.Community
+import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.user.model.SDKClientInfo
 import com.likeminds.likemindschat.user.model.User
@@ -79,6 +81,26 @@ object ModelConverter {
             _community_.imageUrl,
             _community_.membersCount,
             _community_.updatedAt,
+        )
+    }
+
+    //converts API GetExploreTabCountResponse model to LM model
+    fun convertGetExploreTabCountAPIResponse(
+        apiResponse: APIResponse<_GetExploreTabCountResponse_>
+    ): LMResponse<GetExploreTabCountResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetExploreTabCountResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal GetExploreTabCountResponse model to client model
+    private fun convertGetExploreTabCountResponse(_getExploreTabCountResponse_: _GetExploreTabCountResponse_?): GetExploreTabCountResponse? {
+        if (_getExploreTabCountResponse_ == null) return null
+        return GetExploreTabCountResponse(
+            _getExploreTabCountResponse_.unseenChatroomCount,
+            _getExploreTabCountResponse_.totalChatroomCount
         )
     }
 }

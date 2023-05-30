@@ -1,11 +1,11 @@
 package com.likeminds.likemindschat
 
 import android.app.Application
+import com.likeminds.likemindschat.homefeed.HomeFeedClient
+import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
 import com.likeminds.likemindschat.initiateUser.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,6 +14,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var initiateUserClient: InitiateUserClient
+
+    @Inject
+    lateinit var homeFeedClient: HomeFeedClient
 
     class Builder(val application: Application) {
 
@@ -40,17 +43,23 @@ class LMChatClient private constructor() {
         }
     }
 
-    // Exposed function to process initiate user request
+    //function to process initiate user request
     suspend fun initiateUser(initiateUserRequest: InitiateUserRequest): LMResponse<InitiateUserResponse> {
         return initiateUserClient.initiateUser(initiateUserRequest)
     }
 
-    // Exposed function to process logout request
+    //function to process logout request
     suspend fun logout(logoutRequest: LogoutRequest): LMResponse<Nothing> {
         return initiateUserClient.logout(logoutRequest)
     }
 
+    //function to register device
     suspend fun registerDevice(registerDeviceRequest: RegisterDeviceRequest): LMResponse<Nothing> {
         return initiateUserClient.registerDevice(registerDeviceRequest)
+    }
+
+    //function to get explore tab count
+    suspend fun getExploreTabCount(): LMResponse<GetExploreTabCountResponse> {
+        return homeFeedClient.getExploreTabCount()
     }
 }

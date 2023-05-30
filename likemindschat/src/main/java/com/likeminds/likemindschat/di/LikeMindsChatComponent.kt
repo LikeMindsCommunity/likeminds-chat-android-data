@@ -2,6 +2,7 @@ package com.likeminds.likemindschat.di
 
 import android.app.Application
 import com.likeminds.likemindschat.LMChatClient
+import com.likeminds.likemindschat.di.homefeed.HomeFeedSubComponent
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserModule
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
 import com.likeminds.likemindschat.di.internalsdk.SDKModule
@@ -20,6 +21,7 @@ internal interface LikeMindsChatComponent {
     fun inject(lmChatClient: LMChatClient)
 
     fun initiateUserComponent(): InitiateUserSubComponent.Factory
+    fun homeFeedComponent(): HomeFeedSubComponent.Factory
 
     @Component.Builder
     interface Builder {
