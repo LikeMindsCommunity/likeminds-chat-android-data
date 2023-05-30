@@ -1,12 +1,7 @@
 package com.likeminds.internalsdk.di
 
 import com.likeminds.internalsdk.GroupChatSDK
-import com.likeminds.internalsdk.di.modules.CommunityModule
-import com.likeminds.internalsdk.di.modules.GsonModule
-import com.likeminds.internalsdk.di.modules.NetworkModule
-import com.likeminds.internalsdk.di.modules.SDKModule
-import com.likeminds.internalsdk.di.modules.SDKSharedResourcesModule
-import com.likeminds.internalsdk.di.modules.UserModule
+import com.likeminds.internalsdk.di.modules.*
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -18,7 +13,8 @@ import javax.inject.Singleton
         NetworkModule::class,
         SDKModule::class,
         UserModule::class,
-        CommunityModule::class
+        CommunityModule::class,
+        HomeFeedModule::class
     ]
 )
 interface InternalSDKComponent {
