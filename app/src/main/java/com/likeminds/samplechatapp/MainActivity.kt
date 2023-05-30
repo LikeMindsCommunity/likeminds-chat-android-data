@@ -5,8 +5,10 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
-import com.likeminds.likemindschat.chatroom.model.FollowChatroomRequest
-import com.likeminds.likemindschat.chatroom.model.GetChatroomRequest
+import com.likeminds.likemindschat.chatroom.model.LeaveSecretChatroomRequest
+import com.likeminds.likemindschat.chatroom.model.MarkReadChatroomRequest
+import com.likeminds.likemindschat.chatroom.model.MuteChatroomRequest
+import com.likeminds.likemindschat.chatroom.model.ShareChatroomUrlRequest
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,34 +47,65 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
 
-            val getChatroomRequest = GetChatroomRequest.Builder()
-                .chatroomId("82825")
+            val leaveSecretChatroomRequest = LeaveSecretChatroomRequest.Builder()
+                .chatroomId(82910)
+                .isSecret(true)
                 .build()
-            val getChatroomResponse = client.getChatroom(getChatroomRequest)
+            val leaveSecretChatroomResponse = client.leaveSecretChatroom(leaveSecretChatroomRequest)
 
-            Log.d(TAG, "getChatroomResponse:${getChatroomResponse.data}")
+            Log.d(TAG, "leaveSecretChatroomResponse:${leaveSecretChatroomResponse}")
 
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     this@MainActivity,
-                    "chatroom participants: ${getChatroomResponse.data?.participantCount}",
+                    "leave: ${leaveSecretChatroomResponse.success}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
 
-            val followChatroomRequest = FollowChatroomRequest.Builder()
-                .chatroomId("82825")
-                .memberId("88866")
+            val muteChatroomRequest = MuteChatroomRequest.Builder()
+                .chatroomId(82825)
                 .value(true)
                 .build()
-            val followChatroomResponse = client.followChatroom(followChatroomRequest)
+            val muteChatroomResponse = client.muteChatroom(muteChatroomRequest)
 
-            Log.d(TAG, "followChatroomResponse:${followChatroomResponse.data}")
+            Log.d(TAG, "muteChatroomResponse:${muteChatroomResponse}")
 
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     this@MainActivity,
-                    "followChatroomResponse error: ${followChatroomResponse.errorMessage}",
+                    "muteChatroom: ${muteChatroomResponse.success}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val markReadChatroomRequest = MarkReadChatroomRequest.Builder()
+                .chatroomId(82825)
+                .build()
+            val markReadChatroomResponse = client.markReadChatroom(markReadChatroomRequest)
+
+            Log.d(TAG, "markReadChatroomResponse:${markReadChatroomResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "markReadChatroom: ${markReadChatroomResponse.success}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val shareChatroomUrlRequest = ShareChatroomUrlRequest.Builder()
+                .chatroomId("82825")
+                .domain("https://www.sample.com")
+                .build()
+            val shareChatroomUrlResponse = client.shareChatroomUrl(shareChatroomUrlRequest)
+
+            Log.d(TAG, "shareChatroomUrlResponse:${shareChatroomUrlResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "markReadChatroom: ${shareChatroomUrlResponse.data?.shareChatroomUrl?.shareUrl}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
