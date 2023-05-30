@@ -2,6 +2,7 @@ package com.likeminds.likemindschat.di
 
 import android.app.Application
 import com.likeminds.likemindschat.LMChatClient
+import com.likeminds.likemindschat.di.homefeed.HomeFeedModule
 import com.likeminds.likemindschat.di.homefeed.HomeFeedSubComponent
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserModule
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
@@ -13,7 +14,14 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [SDKModule::class, SharedModule::class, InitiateUserModule::class])
+@Component(
+    modules = [
+        SDKModule::class,
+        SharedModule::class,
+        InitiateUserModule::class,
+        HomeFeedModule::class
+    ]
+)
 internal interface LikeMindsChatComponent {
 
     fun inject(likeMindsChatApplication: LikeMindsChatApplication)

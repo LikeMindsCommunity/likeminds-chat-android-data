@@ -1,4 +1,6 @@
 package com.likeminds.likemindschat.di.homefeed
 
-class HomeFeedModule {
-}
+import dagger.Module
+
+@Module(subcomponents = [HomeFeedSubComponent::class])
+class HomeFeedModule
