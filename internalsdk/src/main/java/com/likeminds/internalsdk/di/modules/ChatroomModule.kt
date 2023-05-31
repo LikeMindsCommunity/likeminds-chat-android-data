@@ -16,7 +16,7 @@ class ChatroomModule {
 
     @Provides
     @Singleton
-    fun provideCommunityModule(
+    fun provideChatroomModule(
         client: OkHttpClient,
         gson: Gson,
         baseUrl: BaseUrl

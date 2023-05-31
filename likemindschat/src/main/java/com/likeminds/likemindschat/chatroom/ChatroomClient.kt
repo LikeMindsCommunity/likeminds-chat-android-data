@@ -33,7 +33,9 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request =
-            _GetChatroomRequest_.Builder().chatroomId(getChatroomRequest.chatroomId).build()
+            _GetChatroomRequest_.Builder()
+                .chatroomId(getChatroomRequest.chatroomId)
+                .build()
 
         // calls api and processes the response accordingly
         return when (val response = chatroomApi.getChatroom(request)) {
@@ -73,7 +75,8 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request =
-            _FollowChatroomRequest_.Builder().chatroomId(followChatroomRequest.chatroomId)
+            _FollowChatroomRequest_.Builder()
+                .chatroomId(followChatroomRequest.chatroomId)
                 .memberId(followChatroomRequest.memberId)
                 .value(followChatroomRequest.value)
                 .build()
@@ -116,7 +119,8 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request =
-            _LeaveSecretChatroomRequest_.Builder().chatroomId(leaveSecretChatroomRequest.chatroomId)
+            _LeaveSecretChatroomRequest_.Builder()
+                .chatroomId(leaveSecretChatroomRequest.chatroomId)
                 .isSecret(leaveSecretChatroomRequest.isSecret)
                 .build()
 
@@ -155,7 +159,8 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request =
-            _MuteChatroomRequest_.Builder().chatroomId(muteChatroomRequest.chatroomId)
+            _MuteChatroomRequest_.Builder()
+                .chatroomId(muteChatroomRequest.chatroomId)
                 .value(muteChatroomRequest.value)
                 .build()
 
@@ -194,7 +199,8 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request =
-            _MarkReadChatroomRequest_.Builder().chatroomId(markReadChatroomRequest.chatroomId)
+            _MarkReadChatroomRequest_.Builder()
+                .chatroomId(markReadChatroomRequest.chatroomId)
                 .build()
 
         // calls api and processes the response accordingly
@@ -232,7 +238,8 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request =
-            _ShareChatroomUrlRequest_.Builder().chatroomId(shareChatroomUrlRequest.chatroomId)
+            _ShareChatroomUrlRequest_.Builder()
+                .chatroomId(shareChatroomUrlRequest.chatroomId)
                 .domain(shareChatroomUrlRequest.domain)
                 .build()
 
@@ -273,7 +280,8 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request =
-            _SetChatroomTopicRequest_.Builder().chatroomId(setChatroomTopicRequest.chatroomId)
+            _SetChatroomTopicRequest_.Builder()
+                .chatroomId(setChatroomTopicRequest.chatroomId)
                 .conversationId(setChatroomTopicRequest.conversationId)
                 .build()
 
