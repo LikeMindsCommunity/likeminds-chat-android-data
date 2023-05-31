@@ -1,11 +1,16 @@
 package com.likeminds.likemindschat
 
 import android.app.Application
+import com.likeminds.likemindschat.chatroom.ChatroomClient
+import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.*
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
+import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
+import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.query
+import com.likeminds.likemindschat.user.UserClient
+import com.likeminds.likemindschat.user.model.User
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,6 +19,12 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var initiateUserClient: InitiateUserClient
+
+    @Inject
+    lateinit var userClient: UserClient
+
+    @Inject
+    lateinit var chatroomClient: ChatroomClient
 
     class Builder(val application: Application) {
 
@@ -50,7 +61,48 @@ class LMChatClient private constructor() {
         return initiateUserClient.logout(logoutRequest)
     }
 
+    // Exposed function to register device
     suspend fun registerDevice(registerDeviceRequest: RegisterDeviceRequest): LMResponse<Nothing> {
         return initiateUserClient.registerDevice(registerDeviceRequest)
+    }
+
+    // Exposed function to get user from Db
+    suspend fun getUser(): LMResponse<User> {
+        return userClient.getUser()
+    }
+
+    // Exposed function to get chatroom
+    suspend fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
+        return chatroomClient.getChatroom(getChatroomRequest)
+    }
+
+    // Exposed function to follow chatroom
+    suspend fun followChatroom(followChatroomRequest: FollowChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.followChatroom(followChatroomRequest)
+    }
+
+    // Exposed function to leave a secret chatroom
+    suspend fun leaveSecretChatroom(leaveSecretChatroomRequest: LeaveSecretChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.leaveSecretChatroom(leaveSecretChatroomRequest)
+    }
+
+    // Exposed function to mute a chatroom
+    suspend fun muteChatroom(muteChatroomRequest: MuteChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.muteChatroom(muteChatroomRequest)
+    }
+
+    // Exposed function to mark a chatroom as read
+    suspend fun markReadChatroom(markReadChatroomRequest: MarkReadChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.markReadChatroom(markReadChatroomRequest)
+    }
+
+    // Exposed function to get chatroom's share url
+    suspend fun shareChatroomUrl(shareChatroomUrlRequest: ShareChatroomUrlRequest): LMResponse<ShareChatroomUrlResponse> {
+        return chatroomClient.shareChatroomUrl(shareChatroomUrlRequest)
+    }
+
+    // Exposed function to set chatroom's topic
+    suspend fun setChatroomTopic(setChatroomTopicRequest: SetChatroomTopicRequest): LMResponse<Nothing> {
+        return chatroomClient.setChatroomTopic(setChatroomTopicRequest)
     }
 }

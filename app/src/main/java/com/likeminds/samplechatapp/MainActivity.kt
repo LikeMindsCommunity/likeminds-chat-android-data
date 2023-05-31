@@ -1,12 +1,19 @@
 package com.likeminds.samplechatapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
+import com.likeminds.likemindschat.chatroom.model.LeaveSecretChatroomRequest
+import com.likeminds.likemindschat.chatroom.model.MarkReadChatroomRequest
+import com.likeminds.likemindschat.chatroom.model.MuteChatroomRequest
+import com.likeminds.likemindschat.chatroom.model.ShareChatroomUrlRequest
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,9 +29,9 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val initiateUserRequest = InitiateUserRequest.Builder()
-                .apiKey("69edd43f-4a5e-4077-9c50-2b7aa740acce")
-                .userId("10003")
-                .userName("Ishaan Jain")
+                .apiKey("c4570b5a-46a4-4bb1-b82b-c89f4ea386c5")
+                .userId("123456789")
+                .userName("Sid")
                 .deviceId("123333")
                 .isGuest(false)
                 .build()
@@ -36,6 +43,69 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(
                     this@MainActivity,
                     "User id: ${initiateResponse.data?.user?.id}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val leaveSecretChatroomRequest = LeaveSecretChatroomRequest.Builder()
+                .chatroomId(82910)
+                .isSecret(true)
+                .build()
+            val leaveSecretChatroomResponse = client.leaveSecretChatroom(leaveSecretChatroomRequest)
+
+            Log.d(TAG, "leaveSecretChatroomResponse:${leaveSecretChatroomResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "leave: ${leaveSecretChatroomResponse.success}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val muteChatroomRequest = MuteChatroomRequest.Builder()
+                .chatroomId(82825)
+                .value(true)
+                .build()
+            val muteChatroomResponse = client.muteChatroom(muteChatroomRequest)
+
+            Log.d(TAG, "muteChatroomResponse:${muteChatroomResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "muteChatroom: ${muteChatroomResponse.success}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val markReadChatroomRequest = MarkReadChatroomRequest.Builder()
+                .chatroomId(82825)
+                .build()
+            val markReadChatroomResponse = client.markReadChatroom(markReadChatroomRequest)
+
+            Log.d(TAG, "markReadChatroomResponse:${markReadChatroomResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "markReadChatroom: ${markReadChatroomResponse.success}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val shareChatroomUrlRequest = ShareChatroomUrlRequest.Builder()
+                .chatroomId("82825")
+                .domain("https://www.sample.com")
+                .build()
+            val shareChatroomUrlResponse = client.shareChatroomUrl(shareChatroomUrlRequest)
+
+            Log.d(TAG, "shareChatroomUrlResponse:${shareChatroomUrlResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "markReadChatroom: ${shareChatroomUrlResponse.data?.shareChatroomUrl?.shareUrl}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

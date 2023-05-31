@@ -15,4 +15,6 @@ class UserRO : RealmObject {
     var organizationName: String? = null
     var updatedAt: Long = 0L
     var sdkClientInfoRO: SDKClientInfoRO? = null
+    var isDeleted: Boolean? = null
+    var customTitle: String? = null
 }

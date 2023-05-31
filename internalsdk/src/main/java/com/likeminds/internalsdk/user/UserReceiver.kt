@@ -10,6 +10,7 @@ import com.likeminds.internalsdk.user.model._RegisterDeviceRequest_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.kotlin.Realm
+import io.realm.kotlin.ext.query
 import javax.inject.Inject
 
 class UserReceiver @Inject constructor(private val userNetworkApi: UserNetworkApi) {
@@ -50,5 +51,12 @@ class UserReceiver @Inject constructor(private val userNetworkApi: UserNetworkAp
             }
         }
         realm.close()
+    }
+
+    fun getUser(): UserRO {
+        val realm = Realm.open(GroupChatSDK.getRealmConfiguration())
+        val userRO = realm.query<UserRO>().find().first()
+        realm.close()
+        return userRO
     }
 }
