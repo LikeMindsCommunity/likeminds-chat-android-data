@@ -11,6 +11,7 @@ import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
 import com.likeminds.likemindschat.moderation.ModerationClient
 import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
+import com.likeminds.likemindschat.moderation.model.PostReportRequest
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.User
@@ -120,5 +121,10 @@ class LMChatClient private constructor() {
     // Exposed function to process request to fetch report tags
     suspend fun getReportTags(getReportTagsRequest: GetReportTagsRequest): LMResponse<GetReportTagsResponse> {
         return moderationClient.getReportTags(getReportTagsRequest)
+    }
+
+    // Exposed function to process request to post report on the entity
+    suspend fun postReport(postReportRequest: PostReportRequest): LMResponse<Nothing> {
+        return moderationClient.postReport(postReportRequest)
     }
 }
