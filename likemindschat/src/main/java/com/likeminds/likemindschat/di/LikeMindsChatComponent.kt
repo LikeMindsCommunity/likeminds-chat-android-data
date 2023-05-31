@@ -3,6 +3,7 @@ package com.likeminds.likemindschat.di
 import android.app.Application
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.di.chatroom.ChatroomSubComponent
+import com.likeminds.likemindschat.di.community.CommunitySubComponent
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserModule
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
 import com.likeminds.likemindschat.di.internalsdk.SDKModule
@@ -24,6 +25,7 @@ internal interface LikeMindsChatComponent {
     fun initiateUserComponent(): InitiateUserSubComponent.Factory
     fun userComponent(): UserSubComponent.Factory
     fun chatroomSubComponent(): ChatroomSubComponent.Factory
+    fun communitySubComponent(): CommunitySubComponent.Factory
 
     @Component.Builder
     interface Builder {

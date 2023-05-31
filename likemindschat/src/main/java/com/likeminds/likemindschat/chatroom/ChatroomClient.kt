@@ -29,7 +29,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
     suspend fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
         // validates the client request
         RequestUtils.validate()
-        validateGetPostRequest(getChatroomRequest)
+        validateGetChatroomRequest(getChatroomRequest)
 
         // builds internal request model
         val request =
@@ -56,7 +56,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * validates [getChatroomRequest]
      * @throws IllegalArgumentException - when required properties not provided
      */
-    private fun validateGetPostRequest(getChatroomRequest: GetChatroomRequest) {
+    private fun validateGetChatroomRequest(getChatroomRequest: GetChatroomRequest) {
         if (getChatroomRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }

@@ -3,6 +3,9 @@ package com.likeminds.likemindschat
 import android.app.Application
 import com.likeminds.likemindschat.chatroom.ChatroomClient
 import com.likeminds.likemindschat.chatroom.model.*
+import com.likeminds.likemindschat.community.CommunityClient
+import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
+import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
@@ -25,6 +28,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var chatroomClient: ChatroomClient
+
+    @Inject
+    lateinit var communityClient: CommunityClient
 
     class Builder(val application: Application) {
 
@@ -109,5 +115,10 @@ class LMChatClient private constructor() {
     // Exposed function to get list of participants in chatroom
     suspend fun getChatroomParticipants(getChatroomParticipantsRequest: GetChatroomParticipantsRequest): LMResponse<GetChatroomParticipantsResponse> {
         return chatroomClient.getChatroomParticipants(getChatroomParticipantsRequest)
+    }
+
+    // Exposed function to get list of participants in chatroom
+    suspend fun getExploreFeed(getExploreFeedRequest: GetExploreFeedRequest): LMResponse<GetExploreFeedResponse> {
+        return communityClient.getExploreFeed(getExploreFeedRequest)
     }
 }
