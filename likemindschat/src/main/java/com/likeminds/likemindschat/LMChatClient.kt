@@ -8,6 +8,9 @@ import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
 import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
+import com.likeminds.likemindschat.moderation.ModerationClient
+import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
+import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.User
@@ -25,6 +28,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var chatroomClient: ChatroomClient
+
+    @Inject
+    lateinit var moderationClient: ModerationClient
 
     class Builder(val application: Application) {
 
@@ -109,5 +115,10 @@ class LMChatClient private constructor() {
     // Exposed function to get list of participants in chatroom
     suspend fun getChatroomParticipants(getChatroomParticipantsRequest: GetChatroomParticipantsRequest): LMResponse<GetChatroomParticipantsResponse> {
         return chatroomClient.getChatroomParticipants(getChatroomParticipantsRequest)
+    }
+
+    // Exposed function to process request to fetch report tags
+    suspend fun getReportTags(getReportTagsRequest: GetReportTagsRequest): LMResponse<GetReportTagsResponse> {
+        return moderationClient.getReportTags(getReportTagsRequest)
     }
 }

@@ -4,6 +4,8 @@ import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.community.model._Community_
 import com.likeminds.internalsdk.db.models.SDKClientInfoRO
 import com.likeminds.internalsdk.db.models.UserRO
+import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
+import com.likeminds.internalsdk.moderation.model._ReportTag_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
@@ -12,6 +14,8 @@ import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.Community
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
+import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
+import com.likeminds.likemindschat.moderation.model.ReportTag
 import com.likeminds.likemindschat.user.model.SDKClientInfo
 import com.likeminds.likemindschat.user.model.User
 
@@ -209,6 +213,48 @@ object ModelConverter {
             _participant_.name,
             _participant_.userUniqueId,
             _participant_.customTitle,
+        )
+    }
+
+    // converts api GetReportTagsResponse model to LM GetReportTagsResponse model
+    fun convertGetReportTagsAPIResponse(
+        apiResponse: APIResponse<_GetReportTagsResponse_>
+    ): LMResponse<GetReportTagsResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetReportTagsResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal GetReportTagsResponse model to client model
+    private fun convertGetReportTagsResponse(
+        _getReportTagsResponse_: _GetReportTagsResponse_?
+    ): GetReportTagsResponse? {
+        if (_getReportTagsResponse_ == null) {
+            return null
+        }
+        return GetReportTagsResponse(
+            convertReportTags(_getReportTagsResponse_.tags)
+        )
+    }
+
+    // converts internal ReportTag model list to client model list
+    private fun convertReportTags(
+        _tags_: List<_ReportTag_>
+    ): List<ReportTag> {
+        return _tags_.map {
+            convertReportTag(it)
+        }
+    }
+
+    // converts internal ReportTag model to client model
+    private fun convertReportTag(
+        _reportTag_: _ReportTag_
+    ): ReportTag {
+        return ReportTag(
+            _reportTag_.id,
+            _reportTag_.name
         )
     }
 
