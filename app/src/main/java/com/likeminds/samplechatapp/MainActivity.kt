@@ -5,10 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
-import com.likeminds.likemindschat.chatroom.model.LeaveSecretChatroomRequest
-import com.likeminds.likemindschat.chatroom.model.MarkReadChatroomRequest
-import com.likeminds.likemindschat.chatroom.model.MuteChatroomRequest
-import com.likeminds.likemindschat.chatroom.model.ShareChatroomUrlRequest
+import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -106,6 +103,25 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(
                     this@MainActivity,
                     "markReadChatroom: ${shareChatroomUrlResponse.data?.shareChatroomUrl?.shareUrl}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val getChatroomParticipantsRequest = GetChatroomParticipantsRequest.Builder()
+                .isChatroomSecret(false)
+                .chatroomId("82825")
+                .page(1)
+                .pageSize(1)
+                .build()
+            val getChatroomParticipantsResponse =
+                client.getChatroomParticipants(getChatroomParticipantsRequest)
+
+            Log.d(TAG, "getChatroomParticipantsResponse:${getChatroomParticipantsResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "markReadChatroom: ${getChatroomParticipantsResponse.data?.totalParticipantsCount}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

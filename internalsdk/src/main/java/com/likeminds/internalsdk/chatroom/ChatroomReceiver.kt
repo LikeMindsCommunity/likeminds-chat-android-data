@@ -50,4 +50,16 @@ class ChatroomReceiver @Inject constructor(private val chatroomNetworkApi: Chatr
     ): NetworkResponse<APIResponse<Nothing>> {
         return chatroomNetworkApi.setChatroomTopic(request)
     }
+
+    suspend fun getChatroomParticipants(
+        request: _GetChatroomParticipantsRequest_
+    ): NetworkResponse<APIResponse<_GetChatroomParticipantsResponse_>> {
+        return chatroomNetworkApi.getChatroomParticipants(
+            request.isChatroomSecret,
+            request.chatroomId,
+            request.participantName,
+            request.page,
+            request.pageSize
+        )
+    }
 }
