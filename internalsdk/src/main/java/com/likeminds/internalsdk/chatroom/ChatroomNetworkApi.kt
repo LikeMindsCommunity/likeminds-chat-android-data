@@ -43,4 +43,13 @@ interface ChatroomNetworkApi {
     suspend fun setChatroomTopic(
         @Body request: _SetChatroomTopicRequest_
     ): NetworkResponse<APIResponse<Nothing>>
+
+    @GET("chatroom/participants")
+    suspend fun getChatroomParticipants(
+        @Query("is_secret") isSecretChatroom: Boolean,
+        @Query("chatroom_id") chatroomId: String,
+        @Query("participant_name") participantName: String?,
+        @Query("page") page: Int,
+        @Query("page_size") pageSize: Int,
+    ): NetworkResponse<APIResponse<_GetChatroomParticipantsResponse_>>
 }
