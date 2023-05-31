@@ -50,4 +50,10 @@ class ChatroomApiImpl @Inject constructor(
     ): NetworkResponse<APIResponse<Nothing>> {
         return chatroomReceiver.setChatroomTopic(request)
     }
+
+    override suspend fun getChatroomParticipants(
+        request: _GetChatroomParticipantsRequest_
+    ): NetworkResponse<APIResponse<_GetChatroomParticipantsResponse_>> {
+        return chatroomReceiver.getChatroomParticipants(request)
+    }
 }

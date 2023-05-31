@@ -40,4 +40,9 @@ interface ChatroomApi {
     suspend fun setChatroomTopic(
         request: _SetChatroomTopicRequest_
     ): NetworkResponse<APIResponse<Nothing>>
+
+    // api to get list of participants in chatroom
+    suspend fun getChatroomParticipants(
+        request: _GetChatroomParticipantsRequest_
+    ): NetworkResponse<APIResponse<_GetChatroomParticipantsResponse_>>
 }

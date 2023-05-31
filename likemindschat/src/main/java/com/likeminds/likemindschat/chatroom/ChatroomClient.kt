@@ -97,6 +97,10 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [followChatroomRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateFollowChatroomRequest(followChatroomRequest: FollowChatroomRequest) {
         if (followChatroomRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
@@ -140,6 +144,10 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [leaveSecretChatroomRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateLeaveSecretChatroomRequest(leaveSecretChatroomRequest: LeaveSecretChatroomRequest) {
         if (leaveSecretChatroomRequest.chatroomId == -1) {
             RequestUtils.throwException("chatroomId")
@@ -180,6 +188,10 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [muteChatroomRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateMuteChatroomRequest(muteChatroomRequest: MuteChatroomRequest) {
         if (muteChatroomRequest.chatroomId == -1) {
             RequestUtils.throwException("chatroomId")
@@ -219,6 +231,10 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [markReadChatroomRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateMarkReadChatroomRequest(markReadChatroomRequest: MarkReadChatroomRequest) {
         if (markReadChatroomRequest.chatroomId == -1) {
             RequestUtils.throwException("chatroomId")
@@ -229,7 +245,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * Converts client request model to internal model and calls the api
      * @param shareChatroomUrlRequest - client request model to get chatroom's share url
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
-     * @return LMResponse<Nothing> - Base LM response
+     * @return ShareChatroomUrlResponse - ShareChatroomUrlResponse model for shareChatroomUrlRequest
      */
     suspend fun shareChatroomUrl(shareChatroomUrlRequest: ShareChatroomUrlRequest): LMResponse<ShareChatroomUrlResponse> {
         // validates the client request
@@ -258,6 +274,10 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [shareChatroomUrlRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateShareChatroomUrlRequest(shareChatroomUrlRequest: ShareChatroomUrlRequest) {
         if (shareChatroomUrlRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
@@ -301,12 +321,62 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [setChatroomTopicRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateSetChatroomTopicRequest(setChatroomTopicRequest: SetChatroomTopicRequest) {
         if (setChatroomTopicRequest.chatroomId == -1) {
             RequestUtils.throwException("chatroomId")
         }
         if (setChatroomTopicRequest.conversationId == -1) {
             RequestUtils.throwException("conversationId")
+        }
+    }
+
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param getChatroomParticipantsRequest - client request model to get list of participants in chatroom
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return GetChatroomParticipantsResponse - GetChatroomParticipantsResponse model for getChatroomParticipantsRequest
+     */
+    suspend fun getChatroomParticipants(getChatroomParticipantsRequest: GetChatroomParticipantsRequest): LMResponse<GetChatroomParticipantsResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validateGetChatroomParticipantsRequest(getChatroomParticipantsRequest)
+
+        // builds internal request model
+        val request =
+            _GetChatroomParticipantsRequest_.Builder()
+                .isChatroomSecret(getChatroomParticipantsRequest.isChatroomSecret)
+                .chatroomId(getChatroomParticipantsRequest.chatroomId)
+                .participantName(getChatroomParticipantsRequest.participantName)
+                .page(getChatroomParticipantsRequest.page)
+                .pageSize(getChatroomParticipantsRequest.pageSize)
+                .build()
+
+        // calls api and processes the response accordingly
+        return when (val response = chatroomApi.getChatroomParticipants(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+            is NetworkResponse.Success -> {
+                val body = response.body
+                return ModelConverter.convertGetChatroomParticipantsResponse(body)
+            }
+        }
+    }
+
+    /**
+     * validates [getChatroomParticipantsRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateGetChatroomParticipantsRequest(getChatroomParticipantsRequest: GetChatroomParticipantsRequest) {
+        if (getChatroomParticipantsRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
         }
     }
 }

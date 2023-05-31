@@ -1,9 +1,6 @@
 package com.likeminds.likemindschat.sdk
 
-import com.likeminds.internalsdk.chatroom.model._ChatroomAction_
-import com.likeminds.internalsdk.chatroom.model._GetChatroomResponse_
-import com.likeminds.internalsdk.chatroom.model._ShareChatroomUrlResponse_
-import com.likeminds.internalsdk.chatroom.model._ShareChatroomUrl_
+import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.community.model._Community_
 import com.likeminds.internalsdk.db.models.SDKClientInfoRO
 import com.likeminds.internalsdk.db.models.UserRO
@@ -12,10 +9,7 @@ import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
-import com.likeminds.likemindschat.chatroom.model.ChatroomAction
-import com.likeminds.likemindschat.chatroom.model.GetChatroomResponse
-import com.likeminds.likemindschat.chatroom.model.ShareChatroomUrl
-import com.likeminds.likemindschat.chatroom.model.ShareChatroomUrlResponse
+import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.Community
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.user.model.SDKClientInfo
@@ -169,6 +163,52 @@ object ModelConverter {
             _shareChatroomUrl_.shareUrl,
             _shareChatroomUrl_.creatorShareUrl,
             _shareChatroomUrl_.linkCreatedAt
+        )
+    }
+
+    // converts api GetChatroomParticipantsResponse model to LM GetChatroomParticipantsResponse model
+    fun convertGetChatroomParticipantsResponse(
+        apiResponse: APIResponse<_GetChatroomParticipantsResponse_>
+    ): LMResponse<GetChatroomParticipantsResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetChatroomParticipantsResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal GetChatroomParticipantsResponse model to client model
+    private fun convertGetChatroomParticipantsResponse(
+        _getChatroomParticipantsResponse_: _GetChatroomParticipantsResponse_?
+    ): GetChatroomParticipantsResponse? {
+        if (_getChatroomParticipantsResponse_ == null) return null
+        return GetChatroomParticipantsResponse(
+            _getChatroomParticipantsResponse_.canEditParticipant,
+            convertParticipantsData(_getChatroomParticipantsResponse_.participants),
+            _getChatroomParticipantsResponse_.totalParticipantsCount
+        )
+    }
+
+    // converts internal ParticipantData model list to client model list
+    private fun convertParticipantsData(
+        _participants_: List<_ParticipantData_>
+    ): List<ParticipantData> {
+        return _participants_.map {
+            convertParticipantData(it)
+        }
+    }
+
+    // converts internal ParticipantData model to client model
+    private fun convertParticipantData(
+        _participant_: _ParticipantData_
+    ): ParticipantData {
+        return ParticipantData(
+            _participant_.id,
+            _participant_.imageUrl,
+            _participant_.isGuest,
+            _participant_.name,
+            _participant_.userUniqueId,
+            _participant_.customTitle,
         )
     }
 

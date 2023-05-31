@@ -43,4 +43,9 @@ interface ChatroomNetworkApi {
     suspend fun setChatroomTopic(
         @Body request: _SetChatroomTopicRequest_
     ): NetworkResponse<APIResponse<Nothing>>
+
+    @GET("chatroom/participants")
+    suspend fun getChatroomParticipants(
+        @QueryMap queries: HashMap<String, Any?>
+    ): NetworkResponse<APIResponse<_GetChatroomParticipantsResponse_>>
 }

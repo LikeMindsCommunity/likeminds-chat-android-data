@@ -7,6 +7,14 @@ import javax.inject.Inject
 
 class ChatroomReceiver @Inject constructor(private val chatroomNetworkApi: ChatroomNetworkApi) {
 
+    companion object {
+        const val IS_SECRET_KEY = "is_secret"
+        const val CHATROOM_ID_KEY = "chatroom_id"
+        const val PARTICIPANT_NAME_KEY = "participant_name"
+        const val PAGE_KEY = "page"
+        const val PAGE_SIZE_KEY = "page_size"
+    }
+
     suspend fun getChatroom(
         request: _GetChatroomRequest_
     ): NetworkResponse<APIResponse<_GetChatroomResponse_>> {
@@ -49,5 +57,21 @@ class ChatroomReceiver @Inject constructor(private val chatroomNetworkApi: Chatr
         request: _SetChatroomTopicRequest_
     ): NetworkResponse<APIResponse<Nothing>> {
         return chatroomNetworkApi.setChatroomTopic(request)
+    }
+
+    suspend fun getChatroomParticipants(
+        request: _GetChatroomParticipantsRequest_
+    ): NetworkResponse<APIResponse<_GetChatroomParticipantsResponse_>> {
+        val queries = HashMap<String, Any?>()
+        // Set query parameters for request
+        queries[IS_SECRET_KEY] = request.isChatroomSecret
+        queries[CHATROOM_ID_KEY] = request.chatroomId
+        if (request.participantName != null) {
+            queries[PARTICIPANT_NAME_KEY] = request.participantName
+        }
+        queries[PAGE_KEY] = request.page
+        queries[PAGE_SIZE_KEY] = request.pageSize
+
+        return chatroomNetworkApi.getChatroomParticipants(queries)
     }
 }
