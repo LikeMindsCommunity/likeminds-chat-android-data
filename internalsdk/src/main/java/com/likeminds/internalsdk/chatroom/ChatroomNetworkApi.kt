@@ -46,10 +46,6 @@ interface ChatroomNetworkApi {
 
     @GET("chatroom/participants")
     suspend fun getChatroomParticipants(
-        @Query("is_secret") isSecretChatroom: Boolean,
-        @Query("chatroom_id") chatroomId: String,
-        @Query("participant_name") participantName: String?,
-        @Query("page") page: Int,
-        @Query("page_size") pageSize: Int,
+        @QueryMap queries: HashMap<String, Any?>
     ): NetworkResponse<APIResponse<_GetChatroomParticipantsResponse_>>
 }
