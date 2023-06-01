@@ -4,6 +4,10 @@ import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.community.model._Community_
 import com.likeminds.internalsdk.db.models.SDKClientInfoRO
 import com.likeminds.internalsdk.db.models.UserRO
+import com.likeminds.internalsdk.helper.model._DecodeUrlResponse_
+import com.likeminds.internalsdk.helper.model._GetTaggingListResponse_
+import com.likeminds.internalsdk.helper.model._GroupTag_
+import com.likeminds.internalsdk.helper.model._UserTag_
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
 import com.likeminds.internalsdk.moderation.model._ReportTag_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
@@ -13,6 +17,11 @@ import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.Community
+import com.likeminds.likemindschat.community.model.LinkOGTags
+import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
+import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
+import com.likeminds.likemindschat.helper.model.GroupTag
+import com.likeminds.likemindschat.helper.model.UserTag
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
@@ -255,6 +264,117 @@ object ModelConverter {
         return ReportTag(
             _reportTag_.id,
             _reportTag_.name
+        )
+    }
+
+    // converts api DecodeUrlResponse model to LM DecodeUrlResponse model
+    fun convertDecodeUrlResponse(
+        apiResponse: APIResponse<_DecodeUrlResponse_>
+    ): LMResponse<DecodeUrlResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertDecodeUrlResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal DecodeUrlResponse model to client model
+    private fun convertDecodeUrlResponse(
+        _decodeUrlResponse_: _DecodeUrlResponse_?
+    ): DecodeUrlResponse? {
+        if (_decodeUrlResponse_ == null) {
+            return null
+        }
+        return DecodeUrlResponse(convertOGTags(_decodeUrlResponse_.ogTags))
+    }
+
+    // converts internal LinkOGTags model to client model
+    private fun convertOGTags(
+        _ogTags_: _LinkOGTags_
+    ): LinkOGTags {
+        return LinkOGTags.Builder()
+            .title(_ogTags_.title)
+            .image(_ogTags_.image)
+            .description(_ogTags_.description)
+            .url(_ogTags_.url)
+            .build()
+    }
+
+    // converts api GetTaggingListResponse model to LM GetTaggingListResponse model
+    fun convertGetTaggingListAPIResponse(
+        apiResponse: APIResponse<_GetTaggingListResponse_>
+    ): LMResponse<GetTaggingListResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetTaggingListResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal GetTaggingListResponse model to client model
+    private fun convertGetTaggingListResponse(
+        _getTaggingListResponse_: _GetTaggingListResponse_?
+    ): GetTaggingListResponse? {
+        if (_getTaggingListResponse_ == null) {
+            return null
+        }
+        return GetTaggingListResponse(
+            convertGroupTags(_getTaggingListResponse_.groupTags),
+            convertChatroomParticipants(_getTaggingListResponse_.chatroomParticipants),
+            convertCommunityMembers(_getTaggingListResponse_.communityMembers),
+        )
+    }
+
+    // converts internal GroupTag model list to client model list
+    private fun convertGroupTags(
+        _groupTags_: List<_GroupTag_>
+    ): List<GroupTag> {
+        return _groupTags_.map {
+            convertGroupTag(it)
+        }
+    }
+
+    // converts internal GroupTag model to client model
+    private fun convertGroupTag(
+        _groupTag_: _GroupTag_
+    ): GroupTag {
+        return GroupTag(
+            _groupTag_.description,
+            _groupTag_.name,
+            _groupTag_.route,
+            _groupTag_.tag,
+            _groupTag_.imageUrl,
+        )
+    }
+
+    // converts internal chatroomParticipants list to client model list
+    private fun convertChatroomParticipants(
+        _chatroomParticipants_: List<_UserTag_>
+    ): List<UserTag> {
+        return _chatroomParticipants_.map {
+            convertUserTag(it)
+        }
+    }
+
+    // converts internal communityMembers list to client model list
+    private fun convertCommunityMembers(
+        _communityMembers_: List<_UserTag_>
+    ): List<UserTag> {
+        return _communityMembers_.map {
+            convertUserTag(it)
+        }
+    }
+
+    // converts internal UserTag model to client model
+    private fun convertUserTag(
+        _userTag_: _UserTag_
+    ): UserTag {
+        return UserTag(
+            _userTag_.id,
+            _userTag_.imageUrl,
+            _userTag_.isGuest,
+            _userTag_.name,
+            _userTag_.userUniqueId,
         )
     }
 

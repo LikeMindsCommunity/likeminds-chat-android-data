@@ -8,11 +8,11 @@ import javax.inject.Inject
 class ChatroomReceiver @Inject constructor(private val chatroomNetworkApi: ChatroomNetworkApi) {
 
     companion object {
-        const val IS_SECRET_KEY = "is_secret"
-        const val CHATROOM_ID_KEY = "chatroom_id"
-        const val PARTICIPANT_NAME_KEY = "participant_name"
-        const val PAGE_KEY = "page"
-        const val PAGE_SIZE_KEY = "page_size"
+        private const val IS_SECRET_KEY = "is_secret"
+        private const val CHATROOM_ID_KEY = "chatroom_id"
+        private const val PARTICIPANT_NAME_KEY = "participant_name"
+        private const val PAGE_KEY = "page"
+        private const val PAGE_SIZE_KEY = "page_size"
     }
 
     suspend fun getChatroom(

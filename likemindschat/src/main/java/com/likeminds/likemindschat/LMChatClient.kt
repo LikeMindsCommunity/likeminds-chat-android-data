@@ -3,6 +3,11 @@ package com.likeminds.likemindschat
 import android.app.Application
 import com.likeminds.likemindschat.chatroom.ChatroomClient
 import com.likeminds.likemindschat.chatroom.model.*
+import com.likeminds.likemindschat.helper.HelperClient
+import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
+import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
+import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
+import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
@@ -32,6 +37,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var moderationClient: ModerationClient
+
+    @Inject
+    lateinit var helperClient: HelperClient
 
     class Builder(val application: Application) {
 
@@ -126,5 +134,15 @@ class LMChatClient private constructor() {
     // Exposed function to process request to post report on the entity
     suspend fun postReport(postReportRequest: PostReportRequest): LMResponse<Nothing> {
         return moderationClient.postReport(postReportRequest)
+    }
+
+    // Exposed function to decode url and fetch ogTags
+    suspend fun decodeUrl(decodeUrlRequest: DecodeUrlRequest): LMResponse<DecodeUrlResponse> {
+        return helperClient.decodeUrl(decodeUrlRequest)
+    }
+
+    // Exposed function to fetch tagging list
+    suspend fun getTaggingList(getTaggingListRequest: GetTaggingListRequest): LMResponse<GetTaggingListResponse> {
+        return helperClient.getTaggingList(getTaggingListRequest)
     }
 }
