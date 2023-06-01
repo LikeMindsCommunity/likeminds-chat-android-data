@@ -2,6 +2,7 @@ package com.likeminds.likemindschat
 
 import android.app.Application
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
+import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
 import com.likeminds.likemindschat.initiateUser.model.*
@@ -61,5 +62,10 @@ class LMChatClient private constructor() {
     //function to get explore tab count
     suspend fun getExploreTabCount(): LMResponse<GetExploreTabCountResponse> {
         return homeFeedClient.getExploreTabCount()
+    }
+
+    //function to get config details
+    suspend fun getConfig(): LMResponse<ConfigResponse> {
+        return homeFeedClient.getConfig()
     }
 }

@@ -1,9 +1,9 @@
 package com.likeminds.samplechatapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import kotlinx.coroutines.*
@@ -39,6 +39,21 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+            val count = client.getExploreTabCount()
+
+            Log.d(
+                TAG, """
+                count total: ${count.data?.totalChatroomCount}
+                count new: ${count.data?.unseenChatroomCount}
+            """.trimIndent()
+            )
+            val config = client.getConfig()
+            Log.d(
+                TAG, """
+                config audio: ${config.data?.enableAudio}
+                config polls: ${config.data?.enableMicroPolls}
+            """.trimIndent()
+            )
         }
     }
 }

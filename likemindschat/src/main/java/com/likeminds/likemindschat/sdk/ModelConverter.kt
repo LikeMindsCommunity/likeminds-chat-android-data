@@ -1,14 +1,14 @@
 package com.likeminds.likemindschat.sdk
 
 import com.likeminds.internalsdk.community.model._Community_
-import com.likeminds.internalsdk.homefeed.model._GetExploreTabCountResponse_
+import com.likeminds.internalsdk.homefeed.model.*
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.community.model.Community
-import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
+import com.likeminds.likemindschat.homefeed.model.*
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.user.model.SDKClientInfo
 import com.likeminds.likemindschat.user.model.User
@@ -101,6 +101,48 @@ object ModelConverter {
         return GetExploreTabCountResponse(
             _getExploreTabCountResponse_.unseenChatroomCount,
             _getExploreTabCountResponse_.totalChatroomCount
+        )
+    }
+
+    fun convertConfigAPIResponse(
+        apiResponse: APIResponse<_ConfigResponse_>
+    ): LMResponse<ConfigResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertConfigAPIResponse(apiResponse.data)
+        )
+    }
+
+    private fun convertConfigAPIResponse(_configResponse_: _ConfigResponse_?): ConfigResponse? {
+        if (_configResponse_ == null) return null
+        return ConfigResponse(
+            _configResponse_.access,
+            _configResponse_.enableAudio,
+            _configResponse_.enableGifs,
+            _configResponse_.enableVoiceNote,
+            _configResponse_.enableMicroPolls,
+            convertUserDetails(_configResponse_.userDetails)
+        )
+    }
+
+    private fun convertUserDetails(_userDetails_: _UserDetail_): UserDetail {
+        return UserDetail(
+            convertUser(_userDetails_.user),
+            convertUserMetrics(_userDetails_.userMetrics)
+        )
+    }
+
+    private fun convertUserMetrics(_userMetrics_: _UserMetrics_): UserMetrics {
+        return UserMetrics(
+            _userMetrics_.firstLogin,
+            _userMetrics_.firstLoginEpoch,
+            _userMetrics_.countCommunitiesJoined,
+            _userMetrics_.nameCommunitiesJoined,
+            _userMetrics_.isAnyCommunityPromoter,
+            _userMetrics_.uniqueChatroomResponded,
+            _userMetrics_.countChatroomCreated,
+            _userMetrics_.countChatroomFollowed
         )
     }
 }
