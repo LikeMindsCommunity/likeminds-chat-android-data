@@ -9,6 +9,7 @@ import com.likeminds.likemindschat.di.chatroom.ChatroomSubComponent
 import com.likeminds.likemindschat.di.community.CommunitySubComponent
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
 import com.likeminds.likemindschat.di.moderation.ModerationSubComponent
+import com.likeminds.likemindschat.di.poll.PollSubComponent
 import com.likeminds.likemindschat.di.user.UserSubComponent
 import javax.inject.Inject
 
@@ -27,6 +28,7 @@ internal class LikeMindsChatApplication private constructor() {
     private var communitySubComponent: CommunitySubComponent? = null
     private var chatroomSubComponent: ChatroomSubComponent? = null
     private var moderationSubComponent: ModerationSubComponent? = null
+    private var pollSubComponent: PollSubComponent? = null
 
     companion object {
         private var likeMindsChatApplicationInstance: LikeMindsChatApplication? = null
@@ -91,5 +93,12 @@ internal class LikeMindsChatApplication private constructor() {
             moderationSubComponent = likeMindsChatComponent?.moderationSubComponent()?.create()
         }
         return moderationSubComponent
+    }
+
+    fun pollComponent(): PollSubComponent? {
+        if (pollSubComponent == null) {
+            pollSubComponent = likeMindsChatComponent?.pollSubComponent()?.create()
+        }
+        return pollSubComponent
     }
 }

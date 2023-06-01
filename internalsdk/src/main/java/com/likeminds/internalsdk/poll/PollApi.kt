@@ -11,7 +11,7 @@ interface PollApi {
         request: _AddPollOptionRequest_
     ): NetworkResponse<APIResponse<_AddPollOptionResponse_>>
 
-    // api to submit a poll
+    // api to submit polls selected
     suspend fun submitPoll(
         request: _SubmitPollRequest_
     ): NetworkResponse<APIResponse<Nothing>>
