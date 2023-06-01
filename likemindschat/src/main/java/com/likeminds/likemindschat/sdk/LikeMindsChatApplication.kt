@@ -6,7 +6,9 @@ import com.likeminds.internalsdk.di.SDKSharedResources
 import com.likeminds.likemindschat.di.DaggerLikeMindsChatComponent
 import com.likeminds.likemindschat.di.LikeMindsChatComponent
 import com.likeminds.likemindschat.di.chatroom.ChatroomSubComponent
+import com.likeminds.likemindschat.di.community.CommunitySubComponent
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
+import com.likeminds.likemindschat.di.moderation.ModerationSubComponent
 import com.likeminds.likemindschat.di.user.UserSubComponent
 import javax.inject.Inject
 
@@ -22,7 +24,9 @@ internal class LikeMindsChatApplication private constructor() {
     var likeMindsChatComponent: LikeMindsChatComponent? = null
     private var initiateUserSubComponent: InitiateUserSubComponent? = null
     private var userSubComponent: UserSubComponent? = null
+    private var communitySubComponent: CommunitySubComponent? = null
     private var chatroomSubComponent: ChatroomSubComponent? = null
+    private var moderationSubComponent: ModerationSubComponent? = null
 
     companion object {
         private var likeMindsChatApplicationInstance: LikeMindsChatApplication? = null
@@ -68,10 +72,24 @@ internal class LikeMindsChatApplication private constructor() {
         return userSubComponent
     }
 
+    fun communityComponent(): CommunitySubComponent? {
+        if (communitySubComponent == null) {
+            communitySubComponent = likeMindsChatComponent?.communitySubComponent()?.create()
+        }
+        return communitySubComponent
+    }
+
     fun chatroomComponent(): ChatroomSubComponent? {
         if (chatroomSubComponent == null) {
             chatroomSubComponent = likeMindsChatComponent?.chatroomSubComponent()?.create()
         }
         return chatroomSubComponent
+    }
+
+    fun moderationComponent(): ModerationSubComponent? {
+        if (moderationSubComponent == null) {
+            moderationSubComponent = likeMindsChatComponent?.moderationSubComponent()?.create()
+        }
+        return moderationSubComponent
     }
 }
