@@ -6,6 +6,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.chatroom.model.*
+import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
+import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -102,7 +104,7 @@ class MainActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     this@MainActivity,
-                    "markReadChatroom: ${shareChatroomUrlResponse.data?.shareChatroomUrl?.shareUrl}",
+                    "shareChatroomUrlResponse: ${shareChatroomUrlResponse.data?.shareChatroomUrl?.shareUrl}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -121,7 +123,42 @@ class MainActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     this@MainActivity,
-                    "markReadChatroom: ${getChatroomParticipantsResponse.data?.totalParticipantsCount}",
+                    "getChatroomParticipantsResponse: ${getChatroomParticipantsResponse.data?.totalParticipantsCount}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val decodeUrlRequest = DecodeUrlRequest.Builder()
+                .url("https://www.facebook.com")
+                .build()
+            val decodeUrlResponse =
+                client.decodeUrl(decodeUrlRequest)
+
+            Log.d(TAG, "decodeUrlResponse:${decodeUrlResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "decodeUrlResponse: ${decodeUrlResponse.data?.ogTags?.title}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val getTaggingListRequest = GetTaggingListRequest.Builder()
+                .chatroomId("82825")
+                .page(1)
+                .pageSize(1)
+                .searchName("s")
+                .build()
+            val getTaggingListResponse =
+                client.getTaggingList(getTaggingListRequest)
+
+            Log.d(TAG, "getTaggingListResponse:${getTaggingListResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "getTaggingListResponse: ${getTaggingListResponse.data?.groupTags}",
                     Toast.LENGTH_SHORT
                 ).show()
             }
