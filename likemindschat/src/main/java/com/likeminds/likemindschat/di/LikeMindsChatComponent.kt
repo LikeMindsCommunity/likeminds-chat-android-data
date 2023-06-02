@@ -16,6 +16,7 @@ import com.likeminds.likemindschat.di.moderation.ModerationModule
 import com.likeminds.likemindschat.di.moderation.ModerationSubComponent
 import com.likeminds.likemindschat.di.poll.PollModule
 import com.likeminds.likemindschat.di.poll.PollSubComponent
+import com.likeminds.likemindschat.di.search.SearchSubComponent
 import com.likeminds.likemindschat.di.user.UserModule
 import com.likeminds.likemindschat.di.user.UserSubComponent
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -50,6 +51,7 @@ internal interface LikeMindsChatComponent {
     fun moderationSubComponent(): ModerationSubComponent.Factory
     fun pollSubComponent(): PollSubComponent.Factory
     fun helperSubComponent(): HelperSubComponent.Factory
+    fun searchSubComponent(): SearchSubComponent.Factory
 
     @Component.Builder
     interface Builder {

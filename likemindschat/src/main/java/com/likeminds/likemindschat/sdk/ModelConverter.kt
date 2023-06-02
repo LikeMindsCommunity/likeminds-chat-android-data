@@ -17,16 +17,14 @@ import com.likeminds.internalsdk.poll.model._AddPollOptionResponse_
 import com.likeminds.internalsdk.poll.model._GetPollUsersResponse_
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
+import com.likeminds.internalsdk.search.model._SearchChatroomResponse_
+import com.likeminds.internalsdk.search.model._SearchConversationResponse_
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
-import com.likeminds.likemindschat.community.model.Community
-import com.likeminds.likemindschat.community.model.Member
-import com.likeminds.likemindschat.community.model.MemberAction
-import com.likeminds.likemindschat.community.model.Question
-import com.likeminds.likemindschat.community.model.LinkOGTags
+import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
 import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
 import com.likeminds.likemindschat.helper.model.GroupTag
@@ -37,6 +35,8 @@ import com.likeminds.likemindschat.moderation.model.ReportTag
 import com.likeminds.likemindschat.poll.model.AddPollOptionResponse
 import com.likeminds.likemindschat.poll.model.GetPollUsersResponse
 import com.likeminds.likemindschat.poll.model.Poll
+import com.likeminds.likemindschat.search.model.SearchChatroomResponse
+import com.likeminds.likemindschat.search.model.SearchConversationResponse
 import com.likeminds.likemindschat.user.model.SDKClientInfo
 import com.likeminds.likemindschat.user.model.User
 
@@ -331,6 +331,46 @@ object ModelConverter {
             .member(convertMember(_poll_.member))
             .userId(_poll_.userId)
             .build()
+    }
+
+    // converts api SearchChatroomResponse model to LM SearchChatroomResponse model
+    fun convertSearchChatroomResponse(
+        apiResponse: APIResponse<_SearchChatroomResponse_>
+    ): LMResponse<SearchChatroomResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertSearchChatroomResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal SearchChatroomResponse model to client model
+    private fun convertSearchChatroomResponse(
+        _searchChatroomResponse_: _SearchChatroomResponse_?
+    ): SearchChatroomResponse? {
+        if (_searchChatroomResponse_ == null) return null
+        // todo:
+        return SearchChatroomResponse()
+    }
+
+    // converts api SearchChatroomResponse model to LM SearchChatroomResponse model
+    fun convertSearchConversationResponse(
+        apiResponse: APIResponse<_SearchConversationResponse_>
+    ): LMResponse<SearchConversationResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertSearchConversationResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal SearchChatroomResponse model to client model
+    private fun convertSearchConversationResponse(
+        _searchConversationResponse_: _SearchConversationResponse_?
+    ): SearchConversationResponse? {
+        if (_searchConversationResponse_ == null) return null
+        // todo:
+        return SearchConversationResponse()
     }
 
     fun convertMembers(

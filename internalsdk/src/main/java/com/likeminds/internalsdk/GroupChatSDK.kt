@@ -22,6 +22,7 @@ import com.likeminds.internalsdk.refreshtoken.RefreshTokenApi
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenApiImpl
 import com.likeminds.internalsdk.sdk.SDKApi
 import com.likeminds.internalsdk.sdk.SDKApiImpl
+import com.likeminds.internalsdk.search.SearchApiImpl
 import com.likeminds.internalsdk.user.api.UserApi
 import com.likeminds.internalsdk.user.api.UserApiImpl
 import com.likeminds.internalsdk.user.db.UserDB
@@ -71,6 +72,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var helperApiImpl: HelperApiImpl
+
+    @Inject
+    lateinit var searchApiImpl: SearchApiImpl
 
     companion object {
 
@@ -151,5 +155,9 @@ class GroupChatSDK {
 
     fun getHelperApi(): HelperApiImpl {
         return helperApiImpl
+    }
+
+    fun getSearchApi(): SearchApiImpl {
+        return searchApiImpl
     }
 }
