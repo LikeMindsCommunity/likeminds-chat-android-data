@@ -15,6 +15,7 @@ import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.di.DaggerInternalSDKComponent
 import com.likeminds.internalsdk.di.InternalSDKComponent
 import com.likeminds.internalsdk.di.SDKSharedResources
+import com.likeminds.internalsdk.helper.HelperApiImpl
 import com.likeminds.internalsdk.moderation.ModerationApiImpl
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenApi
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenApiImpl
@@ -63,6 +64,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var moderationApiImpl: ModerationApiImpl
+
+    @Inject
+    lateinit var helperApiImpl: HelperApiImpl
 
     companion object {
 
@@ -135,5 +139,9 @@ class GroupChatSDK {
 
     fun getModerationApi(): ModerationApiImpl {
         return moderationApiImpl
+    }
+
+    fun getHelperApi(): HelperApiImpl {
+        return helperApiImpl
     }
 }
