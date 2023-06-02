@@ -1,8 +1,7 @@
-package com.likeminds.internalsdk.chatroom.model
+package com.likeminds.internalsdk.conversation.model
 
 import com.google.gson.annotations.SerializedName
 
-//todo: move to conversation module
 class _LinkOGTags_ private constructor(
     @SerializedName("title")
     val title: String? = null,
