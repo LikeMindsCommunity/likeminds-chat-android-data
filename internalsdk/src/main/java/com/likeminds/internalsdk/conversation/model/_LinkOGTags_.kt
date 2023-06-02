@@ -1,13 +1,18 @@
-package com.likeminds.likemindschat.community.model
+package com.likeminds.internalsdk.conversation.model
 
-class LinkOGTags private constructor(
+import com.google.gson.annotations.SerializedName
+
+class _LinkOGTags_ private constructor(
+    @SerializedName("title")
     val title: String? = null,
+    @SerializedName("image")
     val image: String? = null,
+    @SerializedName("description")
     val description: String? = null,
+    @SerializedName("url")
     val url: String? = null
 ) {
     class Builder {
-
         private var title: String? = null
         private var image: String? = null
         private var description: String? = null
@@ -18,7 +23,7 @@ class LinkOGTags private constructor(
         fun description(description: String?) = apply { this.description = description }
         fun url(url: String?) = apply { this.url = url }
 
-        fun build() = LinkOGTags(
+        fun build() = _LinkOGTags_(
             title,
             image,
             description,

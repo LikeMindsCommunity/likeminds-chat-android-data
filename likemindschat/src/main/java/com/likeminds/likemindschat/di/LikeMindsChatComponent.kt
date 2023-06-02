@@ -16,6 +16,8 @@ import com.likeminds.likemindschat.di.internalsdk.SDKModule
 import com.likeminds.likemindschat.di.internalsdk.SharedModule
 import com.likeminds.likemindschat.di.moderation.ModerationModule
 import com.likeminds.likemindschat.di.moderation.ModerationSubComponent
+import com.likeminds.likemindschat.di.poll.PollModule
+import com.likeminds.likemindschat.di.poll.PollSubComponent
 import com.likeminds.likemindschat.di.user.UserModule
 import com.likeminds.likemindschat.di.user.UserSubComponent
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -33,6 +35,7 @@ import javax.inject.Singleton
         ChatroomModule::class,
         CommunityModule::class,
         ModerationModule::class,
+        PollModule::class,
         HelperModule::class,
         HomeFeedModule::class
     ]
@@ -48,6 +51,7 @@ internal interface LikeMindsChatComponent {
     fun chatroomSubComponent(): ChatroomSubComponent.Factory
     fun communitySubComponent(): CommunitySubComponent.Factory
     fun moderationSubComponent(): ModerationSubComponent.Factory
+    fun pollSubComponent(): PollSubComponent.Factory
     fun helperSubComponent(): HelperSubComponent.Factory
     fun homeFeedComponent(): HomeFeedSubComponent.Factory
 

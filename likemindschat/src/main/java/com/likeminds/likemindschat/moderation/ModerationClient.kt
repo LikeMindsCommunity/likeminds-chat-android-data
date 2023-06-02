@@ -48,7 +48,8 @@ class ModerationClient @Inject constructor() : BaseClient() {
                 )
             }
             is NetworkResponse.Success -> {
-                ModelConverter.convertGetReportTagsAPIResponse(response.body)
+                val body = response.body
+                ModelConverter.convertGetReportTagsAPIResponse(body)
             }
         }
     }
