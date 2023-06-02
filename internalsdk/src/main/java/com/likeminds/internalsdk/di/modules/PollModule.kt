@@ -16,7 +16,7 @@ class PollModule {
 
     @Provides
     @Singleton
-    fun providePollNetworkApi(
+    fun providePollModule(
         client: OkHttpClient,
         gson: Gson,
         baseUrl: BaseUrl
