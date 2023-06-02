@@ -9,6 +9,12 @@ class PollApiImpl @Inject constructor(
     private val pollReceiver: PollReceiver
 ) : PollApi {
 
+    override suspend fun postPollConversation(
+        request: _PostPollConversationRequest_
+    ): NetworkResponse<APIResponse<_PostPollConversationResponse_>> {
+        return pollReceiver.postPollConversation(request)
+    }
+
     override suspend fun addPollOption(
         request: _AddPollOptionRequest_
     ): NetworkResponse<APIResponse<_AddPollOptionResponse_>> {

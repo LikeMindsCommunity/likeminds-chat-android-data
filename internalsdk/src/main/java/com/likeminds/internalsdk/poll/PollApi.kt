@@ -6,6 +6,11 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 
 interface PollApi {
 
+    // api to post a poll conversation
+    suspend fun postPollConversation(
+        request: _PostPollConversationRequest_
+    ): NetworkResponse<APIResponse<_PostPollConversationResponse_>>
+
     // api to add options to a poll
     suspend fun addPollOption(
         request: _AddPollOptionRequest_
