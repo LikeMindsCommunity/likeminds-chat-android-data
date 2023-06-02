@@ -6,7 +6,6 @@ import com.likeminds.internalsdk.di.modules.HelperModule
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.di.chatroom.ChatroomModule
 import com.likeminds.likemindschat.di.chatroom.ChatroomSubComponent
-import com.likeminds.likemindschat.di.community.CommunityModule
 import com.likeminds.likemindschat.di.community.CommunitySubComponent
 import com.likeminds.likemindschat.di.helper.HelperSubComponent
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserModule
