@@ -13,8 +13,7 @@ import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.PostReportRequest
 import com.likeminds.likemindschat.poll.PollClient
-import com.likeminds.likemindschat.poll.model.AddPollOptionRequest
-import com.likeminds.likemindschat.poll.model.AddPollOptionResponse
+import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.User
@@ -137,5 +136,15 @@ class LMChatClient private constructor() {
     // Exposed function to process request to add poll option in micro poll
     suspend fun addPollOption(addPollOptionRequest: AddPollOptionRequest): LMResponse<AddPollOptionResponse> {
         return pollClient.addPollOption(addPollOptionRequest)
+    }
+
+    // Exposed function to process request to submit polls selected
+    suspend fun submitPoll(submitPollRequest: SubmitPollRequest): LMResponse<Nothing> {
+        return pollClient.submitPoll(submitPollRequest)
+    }
+
+    // Exposed function to process request to get users who have voted on that particular poll option
+    suspend fun getPollUsers(getPollUsersRequest: GetPollUsersRequest): LMResponse<GetPollUsersResponse> {
+        return pollClient.getPollUsers(getPollUsersRequest)
     }
 }

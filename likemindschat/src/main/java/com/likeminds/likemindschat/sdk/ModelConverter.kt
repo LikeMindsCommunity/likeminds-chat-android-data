@@ -10,6 +10,7 @@ import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
 import com.likeminds.internalsdk.moderation.model._ReportTag_
 import com.likeminds.internalsdk.poll.model._AddPollOptionResponse_
+import com.likeminds.internalsdk.poll.model._GetPollUsersResponse_
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
@@ -25,6 +26,7 @@ import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
 import com.likeminds.likemindschat.poll.model.AddPollOptionResponse
+import com.likeminds.likemindschat.poll.model.GetPollUsersResponse
 import com.likeminds.likemindschat.poll.model.Poll
 import com.likeminds.likemindschat.user.model.SDKClientInfo
 import com.likeminds.likemindschat.user.model.User
@@ -268,7 +270,7 @@ object ModelConverter {
         )
     }
 
-    // converts api InitiateUserResponse model to LM InitiateUserResponse model
+    // converts api AddPollOptionResponse model to LM AddPollOptionResponse model
     fun convertAddPollOptionResponse(
         apiResponse: APIResponse<_AddPollOptionResponse_>
     ): LMResponse<AddPollOptionResponse> {
@@ -287,6 +289,25 @@ object ModelConverter {
         return AddPollOptionResponse(convertPoll(_addPollOptionResponse_.poll))
     }
 
+    // converts api GetPollUsersResponse model to LM GetPollUsersResponse model
+    fun convertGetPollUsersResponse(
+        apiResponse: APIResponse<_GetPollUsersResponse_>
+    ): LMResponse<GetPollUsersResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetPollUsersResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal GetPollUsersResponse model to client model
+    private fun convertGetPollUsersResponse(
+        _getPollUsersResponse_: _GetPollUsersResponse_?
+    ): GetPollUsersResponse? {
+        if (_getPollUsersResponse_ == null) return null
+        return GetPollUsersResponse(convertMembers(_getPollUsersResponse_.members))
+    }
+
     // creates internal Poll model to client model
     private fun convertPoll(
         _poll_: _Poll_
@@ -303,11 +324,21 @@ object ModelConverter {
             .build()
     }
 
+    fun convertMembers(
+        _members_: List<_Member_>
+    ): List<Member> {
+        return _members_.map {
+            convertMember(it)
+        }
+    }
+
     // convert internal Member model to client model
     private fun convertMember(
         _member_: _Member_?
-    ): Member? {
-        if (_member_ == null) return null
+    ): Member {
+        if (_member_ == null) {
+            return Member.Builder().build()
+        }
         return Member.Builder()
             .id(_member_.id)
             .userUniqueId(_member_.userUniqueId)
