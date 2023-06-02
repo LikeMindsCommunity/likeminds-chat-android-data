@@ -17,6 +17,7 @@ import javax.inject.Singleton
         CommunityModule::class,
         ChatroomModule::class,
         ModerationModule::class,
+        PollModule::class,
         HelperModule::class
     ]
 )

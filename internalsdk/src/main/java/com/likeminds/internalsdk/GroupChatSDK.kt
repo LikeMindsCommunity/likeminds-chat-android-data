@@ -17,6 +17,7 @@ import com.likeminds.internalsdk.di.InternalSDKComponent
 import com.likeminds.internalsdk.di.SDKSharedResources
 import com.likeminds.internalsdk.helper.HelperApiImpl
 import com.likeminds.internalsdk.moderation.ModerationApiImpl
+import com.likeminds.internalsdk.poll.PollApiImpl
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenApi
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenApiImpl
 import com.likeminds.internalsdk.sdk.SDKApi
@@ -64,6 +65,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var moderationApiImpl: ModerationApiImpl
+
+    @Inject
+    lateinit var pollApiImpl: PollApiImpl
 
     @Inject
     lateinit var helperApiImpl: HelperApiImpl
@@ -139,6 +143,10 @@ class GroupChatSDK {
 
     fun getModerationApi(): ModerationApiImpl {
         return moderationApiImpl
+    }
+
+    fun getPollApi(): PollApiImpl {
+        return pollApiImpl
     }
 
     fun getHelperApi(): HelperApiImpl {

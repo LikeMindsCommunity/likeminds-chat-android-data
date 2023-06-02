@@ -16,7 +16,7 @@ class HelperModule {
 
     @Provides
     @Singleton
-    fun provideHelperNetworkApi(
+    fun provideHelperModule(
         client: OkHttpClient,
         gson: Gson,
         baseUrl: BaseUrl
