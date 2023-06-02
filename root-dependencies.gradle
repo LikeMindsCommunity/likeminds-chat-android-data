@@ -20,6 +20,7 @@ versions.chucker = '3.5.2'
 versions.kotlin = '1.7.20'
 versions.coroutines = "1.6.4"
 versions.sentry = '6.12.1'
+versions.work_manager = '2.7.1'
 versions.dagger = '2.42'
 ext.versions = versions
 
@@ -70,6 +71,10 @@ def chucker = [:]
 chucker.main = "com.github.chuckerteam.chucker:library:$versions.chucker"
 chucker.no_op = "com.github.chuckerteam.chucker:library-no-op:$versions.chucker"
 deps.chucker = chucker
+
+def work_manager = [:]
+work_manager.main = "androidx.work:work-runtime-ktx:$versions.work_manager"
+deps.workmanager = work_manager
 
 def sentry = [:]
 sentry.main = "io.sentry:sentry-android:$versions.sentry"
