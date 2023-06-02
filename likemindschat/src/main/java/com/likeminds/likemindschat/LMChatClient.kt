@@ -4,9 +4,25 @@ import android.app.Application
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
+import com.likeminds.likemindschat.chatroom.ChatroomClient
+import com.likeminds.likemindschat.chatroom.model.*
+import com.likeminds.likemindschat.helper.HelperClient
+import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
+import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
+import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
+import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.*
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
+import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
+import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
+import com.likeminds.likemindschat.moderation.ModerationClient
+import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
+import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
+import com.likeminds.likemindschat.moderation.model.PostReportRequest
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
+import com.likeminds.likemindschat.user.UserClient
+import com.likeminds.likemindschat.user.model.User
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,6 +34,18 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var homeFeedClient: HomeFeedClient
+
+    @Inject
+    lateinit var userClient: UserClient
+
+    @Inject
+    lateinit var chatroomClient: ChatroomClient
+
+    @Inject
+    lateinit var moderationClient: ModerationClient
+
+    @Inject
+    lateinit var helperClient: HelperClient
 
     class Builder(val application: Application) {
 
@@ -54,7 +82,7 @@ class LMChatClient private constructor() {
         return initiateUserClient.logout(logoutRequest)
     }
 
-    //function to register device
+    // Exposed function to register device
     suspend fun registerDevice(registerDeviceRequest: RegisterDeviceRequest): LMResponse<Nothing> {
         return initiateUserClient.registerDevice(registerDeviceRequest)
     }
@@ -67,5 +95,70 @@ class LMChatClient private constructor() {
     //function to get config details
     suspend fun getConfig(): LMResponse<ConfigResponse> {
         return homeFeedClient.getConfig()
+    }
+
+    // Exposed function to get user from Db
+    suspend fun getUser(): LMResponse<User> {
+        return userClient.getUser()
+    }
+
+    // Exposed function to get chatroom
+    suspend fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
+        return chatroomClient.getChatroom(getChatroomRequest)
+    }
+
+    // Exposed function to follow chatroom
+    suspend fun followChatroom(followChatroomRequest: FollowChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.followChatroom(followChatroomRequest)
+    }
+
+    // Exposed function to leave a secret chatroom
+    suspend fun leaveSecretChatroom(leaveSecretChatroomRequest: LeaveSecretChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.leaveSecretChatroom(leaveSecretChatroomRequest)
+    }
+
+    // Exposed function to mute a chatroom
+    suspend fun muteChatroom(muteChatroomRequest: MuteChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.muteChatroom(muteChatroomRequest)
+    }
+
+    // Exposed function to mark a chatroom as read
+    suspend fun markReadChatroom(markReadChatroomRequest: MarkReadChatroomRequest): LMResponse<Nothing> {
+        return chatroomClient.markReadChatroom(markReadChatroomRequest)
+    }
+
+    // Exposed function to get chatroom's share url
+    suspend fun shareChatroomUrl(shareChatroomUrlRequest: ShareChatroomUrlRequest): LMResponse<ShareChatroomUrlResponse> {
+        return chatroomClient.shareChatroomUrl(shareChatroomUrlRequest)
+    }
+
+    // Exposed function to set chatroom's topic
+    suspend fun setChatroomTopic(setChatroomTopicRequest: SetChatroomTopicRequest): LMResponse<Nothing> {
+        return chatroomClient.setChatroomTopic(setChatroomTopicRequest)
+    }
+
+    // Exposed function to get list of participants in chatroom
+    suspend fun getChatroomParticipants(getChatroomParticipantsRequest: GetChatroomParticipantsRequest): LMResponse<GetChatroomParticipantsResponse> {
+        return chatroomClient.getChatroomParticipants(getChatroomParticipantsRequest)
+    }
+
+    // Exposed function to process request to fetch report tags
+    suspend fun getReportTags(getReportTagsRequest: GetReportTagsRequest): LMResponse<GetReportTagsResponse> {
+        return moderationClient.getReportTags(getReportTagsRequest)
+    }
+
+    // Exposed function to process request to post report on the entity
+    suspend fun postReport(postReportRequest: PostReportRequest): LMResponse<Nothing> {
+        return moderationClient.postReport(postReportRequest)
+    }
+
+    // Exposed function to decode url and fetch ogTags
+    suspend fun decodeUrl(decodeUrlRequest: DecodeUrlRequest): LMResponse<DecodeUrlResponse> {
+        return helperClient.decodeUrl(decodeUrlRequest)
+    }
+
+    // Exposed function to fetch tagging list
+    suspend fun getTaggingList(getTaggingListRequest: GetTaggingListRequest): LMResponse<GetTaggingListResponse> {
+        return helperClient.getTaggingList(getTaggingListRequest)
     }
 }

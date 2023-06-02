@@ -8,13 +8,17 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-    modules = [SDKSharedResourcesModule::class,
+    modules = [
+        SDKSharedResourcesModule::class,
         GsonModule::class,
         NetworkModule::class,
         SDKModule::class,
         UserModule::class,
         CommunityModule::class,
-        HomeFeedModule::class
+        HomeFeedModule::class,
+        ChatroomModule::class,
+        ModerationModule::class,
+        HelperModule::class
     ]
 )
 interface InternalSDKComponent {
