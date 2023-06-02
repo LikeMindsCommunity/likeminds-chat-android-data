@@ -1,16 +1,9 @@
-package com.likeminds.internalsdk.chatroom.model
+package com.likeminds.likemindschat.conversation.model
 
-import com.google.gson.annotations.SerializedName
-
-//todo: move to conversation module
-class _LinkOGTags_ private constructor(
-    @SerializedName("title")
+class LinkOGTags private constructor(
     val title: String? = null,
-    @SerializedName("image")
     val image: String? = null,
-    @SerializedName("description")
     val description: String? = null,
-    @SerializedName("url")
     val url: String? = null
 ) {
     class Builder {
@@ -25,7 +18,7 @@ class _LinkOGTags_ private constructor(
         fun description(description: String?) = apply { this.description = description }
         fun url(url: String?) = apply { this.url = url }
 
-        fun build() = _LinkOGTags_(
+        fun build() = LinkOGTags(
             title,
             image,
             description,

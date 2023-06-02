@@ -5,6 +5,7 @@ import com.likeminds.internalsdk.community.model._Community_
 import com.likeminds.internalsdk.community.model._MemberAction_
 import com.likeminds.internalsdk.community.model._Member_
 import com.likeminds.internalsdk.community.model._Question_
+import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.SDKClientInfoRO
 import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.helper.model._DecodeUrlResponse_
@@ -16,6 +17,7 @@ import com.likeminds.internalsdk.moderation.model._ReportTag_
 import com.likeminds.internalsdk.poll.model._AddPollOptionResponse_
 import com.likeminds.internalsdk.poll.model._GetPollUsersResponse_
 import com.likeminds.internalsdk.poll.model._Poll_
+import com.likeminds.internalsdk.poll.model._PostPollConversationResponse_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.search.model._SearchChatroomResponse_
 import com.likeminds.internalsdk.search.model._SearchConversationResponse_
@@ -37,6 +39,7 @@ import com.likeminds.likemindschat.poll.model.GetPollUsersResponse
 import com.likeminds.likemindschat.poll.model.Poll
 import com.likeminds.likemindschat.search.model.SearchChatroomResponse
 import com.likeminds.likemindschat.search.model.SearchConversationResponse
+import com.likeminds.likemindschat.poll.model.PostPollConversationResponse
 import com.likeminds.likemindschat.user.model.SDKClientInfo
 import com.likeminds.likemindschat.user.model.User
 
@@ -317,7 +320,39 @@ object ModelConverter {
         return GetPollUsersResponse(convertMembers(_getPollUsersResponse_.members))
     }
 
-    // creates internal Poll model to client model
+    // converts api PostPollConversationResponse model to LM PostPollConversationResponse model
+    fun convertPostPollConversationResponse(
+        apiResponse: APIResponse<_PostPollConversationResponse_>
+    ): LMResponse<PostPollConversationResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertPostPollConversationResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal PostPollConversationResponse model to client model
+    private fun convertPostPollConversationResponse(
+        _postPollConversationResponse_: _PostPollConversationResponse_?
+    ): PostPollConversationResponse? {
+        if (_postPollConversationResponse_ == null) return null
+        return PostPollConversationResponse(
+            _postPollConversationResponse_.id,
+            convertConversation(_postPollConversationResponse_.conversation)
+        )
+    }
+
+    // converts internal Poll model list to client model list
+    private fun convertPolls(
+        _polls_: List<_Poll_>?
+    ): List<Poll>? {
+        if (_polls_ == null) return null
+        return _polls_.map {
+            convertPoll(it)
+        }
+    }
+
+    // converts internal Poll model to client model
     private fun convertPoll(
         _poll_: _Poll_
     ): Poll {
@@ -468,6 +503,109 @@ object ModelConverter {
             _memberAction_.title,
             _memberAction_.route
         )
+    }
+
+    private fun convertConversation(
+        _conversation_: _Conversation_
+    ): Conversation {
+        return Conversation.Builder()
+            .id(_conversation_.id)
+            .chatroomId(_conversation_.chatroomId)
+            .communityId(_conversation_.communityId)
+            .member(convertMember(_conversation_.member))
+            .answer(_conversation_.answer)
+            .createdAt(_conversation_.createdAt)
+            .state(_conversation_.state)
+            .attachments(convertAttachments(_conversation_.attachments))
+            .lastSeen(_conversation_.lastSeen)
+            .ogTags(_conversation_.ogTags?.let { convertOGTags(it) })
+            .date(_conversation_.date)
+            .isEdited(_conversation_.isEdited)
+            .memberId(_conversation_.memberId)
+            .replyConversation(_conversation_.replyConversation)
+            .deletedBy(_conversation_.deletedBy)
+            .createdEpoch(_conversation_.createdEpoch)
+            .attachmentCount(_conversation_.attachmentCount)
+            .attachmentUploaded(_conversation_.attachmentUploaded)
+            .uploadWorkerUUID(_conversation_.uploadWorkerUUID)
+            .temporaryId(_conversation_.temporaryId)
+            .localCreatedEpoch(_conversation_.localCreatedEpoch)
+            .reactions(convertReactions(_conversation_.reactions))
+            .isAnonymous(_conversation_.isAnonymous)
+            .allowAddOption(_conversation_.allowAddOption)
+            .pollType(_conversation_.pollType)
+            .pollTypeText(_conversation_.pollTypeText)
+            .submitTypeText(_conversation_.submitTypeText)
+            .expiryTime(_conversation_.expiryTime)
+            .multipleSelectNum(_conversation_.multipleSelectNum)
+            .multipleSelectState(_conversation_.multipleSelectState)
+            .polls(convertPolls(_conversation_.polls))
+            .toShowResults(_conversation_.toShowResults)
+            .pollAnswerText(_conversation_.pollAnswerText)
+            .replyChatroomId(_conversation_.replyChatroomId)
+            .build()
+    }
+
+    private fun convertAttachments(
+        _attachments_: List<_Attachment_>?
+    ): List<Attachment>? {
+        if (_attachments_ == null) return null
+        return _attachments_.map {
+            convertAttachment(it)
+        }
+    }
+
+    private fun convertAttachment(
+        _attachment_: _Attachment_
+    ): Attachment {
+        return Attachment.Builder()
+            .id(_attachment_.id)
+            .name(_attachment_.name)
+            .url(_attachment_.url)
+            .type(_attachment_.type)
+            .index(_attachment_.index)
+            .width(_attachment_.width)
+            .height(_attachment_.height)
+            .awsFolderPath(_attachment_.awsFolderPath)
+            .localFilePath(_attachment_.localFilePath)
+            .thumbnailUrl(_attachment_.thumbnailUrl)
+            .thumbnailAWSFolderPath(_attachment_.thumbnailAWSFolderPath)
+            .thumbnailLocalFilePath(_attachment_.thumbnailLocalFilePath)
+            .meta(convertAttachmentMeta(_attachment_.meta))
+            .createdAt(_attachment_.createdAt)
+            .updatedAt(_attachment_.updatedAt)
+            .isRecording(_attachment_.isRecording)
+            .about(_attachment_.about)
+            .build()
+    }
+
+    private fun convertAttachmentMeta(
+        _attachmentMeta_: _AttachmentMeta_?
+    ): AttachmentMeta? {
+        if (_attachmentMeta_ == null) return null
+        return AttachmentMeta.Builder()
+            .numberOfPage(_attachmentMeta_.numberOfPage)
+            .size(_attachmentMeta_.size)
+            .duration(_attachmentMeta_.duration)
+            .build()
+    }
+
+    private fun convertReactions(
+        _reactions_: List<_Reaction_>?
+    ): List<Reaction>? {
+        if (_reactions_ == null) return null
+        return _reactions_.map {
+            convertReaction(it)
+        }
+    }
+
+    private fun convertReaction(
+        _reaction_: _Reaction_
+    ): Reaction {
+        return Reaction.Builder()
+            .member(convertMember(_reaction_.member))
+            .reaction(_reaction_.reaction)
+            .build()
     }
 
     /**--------------------------------

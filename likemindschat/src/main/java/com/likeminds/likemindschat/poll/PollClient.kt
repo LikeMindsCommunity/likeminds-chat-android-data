@@ -2,6 +2,7 @@ package com.likeminds.likemindschat.poll
 
 import com.likeminds.internalsdk.poll.model._AddPollOptionRequest_
 import com.likeminds.internalsdk.poll.model._GetPollUsersRequest_
+import com.likeminds.internalsdk.poll.model._PostPollConversationRequest_
 import com.likeminds.internalsdk.poll.model._SubmitPollRequest_
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
@@ -20,6 +21,68 @@ class PollClient @Inject constructor() : BaseClient() {
 
     private val pollApi by lazy {
         groupChatSDK.getPollApi()
+    }
+
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param postPollConversationRequest - client request model to post a poll conversation
+     * @throws IllegalArgumentException - when LMFeedClient is not instantiated
+     * @return PostPollConversationResponse - PostPollConversationResponse model for postPollConversationRequest
+     */
+    suspend fun postPollConversation(postPollConversationRequest: PostPollConversationRequest): LMResponse<PostPollConversationResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validatePostPollConversationRequest(postPollConversationRequest)
+
+        // builds internal request model
+        val request = _PostPollConversationRequest_.Builder()
+            .build()
+
+        // calls api and processes the response accordingly
+        return when (val response = pollApi.postPollConversation(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage,
+                )
+            }
+            is NetworkResponse.Success -> {
+                val body = response.body
+                ModelConverter.convertPostPollConversationResponse(body)
+            }
+        }
+    }
+
+    /**
+     * validates [postPollConversationRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validatePostPollConversationRequest(postPollConversationRequest: PostPollConversationRequest) {
+        if (postPollConversationRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+
+        if (postPollConversationRequest.polls.isEmpty()) {
+            RequestUtils.throwException("polls")
+        }
+
+        postPollConversationRequest.polls.forEach {
+            if (it.text.isEmpty()) {
+                RequestUtils.throwException("text")
+            }
+        }
+
+        if (postPollConversationRequest.text.isEmpty()) {
+            RequestUtils.throwException("text")
+        }
+
+        if (postPollConversationRequest.pollType == -1) {
+            RequestUtils.throwException("pollType")
+        }
+
+        if (postPollConversationRequest.expiryTime == -1L) {
+            RequestUtils.throwException("pollType")
+        }
     }
 
     /**

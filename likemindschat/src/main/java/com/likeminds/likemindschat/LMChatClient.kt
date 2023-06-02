@@ -164,6 +164,11 @@ class LMChatClient private constructor() {
         return pollClient.getPollUsers(getPollUsersRequest)
     }
 
+    // Exposed function to post a poll conversation
+    suspend fun postPollConversation(postPollConversationRequest: PostPollConversationRequest): LMResponse<PostPollConversationResponse> {
+        return pollClient.postPollConversation(postPollConversationRequest)
+    }
+
     // Exposed function to decode url and fetch ogTags
     suspend fun decodeUrl(decodeUrlRequest: DecodeUrlRequest): LMResponse<DecodeUrlResponse> {
         return helperClient.decodeUrl(decodeUrlRequest)
