@@ -1,80 +1,44 @@
-package com.likeminds.internalsdk.conversation.model
+package com.likeminds.likemindschat.conversation.model
 
-import com.google.gson.annotations.SerializedName
-import com.likeminds.internalsdk.community.model._Member_
-import com.likeminds.internalsdk.poll.model._Poll_
+import com.likeminds.likemindschat.community.model.Member
+import com.likeminds.likemindschat.poll.model.Poll
 
-class _Conversation_ private constructor(
-    @SerializedName("id")
+class Conversation private constructor(
     val id: String?,
-    @SerializedName("chatroom_id")
     val chatroomId: String?,
-    @SerializedName("community_id")
     val communityId: String?,
-    @SerializedName("member")
-    val member: _Member_?,
-    @SerializedName("answer")
+    val member: Member?,
     val answer: String,
-    @SerializedName("created_at")
     val createdAt: String?,
-    @SerializedName("state")
     val state: Int,
-    @SerializedName("attachments")
-    val attachments: List<_Attachment_>?,
-    @SerializedName("last_seen")
+    val attachments: List<Attachment>?,
     val lastSeen: Boolean?,
-    @SerializedName("og_tags")
-    val ogTags: _LinkOGTags_?,
-    @SerializedName("date")
+    val ogTags: LinkOGTags?,
     val date: String?,
-    @SerializedName("is_edited")
     val isEdited: Boolean?,
-    @SerializedName("member_id")
     val memberId: String?,
-    @SerializedName("reply_conversation")
     val replyConversation: String?,
-    @SerializedName("delete_by")
     val deletedBy: String?,
-    @SerializedName("created_epoch")
     val createdEpoch: Long?,
-    @SerializedName("attachment_count")
     val attachmentCount: Int?,
-    @SerializedName("attachments_uploaded")
     val attachmentUploaded: Boolean?,
-    @SerializedName("upload_worker_uuid")
     val uploadWorkerUUID: String?,
-    @SerializedName("temporary_id")
     val temporaryId: String?,
-    @SerializedName("local_created_epoch")
     val localCreatedEpoch: Long?,
-    @SerializedName("reactions")
-    val reactions: List<_Reaction_>?,
-    @SerializedName("is_anonymous")
+    val reactions: List<Reaction>?,
     val isAnonymous: Boolean?,
-    @SerializedName("allow_add_option")
     val allowAddOption: Boolean?,
-    @SerializedName("poll_type")
     val pollType: Int?,
-    @SerializedName("poll_type_text")
     val pollTypeText: String?,
-    @SerializedName("submit_type_text")
     val submitTypeText: String?,
-    @SerializedName("expiry_time")
     val expiryTime: Long?,
-    @SerializedName("multiple_select_no")
     val multipleSelectNum: Int?,
-    @SerializedName("multiple_select_state")
     val multipleSelectState: Int?,
-    @SerializedName("polls")
-    val polls: List<_Poll_>?,
-    @SerializedName("to_show_results")
+    val polls: List<Poll>?,
     val toShowResults: Boolean?,
-    @SerializedName("poll_answer_text")
     val pollAnswerText: String?,
-    @SerializedName("reply_chatroom_id")
     val replyChatroomId: String?
 ) {
-
     fun hasAttachments(): Boolean {
         return attachmentCount != null && attachmentCount > 0
     }
@@ -87,13 +51,13 @@ class _Conversation_ private constructor(
         private var id: String? = ""
         private var chatroomId: String? = null
         private var communityId: String? = null
-        private var member: _Member_? = null
+        private var member: Member? = null
         private var answer: String = ""
         private var createdAt: String? = null
         private var state: Int = 0
-        private var attachments: List<_Attachment_>? = null
+        private var attachments: List<Attachment>? = null
         private var lastSeen: Boolean? = null
-        private var ogTags: _LinkOGTags_? = null
+        private var ogTags: LinkOGTags? = null
         private var date: String? = null
         private var isEdited: Boolean? = null
         private var memberId: String? = null
@@ -105,7 +69,7 @@ class _Conversation_ private constructor(
         private var uploadWorkerUUID: String? = null
         private var temporaryId: String? = null
         private var localCreatedEpoch: Long? = null
-        private var reactions: List<_Reaction_>? = null
+        private var reactions: List<Reaction>? = null
         private var isAnonymous: Boolean? = null
         private var allowAddOption: Boolean? = null
         private var pollType: Int? = null
@@ -114,7 +78,7 @@ class _Conversation_ private constructor(
         private var expiryTime: Long? = null
         private var multipleSelectNum: Int? = null
         private var multipleSelectState: Int? = null
-        private var polls: List<_Poll_>? = null
+        private var polls: List<Poll>? = null
         private var toShowResults: Boolean? = null
         private var pollAnswerText: String? = null
         private var replyChatroomId: String? = null
@@ -122,13 +86,13 @@ class _Conversation_ private constructor(
         fun id(id: String?) = apply { this.id = id }
         fun chatroomId(chatroomId: String?) = apply { this.chatroomId = chatroomId }
         fun communityId(communityId: String?) = apply { this.communityId = communityId }
-        fun member(member: _Member_?) = apply { this.member = member }
+        fun member(member: Member?) = apply { this.member = member }
         fun answer(answer: String) = apply { this.answer = answer }
         fun createdAt(createdAt: String?) = apply { this.createdAt = createdAt }
         fun state(state: Int) = apply { this.state = state }
-        fun attachments(attachments: List<_Attachment_>?) = apply { this.attachments = attachments }
+        fun attachments(attachments: List<Attachment>?) = apply { this.attachments = attachments }
         fun lastSeen(lastSeen: Boolean?) = apply { this.lastSeen = lastSeen }
-        fun ogTags(ogTags: _LinkOGTags_?) = apply { this.ogTags = ogTags }
+        fun ogTags(ogTags: LinkOGTags?) = apply { this.ogTags = ogTags }
         fun date(date: String?) = apply { this.date = date }
         fun isEdited(isEdited: Boolean?) = apply { this.isEdited = isEdited }
         fun memberId(memberId: String?) = apply { this.memberId = memberId }
@@ -150,7 +114,7 @@ class _Conversation_ private constructor(
         fun localCreatedEpoch(localCreatedEpoch: Long?) =
             apply { this.localCreatedEpoch = localCreatedEpoch }
 
-        fun reactions(reactions: List<_Reaction_>?) = apply { this.reactions = reactions }
+        fun reactions(reactions: List<Reaction>?) = apply { this.reactions = reactions }
         fun isAnonymous(isAnonymous: Boolean?) = apply { this.isAnonymous = isAnonymous }
         fun allowAddOption(allowAddOption: Boolean?) =
             apply { this.allowAddOption = allowAddOption }
@@ -165,13 +129,13 @@ class _Conversation_ private constructor(
         fun multipleSelectState(multipleSelectState: Int?) =
             apply { this.multipleSelectState = multipleSelectState }
 
-        fun polls(polls: List<_Poll_>?) = apply { this.polls = polls }
+        fun polls(polls: List<Poll>?) = apply { this.polls = polls }
         fun toShowResults(toShowResults: Boolean?) = apply { this.toShowResults = toShowResults }
         fun pollAnswerText(pollAnswerText: String?) = apply { this.pollAnswerText = pollAnswerText }
         fun replyChatroomId(replyChatroomId: String?) =
             apply { this.replyChatroomId = replyChatroomId }
 
-        fun build() = _Conversation_(
+        fun build() = Conversation(
             id,
             chatroomId,
             communityId,

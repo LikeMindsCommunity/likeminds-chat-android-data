@@ -13,7 +13,6 @@ class _LinkOGTags_ private constructor(
     val url: String? = null
 ) {
     class Builder {
-
         private var title: String? = null
         private var image: String? = null
         private var description: String? = null

@@ -9,7 +9,6 @@ class _Reaction_ private constructor(
     @SerializedName("reaction")
     val reaction: String
 ) {
-
     class Builder {
 
         private var member: _Member_ = _Member_.Builder().build()

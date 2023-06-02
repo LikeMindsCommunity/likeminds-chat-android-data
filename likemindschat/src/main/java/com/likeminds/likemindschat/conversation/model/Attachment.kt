@@ -1,41 +1,22 @@
-package com.likeminds.internalsdk.conversation.model
+package com.likeminds.likemindschat.conversation.model
 
-import com.google.gson.annotations.SerializedName
-
-class _Attachment_ private constructor(
-    @SerializedName("id")
+class Attachment private constructor(
     val id: String?,
-    @SerializedName("name")
     val name: String?,
-    @SerializedName(value = "url", alternate = ["image_url", "video_url", "file_url"])
     val url: String,
-    @SerializedName("type")
     val type: String,
-    @SerializedName("index")
     val index: Int?,
-    @SerializedName("width")
     val width: Int?,
-    @SerializedName("height")
     val height: Int?,
-    @SerializedName("aws_folder_path")
     val awsFolderPath: String?,
-    @SerializedName("local_file_path")
     val localFilePath: String?,
-    @SerializedName("thumbnail_url")
     val thumbnailUrl: String?,
-    @SerializedName("thumbnail_aws_folder_path")
     val thumbnailAWSFolderPath: String?,
-    @SerializedName("thumbnail_local_file_path")
     val thumbnailLocalFilePath: String?,
-    @SerializedName("meta")
-    val meta: _AttachmentMeta_?,
-    @SerializedName("created_at")
+    val meta: AttachmentMeta?,
     val createdAt: Long?,
-    @SerializedName("updatedAt")
     val updatedAt: Long?,
-    @SerializedName("is_recording")
     val isRecording: Boolean?,
-    @SerializedName("about")
     val about: String?
 ) {
     class Builder {
@@ -51,7 +32,7 @@ class _Attachment_ private constructor(
         private var thumbnailUrl: String? = null
         private var thumbnailAWSFolderPath: String? = null
         private var thumbnailLocalFilePath: String? = null
-        private var meta: _AttachmentMeta_? = null
+        private var meta: AttachmentMeta? = null
         private var createdAt: Long? = null
         private var updatedAt: Long? = null
         private var isRecording: Boolean? = null
@@ -73,13 +54,13 @@ class _Attachment_ private constructor(
         fun thumbnailLocalFilePath(thumbnailLocalFilePath: String?) =
             apply { this.thumbnailLocalFilePath = thumbnailLocalFilePath }
 
-        fun meta(meta: _AttachmentMeta_?) = apply { this.meta = meta }
+        fun meta(meta: AttachmentMeta?) = apply { this.meta = meta }
         fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
         fun updatedAt(updatedAt: Long?) = apply { this.updatedAt = updatedAt }
         fun isRecording(isRecording: Boolean?) = apply { this.isRecording = isRecording }
         fun about(about: String?) = apply { this.about = about }
 
-        fun build() = _Attachment_(
+        fun build() = Attachment(
             id,
             name,
             url,

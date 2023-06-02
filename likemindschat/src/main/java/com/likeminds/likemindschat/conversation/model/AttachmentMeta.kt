@@ -1,13 +1,8 @@
-package com.likeminds.internalsdk.conversation.model
+package com.likeminds.likemindschat.conversation.model
 
-import com.google.gson.annotations.SerializedName
-
-class _AttachmentMeta_ private constructor(
-    @SerializedName("number_of_page")
+class AttachmentMeta private constructor(
     val numberOfPage: Int?,
-    @SerializedName("size")
     val size: Long?,
-    @SerializedName("duration")
     val duration: Int? //in seconds
 ) {
     class Builder {
@@ -19,7 +14,7 @@ class _AttachmentMeta_ private constructor(
         fun size(size: Long?) = apply { this.size = size }
         fun duration(duration: Int?) = apply { this.duration = duration }
 
-        fun build() = _AttachmentMeta_(numberOfPage, size, duration)
+        fun build() = AttachmentMeta(numberOfPage, size, duration)
     }
 
     fun toBuilder(): Builder {

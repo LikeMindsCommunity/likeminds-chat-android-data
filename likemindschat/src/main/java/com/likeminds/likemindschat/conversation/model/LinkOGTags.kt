@@ -1,4 +1,4 @@
-package com.likeminds.likemindschat.community.model
+package com.likeminds.likemindschat.conversation.model
 
 class LinkOGTags private constructor(
     val title: String? = null,
