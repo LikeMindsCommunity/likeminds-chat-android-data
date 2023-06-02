@@ -17,7 +17,8 @@ import javax.inject.Singleton
         CommunityModule::class,
         ChatroomModule::class,
         ModerationModule::class,
-        PollModule::class
+        PollModule::class,
+        HelperModule::class
     ]
 )
 interface InternalSDKComponent {
