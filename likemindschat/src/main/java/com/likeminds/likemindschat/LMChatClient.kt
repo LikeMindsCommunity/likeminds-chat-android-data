@@ -1,6 +1,9 @@
 package com.likeminds.likemindschat
 
 import android.app.Application
+import com.likeminds.likemindschat.homefeed.HomeFeedClient
+import com.likeminds.likemindschat.homefeed.model.ConfigResponse
+import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.chatroom.ChatroomClient
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.helper.HelperClient
@@ -35,6 +38,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var initiateUserClient: InitiateUserClient
+
+    @Inject
+    lateinit var homeFeedClient: HomeFeedClient
 
     @Inject
     lateinit var userClient: UserClient
@@ -79,12 +85,12 @@ class LMChatClient private constructor() {
         }
     }
 
-    // Exposed function to process initiate user request
+    //function to process initiate user request
     suspend fun initiateUser(initiateUserRequest: InitiateUserRequest): LMResponse<InitiateUserResponse> {
         return initiateUserClient.initiateUser(initiateUserRequest)
     }
 
-    // Exposed function to process logout request
+    //function to process logout request
     suspend fun logout(logoutRequest: LogoutRequest): LMResponse<Nothing> {
         return initiateUserClient.logout(logoutRequest)
     }
@@ -92,6 +98,16 @@ class LMChatClient private constructor() {
     // Exposed function to register device
     suspend fun registerDevice(registerDeviceRequest: RegisterDeviceRequest): LMResponse<Nothing> {
         return initiateUserClient.registerDevice(registerDeviceRequest)
+    }
+
+    //function to get explore tab count
+    suspend fun getExploreTabCount(): LMResponse<GetExploreTabCountResponse> {
+        return homeFeedClient.getExploreTabCount()
+    }
+
+    //function to get config details
+    suspend fun getConfig(): LMResponse<ConfigResponse> {
+        return homeFeedClient.getConfig()
     }
 
     // Exposed function to get user from Db

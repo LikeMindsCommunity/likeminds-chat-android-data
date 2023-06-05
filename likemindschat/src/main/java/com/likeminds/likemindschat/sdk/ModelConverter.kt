@@ -6,6 +6,7 @@ import com.likeminds.internalsdk.community.model._MemberAction_
 import com.likeminds.internalsdk.community.model._Member_
 import com.likeminds.internalsdk.community.model._Question_
 import com.likeminds.internalsdk.conversation.model.*
+import com.likeminds.internalsdk.homefeed.model.*
 import com.likeminds.internalsdk.db.models.SDKClientInfoRO
 import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.helper.model._DecodeUrlResponse_
@@ -26,6 +27,8 @@ import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.Community
+import com.likeminds.likemindschat.homefeed.model.*
+import com.likeminds.likemindschat.community.model.LinkOGTags
 import com.likeminds.likemindschat.community.model.Member
 import com.likeminds.likemindschat.community.model.MemberAction
 import com.likeminds.likemindschat.community.model.Question
@@ -117,6 +120,68 @@ object ModelConverter {
             _community_.imageUrl,
             _community_.membersCount,
             _community_.updatedAt,
+        )
+    }
+
+    //converts API GetExploreTabCountResponse model to LM model
+    fun convertGetExploreTabCountAPIResponse(
+        apiResponse: APIResponse<_GetExploreTabCountResponse_>
+    ): LMResponse<GetExploreTabCountResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetExploreTabCountResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal GetExploreTabCountResponse model to client model
+    private fun convertGetExploreTabCountResponse(_getExploreTabCountResponse_: _GetExploreTabCountResponse_?): GetExploreTabCountResponse? {
+        if (_getExploreTabCountResponse_ == null) return null
+        return GetExploreTabCountResponse(
+            _getExploreTabCountResponse_.unseenChatroomCount,
+            _getExploreTabCountResponse_.totalChatroomCount
+        )
+    }
+
+    fun convertConfigAPIResponse(
+        apiResponse: APIResponse<_ConfigResponse_>
+    ): LMResponse<ConfigResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertConfigAPIResponse(apiResponse.data)
+        )
+    }
+
+    private fun convertConfigAPIResponse(_configResponse_: _ConfigResponse_?): ConfigResponse? {
+        if (_configResponse_ == null) return null
+        return ConfigResponse(
+            _configResponse_.access,
+            _configResponse_.enableAudio,
+            _configResponse_.enableGifs,
+            _configResponse_.enableVoiceNote,
+            _configResponse_.enableMicroPolls,
+            convertUserDetails(_configResponse_.userDetails)
+        )
+    }
+
+    private fun convertUserDetails(_userDetails_: _UserDetail_): UserDetail {
+        return UserDetail(
+            convertUser(_userDetails_.user),
+            convertUserMetrics(_userDetails_.userMetrics)
+        )
+    }
+
+    private fun convertUserMetrics(_userMetrics_: _UserMetrics_): UserMetrics {
+        return UserMetrics(
+            _userMetrics_.firstLogin,
+            _userMetrics_.firstLoginEpoch,
+            _userMetrics_.countCommunitiesJoined,
+            _userMetrics_.nameCommunitiesJoined,
+            _userMetrics_.isAnyCommunityPromoter,
+            _userMetrics_.uniqueChatroomResponded,
+            _userMetrics_.countChatroomCreated,
+            _userMetrics_.countChatroomFollowed
         )
     }
 

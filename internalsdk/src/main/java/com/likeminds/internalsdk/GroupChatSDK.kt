@@ -6,6 +6,11 @@ import com.likeminds.internalsdk.chatroom.ChatroomApi
 import com.likeminds.internalsdk.chatroom.ChatroomApiImpl
 import com.likeminds.internalsdk.community.CommunityApi
 import com.likeminds.internalsdk.community.CommunityApiImpl
+import com.likeminds.internalsdk.db.*
+import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.di.*
+import com.likeminds.internalsdk.homefeed.HomeFeedApi
+import com.likeminds.internalsdk.homefeed.HomeFeedApiImpl
 import com.likeminds.internalsdk.db.DB_SCHEMA_NAME
 import com.likeminds.internalsdk.db.DB_SCHEMA_VERSION
 import com.likeminds.internalsdk.db.RealmDBMigration
@@ -60,6 +65,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var communityApiImpl: CommunityApiImpl
+
+    @Inject
+    lateinit var homeFeedApi: HomeFeedApiImpl
 
     @Inject
     lateinit var chatroomApiImpl: ChatroomApiImpl
@@ -139,6 +147,10 @@ class GroupChatSDK {
 
     fun getCommunityApi(): CommunityApi {
         return communityApiImpl
+    }
+
+    fun homeFeedApi(): HomeFeedApi {
+        return homeFeedApi
     }
 
     fun getChatroomApi(): ChatroomApi {

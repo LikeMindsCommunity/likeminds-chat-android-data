@@ -15,6 +15,7 @@ import javax.inject.Singleton
         SDKModule::class,
         UserModule::class,
         CommunityModule::class,
+        HomeFeedModule::class,
         ChatroomModule::class,
         ModerationModule::class,
         PollModule::class,

@@ -125,6 +125,21 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+            val count = client.getExploreTabCount()
+
+            Log.d(
+                TAG, """
+                count total: ${count.data?.totalChatroomCount}
+                count new: ${count.data?.unseenChatroomCount}
+            """.trimIndent()
+            )
+            val config = client.getConfig()
+            Log.d(
+                TAG, """
+                config audio: ${config.data?.enableAudio}
+                config polls: ${config.data?.enableMicroPolls}
+            """.trimIndent()
+            )
         }
     }
 }

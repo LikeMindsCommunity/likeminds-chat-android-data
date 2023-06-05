@@ -44,6 +44,9 @@ dependencies {
     implementation deps.sentry.main
     implementation deps.sentry.okhttp
 
+    //workmanager
+    implementation deps.workmanager.main
+
     //testing
     testImplementation deps.testing.junit
     androidTestImplementation deps.testing.android_junit
