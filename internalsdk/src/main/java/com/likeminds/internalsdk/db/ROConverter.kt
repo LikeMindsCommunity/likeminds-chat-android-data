@@ -1,16 +1,19 @@
 package com.likeminds.internalsdk.db
 
+import com.likeminds.internalsdk.community.model._Community_
+import com.likeminds.internalsdk.db.models.CommunityRO
 import com.likeminds.internalsdk.db.models.SDKClientInfoRO
 import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 
-object ROConvertor {
+object ROConverter {
 
     /**--------------------------------
      * Internal Model -> Db Model
     --------------------------------*/
 
+    //convert _User_ -> UserRO
     fun convertUser(user: _User_?): UserRO? {
         if (user == null) return null
         return UserRO().apply {
@@ -27,6 +30,7 @@ object ROConvertor {
         }
     }
 
+    //convert _SDKClientInfo_ -> SDKClientInfoRO
     private fun convertSDKClientInfo(sdkClientInfo: _SDKClientInfo_?): SDKClientInfoRO? {
         if (sdkClientInfo == null) return null
         return SDKClientInfoRO().apply {
@@ -35,4 +39,18 @@ object ROConvertor {
             userUniqueId = sdkClientInfo.userUniqueId
         }
     }
+
+    //convert _Community_ -> CommunityRO
+    fun convertCommunity(community: _Community_?): CommunityRO? {
+        if (community == null) return null
+        return CommunityRO().apply {
+            id = community.id
+            name = community.name
+            imageUrl = community.imageUrl
+            membersCount = community.membersCount
+            updatedAt = community.updatedAt
+        }
+    }
+
+//    fun convertMember(member_: _Member_):
 }

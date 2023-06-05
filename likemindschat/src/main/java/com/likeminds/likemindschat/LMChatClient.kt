@@ -6,12 +6,23 @@ import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.CommunityClient
 import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
 import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
+import com.likeminds.likemindschat.helper.HelperClient
+import com.likeminds.likemindschat.helper.model.*
+import com.likeminds.likemindschat.homefeed.HomeFeedClient
+import com.likeminds.likemindschat.homefeed.model.ConfigResponse
+import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
-import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
-import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
+import com.likeminds.likemindschat.initiateUser.model.*
+import com.likeminds.likemindschat.moderation.ModerationClient
+import com.likeminds.likemindschat.moderation.model.*
+import com.likeminds.likemindschat.poll.PollClient
+import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
+import com.likeminds.likemindschat.search.SearchClient
+import com.likeminds.likemindschat.search.model.SearchChatroomRequest
+import com.likeminds.likemindschat.search.model.SearchChatroomResponse
+import com.likeminds.likemindschat.search.model.SearchConversationRequest
+import com.likeminds.likemindschat.search.model.SearchConversationResponse
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.User
 import javax.inject.Inject
@@ -24,6 +35,9 @@ class LMChatClient private constructor() {
     lateinit var initiateUserClient: InitiateUserClient
 
     @Inject
+    lateinit var homeFeedClient: HomeFeedClient
+
+    @Inject
     lateinit var userClient: UserClient
 
     @Inject
@@ -31,6 +45,18 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var communityClient: CommunityClient
+
+    @Inject
+    lateinit var moderationClient: ModerationClient
+
+    @Inject
+    lateinit var pollClient: PollClient
+
+    @Inject
+    lateinit var helperClient: HelperClient
+
+    @Inject
+    lateinit var searchClient: SearchClient
 
     class Builder(val application: Application) {
 
@@ -70,6 +96,16 @@ class LMChatClient private constructor() {
     // Exposed function to register device
     suspend fun registerDevice(registerDeviceRequest: RegisterDeviceRequest): LMResponse<Nothing> {
         return initiateUserClient.registerDevice(registerDeviceRequest)
+    }
+
+    // Exposed function to get explore tab count
+    suspend fun getExploreTabCount(): LMResponse<GetExploreTabCountResponse> {
+        return homeFeedClient.getExploreTabCount()
+    }
+
+    // Exposed function to get config details
+    suspend fun getConfig(): LMResponse<ConfigResponse> {
+        return homeFeedClient.getConfig()
     }
 
     // Exposed function to get user from Db
@@ -120,5 +156,55 @@ class LMChatClient private constructor() {
     // Exposed function to get list of participants in chatroom
     suspend fun getExploreFeed(getExploreFeedRequest: GetExploreFeedRequest): LMResponse<GetExploreFeedResponse> {
         return communityClient.getExploreFeed(getExploreFeedRequest)
+    }
+
+    // Exposed function to process request to fetch report tags
+    suspend fun getReportTags(getReportTagsRequest: GetReportTagsRequest): LMResponse<GetReportTagsResponse> {
+        return moderationClient.getReportTags(getReportTagsRequest)
+    }
+
+    // Exposed function to process request to post report on the entity
+    suspend fun postReport(postReportRequest: PostReportRequest): LMResponse<Nothing> {
+        return moderationClient.postReport(postReportRequest)
+    }
+
+    // Exposed function to process request to add poll option in micro poll
+    suspend fun addPollOption(addPollOptionRequest: AddPollOptionRequest): LMResponse<AddPollOptionResponse> {
+        return pollClient.addPollOption(addPollOptionRequest)
+    }
+
+    // Exposed function to process request to submit polls selected
+    suspend fun submitPoll(submitPollRequest: SubmitPollRequest): LMResponse<Nothing> {
+        return pollClient.submitPoll(submitPollRequest)
+    }
+
+    // Exposed function to process request to get users who have voted on that particular poll option
+    suspend fun getPollUsers(getPollUsersRequest: GetPollUsersRequest): LMResponse<GetPollUsersResponse> {
+        return pollClient.getPollUsers(getPollUsersRequest)
+    }
+
+    // Exposed function to post a poll conversation
+    suspend fun postPollConversation(postPollConversationRequest: PostPollConversationRequest): LMResponse<PostPollConversationResponse> {
+        return pollClient.postPollConversation(postPollConversationRequest)
+    }
+
+    // Exposed function to decode url and fetch ogTags
+    suspend fun decodeUrl(decodeUrlRequest: DecodeUrlRequest): LMResponse<DecodeUrlResponse> {
+        return helperClient.decodeUrl(decodeUrlRequest)
+    }
+
+    // Exposed function to fetch tagging list
+    suspend fun getTaggingList(getTaggingListRequest: GetTaggingListRequest): LMResponse<GetTaggingListResponse> {
+        return helperClient.getTaggingList(getTaggingListRequest)
+    }
+
+    // Exposed function to search a chatroom
+    suspend fun searchChatroom(searchChatroomRequest: SearchChatroomRequest): LMResponse<SearchChatroomResponse> {
+        return searchClient.searchChatroom(searchChatroomRequest)
+    }
+
+    // Exposed function to search a conversation
+    suspend fun searchConversation(searchConversationRequest: SearchConversationRequest): LMResponse<SearchConversationResponse> {
+        return searchClient.searchConversation(searchConversationRequest)
     }
 }
