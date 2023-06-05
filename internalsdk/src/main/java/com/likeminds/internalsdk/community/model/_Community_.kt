@@ -12,5 +12,5 @@ data class _Community_(
     @SerializedName("members_count")
     var membersCount: Int?,
     @SerializedName("updated_at")
-    var updatedAt: String?
+    var updatedAt: Long?
 )
