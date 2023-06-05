@@ -37,6 +37,11 @@ class SearchClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request = _SearchChatroomRequest_.Builder()
+            .search(searchChatroomRequest.search)
+            .searchType(searchChatroomRequest.searchType)
+            .followStatus(searchChatroomRequest.followStatus)
+            .page(searchChatroomRequest.page)
+            .pageSize(searchChatroomRequest.pageSize)
             .build()
 
         // calls api and processes the response accordingly
@@ -81,6 +86,10 @@ class SearchClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request = _SearchConversationRequest_.Builder()
+            .search(searchConversationRequest.search)
+            .followStatus(searchConversationRequest.followStatus)
+            .page(searchConversationRequest.page)
+            .pageSize(searchConversationRequest.pageSize)
             .build()
 
         // calls api and processes the response accordingly

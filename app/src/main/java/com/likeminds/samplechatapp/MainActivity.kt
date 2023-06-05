@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.search.model.SearchChatroomRequest
+import com.likeminds.likemindschat.search.model.SearchConversationRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -140,6 +142,45 @@ class MainActivity : AppCompatActivity() {
                 config polls: ${config.data?.enableMicroPolls}
             """.trimIndent()
             )
+
+            val searchChatroomRequest = SearchChatroomRequest.Builder()
+                .search("gen")
+                .searchType("header")
+                .followStatus(true)
+                .page(1)
+                .pageSize(10)
+                .build()
+            val searchChatroomResponse =
+                client.searchChatroom(searchChatroomRequest)
+
+            Log.d(TAG, "searchChatroomResponse:${searchChatroomResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "searchChatroom: ${searchChatroomResponse.data?.chatrooms?.size}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val searchConversationRequest = SearchConversationRequest.Builder()
+                .search("convo")
+                .followStatus(true)
+                .page(1)
+                .pageSize(10)
+                .build()
+            val searchConversationResponse =
+                client.searchConversation(searchConversationRequest)
+
+            Log.d(TAG, "searchConversationResponse:${searchConversationResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "searchConversationResponse: ${searchConversationResponse.data?.conversations?.size}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 }
