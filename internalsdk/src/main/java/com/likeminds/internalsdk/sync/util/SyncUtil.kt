@@ -42,14 +42,15 @@ object SyncUtil {
             //save community
             realm.copyFromRealm(communityRO)
 
-            chatrooms.forEach { chatroom ->
-//                //chatroom creator
-                val creatorId = chatroom.userId
-                val creator = data.userMeta[creatorId.toString()] ?: return@forEach
-                val chatroomCreatorRO =
-                    ROConverter.convertMember(creator, communityId) ?: return@forEach
-                realm.copyFromRealm(chatroomCreatorRO)
-            }
+            // todo:
+//            chatrooms.forEach { chatroom ->
+////                //chatroom creator
+//                val creatorId = chatroom.userId
+//                val creator = data.userMeta[creatorId.toString()] ?: return@forEach
+//                val chatroomCreatorRO =
+//                    ROConverter.convertMember(creator, communityId) ?: return@forEach
+//                realm.copyFromRealm(chatroomCreatorRO)
+//            }
         }
 
 //        realm.write(realm) { realmWrite ->

@@ -1,8 +1,9 @@
 package com.likeminds.internalsdk.db
 
 import com.likeminds.internalsdk.community.model._Community_
-import com.likeminds.internalsdk.community.model._Member_
-import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.db.models.CommunityRO
+import com.likeminds.internalsdk.db.models.SDKClientInfoRO
+import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 
@@ -51,5 +52,5 @@ object ROConverter {
         }
     }
 
-    fun convertMember(member_: _Member_):
+//    fun convertMember(member_: _Member_):
 }
