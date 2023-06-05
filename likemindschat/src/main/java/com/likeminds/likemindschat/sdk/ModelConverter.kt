@@ -472,6 +472,7 @@ object ModelConverter {
         return SearchChatroom(
             convertAttachments(_chatroom_.attachments) ?: listOf(),
             _chatroom_.attendingStatus,
+            convertChatroom(_chatroom_.chatroom),
             convertCommunity(_chatroom_.community),
             _chatroom_.followStatus,
             _chatroom_.id,
@@ -532,6 +533,7 @@ object ModelConverter {
             _conversation_.attachmentCount,
             convertAttachments(_conversation_.attachments) ?: listOf(),
             _conversation_.attachmentsUploaded,
+            convertChatroom(_conversation_.chatroom),
             convertCommunity(_conversation_.community),
             _conversation_.createdAt,
             _conversation_.id,
@@ -639,6 +641,84 @@ object ModelConverter {
             _memberAction_.title,
             _memberAction_.route
         )
+    }
+
+    private fun convertChatroom(
+        _chatroom_: _Chatroom_
+    ): Chatroom {
+        return Chatroom.Builder()
+            .member(convertMember(_chatroom_.member))
+            .id(_chatroom_.id)
+            .title(_chatroom_.title)
+            .createdAt(_chatroom_.createdAt)
+            .answerText(_chatroom_.answerText)
+            .state(_chatroom_.state)
+            .unseenCount(_chatroom_.unseenCount)
+            .shareUrl(_chatroom_.shareUrl)
+            .communityId(_chatroom_.communityId)
+            .communityName(_chatroom_.communityName)
+            .type(_chatroom_.type)
+            .about(_chatroom_.about)
+            .header(_chatroom_.header)
+            .showFollowTelescope(_chatroom_.showFollowTelescope)
+            .showFollowAutoTag(_chatroom_.showFollowAutoTag)
+            .cardCreationTime(_chatroom_.cardCreationTime)
+            .participantsCount(_chatroom_.participantsCount)
+            .totalResponseCount(_chatroom_.totalResponseCount)
+            .muteStatus(_chatroom_.muteStatus)
+            .followStatus(_chatroom_.followStatus)
+            .hasBeenNamed(_chatroom_.hasBeenNamed)
+            .hasReactions(_chatroom_.hasReactions)
+            .date(_chatroom_.date)
+            .isTagged(_chatroom_.isTagged)
+            .isPending(_chatroom_.isPending)
+            .isPinned(_chatroom_.isPinned)
+            .isDeleted(_chatroom_.isDeleted)
+            .userId(_chatroom_.userId)
+            .deletedBy(_chatroom_.deletedBy)
+            .deletedByMember(convertMember(_chatroom_.deletedByMember))
+            .updatedAt(_chatroom_.updatedAt)
+            .lastSeenConversationId(_chatroom_.lastSeenConversationId)
+            .lastConversationId(_chatroom_.lastConversationId)
+            .dateEpoch(_chatroom_.dateEpoch)
+            .isSecret(_chatroom_.isSecret)
+            .secretChatroomParticipants(_chatroom_.secretChatroomParticipants)
+            .secretChatroomLeft(_chatroom_.secretChatroomLeft)
+            .reactions(convertReactions(_chatroom_.reactions))
+            .topicId(_chatroom_.topicId)
+            .topic(_chatroom_.topic?.let {
+                convertConversation(it)
+            })
+            .autoFollowDone(_chatroom_.autoFollowDone)
+            .isEdited(_chatroom_.isEdited)
+            .memberCanMessage(_chatroom_.memberCanMessage)
+            .cohorts(convertCohorts(_chatroom_.cohorts))
+            .externalSeen(_chatroom_.externalSeen)
+            .unreadConversationCount(_chatroom_.unreadConversationCount)
+            .chatroomImageUrl(_chatroom_.chatroomImageUrl)
+            .accessWithoutSubscription(_chatroom_.accessWithoutSubscription)
+            .build()
+    }
+
+    private fun convertCohorts(
+        _cohorts_: List<_Cohort_>?
+    ): List<Cohort>? {
+        return _cohorts_?.map {
+            convertCohort(it)
+        }
+    }
+
+    private fun convertCohort(
+        _cohort_: _Cohort_
+    ): Cohort {
+        return Cohort.Builder()
+            .id(_cohort_.id)
+            .totalMembers(_cohort_.totalMembers)
+            .name(_cohort_.name)
+            .members(_cohort_.members?.let {
+                convertMembers(it)
+            })
+            .build()
     }
 
     private fun convertConversation(

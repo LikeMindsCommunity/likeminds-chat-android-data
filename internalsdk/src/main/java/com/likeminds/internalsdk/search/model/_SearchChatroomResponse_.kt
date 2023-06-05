@@ -1,6 +1,7 @@
 package com.likeminds.internalsdk.search.model
 
 import com.google.gson.annotations.SerializedName
+import com.likeminds.internalsdk.chatroom.model._Chatroom_
 import com.likeminds.internalsdk.community.model._Community_
 import com.likeminds.internalsdk.conversation.model._Attachment_
 
@@ -9,14 +10,13 @@ data class _SearchChatroomResponse_(
     val conversations: List<_SearchChatroom_>
 )
 
-// todo: add chatroom
 data class _SearchChatroom_(
     @SerializedName("attachments")
     val attachments: List<_Attachment_>,
     @SerializedName("attending_status")
     val attendingStatus: Boolean,
-//    @SerializedName("chatroom")
-//    val chatroom: Collabcard,
+    @SerializedName("chatroom")
+    val chatroom: _Chatroom_,
     @SerializedName("community")
     val community: _Community_,
     @SerializedName("follow_status")
