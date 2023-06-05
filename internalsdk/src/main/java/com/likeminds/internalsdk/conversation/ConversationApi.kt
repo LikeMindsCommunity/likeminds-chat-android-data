@@ -4,19 +4,16 @@ import com.likeminds.internalsdk.conversation.model._DeleteReactionRequest_
 import com.likeminds.internalsdk.conversation.model._PutReactionRequest_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
-import retrofit2.http.Body
-import retrofit2.http.HTTP
-import retrofit2.http.PUT
 
-interface ConversationNetworkApi {
+interface ConversationApi {
 
-    @PUT("conversation/reaction")
+    // api to react on a conversation
     suspend fun putReaction(
-        @Body request: _PutReactionRequest_
+        request: _PutReactionRequest_
     ): NetworkResponse<APIResponse<Nothing>>
 
-    @HTTP(method = "DELETE", path = "conversation/reaction", hasBody = true)
+    // api to delete reaction on a conversation
     suspend fun deleteReaction(
-        @Body request: _DeleteReactionRequest_
+        request: _DeleteReactionRequest_
     ): NetworkResponse<APIResponse<Nothing>>
 }

@@ -6,9 +6,17 @@ import com.likeminds.internalsdk.chatroom.ChatroomApi
 import com.likeminds.internalsdk.chatroom.ChatroomApiImpl
 import com.likeminds.internalsdk.community.CommunityApi
 import com.likeminds.internalsdk.community.CommunityApiImpl
-import com.likeminds.internalsdk.db.*
-import com.likeminds.internalsdk.db.models.*
-import com.likeminds.internalsdk.di.*
+import com.likeminds.internalsdk.conversation.ConversationApi
+import com.likeminds.internalsdk.conversation.ConversationApiImpl
+import com.likeminds.internalsdk.db.DB_SCHEMA_NAME
+import com.likeminds.internalsdk.db.DB_SCHEMA_VERSION
+import com.likeminds.internalsdk.db.RealmDBMigration
+import com.likeminds.internalsdk.db.models.AppConfigRO
+import com.likeminds.internalsdk.db.models.SDKClientInfoRO
+import com.likeminds.internalsdk.db.models.UserRO
+import com.likeminds.internalsdk.di.DaggerInternalSDKComponent
+import com.likeminds.internalsdk.di.InternalSDKComponent
+import com.likeminds.internalsdk.di.SDKSharedResources
 import com.likeminds.internalsdk.helper.HelperApi
 import com.likeminds.internalsdk.helper.HelperApiImpl
 import com.likeminds.internalsdk.homefeed.HomeFeedApi
@@ -21,9 +29,9 @@ import com.likeminds.internalsdk.refreshtoken.RefreshTokenApi
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenApiImpl
 import com.likeminds.internalsdk.sdk.SDKApi
 import com.likeminds.internalsdk.sdk.SDKApiImpl
-import com.likeminds.internalsdk.search.SearchApiImpl
 import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.search.SearchApi
+import com.likeminds.internalsdk.search.SearchApiImpl
 import com.likeminds.internalsdk.sync.api.chatroom.ChatroomSyncApi
 import com.likeminds.internalsdk.sync.api.chatroom.ChatroomSyncApiImpl
 import com.likeminds.internalsdk.user.api.UserApi
@@ -32,7 +40,9 @@ import com.likeminds.internalsdk.user.db.UserDB
 import com.likeminds.internalsdk.user.db.UserDbImpl
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -82,6 +92,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var chatroomSyncApiImpl: ChatroomSyncApiImpl
+
+    @Inject
+    lateinit var conversationApiImpl: ConversationApiImpl
 
     @Inject
     lateinit var sdkPreferences: SDKPreferences
@@ -181,5 +194,9 @@ class GroupChatSDK {
 
     fun getChatroomSyncApi(): ChatroomSyncApi {
         return chatroomSyncApiImpl
+    }
+
+    fun getConversationApi(): ConversationApi {
+        return conversationApiImpl
     }
 }

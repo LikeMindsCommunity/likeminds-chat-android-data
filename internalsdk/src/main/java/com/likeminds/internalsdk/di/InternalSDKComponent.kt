@@ -20,7 +20,8 @@ import javax.inject.Singleton
         ModerationModule::class,
         PollModule::class,
         HelperModule::class,
-        SearchModule::class
+        SearchModule::class,
+        ConversationModule::class
     ]
 )
 interface InternalSDKComponent {

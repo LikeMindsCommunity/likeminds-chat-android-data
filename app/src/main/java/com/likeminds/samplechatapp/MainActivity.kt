@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
+import com.likeminds.likemindschat.conversation.model.DeleteReactionRequest
+import com.likeminds.likemindschat.conversation.model.PutReactionRequest
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import com.likeminds.likemindschat.search.model.SearchChatroomRequest
 import com.likeminds.likemindschat.search.model.SearchConversationRequest
@@ -195,6 +197,37 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(
                     this@MainActivity,
                     "getExploreFeedResponse: ${getExploreFeedResponse.data?.pinnedChatroomCount}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val putReactionRequest = PutReactionRequest.Builder()
+                .conversationId("281178")
+                .reaction("❤️")
+                .build()
+            val putReactionResponse = client.putReaction(putReactionRequest)
+
+            Log.d(TAG, "putReactionResponse:${putReactionResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "putReactionResponse: ${putReactionResponse.success}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val deleteReactionRequest = DeleteReactionRequest.Builder()
+                .conversationId("281178")
+                .build()
+            val deleteReactionResponse = client.deleteReaction(deleteReactionRequest)
+
+            Log.d(TAG, "deleteReactionResponse:${deleteReactionResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "deleteReactionResponse: ${deleteReactionResponse.success}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

@@ -5,8 +5,9 @@ import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import javax.inject.Inject
 
-class ChatroomReceiver @Inject constructor(private val chatroomNetworkApi: ChatroomNetworkApi) {
-
+class ChatroomReceiver @Inject constructor(
+    private val chatroomNetworkApi: ChatroomNetworkApi
+) {
     companion object {
         private const val IS_SECRET_KEY = "is_secret"
         private const val CHATROOM_ID_KEY = "chatroom_id"
