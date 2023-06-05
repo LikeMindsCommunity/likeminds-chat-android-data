@@ -7,6 +7,7 @@ import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
 import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
+import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import javax.inject.Inject
 
@@ -47,11 +48,8 @@ class CommunityClient @Inject constructor() : BaseClient() {
                 )
             }
             is NetworkResponse.Success -> {
-                // todo: convert response
                 val body = response.body
-                return LMResponse(
-                    success = response.body.success,
-                )
+                ModelConverter.convertGetExploreFeedResponse(body)
             }
         }
     }

@@ -1,4 +1,8 @@
 package com.likeminds.likemindschat.community.model
 
-class GetExploreFeedResponse {
-}
+import com.likeminds.likemindschat.chatroom.model.Chatroom
+
+data class GetExploreFeedResponse(
+    val chatrooms: List<Chatroom>,
+    val pinnedChatroomCount: Int
+)

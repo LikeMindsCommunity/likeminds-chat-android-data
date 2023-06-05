@@ -20,7 +20,9 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
         val queries = HashMap<String, Any?>()
         // Set query parameters for request
         queries[ORDER_TYPE_KEY] = request.orderType
-        queries[IS_PINNED_KEY] = request.isPinned
+        if (request.isPinned != null) {
+            queries[IS_PINNED_KEY] = request.isPinned
+        }
         queries[PAGE_KEY] = request.page
 
         return communityNetworkApi.getExploreFeed(queries)
