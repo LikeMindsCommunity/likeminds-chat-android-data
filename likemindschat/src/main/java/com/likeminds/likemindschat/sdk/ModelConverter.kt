@@ -458,6 +458,7 @@ object ModelConverter {
         return SearchChatroomResponse(convertSearchChatrooms(_searchChatroomResponse_.conversations))
     }
 
+    // converts internal SearchChatroom model list to client model list
     private fun convertSearchChatrooms(
         _chatrooms_: List<_SearchChatroom_>
     ): List<SearchChatroom> {
@@ -466,6 +467,7 @@ object ModelConverter {
         }
     }
 
+    // converts internal SearchChatroom model to client model
     private fun convertSearchChatroom(
         _chatroom_: _SearchChatroom_
     ): SearchChatroom {
@@ -487,6 +489,7 @@ object ModelConverter {
         )
     }
 
+    // converts internal SearchMember model to client model
     private fun convertSearchMember(
         _searchMember_: _SearchMember_
     ): SearchMember {
@@ -496,7 +499,7 @@ object ModelConverter {
         )
     }
 
-    // converts api SearchChatroomResponse model to LM SearchChatroomResponse model
+    // converts api SearchConversationResponse model to LM SearchConversationResponse model
     fun convertSearchConversationResponse(
         apiResponse: APIResponse<_SearchConversationResponse_>
     ): LMResponse<SearchConversationResponse> {
@@ -507,7 +510,7 @@ object ModelConverter {
         )
     }
 
-    // converts internal SearchChatroomResponse model to client model
+    // converts internal SearchConversationResponse model to client model
     private fun convertSearchConversationResponse(
         _searchConversationResponse_: _SearchConversationResponse_?
     ): SearchConversationResponse? {
@@ -643,6 +646,7 @@ object ModelConverter {
         )
     }
 
+    // converts internal Chatroom model to client model
     private fun convertChatroom(
         _chatroom_: _Chatroom_
     ): Chatroom {
@@ -700,6 +704,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts internal Cohort model list to client model list
     private fun convertCohorts(
         _cohorts_: List<_Cohort_>?
     ): List<Cohort>? {
@@ -708,6 +713,7 @@ object ModelConverter {
         }
     }
 
+    // converts internal Cohort model to client model
     private fun convertCohort(
         _cohort_: _Cohort_
     ): Cohort {
@@ -721,6 +727,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts internal Conversation model to client model
     private fun convertConversation(
         _conversation_: _Conversation_
     ): Conversation {
@@ -766,6 +773,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts internal Attachment model list to client model list
     private fun convertAttachments(
         _attachments_: List<_Attachment_>?
     ): List<Attachment>? {
@@ -775,6 +783,7 @@ object ModelConverter {
         }
     }
 
+    // converts internal Attachment model to client model
     private fun convertAttachment(
         _attachment_: _Attachment_
     ): Attachment {
@@ -799,6 +808,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts internal AttachmentMeta model to client model
     private fun convertAttachmentMeta(
         _attachmentMeta_: _AttachmentMeta_?
     ): AttachmentMeta? {
@@ -810,6 +820,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts internal Reaction model list to client model list
     private fun convertReactions(
         _reactions_: List<_Reaction_>?
     ): List<Reaction>? {
@@ -819,6 +830,7 @@ object ModelConverter {
         }
     }
 
+    // converts internal Reaction model to client model
     private fun convertReaction(
         _reaction_: _Reaction_
     ): Reaction {
@@ -831,6 +843,7 @@ object ModelConverter {
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
+
     // creates internal Poll model list from client model list
     fun createPolls(
         polls: List<Poll>
@@ -1057,6 +1070,7 @@ object ModelConverter {
     /**--------------------------------
      * Db Model -> Client Model
     --------------------------------*/
+
     // converts User db model to client model
     fun convertUser(userRO: UserRO): User {
         return User(
