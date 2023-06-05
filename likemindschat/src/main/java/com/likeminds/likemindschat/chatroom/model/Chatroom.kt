@@ -1,114 +1,64 @@
-package com.likeminds.internalsdk.chatroom.model
+package com.likeminds.likemindschat.chatroom.model
 
-import com.google.gson.annotations.SerializedName
-import com.likeminds.internalsdk.community.model._Member_
-import com.likeminds.internalsdk.conversation.model._Conversation_
-import com.likeminds.internalsdk.conversation.model._Reaction_
+import com.likeminds.likemindschat.community.model.Member
+import com.likeminds.likemindschat.conversation.model.Conversation
+import com.likeminds.likemindschat.conversation.model.Reaction
 
-class _Chatroom_ private constructor(
-    @SerializedName("member")
-    val member: _Member_?,
-    @SerializedName("id")
+class Chatroom private constructor(
+    val member: Member?,
     val id: String,
-    @SerializedName("title")
     val title: String,
-    @SerializedName("created_at")
     val createdAt: String?,
-    @SerializedName("answer_text")
     val answerText: String?,
-    @SerializedName("state")
     val state: Int,
-    @SerializedName("unseen_count")
     val unseenCount: Int?,
-    @SerializedName("share_url")
     val shareUrl: String?,
-    @SerializedName("community_id")
     val communityId: String?,
-    @SerializedName("community_name")
     val communityName: String?,
-    @SerializedName("type")
     val type: Int?,
-    @SerializedName("about")
     val about: String?,
-    @SerializedName("header")
     val header: String?,
-    @SerializedName("show_follow_telescope")
     val showFollowTelescope: Boolean?,
-    @SerializedName("show_follow_auto_tag")
     val showFollowAutoTag: Boolean?,
-    @SerializedName("card_creation_time")
     val cardCreationTime: String?,
-    @SerializedName("participants_count")
     val participantsCount: String?,
-    @SerializedName("total_response_count")
     val totalResponseCount: String?,
-    @SerializedName("mute_status")
     val muteStatus: Boolean?,
-    @SerializedName("follow_status")
     val followStatus: Boolean?,
-    @SerializedName("has_been_named")
     val hasBeenNamed: Boolean?,
-    @SerializedName("has_reactions")
     val hasReactions: Boolean?,
-    @SerializedName("date")
     val date: String?,
-    @SerializedName("is_tagged")
     val isTagged: Boolean?,
-    @SerializedName("is_pending")
     val isPending: Boolean?,
-    @SerializedName("is_pinned")
     val isPinned: Boolean?,
-    @SerializedName("is_deleted")
     val isDeleted: Boolean?,
-    @SerializedName("member_id", alternate = ["user_id"])
     val userId: String?,
-    @SerializedName("deleted_by", alternate = ["deleted_by_user_id"])
     val deletedBy: String?,
-    @SerializedName("deleted_by_member")
-    val deletedByMember: _Member_?,
-    @SerializedName("updated_at")
+    val deletedByMember: Member?,
     val updatedAt: Long?,
-    @SerializedName("last_seen_conversation", alternate = ["last_seen_conversation_id"])
     val lastSeenConversationId: String?,
-    @SerializedName("last_conversation_id")
     val lastConversationId: String?,
-    @SerializedName("date_epoch")
     val dateEpoch: Long?,
-    @SerializedName("is_secret")
     val isSecret: Boolean?,
-    @SerializedName("secret_chatroom_participants")
     val secretChatroomParticipants: List<Int>?,
-    @SerializedName("secret_chatroom_left")
     val secretChatroomLeft: Boolean?,
-    @SerializedName("reactions")
-    val reactions: List<_Reaction_>?,
-    @SerializedName("topic_id")
+    val reactions: List<Reaction>?,
     val topicId: String?,
-    @SerializedName("topic")
-    val topic: _Conversation_?,
-    @SerializedName("auto_follow_done")
+    val topic: Conversation?,
     val autoFollowDone: Boolean?,
-    @SerializedName("is_edited")
     val isEdited: Boolean?,
-    @SerializedName("access")
     val access: Int?,
-    @SerializedName("member_can_message")
     val memberCanMessage: Boolean?,
-    @SerializedName("cohorts")
-    val cohorts: List<_Cohort_>?,
-    @SerializedName("external_seen")
+    val cohorts: List<Cohort>?,
     val externalSeen: Boolean?,
-    @SerializedName(value = "unread_messages", alternate = ["conversations_unread"])
     val unreadConversationCount: Int?,
-    @SerializedName("chatroom_image_url")
     val chatroomImageUrl: String?,
-    @SerializedName("access_without_subscription")
     val accessWithoutSubscription: Boolean?
 ) {
 
     class Builder {
 
-        private var member: _Member_? = null
+        private var member: Member? = null
         private var id: String = ""
         private var title: String = ""
         private var createdAt: String? = null
@@ -137,7 +87,7 @@ class _Chatroom_ private constructor(
         private var isDeleted: Boolean? = null
         private var userId: String? = null
         private var deletedBy: String? = null
-        private var deletedByMember: _Member_? = null
+        private var deletedByMember: Member? = null
         private var updatedAt: Long? = null
         private var lastSeenConversationId: String? = null
         private var lastConversationId: String? = null
@@ -145,20 +95,20 @@ class _Chatroom_ private constructor(
         private var isSecret: Boolean? = null
         private var secretChatroomParticipants: List<Int>? = null
         private var secretChatroomLeft: Boolean? = null
-        private var reactions: List<_Reaction_>? = null
+        private var reactions: List<Reaction>? = null
         private var topicId: String? = null
-        private var topic: _Conversation_? = null
+        private var topic: Conversation? = null
         private var autoFollowDone: Boolean? = null
         private var isEdited: Boolean? = null
         private var access: Int? = null
         private var memberCanMessage: Boolean? = null
-        private var cohorts: List<_Cohort_>? = null
+        private var cohorts: List<Cohort>? = null
         private var externalSeen: Boolean? = null
         private var unreadConversationCount: Int? = null
         private var chatroomImageUrl: String? = null
         private var accessWithoutSubscription: Boolean? = null
 
-        fun member(member: _Member_?) = apply { this.member = member }
+        fun member(member: Member?) = apply { this.member = member }
         fun id(id: String) = apply { this.id = id }
         fun title(title: String) = apply { this.title = title }
         fun createdAt(createdAt: String?) = apply { this.createdAt = createdAt }
@@ -197,7 +147,7 @@ class _Chatroom_ private constructor(
         fun isDeleted(isDeleted: Boolean?) = apply { this.isDeleted = isDeleted }
         fun userId(userId: String?) = apply { this.userId = userId }
         fun deletedBy(deletedBy: String?) = apply { this.deletedBy = deletedBy }
-        fun deletedByMember(deletedByMember: _Member_?) =
+        fun deletedByMember(deletedByMember: Member?) =
             apply { this.deletedByMember = deletedByMember }
 
         fun updatedAt(updatedAt: Long?) = apply { this.updatedAt = updatedAt }
@@ -215,9 +165,9 @@ class _Chatroom_ private constructor(
         fun secretChatroomLeft(secretChatroomLeft: Boolean?) =
             apply { this.secretChatroomLeft = secretChatroomLeft }
 
-        fun reactions(reactions: List<_Reaction_>?) = apply { this.reactions = reactions }
+        fun reactions(reactions: List<Reaction>?) = apply { this.reactions = reactions }
         fun topicId(topicId: String?) = apply { this.topicId = topicId }
-        fun topic(topic: _Conversation_?) = apply { this.topic = topic }
+        fun topic(topic: Conversation?) = apply { this.topic = topic }
         fun autoFollowDone(autoFollowDone: Boolean?) =
             apply { this.autoFollowDone = autoFollowDone }
 
@@ -226,7 +176,7 @@ class _Chatroom_ private constructor(
         fun memberCanMessage(memberCanMessage: Boolean?) =
             apply { this.memberCanMessage = memberCanMessage }
 
-        fun cohorts(cohorts: List<_Cohort_>?) = apply { this.cohorts = cohorts }
+        fun cohorts(cohorts: List<Cohort>?) = apply { this.cohorts = cohorts }
         fun externalSeen(externalSeen: Boolean?) = apply { this.externalSeen = externalSeen }
         fun unreadConversationCount(unreadConversationCount: Int?) =
             apply { this.unreadConversationCount = unreadConversationCount }
@@ -237,7 +187,7 @@ class _Chatroom_ private constructor(
         fun accessWithoutSubscription(accessWithoutSubscription: Boolean?) =
             apply { this.accessWithoutSubscription = accessWithoutSubscription }
 
-        fun build() = _Chatroom_(
+        fun build() = Chatroom(
             member,
             id,
             title,

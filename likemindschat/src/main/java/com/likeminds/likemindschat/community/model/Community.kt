@@ -5,5 +5,5 @@ data class Community(
     var name: String,
     var imageUrl: String?,
     var membersCount: Int?,
-    var updatedAt: String?
+    var updatedAt: Long?
 )

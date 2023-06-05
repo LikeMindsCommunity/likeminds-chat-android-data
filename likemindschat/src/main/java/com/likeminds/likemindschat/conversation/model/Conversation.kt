@@ -17,7 +17,7 @@ class Conversation private constructor(
     val date: String?,
     val isEdited: Boolean?,
     val memberId: String?,
-    val replyConversation: String?,
+    val replyConversationId: String?,
     val deletedBy: String?,
     val createdEpoch: Long?,
     val attachmentCount: Int?,
@@ -37,15 +37,12 @@ class Conversation private constructor(
     val polls: List<Poll>?,
     val toShowResults: Boolean?,
     val pollAnswerText: String?,
-    val replyChatroomId: String?
+    val replyChatroomId: String?,
+    val deviceId: String?,
+    val hasFiles: Boolean?,
+    val hasReactions: Boolean?,
+    val lastUpdated: Long?,
 ) {
-    fun hasAttachments(): Boolean {
-        return attachmentCount != null && attachmentCount > 0
-    }
-
-    fun hasReactions(): Boolean {
-        return !reactions.isNullOrEmpty()
-    }
 
     class Builder {
         private var id: String? = ""
@@ -61,7 +58,7 @@ class Conversation private constructor(
         private var date: String? = null
         private var isEdited: Boolean? = null
         private var memberId: String? = null
-        private var replyConversation: String? = null
+        private var replyConversationId: String? = null
         private var deletedBy: String? = null
         private var createdEpoch: Long? = null
         private var attachmentCount: Int? = null
@@ -82,6 +79,10 @@ class Conversation private constructor(
         private var toShowResults: Boolean? = null
         private var pollAnswerText: String? = null
         private var replyChatroomId: String? = null
+        private var deviceId: String? = null
+        private var hasFiles: Boolean? = false
+        private var hasReactions: Boolean? = false
+        private var lastUpdated: Long? = null
 
         fun id(id: String?) = apply { this.id = id }
         fun chatroomId(chatroomId: String?) = apply { this.chatroomId = chatroomId }
@@ -96,8 +97,8 @@ class Conversation private constructor(
         fun date(date: String?) = apply { this.date = date }
         fun isEdited(isEdited: Boolean?) = apply { this.isEdited = isEdited }
         fun memberId(memberId: String?) = apply { this.memberId = memberId }
-        fun replyConversation(replyConversation: String?) =
-            apply { this.replyConversation = replyConversation }
+        fun replyConversationId(replyConversationId: String?) =
+            apply { this.replyConversationId = replyConversationId }
 
         fun deletedBy(deletedBy: String?) = apply { this.deletedBy = deletedBy }
         fun createdEpoch(createdEpoch: Long?) = apply { this.createdEpoch = createdEpoch }
@@ -135,6 +136,10 @@ class Conversation private constructor(
         fun replyChatroomId(replyChatroomId: String?) =
             apply { this.replyChatroomId = replyChatroomId }
 
+        fun deviceId(deviceId: String?) = apply { this.deviceId = deviceId }
+        fun hasFiles(hasFiles: Boolean?) = apply { this.hasFiles = hasFiles }
+        fun hasReactions(hasReactions: Boolean?) = apply { this.hasReactions = hasReactions }
+        fun lastUpdated(lastUpdated: Long?) = apply { this.lastUpdated = lastUpdated }
         fun build() = Conversation(
             id,
             chatroomId,
@@ -149,7 +154,7 @@ class Conversation private constructor(
             date,
             isEdited,
             memberId,
-            replyConversation,
+            replyConversationId,
             deletedBy,
             createdEpoch,
             attachmentCount,
@@ -169,7 +174,11 @@ class Conversation private constructor(
             polls,
             toShowResults,
             pollAnswerText,
-            replyChatroomId
+            replyChatroomId,
+            deviceId,
+            hasFiles,
+            hasReactions,
+            lastUpdated
         )
     }
 
@@ -187,7 +196,7 @@ class Conversation private constructor(
             .date(date)
             .isEdited(isEdited)
             .memberId(memberId)
-            .replyConversation(replyConversation)
+            .replyConversationId(replyConversationId)
             .deletedBy(deletedBy)
             .createdEpoch(createdEpoch)
             .attachmentCount(attachmentCount)
@@ -208,5 +217,9 @@ class Conversation private constructor(
             .toShowResults(toShowResults)
             .pollAnswerText(pollAnswerText)
             .replyChatroomId(replyChatroomId)
+            .deviceId(deviceId)
+            .hasFiles(hasFiles)
+            .hasReactions(hasReactions)
+            .lastUpdated(lastUpdated)
     }
 }

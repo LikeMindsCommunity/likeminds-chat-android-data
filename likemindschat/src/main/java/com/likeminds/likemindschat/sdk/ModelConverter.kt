@@ -1,47 +1,29 @@
 package com.likeminds.likemindschat.sdk
 
 import com.likeminds.internalsdk.chatroom.model.*
-import com.likeminds.internalsdk.community.model._Community_
-import com.likeminds.internalsdk.homefeed.model.*
-import com.likeminds.internalsdk.community.model._MemberAction_
-import com.likeminds.internalsdk.community.model._Member_
-import com.likeminds.internalsdk.community.model._Question_
+import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.SDKClientInfoRO
 import com.likeminds.internalsdk.db.models.UserRO
-import com.likeminds.internalsdk.helper.model._DecodeUrlResponse_
-import com.likeminds.internalsdk.helper.model._GetTaggingListResponse_
-import com.likeminds.internalsdk.helper.model._GroupTag_
-import com.likeminds.internalsdk.helper.model._UserTag_
+import com.likeminds.internalsdk.helper.model.*
+import com.likeminds.internalsdk.homefeed.model.*
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
 import com.likeminds.internalsdk.moderation.model._ReportTag_
-import com.likeminds.internalsdk.poll.model._AddPollOptionResponse_
-import com.likeminds.internalsdk.poll.model._GetPollUsersResponse_
-import com.likeminds.internalsdk.poll.model._Poll_
-import com.likeminds.internalsdk.poll.model._PostPollConversationResponse_
+import com.likeminds.internalsdk.poll.model.*
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
-import com.likeminds.likemindschat.community.model.Community
-import com.likeminds.likemindschat.homefeed.model.*
-import com.likeminds.likemindschat.community.model.Member
-import com.likeminds.likemindschat.community.model.MemberAction
-import com.likeminds.likemindschat.community.model.Question
+import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.model.*
-import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
-import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
-import com.likeminds.likemindschat.helper.model.GroupTag
-import com.likeminds.likemindschat.helper.model.UserTag
+import com.likeminds.likemindschat.helper.model.*
+import com.likeminds.likemindschat.homefeed.model.*
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
-import com.likeminds.likemindschat.poll.model.AddPollOptionResponse
-import com.likeminds.likemindschat.poll.model.GetPollUsersResponse
-import com.likeminds.likemindschat.poll.model.Poll
-import com.likeminds.likemindschat.poll.model.PostPollConversationResponse
+import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.user.model.SDKClientInfo
 import com.likeminds.likemindschat.user.model.User
 
@@ -50,7 +32,6 @@ object ModelConverter {
     /**--------------------------------
      * Internal Model -> Client Model
     --------------------------------*/
-
     // converts api InitiateUserResponse model to LM InitiateUserResponse model
     fun convertInitiateUserResponse(
         apiResponse: APIResponse<_InitiateUserResponse_>
@@ -546,7 +527,7 @@ object ModelConverter {
             .date(_conversation_.date)
             .isEdited(_conversation_.isEdited)
             .memberId(_conversation_.memberId)
-            .replyConversation(_conversation_.replyConversation)
+            .replyConversationId(_conversation_.replyConversationId)
             .deletedBy(_conversation_.deletedBy)
             .createdEpoch(_conversation_.createdEpoch)
             .attachmentCount(_conversation_.attachmentCount)
@@ -567,6 +548,10 @@ object ModelConverter {
             .toShowResults(_conversation_.toShowResults)
             .pollAnswerText(_conversation_.pollAnswerText)
             .replyChatroomId(_conversation_.replyChatroomId)
+            .deviceId(_conversation_.deviceId)
+            .hasFiles(_conversation_.hasFiles)
+            .hasReactions(_conversation_.hasReactions)
+            .lastUpdated(_conversation_.lastUpdated)
             .build()
     }
 
@@ -635,7 +620,6 @@ object ModelConverter {
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
-
     // creates internal Poll model list from client model list
     fun createPolls(
         polls: List<Poll>
@@ -862,7 +846,6 @@ object ModelConverter {
     /**--------------------------------
      * Db Model -> Client Model
     --------------------------------*/
-
     // converts User db model to client model
     fun convertUser(userRO: UserRO): User {
         return User(

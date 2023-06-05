@@ -1,17 +1,14 @@
 package com.likeminds.likemindschat.initiateUser
 
 import com.likeminds.internalsdk.ChatTokenManager
-import com.likeminds.internalsdk.db.ROConvertor
+import com.likeminds.internalsdk.db.ROConverter
 import com.likeminds.internalsdk.sdk.model._InitiateUserRequest_
 import com.likeminds.internalsdk.user.model._LogoutRequest_
 import com.likeminds.internalsdk.user.model._RegisterDeviceRequest_
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
-import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
-import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
+import com.likeminds.likemindschat.initiateUser.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -23,15 +20,22 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
         LikeMindsChatApplication.getInstance().initiateUserComponent()?.inject(this)
     }
 
+    private val sdkPreferences by lazy {
+        groupChatSDK.getSDKPreferences()
+    }
+
     private val sdkApi by lazy {
         groupChatSDK.getSDKApi()
     }
+
     private val refreshTokenApi by lazy {
         groupChatSDK.getRefreshTokenApi()
     }
+
     private val userApi by lazy {
         groupChatSDK.getUserApi()
     }
+
     private val userDb by lazy {
         groupChatSDK.getUserDb()
     }
@@ -69,8 +73,12 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
                 val body = response.body
                 val accessToken = body.data?.accessToken ?: ""
                 val refreshToken = body.data?.refreshToken ?: ""
+                val communityId = body.data?.community?.id ?: ""
+
                 val chatTokenManager = ChatTokenManager.getInstance()
                 chatTokenManager.updateTokens(accessToken, refreshToken)
+
+                sdkPreferences.setCommunityId(communityId)
 
                 if (body.data?.appAccess == false) {
                     // logout the user if app access is false
@@ -88,7 +96,7 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
                         )
                     )
                 } else {
-                    val userRO = ROConvertor.convertUser(body.data?.user)
+                    val userRO = ROConverter.convertUser(body.data?.user)
                     userRO?.let {
                         userDb.saveUser(it)
                     }
@@ -167,13 +175,11 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
         //validate request
         RequestUtils.validate()
         validateRegisterDeviceRequest(registerDeviceRequest)
-
         //build internal request model
         val request = _RegisterDeviceRequest_.Builder()
             .token(registerDeviceRequest.token)
             .deviceId(registerDeviceRequest.deviceId)
             .build()
-
         //call api and process the response accordingly
         return when (val response = userApi.registerDevice(request)) {
             is NetworkResponse.Error -> {
@@ -182,6 +188,7 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
                 LMResponse(success = response.body.success)
             }
