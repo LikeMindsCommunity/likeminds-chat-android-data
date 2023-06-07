@@ -1,5 +1,6 @@
 package com.likeminds.internalsdk.db
 
+import com.likeminds.internalsdk.chatroom.model._Chatroom_
 import com.likeminds.internalsdk.community.model._Community_
 import com.likeminds.internalsdk.community.model._Member_
 import com.likeminds.internalsdk.conversation.model.*
@@ -20,6 +21,212 @@ object ROConverter {
      * Internal Model -> Db Model
     --------------------------------*/
 
+    /**
+     * convert [_Community_] to [CommunityRO]
+     */
+    fun convertCommunity(community: _Community_?): CommunityRO? {
+        if (community == null) return null
+        return CommunityRO().apply {
+            id = community.id
+            name = community.name
+            imageUrl = community.imageUrl
+            membersCount = community.membersCount
+            updatedAt = community.updatedAt
+        }
+    }
+
+    /**
+     * convert [_Chatroom_] to [ChatroomRO] from new sync workers
+     * @param realm: instance of realm
+     * @param chatroom: Chatroom object to converted
+     * @param chatroomCreatorRO: [MemberRO] object of chatroom's creator
+     * @param lastConversationRO: [LastConversationRO] object of the last conversation
+     * @param reactions: [List<ReactionMeta>] list of reactions
+     * */
+    fun convertChatroom(
+        realm: Realm,
+        chatroom: _Chatroom_?,
+        chatroomCreatorRO: MemberRO,
+        lastConversationRO: LastConversationRO? = null,
+        reactions: List<_ReactionMeta_> = emptyList()
+    ): ChatroomRO? {
+        if (chatroom == null) return null
+
+        val chatroomId = chatroom.id
+        val communityId = chatroom.communityId ?: ""
+
+        val savedChatroom = ChatDBUtil.getChatroom(realm, chatroomId)
+        val reactionsRO = convertReactionsMeta(realm, communityId, reactions)
+
+        return ChatroomRO().apply {
+            this.id = chatroomId
+            this.communityId = communityId
+            title = chatroom.title
+            state = chatroom.state
+            member = chatroomCreatorRO
+            createdAt = chatroom.createdAt
+            type = chatroom.type
+            chatroomImageUrl = chatroom.chatroomImageUrl
+            header = chatroom.header
+            cardCreationTime = chatroom.cardCreationTime
+            totalResponseCount = savedChatroom?.totalResponseCount ?: 0
+            totalAllResponseCount = savedChatroom?.totalResponseCount ?: 0
+            muteStatus = chatroom.muteStatus
+            followStatus = chatroom.followStatus
+            hasBeenNamed = chatroom.hasBeenNamed
+            date = chatroom.date
+            isTagged = chatroom.isTagged
+            isPending = chatroom.isPending
+            deletedBy = chatroom.deletedBy
+            autoFollowDone = chatroom.autoFollowDone
+            memberCanMessage = chatroom.memberCanMessage
+            isEdited = chatroom.isEdited
+            externalSeen = chatroom.externalSeen
+            accessWithoutSubscription = chatroom.accessWithoutSubscription
+            unreadConversationsCount = chatroom.unreadConversationCount
+
+            this.reactions = reactionsRO
+
+            val updatedAt = lastConversationRO?.createdEpoch
+                ?: savedChatroom?.lastConversationRO?.createdEpoch
+                ?: chatroom.createdAt
+
+            this.updatedAt = updatedAt
+
+            lastSeenConversationId = chatroom.lastSeenConversationId
+            lastSeenConversation = savedChatroom?.lastSeenConversation
+            lastConversation = savedChatroom?.lastConversation
+            this.lastConversationRO = lastConversationRO ?: savedChatroom?.lastConversationRO
+
+            unseenCount = chatroom.unseenCount ?: 0
+            dateEpoch = chatroom.dateEpoch
+            draftConversation = savedChatroom?.draftConversation //to maintain un-send conversation
+            isSecret = chatroom.isSecret
+            secretChatRoomParticipants = chatroom.secretChatroomParticipants.toRealmList()
+            secretChatRoomLeft = chatroom.secretChatroomLeft
+            topicId = chatroom.topicId ?: savedChatroom?.topicId
+            topic = savedChatroom?.topic
+        }
+    }
+
+    /**
+     * convert [_Conversation_] to [ConversationRO] from new sync workers
+     * @param realm: instance of realm
+     * @param conversation: Conversation object to converted
+     * @param creator: [MemberRO] object of conversation's creator
+     * @param polls: [List<Poll>] list of polls
+     * @param attachments: [List<CollabcardAttachment>] list of attachments
+     * @param reactions: [List<ReactionMeta>] list of reactions
+     * */
+    fun convertConversation(
+        realm: Realm,
+        conversation: _Conversation_?,
+        creator: MemberRO?,
+        polls: List<_Poll_>?,
+        attachments: List<_Attachment_>?,
+        reactions: List<_ReactionMeta_>? = null,
+        loggedInMemberId: String? = null
+    ): ConversationRO? {
+        if (conversation == null || creator == null) return null
+        val chatroomId = conversation.chatroomId ?: return null
+        val communityId = conversation.communityId ?: return null
+
+        var createdEpoch = conversation.createdEpoch ?: 0L
+        createdEpoch = if (TimeUtil.isInMillis(createdEpoch)) {
+            createdEpoch
+        } else {
+            createdEpoch * 1000
+        }
+
+        //get existing conversation from db to update the existing values
+        val savedAnswer =
+            if (conversation.hasReactions == true ||
+                _ConversationState_.isPoll(conversation.state) ||
+                ((conversation.attachmentCount ?: 0) > 0) ||
+                conversation.replyConversationId != null
+            ) {
+                ChatDBUtil.getConversation(realm, conversation.id.toString())
+            } else {
+                null
+            }
+        //get attachments as per saved and new conversation
+        val updatedAttachments = convertUpdatedAttachments(
+            chatroomId,
+            communityId,
+            attachments,
+            savedAnswer?.attachments
+        )
+
+        //get replied conversation
+        val replyConversation = if (conversation.replyConversationId != null) {
+            savedAnswer?.replyConversation ?: ChatDBUtil.getConversation(
+                realm,
+                conversation.replyConversationId
+            )
+        } else {
+            null
+        }
+
+        //convert polls to pollsRO
+        val pollsRO = convertPolls(realm, polls?.toMutableList(), communityId)
+
+        //convert reaction to reactionRO
+        val reactionsRO = convertReactionsMeta(realm, communityId, reactions)
+
+        val linkRO = convertLink(chatroomId, communityId, conversation.ogTags)
+
+        //Clear embedded object list if already present else calling insertToRealmOrUpdate will duplicate it
+        savedAnswer?.attachments?.clear()
+        savedAnswer?.reactions?.clear()
+        savedAnswer?.polls?.clear()
+
+        return ConversationRO().apply {
+            this.id = conversation.id.toString()
+            this.chatroomId = chatroomId
+            this.communityId = communityId
+            member = creator
+            answer = conversation.answer
+            state = conversation.state
+            this.createdEpoch = createdEpoch
+            this.createdAt = conversation.createdAt
+            lastUpdatedAt = conversation.lastUpdated ?: 0L
+            date = conversation.date
+            isEdited = conversation.isEdited
+
+            replyChatRoomId = conversation.replyChatroomId
+            replyConversationId = conversation.replyConversationId
+            this.replyConversation = replyConversation
+
+            deletedBy = conversation.deletedBy
+            attachmentCount = conversation.attachmentCount
+            attachmentsUploaded = conversation.attachmentUploaded
+            uploadWorkerUUID = savedAnswer?.uploadWorkerUUID
+            this.attachments = updatedAttachments
+            this.link = linkRO
+
+            localSavedEpoch = conversation.localCreatedEpoch ?: 0L
+            temporaryId = if (creator.id == loggedInMemberId) {
+                conversation.temporaryId
+            } else {
+                null
+            }
+
+            this.reactions = reactionsRO
+
+            isAnonymous = conversation.isAnonymous
+            allowAddOption = conversation.allowAddOption
+            pollType = conversation.pollType
+            pollTypeText = conversation.pollTypeText
+            submitTypeText = conversation.submitTypeText
+            expiryTime = conversation.expiryTime
+            multipleSelectNum = conversation.multipleSelectNum
+            multipleSelectState = conversation.multipleSelectState
+            this.polls = pollsRO
+            toShowResults = conversation.toShowResults
+            pollAnswerText = conversation.pollAnswerText
+        }
+    }
+
     //convert _User_ -> UserRO
     fun convertUser(user: _User_?): UserRO? {
         if (user == null) return null
@@ -34,30 +241,6 @@ object ROConverter {
             sdkClientInfoRO = convertSDKClientInfo(user.sdkClientInfo)
             isDeleted = user.isDeleted
             customTitle = user.customTitle
-        }
-    }
-
-    //convert _SDKClientInfo_ -> SDKClientInfoRO
-    private fun convertSDKClientInfo(sdkClientInfo: _SDKClientInfo_?): SDKClientInfoRO? {
-        if (sdkClientInfo == null) return null
-        return SDKClientInfoRO().apply {
-            community = sdkClientInfo.community
-            user = sdkClientInfo.user
-            userUniqueId = sdkClientInfo.userUniqueId
-        }
-    }
-
-    /**
-     * convert [_Community_] to [CommunityRO]
-     */
-    fun convertCommunity(community: _Community_?): CommunityRO? {
-        if (community == null) return null
-        return CommunityRO().apply {
-            id = community.id
-            name = community.name
-            imageUrl = community.imageUrl
-            membersCount = community.membersCount
-            updatedAt = community.updatedAt
         }
     }
 
@@ -89,6 +272,16 @@ object ROConverter {
             isOwner = member.isOwner
             isGuest = member.isGuest
             userUniqueId = member.userUniqueId
+        }
+    }
+
+    //convert _SDKClientInfo_ -> SDKClientInfoRO
+    private fun convertSDKClientInfo(sdkClientInfo: _SDKClientInfo_?): SDKClientInfoRO? {
+        if (sdkClientInfo == null) return null
+        return SDKClientInfoRO().apply {
+            community = sdkClientInfo.community
+            user = sdkClientInfo.user
+            userUniqueId = sdkClientInfo.userUniqueId
         }
     }
 
@@ -288,124 +481,6 @@ object ROConverter {
             metaRO = convertAttachmentMeta(attachment.metaRO)
             createdAt = attachment.createdAt
             updatedAt = attachment.updatedAt
-        }
-    }
-
-    /**
-     * convert [Conversation] to [CollabcardAnswerRO] from new sync workers
-     * @param realm: instance of realm
-     * @param conversation: Conversation object to converted
-     * @param creator: [MemberRO] object of conversation's creator
-     * @param polls: [List<Poll>] list of polls
-     * @param attachments: [List<CollabcardAttachment>] list of attachments
-     * @param reactions: [List<ReactionMeta>] list of reactions
-     * */
-    fun convertConversation(
-        realm: Realm,
-        conversation: _Conversation_?,
-        creator: MemberRO?,
-        polls: List<_Poll_>?,
-        attachments: List<_Attachment_>?,
-        reactions: List<_ReactionMeta_>? = null,
-        loggedInMemberId: String? = null
-    ): ConversationRO? {
-        if (conversation == null || creator == null) return null
-        val chatroomId = conversation.chatroomId ?: return null
-        val communityId = conversation.communityId ?: return null
-
-        var createdEpoch = conversation.createdEpoch ?: 0L
-        createdEpoch = if (TimeUtil.isInMillis(createdEpoch)) {
-            createdEpoch
-        } else {
-            createdEpoch * 1000
-        }
-
-        //get existing conversation from db to update the existing values
-        val savedAnswer =
-            if (conversation.hasReactions == true ||
-                _ConversationState_.isPoll(conversation.state) ||
-                ((conversation.attachmentCount ?: 0) > 0) ||
-                conversation.replyConversationId != null
-            ) {
-                ChatDBUtil.getConversation(realm, conversation.id.toString())
-            } else {
-                null
-            }
-        //get attachments as per saved and new conversation
-        val updatedAttachments = convertUpdatedAttachments(
-            chatroomId,
-            communityId,
-            attachments,
-            savedAnswer?.attachments
-        )
-
-        //get replied conversation
-        val replyConversation = if (conversation.replyConversationId != null) {
-            savedAnswer?.replyConversation ?: ChatDBUtil.getConversation(
-                realm,
-                conversation.replyConversationId
-            )
-        } else {
-            null
-        }
-
-        //convert polls to pollsRO
-        val pollsRO = convertPolls(realm, polls?.toMutableList(), communityId)
-
-        //convert reaction to reactionRO
-        val reactionsRO = convertReactionsMeta(realm, communityId, reactions)
-
-        val linkRO = convertLink(chatroomId, communityId, conversation.ogTags)
-
-        //Clear embedded object list if already present else calling insertToRealmOrUpdate will duplicate it
-        savedAnswer?.attachments?.clear()
-        savedAnswer?.reactions?.clear()
-        savedAnswer?.polls?.clear()
-
-        return ConversationRO().apply {
-            this.id = conversation.id.toString()
-            this.chatroomId = chatroomId
-            this.communityId = communityId
-            member = creator
-            answer = conversation.answer
-            state = conversation.state
-            this.createdEpoch = createdEpoch
-            this.createdAt = conversation.createdAt
-            lastUpdatedAt = conversation.lastUpdated ?: 0L
-            date = conversation.date
-            isEdited = conversation.isEdited
-
-            replyChatRoomId = conversation.replyChatroomId
-            replyConversationId = conversation.replyConversationId
-            this.replyConversation = replyConversation
-
-            deletedBy = conversation.deletedBy
-            attachmentCount = conversation.attachmentCount
-            attachmentsUploaded = conversation.attachmentUploaded
-            uploadWorkerUUID = savedAnswer?.uploadWorkerUUID
-            this.attachments = updatedAttachments
-            this.link = linkRO
-
-            localSavedEpoch = conversation.localCreatedEpoch ?: 0L
-            temporaryId = if (creator.id == loggedInMemberId) {
-                conversation.temporaryId
-            } else {
-                null
-            }
-
-            this.reactions = reactionsRO
-
-            isAnonymous = conversation.isAnonymous
-            allowAddOption = conversation.allowAddOption
-            pollType = conversation.pollType
-            pollTypeText = conversation.pollTypeText
-            submitTypeText = conversation.submitTypeText
-            expiryTime = conversation.expiryTime
-            multipleSelectNum = conversation.multipleSelectNum
-            multipleSelectState = conversation.multipleSelectState
-            this.polls = pollsRO
-            toShowResults = conversation.toShowResults
-            pollAnswerText = conversation.pollAnswerText
         }
     }
 

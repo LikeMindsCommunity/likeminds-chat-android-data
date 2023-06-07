@@ -198,13 +198,13 @@ object SyncUtil {
 
             //convert chatroom
             val chatroomRO = ROConverter.convertChatroom(
-                realmWrite,
+                realm,
                 chatroom,
                 chatroomCreatorRO,
                 lastConversationRO
             ) ?: return@forEach
             chatroomRO.relationshipNeeded = true
-            realmWrite.insertOrUpdate(chatroomRO)
+            ChatDBUtil.insertOrUpdate(realm, chatroomRO)
         }
     }
 }

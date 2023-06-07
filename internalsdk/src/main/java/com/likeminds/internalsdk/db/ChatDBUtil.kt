@@ -1,8 +1,7 @@
 package com.likeminds.internalsdk.db
 
 import android.util.Log
-import com.likeminds.internalsdk.db.models.ConversationRO
-import com.likeminds.internalsdk.db.models.MemberRO
+import com.likeminds.internalsdk.db.models.*
 import io.realm.kotlin.Realm
 import io.realm.kotlin.UpdatePolicy
 import io.realm.kotlin.types.RealmObject
@@ -13,6 +12,13 @@ object ChatDBUtil {
         realm.write {
             copyToRealm(roObject, updatePolicy = UpdatePolicy.ALL)
         }
+    }
+
+    fun getChatroom(realm: Realm, chatroomId: String?): ChatroomRO? {
+        if (chatroomId == null) {
+            return null
+        }
+        return realm.query(ChatroomRO::class, "id == $0", chatroomId).first().find()
     }
 
     fun getConversation(realm: Realm, id: String?): ConversationRO? {

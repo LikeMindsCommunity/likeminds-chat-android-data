@@ -13,7 +13,7 @@ class _Chatroom_ private constructor(
     @SerializedName("title")
     val title: String,
     @SerializedName("created_at")
-    val createdAt: String?,
+    val createdAt: Long?,
     @SerializedName("answer_text")
     val answerText: String?,
     @SerializedName("state")
@@ -111,7 +111,7 @@ class _Chatroom_ private constructor(
         private var member: _Member_? = null
         private var id: String = ""
         private var title: String = ""
-        private var createdAt: String? = null
+        private var createdAt: Long? = null
         private var answerText: String? = null
         private var state: Int = 0
         private var unseenCount: Int? = null
@@ -161,7 +161,7 @@ class _Chatroom_ private constructor(
         fun member(member: _Member_?) = apply { this.member = member }
         fun id(id: String) = apply { this.id = id }
         fun title(title: String) = apply { this.title = title }
-        fun createdAt(createdAt: String?) = apply { this.createdAt = createdAt }
+        fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
         fun answerText(answerText: String?) = apply { this.answerText = answerText }
         fun state(state: Int) = apply { this.state = state }
         fun unseenCount(unseenCount: Int) = apply { this.unseenCount = unseenCount }
