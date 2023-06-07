@@ -10,6 +10,7 @@ import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.sync.model._SyncChatroomResponse_
 import com.likeminds.internalsdk.sync.util.SyncPreferences
 import com.likeminds.internalsdk.sync.util.SyncUtil
+import com.likeminds.internalsdk.user.util.UserPreferences
 import com.likeminds.internalsdk.utils.MAX_RETRY_COUNT
 import com.likeminds.internalsdk.utils.measureExecution
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
@@ -24,6 +25,7 @@ class FirstTimeChatroomSyncWorker(
     private val groupChatSDK = GroupChatSDK.getInstance()
     private val api = groupChatSDK.getChatroomSyncApi()
     private val sdkPreferences = SDKPreferences(context as Application)
+    private val userPreferences = UserPreferences(context as Application)
     private val syncPreferences = SyncPreferences(context as Application)
     private var timeStartedAt: Long = 0L
 
@@ -120,7 +122,12 @@ class FirstTimeChatroomSyncWorker(
 
             else -> {
                 // Dumps the chatroom data to db
-                SyncUtil.saveChatroomResponse(realm, sdkPreferences, data)
+                SyncUtil.saveChatroomResponse(
+                    realm,
+                    sdkPreferences.getCommunityId() ?: "",
+                    userPreferences.getLMMemberId(),
+                    data
+                )
                 // Chatroom data for next page is called in background
                 if (isBackgroundWorker) {
                     page++

@@ -1,26 +1,41 @@
 package com.likeminds.internalsdk.db
 
 import android.util.Log
-import io.realm.kotlin.MutableRealm
+import com.likeminds.internalsdk.db.models.ConversationRO
+import com.likeminds.internalsdk.db.models.MemberRO
 import io.realm.kotlin.Realm
-import java.util.concurrent.atomic.AtomicInteger
+import io.realm.kotlin.UpdatePolicy
+import io.realm.kotlin.types.RealmObject
 
 object ChatDBUtil {
 
-    private val ONGOING_WRITE_TRANSACTION = AtomicInteger(0)
-    suspend fun write(realm: Realm, block: (realm: MutableRealm) -> Unit): Boolean {
-        ONGOING_WRITE_TRANSACTION.incrementAndGet()
-        return try {
-            realm.write {
-                block(this)
-            }
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("Realm Write", "", e)
-            false
-        } finally {
-            ONGOING_WRITE_TRANSACTION.decrementAndGet()
+    suspend fun insertOrUpdate(realm: Realm, roObject: RealmObject) {
+        realm.write {
+            copyToRealm(roObject, updatePolicy = UpdatePolicy.ALL)
         }
+    }
+
+    fun getConversation(realm: Realm, id: String?): ConversationRO? {
+        if (id.isNullOrEmpty()) {
+            return null
+        }
+        return realm.query(ConversationRO::class, "id == $0", id).first().find()
+    }
+
+    fun getMember(
+        realm: Realm,
+        communityId: String?,
+        memberId: String?
+    ): MemberRO? {
+        val uid1 = "$memberId#${communityId}"
+        val member = getMemberByUid(realm, uid1)
+        if (member == null) {
+            Log.e("Member not found", uid1)
+        }
+        return member
+    }
+
+    fun getMemberByUid(realm: Realm, uid: String): MemberRO? {
+        return realm.query(MemberRO::class, "uid == $0", uid).first().find()
     }
 }

@@ -28,6 +28,7 @@ import com.likeminds.internalsdk.user.api.UserApi
 import com.likeminds.internalsdk.user.api.UserApiImpl
 import com.likeminds.internalsdk.user.db.UserDB
 import com.likeminds.internalsdk.user.db.UserDbImpl
+import com.likeminds.internalsdk.user.util.UserPreferences
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import kotlinx.coroutines.*
@@ -81,13 +82,22 @@ class GroupChatSDK {
     @Inject
     lateinit var sdkPreferences: SDKPreferences
 
+    @Inject
+    lateinit var userPreferences: UserPreferences
+
     companion object {
 
         private var groupChatSDK: GroupChatSDK? = null
         const val LOG_TAG = "LikeMindsChat"
 
         fun getRealmConfiguration(): RealmConfiguration {
-            val schema = setOf(AppConfigRO::class, UserRO::class, SDKClientInfoRO::class)
+            val schema = setOf(
+                AppConfigRO::class,
+                UserRO::class,
+                SDKClientInfoRO::class,
+                CommunityRO::class,
+                MemberRO::class
+            )
             return RealmConfiguration.Builder(schema)
                 .name(DB_SCHEMA_NAME)
                 .schemaVersion(DB_SCHEMA_VERSION)
@@ -128,6 +138,10 @@ class GroupChatSDK {
 
     fun getSDKPreferences(): SDKPreferences {
         return sdkPreferences
+    }
+
+    fun getUserPreference(): UserPreferences {
+        return userPreferences
     }
 
     fun getSDKApi(): SDKApi {
