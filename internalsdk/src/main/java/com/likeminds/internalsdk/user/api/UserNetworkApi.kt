@@ -1,14 +1,12 @@
 package com.likeminds.internalsdk.user.api
 
-import com.likeminds.internalsdk.user.model._LogoutRequest_
-import com.likeminds.internalsdk.user.model._RegisterDeviceRequest_
+import com.likeminds.internalsdk.user.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
-import retrofit2.http.Body
-import retrofit2.http.Header
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface UserNetworkApi {
+
     @POST("user/logout")
     suspend fun logout(
         @Header("x-device-id") deviceId: String,
@@ -20,4 +18,7 @@ interface UserNetworkApi {
         @Header("x-device-id") deviceId: String,
         @Body request: _RegisterDeviceRequest_
     ): NetworkResponse<APIResponse<Nothing>>
+
+    @GET("user/meta")
+    suspend fun getUserMeta(): NetworkResponse<APIResponse<_UserMetaResponse_>>
 }

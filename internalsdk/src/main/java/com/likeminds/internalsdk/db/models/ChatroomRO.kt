@@ -1,6 +1,8 @@
 package com.likeminds.internalsdk.db.models
 
+import io.realm.kotlin.ext.backlinks
 import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.query.RealmResults
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
@@ -53,8 +55,8 @@ class ChatroomRO : RealmObject {
     //to check whether chatroom's conversation is saved or not
     var isConversationStored: Boolean = false
 
-    //todo
-//    //---used for local purposes---
-//    @LinkingObjects("chatrooms")
-//    val communities: RealmResults<CommunityRO>? = null
+    //---used for local purposes---
+    val communities: RealmResults<CommunityRO> by backlinks(CommunityRO::chatrooms)
+
+    fun getCommunity() = communities.firstOrNull()
 }

@@ -1,6 +1,8 @@
 package com.likeminds.internalsdk.db.models
 
+import io.realm.kotlin.ext.backlinks
 import io.realm.kotlin.ext.realmListOf
+import io.realm.kotlin.query.RealmResults
 import io.realm.kotlin.types.RealmList
 import io.realm.kotlin.types.RealmObject
 import io.realm.kotlin.types.annotations.PrimaryKey
@@ -20,6 +22,7 @@ class ConversationRO : RealmObject {
     var link: LinkRO? = null
     var date: String? = null
     var isEdited: Boolean? = null
+    var lastSeen: Boolean = false
     var replyConversationId: String? = null
     var replyConversation: ConversationRO? = null
     var deletedBy: String? = null
@@ -42,4 +45,7 @@ class ConversationRO : RealmObject {
     var toShowResults: Boolean? = null
     var replyChatRoomId: String? = null
     var lastUpdatedAt: Long = 0L
+
+    val community: RealmResults<CommunityRO>? by backlinks(CommunityRO::conversations)
+    val chatroom: RealmResults<ChatroomRO>? by backlinks(ChatroomRO::conversations)
 }
