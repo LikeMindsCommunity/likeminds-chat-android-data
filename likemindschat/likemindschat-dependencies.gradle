@@ -10,9 +10,6 @@ dependencies {
     implementation deps.dagger.main
     kapt deps.dagger.compiler
 
-    //realm
-    implementation deps.realm.local
-
     //retrofit gson
     implementation deps.retrofit.gson
 

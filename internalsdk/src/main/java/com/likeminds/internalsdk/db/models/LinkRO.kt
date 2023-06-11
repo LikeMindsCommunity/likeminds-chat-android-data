@@ -1,8 +1,10 @@
 package com.likeminds.internalsdk.db.models
 
-import io.realm.kotlin.types.EmbeddedRealmObject
+import io.realm.RealmObject
+import io.realm.annotations.RealmClass
 
-class LinkRO : EmbeddedRealmObject {
+@RealmClass(embedded = true)
+open class LinkRO : RealmObject() {
 
     var url: String = ""
     var chatroomId: String = ""
