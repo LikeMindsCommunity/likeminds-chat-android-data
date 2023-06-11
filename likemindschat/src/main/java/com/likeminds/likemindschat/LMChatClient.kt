@@ -1,6 +1,8 @@
 package com.likeminds.likemindschat
 
 import android.app.Application
+import android.content.Context
+import com.likeminds.internalsdk.sync.SyncSDK
 import com.likeminds.likemindschat.chatroom.ChatroomClient
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.helper.HelperClient
@@ -177,5 +179,9 @@ class LMChatClient private constructor() {
     // Exposed function to fetch tagging list
     suspend fun getTaggingList(getTaggingListRequest: GetTaggingListRequest): LMResponse<GetTaggingListResponse> {
         return helperClient.getTaggingList(getTaggingListRequest)
+    }
+
+    fun startFirstTimeSync(context: Context) {
+        SyncSDK.startFirstHomeFeedSync(context)
     }
 }

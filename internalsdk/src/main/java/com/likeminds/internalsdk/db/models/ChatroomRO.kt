@@ -41,7 +41,7 @@ class ChatroomRO : RealmObject {
     var isSecret: Boolean? = null
     var secretChatRoomParticipants: RealmList<Int> = realmListOf()
     var secretChatRoomLeft: Boolean? = null
-    var conversations: RealmList<ConversationRO>? = null
+    var conversations: RealmList<ConversationRO> = realmListOf()
     var topicId: String? = null
     var topic: ConversationRO? = null
     var autoFollowDone: Boolean? = null

@@ -56,6 +56,7 @@ class DatabaseSyncWorker(
                     null
                 ).find()
 
+
                 conversationsWhereReplyIsNotPresent.forEach { conversationRO ->
                     realm.write {
                         findLatest(conversationRO)?.replyConversation = ChatDBUtil.getConversation(
@@ -68,20 +69,23 @@ class DatabaseSyncWorker(
                 when {
                     syncType == SYNC_FOLLOWED || syncType == SYNC_DIRECT_MESSAGE_AND_EVENT || syncType == SYNC_REOPEN_CHATROOM -> {
                         //Add inverse relationships to communities
-                        val communitiesWhereRelationshipIsNeeded =
-                            realm.query(CommunityRO::class, "$RELATIONSHIP_NEEDED == true").find()
+                        realm.write {
+                            val communitiesWhereRelationshipIsNeeded =
+                                this.query(CommunityRO::class, "$RELATIONSHIP_NEEDED == true")
+                                    .find()
 
-                        communitiesWhereRelationshipIsNeeded.forEach { communityRO ->
-                            realm.write {
-                                findLatest(communityRO)?.apply {
-                                    chatrooms =
-                                        ChatDBUtil.getChatrooms(realm, communityRO.id).toRealmList()
-
-                                    conversations = ChatDBUtil.getCommunityConversations(
-                                        realm,
-                                        communityRO.id
-                                    ).toRealmList()
-                                }
+                            communitiesWhereRelationshipIsNeeded.forEach { communityRO ->
+                                findLatest(communityRO)?.chatrooms =
+                                    ChatDBUtil.getChatrooms(realm, communityRO.id).toRealmList()
+//                                findLatest(communityRO)?.apply {
+//                                    chatrooms =
+//                                        ChatDBUtil.getChatrooms(realm, communityRO.id).toRealmList()
+//
+//                                    conversations = ChatDBUtil.getCommunityConversations(
+//                                        realm,
+//                                        communityRO.id
+//                                    ).toRealmList()
+//                                }
                             }
                         }
 

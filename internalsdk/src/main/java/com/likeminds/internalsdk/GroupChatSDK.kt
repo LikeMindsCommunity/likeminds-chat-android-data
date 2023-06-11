@@ -93,10 +93,18 @@ class GroupChatSDK {
         fun getRealmConfiguration(): RealmConfiguration {
             val schema = setOf(
                 AppConfigRO::class,
-                UserRO::class,
-                SDKClientInfoRO::class,
+                AttachmentMetaRO::class,
+                AttachmentRO::class,
+                ChatroomRO::class,
                 CommunityRO::class,
-                MemberRO::class
+                ConversationRO::class,
+                LastConversationRO::class,
+                LinkRO::class,
+                MemberRO::class,
+                PollRO::class,
+                ReactionRO::class,
+                SDKClientInfoRO::class,
+                UserRO::class
             )
             return RealmConfiguration.Builder(schema)
                 .name(DB_SCHEMA_NAME)

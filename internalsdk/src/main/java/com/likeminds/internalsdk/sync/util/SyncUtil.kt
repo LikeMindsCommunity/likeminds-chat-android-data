@@ -1,5 +1,6 @@
 package com.likeminds.internalsdk.sync.util
 
+import android.util.Log
 import com.likeminds.internalsdk.conversation.model._ConversationState_
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
@@ -38,6 +39,7 @@ object SyncUtil {
         communityRO.relationshipNeeded = true
 
         //save community
+        Log.d("Test_DB", "community")
         ChatDBUtil.insertOrUpdate(realm, communityRO)
 
         chatrooms.forEach { chatroom ->
@@ -46,6 +48,7 @@ object SyncUtil {
             val creator = data.userMeta[creatorId.toString()] ?: return@forEach
             val chatroomCreatorRO =
                 ROConverter.convertMember(creator, communityId) ?: return@forEach
+            Log.d("Test_DB", "chatroom creator")
             ChatDBUtil.insertOrUpdate(realm, chatroomCreatorRO)
 
             //last conversation
@@ -93,7 +96,9 @@ object SyncUtil {
                 lastConversationAttachment
             ) ?: return@forEach
 
+            Log.d("Test_DB", "last conversation")
             ChatDBUtil.insertOrUpdate(realm, lastConversationRO)
+            Log.d("Test_DB", "last conversation creator")
             ChatDBUtil.insertOrUpdate(realm, lastConversationCreatorRO)
 
             //chatroom topic
@@ -136,9 +141,11 @@ object SyncUtil {
                         loggedInMemberId = loggedInMemberId
                     )
                 if (topicCreatorRO != null) {
+                    Log.d("Test_DB", "topic creator ro")
                     ChatDBUtil.insertOrUpdate(realm, topicCreatorRO)
                 }
                 if (topicRO != null) {
+                    Log.d("Test_DB", "topic")
                     ChatDBUtil.insertOrUpdate(realm, topicRO)
                 }
             }
@@ -189,9 +196,11 @@ object SyncUtil {
                     lastSeenConversationAttachments
                 )
                 if (lastSeenConversationRO != null) {
+                    Log.d("Test_DB", "last seen conversation")
                     ChatDBUtil.insertOrUpdate(realm, lastSeenConversationRO)
                 }
                 if (lastSeenConversationCreatorRO != null) {
+                    Log.d("Test_DB", "last seen conversation creator")
                     ChatDBUtil.insertOrUpdate(realm, lastSeenConversationCreatorRO)
                 }
             }
@@ -204,6 +213,8 @@ object SyncUtil {
                 lastConversationRO
             ) ?: return@forEach
             chatroomRO.relationshipNeeded = true
+
+            Log.d("Test_DB", "chatroom")
             ChatDBUtil.insertOrUpdate(realm, chatroomRO)
         }
     }

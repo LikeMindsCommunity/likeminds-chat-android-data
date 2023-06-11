@@ -39,14 +39,11 @@ object SyncSDK {
         ongoingSyncTypes.add(SYNC_FOLLOWED)
         val firstTime = ChatDBUtil.isEmpty()
 
-        val appConfigWork = WorkManager.getInstance(context)
-            .beginWith(syncAppConfig(firstTime))
-
-        val blockerWork = appConfigWork
-            .then(firstTimeSyncChatroom(false))
+        val blockerWorker = WorkManager.getInstance(context)
+            .beginWith(firstTimeSyncChatroom(false))
             .then(syncDatabase(SYNC_FOLLOWED, firstTime))
 
-        var backgroundWork = blockerWork.then(firstTimeSyncChatroom(true))
+        var backgroundWork = blockerWorker.then(firstTimeSyncChatroom(true))
             .then(syncDatabase(SYNC_FOLLOWED, firstTime))
 
         if (!firstTime) {
@@ -54,30 +51,10 @@ object SyncSDK {
         }
         backgroundWork.enqueue()
         return if (firstTime) {
-            Pair(blockerWork.workInfosLiveData, null)
+            Pair(blockerWorker.workInfosLiveData, null)
         } else {
-            Pair(null, appConfigWork.workInfosLiveData)
+            Pair(null, blockerWorker.workInfosLiveData)
         }
-    }
-
-    /**
-     * Worker to sync app meta
-     */
-    private fun syncAppConfig(isFirstTime: Boolean): OneTimeWorkRequest {
-        return OneTimeWorkRequestBuilder<AppConfigWorker>()
-            .setInputData(
-                workDataOf(
-                    AppConfigWorker.INPUT_DATA_IS_FIRST_TIME to isFirstTime
-                )
-            )
-            .setConstraints(networkConstraint)
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
-                TimeUnit.MILLISECONDS
-            )
-            .addTag(AppConfigWorker.NAME)
-            .build()
     }
 
     //return first chatroom sync worker

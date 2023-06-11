@@ -583,8 +583,6 @@ object ModelConverter {
             .meta(convertAttachmentMeta(_attachment_.meta))
             .createdAt(_attachment_.createdAt)
             .updatedAt(_attachment_.updatedAt)
-            .isRecording(_attachment_.isRecording)
-            .about(_attachment_.about)
             .build()
     }
 

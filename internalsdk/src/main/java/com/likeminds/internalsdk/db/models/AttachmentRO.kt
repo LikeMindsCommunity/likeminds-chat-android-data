@@ -18,7 +18,7 @@ class AttachmentRO : EmbeddedRealmObject {
     var thumbnailUrl: String? = null
     var thumbnailAWSFolderPath: String? = null
     var thumbnailLocalFilePath: String? = null
-    var metaRO: AttachmentMetaRO = AttachmentMetaRO()
+    var metaRO: AttachmentMetaRO? = null
     var createdAt: Long? = null
     var updatedAt: Long? = null
     var isRecording: Boolean? = null
