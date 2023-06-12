@@ -14,7 +14,7 @@ import com.likeminds.internalsdk.user.util.UserPreferences
 import com.likeminds.internalsdk.utils.MAX_RETRY_COUNT
 import com.likeminds.internalsdk.utils.measureExecution
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
-import io.realm.kotlin.Realm
+import io.realm.Realm
 import kotlinx.coroutines.runBlocking
 
 class FirstTimeChatroomSyncWorker(
@@ -50,7 +50,7 @@ class FirstTimeChatroomSyncWorker(
 
     override fun doWork(): Result {
         return measureExecution("$NAME, worker params: isBackgroundSync: $isBackgroundWorker") {
-            val realm = Realm.open(GroupChatSDK.getRealmConfiguration())
+            val realm = Realm.getDefaultInstance()
             val result = runBlocking {
                 getChatrooms(realm)
             }
@@ -123,7 +123,6 @@ class FirstTimeChatroomSyncWorker(
             else -> {
                 // Dumps the chatroom data to db
                 SyncUtil.saveChatroomResponse(
-                    realm,
                     sdkPreferences.getCommunityId() ?: "",
                     userPreferences.getLMMemberId(),
                     data

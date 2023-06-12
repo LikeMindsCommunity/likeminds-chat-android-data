@@ -11,9 +11,8 @@ import com.likeminds.internalsdk.sync.model._ReactionMeta_
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.TimeUtil
-import io.realm.kotlin.Realm
-import io.realm.kotlin.ext.realmListOf
-import io.realm.kotlin.types.RealmList
+import io.realm.Realm
+import io.realm.RealmList
 
 object ROConverter {
 
@@ -26,8 +25,7 @@ object ROConverter {
      */
     fun convertCommunity(community: _Community_?): CommunityRO? {
         if (community == null) return null
-        return CommunityRO().apply {
-            id = community.id
+        return CommunityRO.build(community.id) {
             name = community.name
             imageUrl = community.imageUrl
             membersCount = community.membersCount
@@ -58,10 +56,7 @@ object ROConverter {
         val savedChatroom = ChatDBUtil.getChatroom(realm, chatroomId)
         val reactionsRO = convertReactionsMeta(realm, communityId, reactions)
 
-        return ChatroomRO().apply {
-            this.id = chatroomId
-            this.communityId = communityId
-            title = chatroom.title
+        return ChatroomRO.build(chatroomId, communityId, chatroom.title) {
             state = chatroom.state
             member = chatroomCreatorRO
             createdAt = chatroom.createdAt
@@ -82,7 +77,7 @@ object ROConverter {
             memberCanMessage = chatroom.memberCanMessage
             isEdited = chatroom.isEdited
             externalSeen = chatroom.externalSeen
-            accessWithoutSubscription = chatroom.accessWithoutSubscription
+            accessWithoutSubscription = chatroom.accessWithoutSubscription == true
             unreadConversationsCount = chatroom.unreadConversationCount
 
             this.reactions = reactionsRO
@@ -180,14 +175,16 @@ object ROConverter {
         savedAnswer?.reactions?.clear()
         savedAnswer?.polls?.clear()
 
-        return ConversationRO().apply {
-            this.id = conversation.id.toString()
+        return ConversationRO.build(
+            conversation.id.toString(),
+            conversation.answer,
+            conversation.state,
+            createdEpoch
+        ) {
             this.chatroomId = chatroomId
             this.communityId = communityId
             member = creator
-            answer = conversation.answer
-            state = conversation.state
-            this.createdEpoch = createdEpoch
+
             this.createdAt = conversation.createdAt
             lastUpdatedAt = conversation.lastUpdated ?: 0L
             date = conversation.date
@@ -230,9 +227,8 @@ object ROConverter {
     //convert _User_ -> UserRO
     fun convertUser(user: _User_?): UserRO? {
         if (user == null) return null
-        return UserRO().apply {
-            id = user.id
-            userUniqueId = user.userUniqueId
+
+        return UserRO.build(user.id, user.userUniqueId) {
             imageUrl = user.imageUrl
             name = user.name
             isGuest = user.isGuest
@@ -252,9 +248,8 @@ object ROConverter {
     fun convertMember(member: _Member_?, communityId: String): MemberRO? {
         if (member == null) return null
         val uid = "${member.id}#${communityId}"
-        return MemberRO().apply {
-            this.uid = uid
-            this.id = member.id
+
+        return MemberRO.build(uid, member.id) {
             this.communityId = communityId.toInt()
             name = member.name ?: ""
             imageUrl = member.imageUrl ?: ""
@@ -278,7 +273,7 @@ object ROConverter {
     //convert _SDKClientInfo_ -> SDKClientInfoRO
     private fun convertSDKClientInfo(sdkClientInfo: _SDKClientInfo_?): SDKClientInfoRO? {
         if (sdkClientInfo == null) return null
-        return SDKClientInfoRO().apply {
+        return SDKClientInfoRO.build {
             community = sdkClientInfo.community
             user = sdkClientInfo.user
             userUniqueId = sdkClientInfo.userUniqueId
@@ -330,12 +325,14 @@ object ROConverter {
         //Clear embedded object list if already present else calling insertToRealmOrUpdate will duplicate it
         savedAnswer?.attachments?.clear()
 
-        return LastConversationRO().apply {
-            id = conversation.id.toString()
+        return LastConversationRO.build(
+            conversation.id.toString(),
+            conversation.answer,
+            conversation.state,
+            createdEpoch
+        ) {
             member = creator
             createdAt = conversation.createdAt
-            answer = conversation.answer
-            state = conversation.state
             this.attachments = updatedAttachments
             attachmentCount = conversation.attachmentCount
             date = conversation.date
@@ -358,7 +355,7 @@ object ROConverter {
         oldAttachments: RealmList<AttachmentRO>?
     ): RealmList<AttachmentRO> {
         return when {
-            oldAttachments.isNullOrEmpty() && attachments.isNullOrEmpty() -> realmListOf()
+            oldAttachments.isNullOrEmpty() && attachments.isNullOrEmpty() -> RealmList()
 
             oldAttachments.isNullOrEmpty() && !attachments.isNullOrEmpty() -> {
                 attachments.map { attachment ->
@@ -381,7 +378,7 @@ object ROConverter {
                         oldAttachment.apply {
                             url = attachment.url
                             awsFolderPath = ""
-                            thumbnailUrl = attachment.thumbnailUrl
+                            thumbnail = attachment.thumbnailUrl
                             thumbnailAWSFolderPath = ""
                         }
                     } else {
@@ -398,7 +395,7 @@ object ROConverter {
                     return@map oldAttachment?.apply {
                         url = attachment.url
                         awsFolderPath = ""
-                        thumbnailUrl = attachment.thumbnailUrl
+                        thumbnail = attachment.thumbnailUrl
                         thumbnailAWSFolderPath = ""
                     } ?: convertAttachment(chatroomId, communityId, attachment)
                 }.toRealmList()
@@ -421,11 +418,8 @@ object ROConverter {
         communityId: String,
         attachment: _Attachment_
     ): AttachmentRO {
-        return AttachmentRO().apply {
+        return AttachmentRO.build(attachment.url, chatroomId, communityId) {
             id = attachment.id.toString()
-            url = attachment.url
-            this.chatroomId = chatroomId
-            this.communityId = communityId
             name = attachment.name
             type = attachment.type
             index = attachment.index
@@ -433,7 +427,7 @@ object ROConverter {
             height = attachment.height
             awsFolderPath = attachment.awsFolderPath
             localFilePath = attachment.localFilePath
-            thumbnailUrl = attachment.thumbnailUrl
+            thumbnail = attachment.thumbnailUrl
             thumbnailAWSFolderPath = attachment.thumbnailAWSFolderPath
             thumbnailLocalFilePath = attachment.thumbnailLocalFilePath
             metaRO = convertAttachmentMeta(attachment.meta)
@@ -443,7 +437,7 @@ object ROConverter {
     }
 
     private fun convertAttachmentMeta(meta: _AttachmentMeta_?): AttachmentMetaRO {
-        return AttachmentMetaRO().apply {
+        return AttachmentMetaRO.build {
             numberOfPage = meta?.numberOfPage
             size = meta?.size
             duration = meta?.duration
@@ -451,7 +445,7 @@ object ROConverter {
     }
 
     private fun convertAttachmentMeta(meta: AttachmentMetaRO?): AttachmentMetaRO {
-        return AttachmentMetaRO().apply {
+        return AttachmentMetaRO.build {
             numberOfPage = meta?.numberOfPage
             size = meta?.size
             duration = meta?.duration
@@ -463,11 +457,8 @@ object ROConverter {
         communityId: String,
         attachment: AttachmentRO
     ): AttachmentRO {
-        return AttachmentRO().apply {
-            id = attachment.id
-            url = attachment.url
-            this.chatroomId = chatroomId
-            this.communityId = communityId
+        return AttachmentRO.build(attachment.url, chatroomId, communityId) {
+            id = attachment.id.toString()
             name = attachment.name
             type = attachment.type
             index = attachment.index
@@ -475,7 +466,7 @@ object ROConverter {
             height = attachment.height
             awsFolderPath = attachment.awsFolderPath
             localFilePath = attachment.localFilePath
-            thumbnailUrl = attachment.thumbnailUrl
+            thumbnail = attachment.thumbnail
             thumbnailAWSFolderPath = attachment.thumbnailAWSFolderPath
             thumbnailLocalFilePath = attachment.thumbnailLocalFilePath
             metaRO = convertAttachmentMeta(attachment.metaRO)
@@ -501,9 +492,7 @@ object ROConverter {
         memberId: String?
     ): PollRO? {
         if (poll == null || communityId == null) return null
-        return PollRO().apply {
-            id = poll.id.toString()
-            text = poll.text
+        return PollRO.build(poll.id.toString(), poll.text) {
             subText = poll.subText
             isSelected = poll.isSelected
             percentage = poll.percentage
@@ -533,7 +522,7 @@ object ROConverter {
                 communityId,
                 reaction.userId.toString()
             ) ?: return null
-        return ReactionRO().apply {
+        return ReactionRO.build {
             member = memberRO
             this.reaction = reaction.reaction
         }
@@ -547,8 +536,7 @@ object ROConverter {
         if (link == null || link.url.isNullOrEmpty()) {
             return null
         }
-        return LinkRO().apply {
-            url = link.url
+        return LinkRO.build(link.url) {
             this.chatroomId = chatroomId
             this.communityId = communityId
             title = link.title

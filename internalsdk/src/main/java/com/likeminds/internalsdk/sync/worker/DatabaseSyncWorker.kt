@@ -1,23 +1,21 @@
 package com.likeminds.internalsdk.sync.worker
 
+import android.app.Application
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.models.*
-import com.likeminds.internalsdk.db.util.DbKey.RELATIONSHIP_NEEDED
-import com.likeminds.internalsdk.db.util.DbKey.REPLY_CONVERSATION
-import com.likeminds.internalsdk.db.util.DbKey.REPLY_CONVERSATION_ID
+import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.db.util.toRealmList
 import com.likeminds.internalsdk.sync.SyncSDK
 import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_CHATROOM
 import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_DIRECT_MESSAGE_AND_EVENT
 import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_FOLLOWED
 import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_REOPEN_CHATROOM
+import com.likeminds.internalsdk.user.util.UserPreferences
 import com.likeminds.internalsdk.utils.measureExecution
-import io.realm.kotlin.Realm
-import kotlinx.coroutines.runBlocking
+import io.realm.Realm
 
 /**
  * Worker to make cheap relationships between data models. This is a cpu intensive worker.
@@ -39,6 +37,8 @@ class DatabaseSyncWorker(
         const val INPUT_DATA_IS_FIRST_TIME = "is_first_time"
     }
 
+    private val userPreferences = UserPreferences(context as Application)
+
     private val syncType = workerParams.inputData.getString(INPUT_DATA_SYNC_TYPE)
     private val communityId = workerParams.inputData.getString(INPUT_DATA_COMMUNITY_ID) ?: ""
     private val chatroomId = workerParams.inputData.getString(INPUT_DATA_CHATROOM_ID) ?: ""
@@ -46,68 +46,58 @@ class DatabaseSyncWorker(
 
     override fun doWork(): Result {
         measureExecution("$NAME, First time - $isFirstTime, Sync type - $syncType, Community Id - $communityId, Chatroom Id - $chatroomId") {
-            runBlocking {
-                val realm = Realm.open(GroupChatSDK.getRealmConfiguration())
-
+            val realm = Realm.getDefaultInstance()
+            ChatDBUtil.write(realm) { realm ->
                 //Add relationship for the conversation reply objects
-                val conversationsWhereReplyIsNotPresent = realm.query(
-                    ConversationRO::class,
-                    "$REPLY_CONVERSATION_ID != $0 AND $REPLY_CONVERSATION == $0",
-                    null
-                ).find()
-
-
-                conversationsWhereReplyIsNotPresent.forEach { conversationRO ->
-                    realm.write {
-                        findLatest(conversationRO)?.replyConversation = ChatDBUtil.getConversation(
+                realm.where(ConversationRO::class.java)
+                    .isNotNull(DbKey.REPLY_CONVERSATION_ID)
+                    .isNull(DbKey.REPLY_CONVERSATION)
+                    .findAll()
+                    .forEach { conversation ->
+                        conversation.replyConversation = ChatDBUtil.getConversation(
                             realm,
-                            conversationRO.replyConversationId
+                            conversation.replyConversationId
                         )
                     }
-                }
 
                 when {
                     syncType == SYNC_FOLLOWED || syncType == SYNC_DIRECT_MESSAGE_AND_EVENT || syncType == SYNC_REOPEN_CHATROOM -> {
                         //Add inverse relationships to communities
-                        realm.write {
-                            val communitiesWhereRelationshipIsNeeded =
-                                this.query(CommunityRO::class, "$RELATIONSHIP_NEEDED == true")
-                                    .find()
-
-                            communitiesWhereRelationshipIsNeeded.forEach { communityRO ->
-                                findLatest(communityRO)?.chatrooms =
-                                    ChatDBUtil.getChatrooms(realm, communityRO.id).toRealmList()
-//                                findLatest(communityRO)?.apply {
-//                                    chatrooms =
-//                                        ChatDBUtil.getChatrooms(realm, communityRO.id).toRealmList()
-//
-//                                    conversations = ChatDBUtil.getCommunityConversations(
-//                                        realm,
-//                                        communityRO.id
-//                                    ).toRealmList()
-//                                }
-                            }
-                        }
-
-                        val chatroomWhereRelationshipIsNeeded =
-                            realm.query(ChatroomRO::class, "$RELATIONSHIP_NEEDED == true").find()
-
-                        chatroomWhereRelationshipIsNeeded.forEach { chatroomRO ->
-                            val conversations =
-                                ChatDBUtil.getChatroomConversations(realm, chatroomRO.id)
-
-                            ChatDBUtil.updateRelationshipsOfChatroom(
+                        val communities = realm.where(CommunityRO::class.java)
+                            .equalTo(DbKey.RELATIONSHIP_NEEDED, true)
+                            .findAll()
+                        communities.forEach { communityRO ->
+                            //Add inverse relationships for chatrooms
+                            communityRO.chatrooms = ChatDBUtil.getChatrooms(
                                 realm,
-                                chatroomRO,
-                                conversations
-                            )
+                                communityRO.id
+                            ).toRealmList()
+
+                            //Add inverse relationships for conversations
+                            communityRO.conversations = ChatDBUtil.getCommunityConversations(
+                                realm,
+                                communityRO.id
+                            ).toRealmList()
                         }
 
-                        if (isFirstTime) {
-                            val appConfigRO = ChatDBUtil.getAppConfig(realm)
-                            appConfigRO?.isChatroomsSynced = true
-                            appConfigRO?.isCommunitiesSynced = true
-                            appConfigRO?.isConversationsSynced = true
+                        val chatrooms = realm.where(ChatroomRO::class.java)
+                            .equalTo(DbKey.RELATIONSHIP_NEEDED, true)
+                            .beginGroup()
+                            .notEqualTo(DbKey.IS_DRAFT, true)
+                            .or()
+                            .isNull(DbKey.IS_DRAFT)
+                            .endGroup()
+                            .findAll()
+                        chatrooms.forEach { chatroomRO ->
+                            val conversations = ChatDBUtil.getChatroomConversations(
+                                realm,
+                                chatroomRO.id
+                            )
+                            ChatDBUtil.updateRelationshipsOfChatroom(
+                                chatroomRO,
+                                conversations,
+                                userPreferences.getLMMemberId()
+                            )
                         }
 
                     }
@@ -140,19 +130,19 @@ class DatabaseSyncWorker(
                                 chatroomId
                             )
                             ChatDBUtil.updateRelationshipsOfChatroom(
-                                realm,
                                 chatroomRO,
-                                conversations
+                                conversations,
+                                userPreferences.getLMMemberId()
                             )
                         }
 
                     }
                 }
-                realm.close()
             }
             if (syncType != null) {
                 SyncSDK.clearSyncType(syncType)
             }
+            realm.close()
         }
         return Result.success()
     }

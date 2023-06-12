@@ -4,14 +4,12 @@ import android.app.Application
 import android.content.Context
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.user.util.UserPreferences
 import com.likeminds.internalsdk.utils.measureExecution
-import io.realm.kotlin.Realm
-import kotlinx.coroutines.runBlocking
+import io.realm.Realm
 
 /**
  * Worker to remove unwanted data stored in the local database
@@ -33,53 +31,44 @@ class DatabaseCleanupWorker(
 
     override fun doWork(): Result {
         measureExecution(NAME) {
-            runBlocking {
-                deleteNonRequiredData()
-            }
+            deleteNonRequiredData()
         }
         return Result.success()
     }
 
-    private suspend fun deleteNonRequiredData() {
-        val realm = Realm.open(GroupChatSDK.getRealmConfiguration())
-        val appConfig = ChatDBUtil.getAppConfig(realm) ?: return
-        val communityIds = appConfig.communities.toTypedArray()
+    private fun deleteNonRequiredData() {
+        val realm = Realm.getDefaultInstance()
+        ChatDBUtil.write(realm) { realmWrite ->
+            val appConfig = ChatDBUtil.getAppConfig(realm) ?: return@write
+            val communityIds = appConfig.communities.toTypedArray()
 
-        val removedMembers = realm.query(
-            MemberRO::class,
-            "${DbKey.ID} == $0 AND ${DbKey.CHATROOM_ID} == $1 AND ${DbKey.COMMUNITY_ID} !IN $2",
-            userPreferences.getLMMemberId(),
-            null,
-            communityIds
-        ).distinct(DbKey.COMMUNITY_ID)
-            .find()
+            val removedMembers = realmWrite.where(MemberRO::class.java)
+                .equalTo(DbKey.ID, userPreferences.getLMMemberId())
+                .isNull(DbKey.CHATROOM_ID)
+                .not()
+                .`in`(DbKey.COMMUNITY_ID, communityIds)
+                .distinct(DbKey.COMMUNITY_ID)
+                .findAll()
 
-        val removedCommunityIds = removedMembers.mapNotNull { it.communityId }.toTypedArray()
+            val removedCommunityIds = removedMembers.mapNotNull { it.communityId }.toTypedArray()
 
-        realm.write {
-            val deleteMembers =
-                this.query(MemberRO::class, "${DbKey.COMMUNITY_ID} IN $0", removedCommunityIds)
-                    .find()
-            delete(deleteMembers)
-
-            val deleteConversations =
-                this.query(
-                    ConversationRO::class,
-                    "${DbKey.COMMUNITY_ID} IN $0",
-                    removedCommunityIds
-                )
-                    .find()
-            delete(deleteConversations)
-
-            val deleteChatrooms =
-                this.query(ChatroomRO::class, "${DbKey.COMMUNITY_ID} IN $0", removedCommunityIds)
-                    .find()
-            delete(deleteChatrooms)
-
-            val deleteCommunityRO =
-                this.query(CommunityRO::class, "${DbKey.COMMUNITY_ID} IN $0", removedCommunityIds)
-                    .find()
-            delete(deleteCommunityRO)
+            //Delete everything
+            realmWrite.where(MemberRO::class.java)
+                .`in`(DbKey.COMMUNITY_ID, removedCommunityIds)
+                .findAll()
+                .deleteAllFromRealm()
+            realmWrite.where(ConversationRO::class.java)
+                .`in`(DbKey.COMMUNITY_ID, removedCommunityIds)
+                .findAll()
+                .deleteAllFromRealm()
+            realmWrite.where(ChatroomRO::class.java)
+                .`in`(DbKey.COMMUNITY_ID, removedCommunityIds)
+                .findAll()
+                .deleteAllFromRealm()
+            realmWrite.where(CommunityRO::class.java)
+                .`in`(DbKey.ID, removedCommunityIds)
+                .findAll()
+                .deleteAllFromRealm()
         }
         realm.close()
     }

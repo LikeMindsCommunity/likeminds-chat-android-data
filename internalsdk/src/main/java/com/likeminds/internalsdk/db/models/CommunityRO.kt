@@ -4,7 +4,7 @@ import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
-class CommunityRO(
+open class CommunityRO(
     @PrimaryKey
     var id: String = "",
     var name: String = "",

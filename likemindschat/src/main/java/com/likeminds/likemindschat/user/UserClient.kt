@@ -18,10 +18,15 @@ class UserClient @Inject constructor() : BaseClient() {
     }
 
     suspend fun getUser(): LMResponse<User> {
-        return LMResponse(
-            success = true,
-            null,
-            ModelConverter.convertUser(userDb.getUser())
-        )
+        val userRO = userDb.getUser()
+        return if (userRO == null) {
+            LMResponse(success = false, errorMessage = "User doesn't exist")
+        } else {
+            LMResponse(
+                success = true,
+                null,
+                ModelConverter.convertUser(userRO)
+            )
+        }
     }
 }

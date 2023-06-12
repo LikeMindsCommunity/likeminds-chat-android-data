@@ -1,13 +1,14 @@
 package com.likeminds.internalsdk
 
 import android.app.Application
+import android.util.Log
 import com.google.gson.Gson
 import com.likeminds.internalsdk.chatroom.ChatroomApi
 import com.likeminds.internalsdk.chatroom.ChatroomApiImpl
 import com.likeminds.internalsdk.community.CommunityApi
 import com.likeminds.internalsdk.community.CommunityApiImpl
 import com.likeminds.internalsdk.db.*
-import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.db.util.DbCompactOnLaunchCallback
 import com.likeminds.internalsdk.di.*
 import com.likeminds.internalsdk.helper.HelperApi
 import com.likeminds.internalsdk.helper.HelperApiImpl
@@ -29,9 +30,8 @@ import com.likeminds.internalsdk.user.api.UserApiImpl
 import com.likeminds.internalsdk.user.db.UserDB
 import com.likeminds.internalsdk.user.db.UserDbImpl
 import com.likeminds.internalsdk.user.util.UserPreferences
-import io.realm.kotlin.Realm
-import io.realm.kotlin.RealmConfiguration
-import kotlinx.coroutines.*
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -90,29 +90,6 @@ class GroupChatSDK {
         private var groupChatSDK: GroupChatSDK? = null
         const val LOG_TAG = "LikeMindsChat"
 
-        fun getRealmConfiguration(): RealmConfiguration {
-            val schema = setOf(
-                AppConfigRO::class,
-                AttachmentMetaRO::class,
-                AttachmentRO::class,
-                ChatroomRO::class,
-                CommunityRO::class,
-                ConversationRO::class,
-                LastConversationRO::class,
-                LinkRO::class,
-                MemberRO::class,
-                PollRO::class,
-                ReactionRO::class,
-                SDKClientInfoRO::class,
-                UserRO::class
-            )
-            return RealmConfiguration.Builder(schema)
-                .name(DB_SCHEMA_NAME)
-                .schemaVersion(DB_SCHEMA_VERSION)
-                .migration(RealmDBMigration())
-                .build()
-        }
-
         @JvmStatic
         fun getInstance(): GroupChatSDK {
             if (groupChatSDK == null) {
@@ -129,10 +106,39 @@ class GroupChatSDK {
     }
 
     private fun initRealmAndMigrateAsync() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val realm = Realm.open(getRealmConfiguration())
-            realm.close()
+        Realm.init(application)
+
+        Realm.setDefaultConfiguration(getNewDbConfig())
+
+        migrateDbAsync { }
+    }
+
+    private fun migrateDbAsync(cb: (Boolean) -> Unit) {
+        val config = Realm.getDefaultConfiguration()
+        if (config == null) {
+            cb(false)
+            return
         }
+        Realm.getInstanceAsync(config, object : Realm.Callback() {
+            override fun onSuccess(realm: Realm) {
+                cb(true)
+            }
+
+            override fun onError(exception: Throwable) {
+                super.onError(exception)
+                Log.e("migrateDbAsync", "", exception)
+                cb(false)
+            }
+        })
+    }
+
+    private fun getNewDbConfig(): RealmConfiguration {
+        return RealmConfiguration.Builder()
+            .name(DB_SCHEMA_NAME)
+            .schemaVersion(DB_SCHEMA_VERSION)
+            .migration(RealmDBMigration())
+            .compactOnLaunch(DbCompactOnLaunchCallback())
+            .build()
     }
 
     private fun initSDKComponent(sdkSharedResources: SDKSharedResources) {

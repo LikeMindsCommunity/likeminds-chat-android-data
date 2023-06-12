@@ -4,7 +4,7 @@ import com.likeminds.internalsdk.db.models.UserRO
 
 interface UserDB {
 
-    suspend fun saveUser(userRO: UserRO)
+    fun saveUser(userRO: UserRO)
 
-    suspend fun getUser(): UserRO
+    suspend fun getUser(): UserRO?
 }

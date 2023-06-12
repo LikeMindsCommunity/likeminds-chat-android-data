@@ -845,7 +845,8 @@ object ModelConverter {
      * Db Model -> Client Model
     --------------------------------*/
     // converts User db model to client model
-    fun convertUser(userRO: UserRO): User {
+    fun convertUser(userRO: UserRO?): User? {
+        if (userRO == null) return null
         return User(
             userRO.id,
             userRO.imageUrl,
