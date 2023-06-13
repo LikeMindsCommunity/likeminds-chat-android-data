@@ -91,8 +91,8 @@ class LMChatClient private constructor() {
         return homeFeedClient.getExploreTabCount()
     }
 
-    fun getChatrooms(context: Context, homeFeedChangeListener: HomeFeedChangeListener) {
-        homeFeedClient.getChatrooms(context, homeFeedChangeListener)
+    suspend fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
+        homeFeedClient.getChatrooms(context, listener)
     }
 
     //function to get config details

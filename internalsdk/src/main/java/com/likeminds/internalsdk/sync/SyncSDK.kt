@@ -47,9 +47,6 @@ object SyncSDK {
         var backgroundWork = blockerWorker.then(firstTimeSyncChatroom(true))
             .then(syncDatabase(SYNC_FOLLOWED, firstTime))
 
-        if (!firstTime) {
-            backgroundWork = backgroundWork.then(cleanDatabase())
-        }
         backgroundWork.enqueue()
         return if (firstTime) {
             Pair(blockerWorker.workInfosLiveData, null)
@@ -78,10 +75,6 @@ object SyncSDK {
         var worker = WorkManager.getInstance(context)
             .beginWith(reopenSyncChatroom())
             .then(syncDatabase(SYNC_REOPEN_CHATROOM, firstTime))
-
-        if (!firstTime) {
-            worker = worker.then(cleanDatabase())
-        }
 
         worker.enqueue()
 
@@ -140,21 +133,6 @@ object SyncSDK {
                 TimeUnit.MILLISECONDS
             )
             .addTag(DatabaseSyncWorker.NAME)
-            .build()
-    }
-
-    /**
-     * Worker to clean up non required database files
-     */
-    private fun cleanDatabase(): OneTimeWorkRequest {
-        return OneTimeWorkRequestBuilder<DatabaseCleanupWorker>()
-            .setConstraints(networkConstraint)
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
-                TimeUnit.MILLISECONDS
-            )
-            .addTag(DatabaseCleanupWorker.NAME)
             .build()
     }
 }

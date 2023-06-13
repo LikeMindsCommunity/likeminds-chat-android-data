@@ -25,7 +25,7 @@ class UserClient @Inject constructor() : BaseClient() {
             LMResponse(
                 success = true,
                 null,
-                ModelConverter.convertUser(userRO)
+                ModelConverter.convertUserRO(userRO)
             )
         }
     }

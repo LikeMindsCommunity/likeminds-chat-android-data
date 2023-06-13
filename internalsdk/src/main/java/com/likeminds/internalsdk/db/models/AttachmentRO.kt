@@ -16,7 +16,7 @@ open class AttachmentRO(
     var height: Int? = null,
     var awsFolderPath: String? = null,
     var localFilePath: String? = null,
-    var thumbnail: String? = null,
+    var thumbnailUrl: String? = null,
     var thumbnailAWSFolderPath: String? = null,
     var thumbnailLocalFilePath: String? = null,
     var metaRO: AttachmentMetaRO? = null,
@@ -36,7 +36,7 @@ open class AttachmentRO(
         builder.height,
         builder.awsFolderPath,
         builder.localFilePath,
-        builder.thumbnail,
+        builder.thumbnailUrl,
         builder.thumbnailAWSFolderPath,
         builder.thumbnailLocalFilePath,
         builder.metaRO,
@@ -64,7 +64,7 @@ open class AttachmentRO(
         var height: Int? = null
         var awsFolderPath: String? = null
         var localFilePath: String? = null
-        var thumbnail: String? = null
+        var thumbnailUrl: String? = null
         var thumbnailAWSFolderPath: String? = null
         var thumbnailLocalFilePath: String? = null
         var metaRO: AttachmentMetaRO? = null
@@ -84,7 +84,7 @@ open class AttachmentRO(
             height = this@AttachmentRO.height
             awsFolderPath = this@AttachmentRO.awsFolderPath
             localFilePath = this@AttachmentRO.localFilePath
-            thumbnail = this@AttachmentRO.thumbnail
+            thumbnailUrl = this@AttachmentRO.thumbnailUrl
             thumbnailAWSFolderPath = this@AttachmentRO.thumbnailAWSFolderPath
             thumbnailLocalFilePath = this@AttachmentRO.thumbnailLocalFilePath
             metaRO = this@AttachmentRO.metaRO

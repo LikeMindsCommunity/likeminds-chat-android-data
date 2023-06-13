@@ -3,8 +3,7 @@ package com.likeminds.likemindschat.sdk
 import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.conversation.model.*
-import com.likeminds.internalsdk.db.models.SDKClientInfoRO
-import com.likeminds.internalsdk.db.models.UserRO
+import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.helper.model.*
 import com.likeminds.internalsdk.homefeed.model.*
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
@@ -845,7 +844,7 @@ object ModelConverter {
      * Db Model -> Client Model
     --------------------------------*/
     // converts User db model to client model
-    fun convertUser(userRO: UserRO?): User? {
+    fun convertUserRO(userRO: UserRO?): User? {
         if (userRO == null) return null
         return User(
             userRO.id,
@@ -853,7 +852,7 @@ object ModelConverter {
             userRO.isGuest,
             userRO.name,
             userRO.organizationName,
-            convertSDKClientInfo(userRO.sdkClientInfoRO),
+            convertSDKClientInfoRO(userRO.sdkClientInfoRO),
             userRO.isDeleted,
             userRO.customTitle,
             userRO.updatedAt,
@@ -862,7 +861,7 @@ object ModelConverter {
     }
 
     // converts SDKClientInfo db model to client model
-    private fun convertSDKClientInfo(sdkClientInfoRO: SDKClientInfoRO?): SDKClientInfo? {
+    private fun convertSDKClientInfoRO(sdkClientInfoRO: SDKClientInfoRO?): SDKClientInfo? {
         return sdkClientInfoRO?.let {
             SDKClientInfo(
                 it.community,
@@ -870,5 +869,186 @@ object ModelConverter {
                 it.userUniqueId
             )
         }
+    }
+
+    fun convertChatroomRO(chatroomRO: ChatroomRO?): Chatroom? {
+        if (chatroomRO == null) return null
+        return Chatroom.Builder()
+            .id(chatroomRO.id)
+            .member(convertMemberRO(chatroomRO.member))
+            .communityId(chatroomRO.communityId)
+            .title(chatroomRO.title)
+            .state(chatroomRO.state)
+            .createdAt(chatroomRO.createdAt)
+            .type(chatroomRO.type)
+            .chatroomImageUrl(chatroomRO.chatroomImageUrl)
+            .header(chatroomRO.header)
+            .cardCreationTime(chatroomRO.cardCreationTime)
+            .totalResponseCount(chatroomRO.totalResponseCount)
+            .muteStatus(chatroomRO.muteStatus)
+            .followStatus(chatroomRO.followStatus)
+            .hasBeenNamed(chatroomRO.hasBeenNamed)
+            .date(chatroomRO.date)
+            .isTagged(chatroomRO.isTagged)
+            .isPending(chatroomRO.isPending)
+            .deletedBy(chatroomRO.deletedBy)
+            .updatedAt(chatroomRO.updatedAt)
+            .lastConversationId(chatroomRO.lastConversationId)
+            .lastConversation(convertConversationRO(chatroomRO.lastConversation))
+            .lastSeenConversationId(chatroomRO.lastSeenConversationId)
+            .lastSeenConversation(convertConversationRO(chatroomRO.lastSeenConversation))
+            .dateEpoch(chatroomRO.dateEpoch)
+            .unseenCount(chatroomRO.unseenCount)
+            .draftConversation(chatroomRO.draftConversation)
+            .isSecret(chatroomRO.isSecret)
+            .secretChatroomParticipants(chatroomRO.secretChatRoomParticipants.toList())
+            .secretChatroomLeft(chatroomRO.secretChatRoomLeft)
+            .topicId(chatroomRO.topicId)
+            .topic(convertConversationRO(chatroomRO.topic))
+            .autoFollowDone(chatroomRO.autoFollowDone)
+            .memberCanMessage(chatroomRO.memberCanMessage)
+            .isEdited(chatroomRO.isEdited)
+            .reactions(convertReactionsRO(chatroomRO.reactions))
+            .unreadConversationCount(chatroomRO.unreadConversationsCount)
+            .accessWithoutSubscription(chatroomRO.accessWithoutSubscription)
+            .externalSeen(chatroomRO.externalSeen)
+            .isConversationStored(chatroomRO.isConversationStored)
+            .isDraft(chatroomRO.isDraft)
+            .build()
+    }
+
+    fun convertConversationRO(conversationRO: ConversationRO?): Conversation? {
+        if (conversationRO == null) return null
+        return Conversation.Builder()
+            .id(conversationRO.id)
+            .chatroomId(conversationRO.chatroomId)
+            .communityId(conversationRO.communityId)
+            .member(convertMemberRO(conversationRO.member))
+            .answer(conversationRO.answer)
+            .state(conversationRO.state)
+            .createdAt(conversationRO.createdAt)
+            .createdEpoch(conversationRO.createdEpoch)
+            .attachments(convertAttachmentsRO(conversationRO.attachments.toList()))
+            .ogTags(convertLinkRO(conversationRO.link))
+            .date(conversationRO.date)
+            .isEdited(conversationRO.isEdited)
+            .lastSeen(conversationRO.lastSeen)
+            .replyConversationId(conversationRO.replyConversationId)
+            .replyConversation(convertConversationRO(conversationRO.replyConversation))
+            .deletedBy(conversationRO.deletedBy)
+            .attachmentCount(conversationRO.attachmentCount)
+            .attachmentUploaded(conversationRO.attachmentsUploaded)
+            .uploadWorkerUUID(conversationRO.uploadWorkerUUID)
+            .temporaryId(conversationRO.temporaryId)
+            .reactions(convertReactionsRO(conversationRO.reactions.toList()))
+            .isAnonymous(conversationRO.isAnonymous)
+            .allowAddOption(conversationRO.allowAddOption)
+            .pollType(conversationRO.pollType)
+            .pollTypeText(conversationRO.pollTypeText)
+            .submitTypeText(conversationRO.submitTypeText)
+            .expiryTime(conversationRO.expiryTime)
+            .multipleSelectNum(conversationRO.multipleSelectNum)
+            .multipleSelectState(conversationRO.multipleSelectState)
+            .polls(convertPollsRO(conversationRO.polls.toList()))
+            .pollAnswerText(conversationRO.pollAnswerText)
+            .toShowResults(conversationRO.toShowResults)
+            .replyChatroomId(conversationRO.replyChatRoomId)
+            .lastUpdated(conversationRO.lastUpdatedAt)
+            .build()
+    }
+
+    private fun convertMemberRO(memberRO: MemberRO?): Member? {
+        if (memberRO == null) return null
+        return Member.Builder()
+            .id(memberRO.id)
+            .userUniqueId(memberRO.userUniqueId)
+            .name(memberRO.name)
+            .imageUrl(memberRO.imageUrl)
+            .state(memberRO.state)
+            .customIntroText(memberRO.customIntroText)
+            .customClickText(memberRO.customClickText)
+            .customTitle(memberRO.customTitle)
+            .communityId(memberRO.communityId)
+            .isOwner(memberRO.isOwner)
+            .isGuest(memberRO.isGuest)
+            .build()
+    }
+
+    private fun convertAttachmentsRO(attachmentsRO: List<AttachmentRO>?): List<Attachment>? {
+        if (attachmentsRO.isNullOrEmpty()) return null
+        return attachmentsRO.map { attachmentRO ->
+            convertAttachmentRO(attachmentRO)
+        }
+    }
+
+    private fun convertAttachmentRO(attachmentRO: AttachmentRO): Attachment {
+        return Attachment.Builder()
+            .id(attachmentRO.id)
+            .name(attachmentRO.name)
+            .url(attachmentRO.url)
+            .type(attachmentRO.type)
+            .index(attachmentRO.index)
+            .width(attachmentRO.width)
+            .height(attachmentRO.height)
+            .awsFolderPath(attachmentRO.awsFolderPath)
+            .localFilePath(attachmentRO.localFilePath)
+            .thumbnailUrl(attachmentRO.thumbnailUrl)
+            .thumbnailAWSFolderPath(attachmentRO.thumbnailAWSFolderPath)
+            .thumbnailLocalFilePath(attachmentRO.thumbnailLocalFilePath)
+            .meta(convertAttachmentMetaRO(attachmentRO.metaRO))
+            .createdAt(attachmentRO.createdAt)
+            .updatedAt(attachmentRO.updatedAt)
+            .build()
+    }
+
+    private fun convertAttachmentMetaRO(attachmentMetaRO: AttachmentMetaRO?): AttachmentMeta? {
+        if (attachmentMetaRO == null) return null
+        return AttachmentMeta.Builder()
+            .numberOfPage(attachmentMetaRO.numberOfPage)
+            .duration(attachmentMetaRO.duration)
+            .size(attachmentMetaRO.size)
+            .build()
+    }
+
+    private fun convertLinkRO(linkRO: LinkRO?): LinkOGTags? {
+        if (linkRO == null) return null
+        return LinkOGTags.Builder()
+            .url(linkRO.url)
+            .title(linkRO.title)
+            .url(linkRO.url)
+            .description(linkRO.description)
+            .build()
+    }
+
+    private fun convertReactionsRO(reactionsRO: List<ReactionRO>?): List<Reaction>? {
+        if (reactionsRO.isNullOrEmpty()) return null
+        return reactionsRO.map { reactionRO ->
+            convertReactionRO(reactionRO)
+        }
+    }
+
+    private fun convertReactionRO(reactionRO: ReactionRO): Reaction {
+        return Reaction.Builder()
+            .reaction(reactionRO.reaction)
+            .member(convertMemberRO(reactionRO.member))
+            .build()
+    }
+
+    private fun convertPollsRO(pollsRO: List<PollRO>): List<Poll>? {
+        return pollsRO.map { pollRO ->
+            convertPollRO(pollRO)
+        }
+    }
+
+    private fun convertPollRO(pollRO: PollRO): Poll {
+        return Poll.Builder()
+            .id(pollRO.id)
+            .text(pollRO.text)
+            .isSelected(pollRO.isSelected)
+            .percentage(pollRO.percentage)
+            .subText(pollRO.subText)
+            .noVotes(pollRO.noVotes)
+            .member(convertMemberRO(pollRO.member))
+            .build()
     }
 }

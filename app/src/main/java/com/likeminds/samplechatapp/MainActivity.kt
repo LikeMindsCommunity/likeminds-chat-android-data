@@ -17,6 +17,27 @@ class MainActivity : AppCompatActivity() {
         const val TAG = "test_client"
     }
 
+    private val listener = object : HomeFeedChangeListener {
+        override fun initial(chatrooms: List<Chatroom>) {
+            super.initial(chatrooms)
+            Log.d(TAG, "MainActivity initial")
+        }
+
+        override fun onChanged(
+            removedIndex: List<Int>,
+            inserted: List<Pair<Int, Chatroom>>,
+            changed: List<Pair<Int, Chatroom>>
+        ) {
+            super.onChanged(removedIndex, inserted, changed)
+            Log.d(TAG, "MainActivity onChanged")
+        }
+
+        override fun onError(throwable: Throwable) {
+            super.onError(throwable)
+            Log.d(TAG, "MainActivity onError")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -33,7 +54,6 @@ class MainActivity : AppCompatActivity() {
             val initiateResponse = client.initiateUser(initiateUserRequest)
 
             Log.d(TAG, "initiateResponse:${initiateResponse.data?.user?.id}")
-
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     this@MainActivity,
@@ -41,29 +61,20 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-        }
 
-        val listener = object : HomeFeedChangeListener {
-            override fun initial(chatrooms: List<Chatroom>) {
-                super.initial(chatrooms)
-                Log.d(TAG, "MainActivity initial")
-            }
+            val config = client.getConfig()
+            Log.d(
+                TAG, """
+                config response:
+                microPoll: ${config.data?.enableMicroPolls}
+                audio: ${config.data?.enableAudio}
+            """.trimIndent()
+            )
 
-            override fun onChanged(
-                removedIndex: List<Int>,
-                inserted: List<Pair<Int, Chatroom>>,
-                changed: List<Pair<Int, Chatroom>>
-            ) {
-                super.onChanged(removedIndex, inserted, changed)
-                Log.d(TAG, "MainActivity onChanged")
-            }
 
-            override fun onError(throwable: Throwable) {
-                super.onError(throwable)
-                Log.d(TAG, "MainActivity onError")
+            withContext(Dispatchers.Main) {
+                client.getChatrooms(this@MainActivity, listener)
             }
         }
-
-        client.getChatrooms(this@MainActivity, listener)
     }
 }

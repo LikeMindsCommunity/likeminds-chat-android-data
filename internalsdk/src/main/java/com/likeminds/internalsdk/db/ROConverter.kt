@@ -90,6 +90,7 @@ object ROConverter {
 
             lastSeenConversationId = chatroom.lastSeenConversationId
             lastSeenConversation = savedChatroom?.lastSeenConversation
+            lastConversationId = chatroom.lastConversationId
             lastConversation = savedChatroom?.lastConversation
             this.lastConversationRO = lastConversationRO ?: savedChatroom?.lastConversationRO
 
@@ -378,7 +379,7 @@ object ROConverter {
                         oldAttachment.apply {
                             url = attachment.url
                             awsFolderPath = ""
-                            thumbnail = attachment.thumbnailUrl
+                            thumbnailUrl = attachment.thumbnailUrl
                             thumbnailAWSFolderPath = ""
                         }
                     } else {
@@ -395,7 +396,7 @@ object ROConverter {
                     return@map oldAttachment?.apply {
                         url = attachment.url
                         awsFolderPath = ""
-                        thumbnail = attachment.thumbnailUrl
+                        thumbnailUrl = attachment.thumbnailUrl
                         thumbnailAWSFolderPath = ""
                     } ?: convertAttachment(chatroomId, communityId, attachment)
                 }.toRealmList()
@@ -427,7 +428,7 @@ object ROConverter {
             height = attachment.height
             awsFolderPath = attachment.awsFolderPath
             localFilePath = attachment.localFilePath
-            thumbnail = attachment.thumbnailUrl
+            thumbnailUrl = attachment.thumbnailUrl
             thumbnailAWSFolderPath = attachment.thumbnailAWSFolderPath
             thumbnailLocalFilePath = attachment.thumbnailLocalFilePath
             metaRO = convertAttachmentMeta(attachment.meta)
@@ -466,7 +467,7 @@ object ROConverter {
             height = attachment.height
             awsFolderPath = attachment.awsFolderPath
             localFilePath = attachment.localFilePath
-            thumbnail = attachment.thumbnail
+            thumbnailUrl = attachment.thumbnailUrl
             thumbnailAWSFolderPath = attachment.thumbnailAWSFolderPath
             thumbnailLocalFilePath = attachment.thumbnailLocalFilePath
             metaRO = convertAttachmentMeta(attachment.metaRO)

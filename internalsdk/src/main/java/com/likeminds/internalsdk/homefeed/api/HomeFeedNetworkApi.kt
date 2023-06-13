@@ -5,7 +5,6 @@ import com.likeminds.internalsdk.homefeed.model._GetExploreTabCountResponse_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import retrofit2.http.GET
-import retrofit2.http.Query
 
 interface HomeFeedNetworkApi {
 
@@ -13,5 +12,5 @@ interface HomeFeedNetworkApi {
     suspend fun getExploreTabCount(): NetworkResponse<APIResponse<_GetExploreTabCountResponse_>>
 
     @GET("user/config")
-    suspend fun getConfig(@Query("ingest_your_communities") ingestYourCommunities: Boolean): NetworkResponse<APIResponse<_ConfigResponse_>>
+    suspend fun getConfig(): NetworkResponse<APIResponse<_ConfigResponse_>>
 }

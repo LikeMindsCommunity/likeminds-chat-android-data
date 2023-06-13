@@ -9,7 +9,7 @@ open class ChatroomRO(
     var id: String = "",
     var communityId: String = "",
     var title: String = "",
-    var state: Int? = null,
+    var state: Int = 0,
     var member: MemberRO? = null,
     var createdAt: Long? = null,
     var type: Int? = null,
@@ -47,9 +47,9 @@ open class ChatroomRO(
     var unreadConversationsCount: Int? = null,
     var accessWithoutSubscription: Boolean = false,
     var externalSeen: Boolean? = null,
-    //to check whether chatroom's conversation is saved or not
-    var isConversationStored: Boolean = false,
+    var isConversationStored: Boolean = false, //to check whether chatroom's conversation is saved or not
     var isDraft: Boolean? = null,
+    var lastConversationId: String? = null,
     @LinkingObjects("chatrooms")
     val communities: RealmResults<CommunityRO>? = null
 ) : RealmObject() {
@@ -99,7 +99,8 @@ open class ChatroomRO(
         builder.accessWithoutSubscription,
         builder.externalSeen,
         builder.isConversationStored,
-        builder.isDraft
+        builder.isDraft,
+        builder.lastConversationId
     )
 
     companion object {
@@ -118,7 +119,7 @@ open class ChatroomRO(
         var communityId: String
     ) {
 
-        var state: Int? = null
+        var state: Int = 0
         var member: MemberRO? = null
         var createdAt: Long? = null
         var type: Int? = null
@@ -158,6 +159,7 @@ open class ChatroomRO(
         var externalSeen: Boolean? = null
         var isConversationStored: Boolean = false
         var isDraft: Boolean? = null
+        var lastConversationId: String? = null
 
         fun build() = ChatroomRO(this)
     }
@@ -203,6 +205,7 @@ open class ChatroomRO(
             chatroomImageUrl = this@ChatroomRO.chatroomImageUrl
             isConversationStored = this@ChatroomRO.isConversationStored
             isDraft = this@ChatroomRO.isDraft
+            lastConversationId = this@ChatroomRO.lastConversationId
         }
     }
 }
