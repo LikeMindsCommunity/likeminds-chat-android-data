@@ -12,6 +12,6 @@ interface UserApi {
         request: _LogoutRequest_
     ): NetworkResponse<APIResponse<Nothing>>
 
-    //api to register user
+    //api to register user's device for notification
     suspend fun registerDevice(request: _RegisterDeviceRequest_): NetworkResponse<APIResponse<Nothing>>
 }

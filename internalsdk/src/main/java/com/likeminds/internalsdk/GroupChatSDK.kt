@@ -131,7 +131,7 @@ class GroupChatSDK {
 
             override fun onError(exception: Throwable) {
                 super.onError(exception)
-                Log.e("migrateDbAsync", "", exception)
+                Log.e(LOG_TAG, "migration occurred with", exception)
                 cb(false)
             }
         })

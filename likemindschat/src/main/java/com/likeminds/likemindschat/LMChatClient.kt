@@ -62,6 +62,8 @@ class LMChatClient private constructor() {
         @JvmStatic
         private var lmChatClientInstance: LMChatClient? = null
 
+        const val TAG = "LMChatClient"
+
         @JvmStatic
         fun getInstance(): LMChatClient {
             if (lmChatClientInstance == null) {

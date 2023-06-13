@@ -6,6 +6,7 @@ import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.models.ChatroomRO
 import com.likeminds.internalsdk.sync.SyncSDK
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.chatroom.model.Chatroom
@@ -110,7 +111,7 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
         //[Flow] of the [CollectionChange] of the Chatrooms
         val flowOfChatrooms = homeFeedDB.getChatrooms(realm)
 
-        //collect the floe
+        //collect the flow
         flowOfChatrooms.collect { collectionChange ->
             val changeSet = collectionChange.changeset
             val result = collectionChange.collection
@@ -118,7 +119,6 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
                 //Initial chatrooms
                 OrderedCollectionChangeSet.State.INITIAL -> {
                     result?.let {
-                        Log.d("PUI", "INITIAL: ${result.size}")
                         collection = it
                         val chatrooms = it.mapNotNull { chatroomRO ->
                             ModelConverter.convertChatroomRO(chatroomRO)
@@ -139,13 +139,11 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
 
                 //if any error
                 OrderedCollectionChangeSet.State.ERROR -> {
-                    Log.d("PUI", "ERROR: ${changeSet?.error?.message}")
                     listener.error(changeSet?.error ?: Throwable("Something went wrong"))
                 }
 
-                //
                 null -> {
-                    Log.d("PUI", "null")
+                    Log.d(LMChatClient.TAG, "first emit")
                 }
             }
         }

@@ -6,9 +6,10 @@ class Reaction private constructor(
     val member: Member?,
     val reaction: String
 ) {
+
     class Builder {
 
-        private var member: Member? = Member.Builder().build()
+        private var member: Member? = null
         private var reaction: String = ""
 
         fun member(member: Member?) = apply { this.member = member }

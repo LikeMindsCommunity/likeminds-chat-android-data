@@ -65,7 +65,7 @@ object ROConverter {
             header = chatroom.header
             cardCreationTime = chatroom.cardCreationTime
             totalResponseCount = savedChatroom?.totalResponseCount ?: 0
-            totalAllResponseCount = savedChatroom?.totalResponseCount ?: 0
+            totalAllResponseCount = savedChatroom?.totalAllResponseCount ?: 0
             muteStatus = chatroom.muteStatus
             followStatus = chatroom.followStatus
             hasBeenNamed = chatroom.hasBeenNamed

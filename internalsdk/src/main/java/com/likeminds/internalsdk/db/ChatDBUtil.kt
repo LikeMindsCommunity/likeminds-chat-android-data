@@ -1,6 +1,7 @@
 package com.likeminds.internalsdk.db
 
 import android.util.Log
+import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.chatroom.model.TYPE_DIRECT_MESSAGE
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.*
@@ -44,13 +45,19 @@ object ChatDBUtil {
             true
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e("Realm Write", "", e)
+            Log.e(GroupChatSDK.LOG_TAG, "write error", e)
             false
         } finally {
             ONGOING_WRITE_TRANSACTION.decrementAndGet()
         }
     }
 
+    /**
+     * this function is used inside [writeAsync]
+     * @param block: All the query that need to insert or update in local db
+     *
+     * @return [Boolean] whether write is successful or not
+     **/
     private fun write(block: (realm: Realm) -> Unit): Boolean {
         ONGOING_WRITE_TRANSACTION.incrementAndGet()
         Realm.getDefaultInstance().use { realm ->
@@ -61,7 +68,7 @@ object ChatDBUtil {
                 true
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.e("Realm Write", "", e)
+                Log.e(GroupChatSDK.LOG_TAG, "write async error", e)
                 false
             } finally {
                 ONGOING_WRITE_TRANSACTION.decrementAndGet()
@@ -142,19 +149,19 @@ object ChatDBUtil {
     }
 
     /**
-     * To get a specific [ConversationRO] as per [id]
+     * To get a specific [ConversationRO] as per [conversationId]
      *
      * @param realm: Instance of realm
-     * @param id: Id of the conversation to be fetched
+     * @param conversationId: Id of the conversation to be fetched
      *
      * @return [ConversationRO]
      */
-    fun getConversation(realm: Realm, id: String?): ConversationRO? {
-        if (id.isNullOrEmpty()) {
+    fun getConversation(realm: Realm, conversationId: String?): ConversationRO? {
+        if (conversationId.isNullOrEmpty()) {
             return null
         }
         return realm.where(ConversationRO::class.java)
-            .equalTo(DbKey.ID, id)
+            .equalTo(DbKey.ID, conversationId)
             .findFirst()
     }
 
@@ -235,7 +242,7 @@ object ChatDBUtil {
 
         chatroomRO.topic = chatRoomTopic
 
-//        //chatroom updated at for sorting
+        //chatroom updated at for sorting
         val lastConversationCreatedEpoch = if (chatroomRO.type == TYPE_DIRECT_MESSAGE) {
             chatroomRO.lastConversation?.createdEpoch
         } else {
@@ -312,10 +319,10 @@ object ChatDBUtil {
         communityId: String?,
         memberId: String?
     ): MemberRO? {
-        val uid1 = "$memberId#${communityId}"
-        val member = getMemberByUid(realm, uid1)
+        val uid = "$memberId#${communityId}"
+        val member = getMemberByUid(realm, uid)
         if (member == null) {
-            Log.e("Member not found", uid1)
+            Log.e(GroupChatSDK.LOG_TAG, "Member not found: $uid")
         }
         return member
     }

@@ -13,6 +13,7 @@ object SyncSDK {
 
     private var ongoingSyncTypes = ArrayList<@SyncType String>()
 
+    //clear the ongoingSyncType array after all the workers are completed
     fun clearSyncType(@SyncType syncType: String) {
         ongoingSyncTypes.remove(syncType)
     }
@@ -23,13 +24,10 @@ object SyncSDK {
 
     /**
      * Sync steps for
-     * 1. Fetch app config, compute new communities if present
-     * 2. Fetch and save page = 1 for chatroom sync in blocker shimmer view
-     * 3. Run a database sync worker to make relationships for responses till now
-     * 4. Remove shimmer
-     * 5. Fetch and save page = 2 to empty response for chatroom sync
-     * 6. Run a database sync worker to make relationships for responses till now
-     * 7. if app is not open for the first time then clean database as well
+     * 1. Fetch and save page = 1 for chatroom sync
+     * 2. Run a database sync worker to make relationships for responses till now
+     * 3. Fetch and save page = 2 to empty response for chatroom sync
+     * 4. Run a database sync worker to make relationships for responses till now
      *
      * Return: Pair -> first: live data of blockerWork, second: live data of app config worker
      */
@@ -44,23 +42,21 @@ object SyncSDK {
             .beginWith(firstTimeSyncChatroom(false))
             .then(syncDatabase(SYNC_FIRST_TIME_HOME_FEED, firstTime))
 
-        var backgroundWork = blockerWorker.then(firstTimeSyncChatroom(true))
+        val backgroundWork = blockerWorker.then(firstTimeSyncChatroom(true))
             .then(syncDatabase(SYNC_FIRST_TIME_HOME_FEED, firstTime))
 
         backgroundWork.enqueue()
         return if (firstTime) {
             Pair(blockerWorker.workInfosLiveData, null)
         } else {
-            Pair(null, blockerWorker.workInfosLiveData)
+            Pair(null, backgroundWork.workInfosLiveData)
         }
     }
 
     /**
      * Sync steps for
-     * 1. Fetch app config, compute new communities if present
-     * 2. Fetch and save for page = 1 to empty response for reopen chatroom sync workers
-     * 3. Run a database worker
-     * 4. if app is not open for the first time then clean database as well
+     * 1. Fetch and save for page = 1 to empty response for reopen chatroom sync workers
+     * 2. Run a database worker
      *
      * Return: live data of worker
      */

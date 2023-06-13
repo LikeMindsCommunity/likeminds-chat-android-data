@@ -843,7 +843,7 @@ object ModelConverter {
     /**--------------------------------
      * Db Model -> Client Model
     --------------------------------*/
-    // converts User db model to client model
+    // converts UserRO model to client model
     fun convertUserRO(userRO: UserRO?): User? {
         if (userRO == null) return null
         return User(
@@ -860,7 +860,7 @@ object ModelConverter {
         )
     }
 
-    // converts SDKClientInfo db model to client model
+    // converts SDKClientInfoRO model to client model
     private fun convertSDKClientInfoRO(sdkClientInfoRO: SDKClientInfoRO?): SDKClientInfo? {
         return sdkClientInfoRO?.let {
             SDKClientInfo(
@@ -871,6 +871,7 @@ object ModelConverter {
         }
     }
 
+    // converts ChatroomRO model to client model
     fun convertChatroomRO(chatroomRO: ChatroomRO?): Chatroom? {
         if (chatroomRO == null) return null
         return Chatroom.Builder()
@@ -917,6 +918,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts ConversationRO model to client model
     fun convertConversationRO(conversationRO: ConversationRO?): Conversation? {
         if (conversationRO == null) return null
         return Conversation.Builder()
@@ -957,6 +959,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts MemberRO model to client model
     private fun convertMemberRO(memberRO: MemberRO?): Member? {
         if (memberRO == null) return null
         return Member.Builder()
@@ -974,6 +977,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts list of AttachmentRO model to client model
     private fun convertAttachmentsRO(attachmentsRO: List<AttachmentRO>?): List<Attachment>? {
         if (attachmentsRO.isNullOrEmpty()) return null
         return attachmentsRO.map { attachmentRO ->
@@ -981,6 +985,7 @@ object ModelConverter {
         }
     }
 
+    // converts AttachmentRO model to client model
     private fun convertAttachmentRO(attachmentRO: AttachmentRO): Attachment {
         return Attachment.Builder()
             .id(attachmentRO.id)
@@ -1001,6 +1006,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts AttachmentMetaRO model to client model
     private fun convertAttachmentMetaRO(attachmentMetaRO: AttachmentMetaRO?): AttachmentMeta? {
         if (attachmentMetaRO == null) return null
         return AttachmentMeta.Builder()
@@ -1010,6 +1016,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts LinkRO model to client model
     private fun convertLinkRO(linkRO: LinkRO?): LinkOGTags? {
         if (linkRO == null) return null
         return LinkOGTags.Builder()
@@ -1020,6 +1027,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts list of ReactionRO to client model
     private fun convertReactionsRO(reactionsRO: List<ReactionRO>?): List<Reaction>? {
         if (reactionsRO.isNullOrEmpty()) return null
         return reactionsRO.map { reactionRO ->
@@ -1027,6 +1035,7 @@ object ModelConverter {
         }
     }
 
+    // converts ReactionRO model to client model
     private fun convertReactionRO(reactionRO: ReactionRO): Reaction {
         return Reaction.Builder()
             .reaction(reactionRO.reaction)
@@ -1034,12 +1043,14 @@ object ModelConverter {
             .build()
     }
 
+    // converts list of PollRO model to client model
     private fun convertPollsRO(pollsRO: List<PollRO>): List<Poll>? {
         return pollsRO.map { pollRO ->
             convertPollRO(pollRO)
         }
     }
 
+    // converts PollRO model to client model
     private fun convertPollRO(pollRO: PollRO): Poll {
         return Poll.Builder()
             .id(pollRO.id)

@@ -5,17 +5,17 @@ import com.likeminds.internalsdk.community.model._Member_
 
 class _ReactionMeta_ private constructor(
     @SerializedName("id")
-    var id: Int,
+    val id: Int,
     @SerializedName("reaction")
-    var reaction: String,
+    val reaction: String,
     @SerializedName("chatroom_id")
-    var chatroomId: Int?,
+    val chatroomId: Int?,
     @SerializedName("conversation_id")
-    var conversationId: Int?,
+    val conversationId: Int?,
     @SerializedName("user_id")
-    var userId: Int,
+    val userId: Int,
     @SerializedName("member")
-    var member: _Member_?
+    val member: _Member_?
 ) {
 
     class Builder {
