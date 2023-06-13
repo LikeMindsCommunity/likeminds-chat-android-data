@@ -7,7 +7,9 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 
 interface HomeFeedApi {
 
+    //api to get explore tab count
     suspend fun getExploreTabCount(): NetworkResponse<APIResponse<_GetExploreTabCountResponse_>>
 
+    //api to get config
     suspend fun getConfig(): NetworkResponse<APIResponse<_ConfigResponse_>>
 }

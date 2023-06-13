@@ -8,5 +8,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface HomeFeedDB {
 
+    //db query to get chatrooms for home feed
     fun getChatrooms(realm: Realm): Flow<CollectionChange<RealmResults<ChatroomRO>>>
 }

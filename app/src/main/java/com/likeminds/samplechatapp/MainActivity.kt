@@ -18,22 +18,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val listener = object : HomeFeedChangeListener {
-        override fun initial(chatrooms: List<Chatroom>) {
-            super.initial(chatrooms)
+        override fun initialChatrooms(chatrooms: List<Chatroom>) {
+            super.initialChatrooms(chatrooms)
             Log.d(TAG, "MainActivity initial")
         }
 
-        override fun onChanged(
+        override fun changedChatrooms(
             removedIndex: List<Int>,
             inserted: List<Pair<Int, Chatroom>>,
             changed: List<Pair<Int, Chatroom>>
         ) {
-            super.onChanged(removedIndex, inserted, changed)
+            super.changedChatrooms(removedIndex, inserted, changed)
             Log.d(TAG, "MainActivity onChanged")
         }
 
-        override fun onError(throwable: Throwable) {
-            super.onError(throwable)
+        override fun error(throwable: Throwable) {
+            super.error(throwable)
             Log.d(TAG, "MainActivity onError")
         }
     }

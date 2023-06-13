@@ -91,6 +91,7 @@ class LMChatClient private constructor() {
         return homeFeedClient.getExploreTabCount()
     }
 
+    //function to get chatrooms for home feed
     suspend fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
         homeFeedClient.getChatrooms(context, listener)
     }

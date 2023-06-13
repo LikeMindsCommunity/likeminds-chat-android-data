@@ -28,6 +28,13 @@ object ChatDBUtil {
         }
     }
 
+    /**
+     * Use this function where background is already started
+     * @param realm: Instance of realm
+     * @param block: All the query that need to insert or update in local db
+     *
+     * @return [Boolean] whether write is successful or not
+     **/
     fun write(realm: Realm, block: (realm: Realm) -> Unit): Boolean {
         ONGOING_WRITE_TRANSACTION.incrementAndGet()
         return try {
@@ -62,6 +69,9 @@ object ChatDBUtil {
         }
     }
 
+    /**
+     * Check whether local db is empty or not
+     */
     fun isEmpty(): Boolean {
         Realm.getDefaultInstance().use { realm ->
             if (realm.isEmpty) {
@@ -72,10 +82,22 @@ object ChatDBUtil {
         }
     }
 
+    /**
+     * To fetch the [AppConfigRO] object
+     * @return [AppConfigRO]
+     */
     fun getAppConfig(realm: Realm): AppConfigRO? {
         return realm.where(AppConfigRO::class.java).findFirst()
     }
 
+    /**
+     * To get the [CommunityRO] object as per [communityId]
+     *
+     * @param realm: Instance of realm
+     * @param communityId: Id of the community to be fetched
+     *
+     * @return [CommunityRO]
+     */
     fun getCommunity(realm: Realm, communityId: String?): CommunityRO? {
         if (communityId.isNullOrEmpty()) {
             return null
@@ -85,6 +107,14 @@ object ChatDBUtil {
             .findFirst()
     }
 
+    /**
+     * To get the list of all [ChatroomRO] object as per [communityId]
+     *
+     * @param realm: Instance of realm
+     * @param communityId: Id of the community to be fetched
+     *
+     * @return list of [ChatroomRO]
+     */
     fun getChatrooms(
         realm: Realm,
         communityId: String
@@ -94,6 +124,14 @@ object ChatDBUtil {
             .findAll()
     }
 
+    /**
+     * To get a specific [ChatroomRO] as per [chatroomId]
+     *
+     * @param realm: Instance of realm
+     * @param chatroomId: Id of the chatroom to be fetched
+     *
+     * @return [ChatroomRO]
+     */
     fun getChatroom(realm: Realm, chatroomId: String?): ChatroomRO? {
         if (chatroomId.isNullOrEmpty()) {
             return null
@@ -103,6 +141,14 @@ object ChatDBUtil {
             .findFirst()
     }
 
+    /**
+     * To get a specific [ConversationRO] as per [id]
+     *
+     * @param realm: Instance of realm
+     * @param id: Id of the conversation to be fetched
+     *
+     * @return [ConversationRO]
+     */
     fun getConversation(realm: Realm, id: String?): ConversationRO? {
         if (id.isNullOrEmpty()) {
             return null
@@ -112,6 +158,14 @@ object ChatDBUtil {
             .findFirst()
     }
 
+    /**
+     * To get a list of the [ConversationRO] of a community
+     *
+     * @param realm: Instance of realm
+     * @param communityId: Id of the community whose conversations are fetched
+     *
+     * @return [ConversationRO]
+     */
     fun getCommunityConversations(
         realm: Realm,
         communityId: String
@@ -121,6 +175,14 @@ object ChatDBUtil {
             .findAll()
     }
 
+    /**
+     * To get a list of the [ConversationRO] of a chatroom
+     *
+     * @param realm: Instance of realm
+     * @param chatroomId: Id of the chatroom whose conversations are fetched
+     *
+     * @return [ConversationRO]
+     */
     fun getChatroomConversations(
         realm: Realm,
         chatroomId: String
@@ -236,6 +298,15 @@ object ChatDBUtil {
         chatroomRO.relationshipNeeded = false
     }
 
+    /**
+     * To get a specific [MemberRO] of a community
+     *
+     * @param realm: Instance of realm
+     * @param communityId: Id of the community
+     * @param memberId: Id of the member
+     *
+     * @return [MemberRO]
+     */
     fun getMember(
         realm: Realm,
         communityId: String?,

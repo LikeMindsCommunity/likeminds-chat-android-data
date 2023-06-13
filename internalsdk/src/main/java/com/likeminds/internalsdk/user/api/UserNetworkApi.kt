@@ -18,7 +18,4 @@ interface UserNetworkApi {
         @Header("x-device-id") deviceId: String,
         @Body request: _RegisterDeviceRequest_
     ): NetworkResponse<APIResponse<Nothing>>
-
-    @GET("user/meta")
-    suspend fun getUserMeta(): NetworkResponse<APIResponse<_UserMetaResponse_>>
 }

@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.work.*
 import com.likeminds.internalsdk.db.ChatDBUtil
-import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_FOLLOWED
-import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_REOPEN_CHATROOM
+import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_FIRST_TIME_HOME_FEED
+import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_REOPEN_HOME_FEED
 import com.likeminds.internalsdk.sync.worker.*
 import java.util.concurrent.TimeUnit
 
@@ -34,18 +34,18 @@ object SyncSDK {
      * Return: Pair -> first: live data of blockerWork, second: live data of app config worker
      */
     fun startFirstHomeFeedSync(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
-        if (ongoingSyncTypes.contains(SYNC_FOLLOWED)) {
+        if (ongoingSyncTypes.contains(SYNC_FIRST_TIME_HOME_FEED)) {
             return null
         }
-        ongoingSyncTypes.add(SYNC_FOLLOWED)
+        ongoingSyncTypes.add(SYNC_FIRST_TIME_HOME_FEED)
         val firstTime = ChatDBUtil.isEmpty()
 
         val blockerWorker = WorkManager.getInstance(context)
             .beginWith(firstTimeSyncChatroom(false))
-            .then(syncDatabase(SYNC_FOLLOWED, firstTime))
+            .then(syncDatabase(SYNC_FIRST_TIME_HOME_FEED, firstTime))
 
         var backgroundWork = blockerWorker.then(firstTimeSyncChatroom(true))
-            .then(syncDatabase(SYNC_FOLLOWED, firstTime))
+            .then(syncDatabase(SYNC_FIRST_TIME_HOME_FEED, firstTime))
 
         backgroundWork.enqueue()
         return if (firstTime) {
@@ -65,16 +65,16 @@ object SyncSDK {
      * Return: live data of worker
      */
     fun startReopenSyncForHomeFeed(context: Context): LiveData<MutableList<WorkInfo>>? {
-        if (ongoingSyncTypes.contains(SYNC_REOPEN_CHATROOM)) {
+        if (ongoingSyncTypes.contains(SYNC_REOPEN_HOME_FEED)) {
             return null
         }
 
         val firstTime = ChatDBUtil.isEmpty()
 
-        ongoingSyncTypes.add(SYNC_REOPEN_CHATROOM)
+        ongoingSyncTypes.add(SYNC_REOPEN_HOME_FEED)
         var worker = WorkManager.getInstance(context)
             .beginWith(reopenSyncChatroom())
-            .then(syncDatabase(SYNC_REOPEN_CHATROOM, firstTime))
+            .then(syncDatabase(SYNC_REOPEN_HOME_FEED, firstTime))
 
         worker.enqueue()
 

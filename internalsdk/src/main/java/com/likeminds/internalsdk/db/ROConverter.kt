@@ -34,7 +34,7 @@ object ROConverter {
     }
 
     /**
-     * convert [_Chatroom_] to [ChatroomRO] from new sync workers
+     * convert [_Chatroom_] to [ChatroomRO]
      * @param realm: instance of realm
      * @param chatroom: Chatroom object to converted
      * @param chatroomCreatorRO: [MemberRO] object of chatroom's creator
@@ -106,7 +106,7 @@ object ROConverter {
     }
 
     /**
-     * convert [_Conversation_] to [ConversationRO] from new sync workers
+     * convert [_Conversation_] to [ConversationRO]
      * @param realm: instance of realm
      * @param conversation: Conversation object to converted
      * @param creator: [MemberRO] object of conversation's creator
@@ -225,7 +225,10 @@ object ROConverter {
         }
     }
 
-    //convert _User_ -> UserRO
+    /**
+     * convert [_User_] to [UserRO]
+     * @param user: Object of user to be converted
+     * */
     fun convertUser(user: _User_?): UserRO? {
         if (user == null) return null
 
@@ -271,7 +274,10 @@ object ROConverter {
         }
     }
 
-    //convert _SDKClientInfo_ -> SDKClientInfoRO
+    /**
+     * convert [_SDKClientInfo_] to [_SDKClientInfo_]
+     * @param sdkClientInfo: Object of sdkClientInfo to be converted
+     * */
     private fun convertSDKClientInfo(sdkClientInfo: _SDKClientInfo_?): SDKClientInfoRO? {
         if (sdkClientInfo == null) return null
         return SDKClientInfoRO.build {
@@ -404,16 +410,12 @@ object ROConverter {
         }
     }
 
-    private fun convertAttachments(
-        chatroomId: String,
-        communityId: String,
-        attachments: List<_Attachment_>?
-    ): RealmList<AttachmentRO> {
-        return (attachments ?: emptyList()).map { attachment ->
-            convertAttachment(chatroomId, communityId, attachment)
-        }.toRealmList()
-    }
-
+    /**
+     * convert [_Attachment_] to [AttachmentRO]
+     * @param chatroomId: id of the chatroom
+     * @param communityId: id of the community
+     * @param attachment: [_Attachment_] to be converted
+     * */
     private fun convertAttachment(
         chatroomId: String,
         communityId: String,
@@ -437,6 +439,10 @@ object ROConverter {
         }
     }
 
+    /**
+     * convert [_AttachmentMeta_] to [AttachmentMetaRO]
+     * @param meta: [_AttachmentMeta_] to be converted
+     * */
     private fun convertAttachmentMeta(meta: _AttachmentMeta_?): AttachmentMetaRO {
         return AttachmentMetaRO.build {
             numberOfPage = meta?.numberOfPage
@@ -445,6 +451,10 @@ object ROConverter {
         }
     }
 
+    /**
+     * convert [AttachmentMetaRO] to [AttachmentMetaRO]
+     * @param meta: [AttachmentMetaRO] to be converted
+     * */
     private fun convertAttachmentMeta(meta: AttachmentMetaRO?): AttachmentMetaRO {
         return AttachmentMetaRO.build {
             numberOfPage = meta?.numberOfPage
@@ -453,13 +463,17 @@ object ROConverter {
         }
     }
 
+    /**
+     * convert [AttachmentRO] to [AttachmentMetaRO]
+     * @param meta: [AttachmentRO] to be converted
+     * */
     private fun convertAttachment(
         chatroomId: String,
         communityId: String,
         attachment: AttachmentRO
     ): AttachmentRO {
         return AttachmentRO.build(attachment.url, chatroomId, communityId) {
-            id = attachment.id.toString()
+            id = attachment.id
             name = attachment.name
             type = attachment.type
             index = attachment.index
@@ -476,6 +490,14 @@ object ROConverter {
         }
     }
 
+    /**
+     * convert [_Poll_] to [PollRO]
+     * @param realm: Instance of realm
+     * @param polls: List of [_Poll_] to converted
+     * @param communityId: id of the community
+     *
+     * @return list of [PollRO]
+     * */
     private fun convertPolls(
         realm: Realm,
         polls: MutableList<_Poll_>?,
@@ -486,6 +508,15 @@ object ROConverter {
         }.toRealmList()
     }
 
+    /**
+     * convert [_Poll_] to [PollRO]
+     * @param realm: Instance of realm
+     * @param poll: [_Poll_] to converted
+     * @param communityId: id of the community
+     * @param memberId: id of the member who created the poll
+     *
+     * @return list of [PollRO]
+     * */
     fun convertPoll(
         realm: Realm,
         communityId: String?,
@@ -502,6 +533,14 @@ object ROConverter {
         }
     }
 
+    /**
+     * convert [_ReactionMeta_] to [ReactionRO]
+     * @param realm: Instance of realm
+     * @param reactions: List of [_ReactionMeta_] to converted
+     * @param communityId: id of the community
+     *
+     * @return list of [ReactionRO]
+     * */
     private fun convertReactionsMeta(
         realm: Realm,
         communityId: String?,
@@ -512,6 +551,14 @@ object ROConverter {
         }.toRealmList()
     }
 
+    /**
+     * convert [_ReactionMeta_] to [ReactionRO]
+     * @param realm: Instance of realm
+     * @param reaction: [_ReactionMeta_] to converted
+     * @param communityId: id of the community
+     *
+     * @return [ReactionRO]
+     * */
     private fun convertReactionMeta(
         realm: Realm,
         reaction: _ReactionMeta_,
@@ -529,6 +576,14 @@ object ROConverter {
         }
     }
 
+    /**
+     * convert [_LinkOGTags_] to [LinkRO]
+     * @param chatroomId: id of the chatroom
+     * @param communityId: id of the community
+     * @param link: [_LinkOGTags_] to be converted
+     *
+     * @return list of [ReactionRO]
+     * */
     fun convertLink(
         chatroomId: String,
         communityId: String,

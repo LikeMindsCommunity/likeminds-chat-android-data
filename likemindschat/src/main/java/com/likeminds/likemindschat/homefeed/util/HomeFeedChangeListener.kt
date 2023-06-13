@@ -4,13 +4,13 @@ import com.likeminds.likemindschat.chatroom.model.Chatroom
 
 interface HomeFeedChangeListener {
 
-    fun initial(chatrooms: List<Chatroom>) {}
-    fun onChanged(
+    fun initialChatrooms(chatrooms: List<Chatroom>) {}
+    fun changedChatrooms(
         removedIndex: List<Int>,
         inserted: List<Pair<Int, Chatroom>>,
         changed: List<Pair<Int, Chatroom>>
     ) {
     }
 
-    fun onError(throwable: Throwable) {}
+    fun error(throwable: Throwable) {}
 }

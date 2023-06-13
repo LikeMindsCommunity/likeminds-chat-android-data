@@ -27,6 +27,7 @@ object SyncUtil {
 
     const val TAG = "SyncWorker"
 
+    //Stores App config data to DB
     fun saveAppConfig(communityId: String) {
         if (communityId.isEmpty()) return
         val realm = Realm.getDefaultInstance()

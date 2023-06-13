@@ -80,28 +80,42 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * Start the Sync workers and get db query for chatrooms for home feed
+     *
+     * @param context: Context of the Activity/Fragment
+     * @param listener: [HomeFeedChangeListener] to get object of the chatrooms as per requirements
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     */
     suspend fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
         //validates the client request
         RequestUtils.validate()
 
+        //create realm object
         val realm = Realm.getDefaultInstance()
 
+        //check whether db is empty or not
         val isFirstTime = ChatDBUtil.isEmpty()
+
+        /**
+         * if empty start first time chatroom worker else reopen
+         */
         if (isFirstTime) {
-            Log.d("PUI", "first time")
             SyncSDK.startFirstHomeFeedSync(context)
         } else {
-            Log.d("PUI", "reopen")
             SyncSDK.startReopenSyncForHomeFeed(context)
         }
 
+        //[Flow] of the [CollectionChange] of the Chatrooms
         val flowOfChatrooms = homeFeedDB.getChatrooms(realm)
 
+        //collect the floe
         flowOfChatrooms.collect { collectionChange ->
-            Log.d("PUI", "collect: $collectionChange")
             val changeSet = collectionChange.changeset
             val result = collectionChange.collection
             when (collectionChange.changeset?.state) {
+                //Initial chatrooms
                 OrderedCollectionChangeSet.State.INITIAL -> {
                     result?.let {
                         Log.d("PUI", "INITIAL: ${result.size}")
@@ -109,31 +123,27 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
                         val chatrooms = it.mapNotNull { chatroomRO ->
                             ModelConverter.convertChatroomRO(chatroomRO)
                         }
-                        listener.initial(chatrooms)
+                        listener.initialChatrooms(chatrooms)
                     }
                 }
 
+                //Updated chatrooms i.e. inserted or changed
                 OrderedCollectionChangeSet.State.UPDATE -> {
                     changeSet?.let {
                         collection = result
                         val insertions = getIndexedChatrooms(it.insertions)
                         val changes = getIndexedChatrooms(it.changes)
-                        Log.d(
-                            "PUI", """
-                            UPDATE:
-                            insertion: ${insertions.size}
-                            changes: ${changes.size}
-                        """.trimIndent()
-                        )
-                        listener.onChanged(it.deletions.reversed(), insertions, changes)
+                        listener.changedChatrooms(it.deletions.reversed(), insertions, changes)
                     }
                 }
 
+                //if any error
                 OrderedCollectionChangeSet.State.ERROR -> {
                     Log.d("PUI", "ERROR: ${changeSet?.error?.message}")
-                    listener.onError(changeSet?.error ?: Throwable("Something went wrong"))
+                    listener.error(changeSet?.error ?: Throwable("Something went wrong"))
                 }
 
+                //
                 null -> {
                     Log.d("PUI", "null")
                 }

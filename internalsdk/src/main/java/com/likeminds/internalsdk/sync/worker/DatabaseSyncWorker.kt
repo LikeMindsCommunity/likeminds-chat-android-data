@@ -10,9 +10,8 @@ import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.db.util.toRealmList
 import com.likeminds.internalsdk.sync.SyncSDK
 import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_CHATROOM
-import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_DIRECT_MESSAGE_AND_EVENT
-import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_FOLLOWED
-import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_REOPEN_CHATROOM
+import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_FIRST_TIME_HOME_FEED
+import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_REOPEN_HOME_FEED
 import com.likeminds.internalsdk.user.util.UserPreferences
 import com.likeminds.internalsdk.utils.measureExecution
 import io.realm.Realm
@@ -61,7 +60,7 @@ class DatabaseSyncWorker(
                     }
 
                 when {
-                    syncType == SYNC_FOLLOWED || syncType == SYNC_DIRECT_MESSAGE_AND_EVENT || syncType == SYNC_REOPEN_CHATROOM -> {
+                    syncType == SYNC_FIRST_TIME_HOME_FEED || syncType == SYNC_REOPEN_HOME_FEED -> {
                         //Add inverse relationships to communities
                         val communities = realm.where(CommunityRO::class.java)
                             .equalTo(DbKey.RELATIONSHIP_NEEDED, true)
