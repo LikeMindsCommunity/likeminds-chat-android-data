@@ -5,6 +5,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
+import com.likeminds.likemindschat.chatroom.model.Chatroom
+import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import kotlinx.coroutines.*
 
@@ -39,8 +41,29 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-
-            client.startFirstTimeSync(this@MainActivity)
         }
+
+        val listener = object : HomeFeedChangeListener {
+            override fun initial(chatrooms: List<Chatroom>) {
+                super.initial(chatrooms)
+                Log.d(TAG, "MainActivity initial")
+            }
+
+            override fun onChanged(
+                removedIndex: List<Int>,
+                inserted: List<Pair<Int, Chatroom>>,
+                changed: List<Pair<Int, Chatroom>>
+            ) {
+                super.onChanged(removedIndex, inserted, changed)
+                Log.d(TAG, "MainActivity onChanged")
+            }
+
+            override fun onError(throwable: Throwable) {
+                super.onError(throwable)
+                Log.d(TAG, "MainActivity onError")
+            }
+        }
+
+        client.getChatrooms(this@MainActivity, listener)
     }
 }

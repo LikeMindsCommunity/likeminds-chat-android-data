@@ -9,7 +9,7 @@ open class AppConfigRO(
     @PrimaryKey
     var id: Int = 0,
     @Required
-    var communities: RealmList<Int> = RealmList(),
+    var communities: RealmList<String> = RealmList(),
     var isConversationsSynced: Boolean = false,
     var isChatroomsSynced: Boolean = false,
     var isCommunitiesSynced: Boolean = false
@@ -31,7 +31,7 @@ open class AppConfigRO(
     class Builder {
 
         var id: Int = 0
-        var communities: RealmList<Int> = RealmList()
+        var communities: RealmList<String> = RealmList()
         var isConversationsSynced: Boolean = false
         var isChatroomsSynced: Boolean = false
         var isCommunitiesSynced: Boolean = false

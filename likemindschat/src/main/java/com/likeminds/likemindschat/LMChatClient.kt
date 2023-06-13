@@ -2,7 +2,6 @@ package com.likeminds.likemindschat
 
 import android.app.Application
 import android.content.Context
-import com.likeminds.internalsdk.sync.SyncSDK
 import com.likeminds.likemindschat.chatroom.ChatroomClient
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.helper.HelperClient
@@ -10,6 +9,7 @@ import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
+import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
 import com.likeminds.likemindschat.initiateUser.model.*
 import com.likeminds.likemindschat.moderation.ModerationClient
@@ -89,6 +89,10 @@ class LMChatClient private constructor() {
     //function to get explore tab count
     suspend fun getExploreTabCount(): LMResponse<GetExploreTabCountResponse> {
         return homeFeedClient.getExploreTabCount()
+    }
+
+    fun getChatrooms(context: Context, homeFeedChangeListener: HomeFeedChangeListener) {
+        homeFeedClient.getChatrooms(context, homeFeedChangeListener)
     }
 
     //function to get config details
@@ -179,9 +183,5 @@ class LMChatClient private constructor() {
     // Exposed function to fetch tagging list
     suspend fun getTaggingList(getTaggingListRequest: GetTaggingListRequest): LMResponse<GetTaggingListResponse> {
         return helperClient.getTaggingList(getTaggingListRequest)
-    }
-
-    fun startFirstTimeSync(context: Context) {
-        SyncSDK.startFirstHomeFeedSync(context)
     }
 }

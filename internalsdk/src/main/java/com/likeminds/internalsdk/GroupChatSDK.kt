@@ -12,8 +12,10 @@ import com.likeminds.internalsdk.db.util.DbCompactOnLaunchCallback
 import com.likeminds.internalsdk.di.*
 import com.likeminds.internalsdk.helper.HelperApi
 import com.likeminds.internalsdk.helper.HelperApiImpl
-import com.likeminds.internalsdk.homefeed.HomeFeedApi
-import com.likeminds.internalsdk.homefeed.HomeFeedApiImpl
+import com.likeminds.internalsdk.homefeed.api.HomeFeedApi
+import com.likeminds.internalsdk.homefeed.api.HomeFeedApiImpl
+import com.likeminds.internalsdk.homefeed.db.HomeFeedDB
+import com.likeminds.internalsdk.homefeed.db.HomeFeedDBImpl
 import com.likeminds.internalsdk.moderation.ModerationApi
 import com.likeminds.internalsdk.moderation.ModerationApiImpl
 import com.likeminds.internalsdk.poll.PollApi
@@ -63,6 +65,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var homeFeedApi: HomeFeedApiImpl
+
+    @Inject
+    lateinit var homeFeedDB: HomeFeedDBImpl
 
     @Inject
     lateinit var chatroomApiImpl: ChatroomApiImpl
@@ -178,8 +183,12 @@ class GroupChatSDK {
         return communityApiImpl
     }
 
-    fun homeFeedApi(): HomeFeedApi {
+    fun getHomeFeedApi(): HomeFeedApi {
         return homeFeedApi
+    }
+
+    fun getHomeFeedDb(): HomeFeedDB {
+        return homeFeedDB
     }
 
     fun getChatroomApi(): ChatroomApi {

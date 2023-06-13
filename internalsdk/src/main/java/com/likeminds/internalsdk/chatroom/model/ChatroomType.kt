@@ -28,7 +28,7 @@ const val TYPE_DIRECT_MESSAGE = 10
     TYPE_DIRECT_MESSAGE
 )
 @Retention(AnnotationRetention.SOURCE)
-annotation class CollabcardType {
+annotation class ChatroomType {
 
     companion object {
 

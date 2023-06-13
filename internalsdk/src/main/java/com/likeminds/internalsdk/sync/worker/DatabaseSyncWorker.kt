@@ -100,6 +100,13 @@ class DatabaseSyncWorker(
                             )
                         }
 
+                        if (isFirstTime) {
+                            val appConfigRO = ChatDBUtil.getAppConfig(realm)
+                            appConfigRO?.isChatroomsSynced = true
+                            appConfigRO?.isCommunitiesSynced = true
+                            appConfigRO?.isConversationsSynced = true
+                        }
+
                     }
 
                     syncType == SYNC_CHATROOM && chatroomId.isEmpty() -> {

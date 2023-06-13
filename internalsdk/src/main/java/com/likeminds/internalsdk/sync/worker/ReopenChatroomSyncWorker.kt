@@ -17,39 +17,33 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.Realm
 import kotlinx.coroutines.runBlocking
 
-class FirstTimeChatroomSyncWorker(
+/**
+ * Worker to sync home feed chatrooms when the app is reopened and DB contains first sync data
+ * @param context Context object
+ * @param workerParams Contains meta data and input data of this worker
+ */
+class ReopenChatroomSyncWorker(
     context: Context,
     workerParameters: WorkerParameters
 ) : Worker(context, workerParameters) {
 
-    private val groupChatSDK = GroupChatSDK.getInstance()
-    private val api = groupChatSDK.getChatroomSyncApi()
+    private val collabmatesSdk = GroupChatSDK.getInstance()
+    private val api = collabmatesSdk.getChatroomSyncApi()
     private val sdkPreferences = SDKPreferences(context as Application)
     private val userPreferences = UserPreferences(context as Application)
     private val syncPreferences = SyncPreferences(context as Application)
-    private var timeStartedAt: Long = 0L
+    private val maxTimestamp = System.currentTimeMillis() / 1000
+    private val minTimestamp = syncPreferences.getTimestampForSyncChatroom()
 
-    private val isBackgroundWorker =
-        workerParameters.inputData.getBoolean(IS_BACKGROUND_WORKER, false)
-
-    /*
-    * page = 1 -> Shows blocker while loading data.
-    * page = 2 -> Loads further data in background.
-    **/
-    private var page = if (isBackgroundWorker) {
-        2
-    } else {
-        1
-    }
+    private var page = 1
 
     companion object {
 
-        const val NAME = "First time Chatroom Sync Worker"
-        const val IS_BACKGROUND_WORKER = "is_background_worker"
+        const val NAME = "Reopen Chatroom Sync Worker"
     }
 
     override fun doWork(): Result {
-        return measureExecution("$NAME, worker params: isBackgroundSync: $isBackgroundWorker") {
+        return measureExecution(NAME) {
             val realm = Realm.getDefaultInstance()
             val result = runBlocking {
                 getChatrooms(realm)
@@ -63,31 +57,19 @@ class FirstTimeChatroomSyncWorker(
      * Fetches all chatrooms
      */
     private suspend fun getChatrooms(realm: Realm): Result {
-        timeStartedAt = System.currentTimeMillis()
         val queries = HashMap<String, Any?>()
         // Set query parameters for request
         queries[SyncUtil.PAGE_KEY] = page
         queries[SyncUtil.PAGE_SIZE_KEY] = SyncUtil.CHATROOM_PAGE_SIZE
+        queries[SyncUtil.MIN_TIMESTAMP_KEY] = minTimestamp
+        queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
         queries[SyncUtil.CHATROOM_TYPES_KEY] = SyncUtil.CHATROOM_TYPE_LIST
-        queries[SyncUtil.MIN_TIMESTAMP_KEY] = 0
-
-        /*
-        * For blocker worker -> Current timestamp is used as Max timestamp and stored in prefs
-        * For background worker -> Timestamp is fetched from prefs and is used as Max timestamp
-        * */
-        if (isBackgroundWorker) {
-            queries[SyncUtil.MAX_TIMESTAMP_KEY] = syncPreferences.getTimestampForSyncChatroom()
-        } else {
-            val maxTimestamp = System.currentTimeMillis() / 1000
-            queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
-            syncPreferences.setTimestampForSyncChatroom(maxTimestamp)
-        }
 
         var data: _SyncChatroomResponse_? = null
         when (val response = api.syncChatrooms(queries)) {
             is NetworkResponse.Error -> {
-                Log.e(SyncUtil.TAG, "first time chatroom failed: ${response.body.errorMessage}")
                 // The api call failed with some error, retry again or return failure according to the condition
+                Log.e(SyncUtil.TAG, "reopen chatroom failed: ${response.body.errorMessage}")
                 if (runAttemptCount <= MAX_RETRY_COUNT) {
                     Result.retry()
                 } else {
@@ -107,7 +89,7 @@ class FirstTimeChatroomSyncWorker(
             }
 
             data == null -> {
-                // The api call failed, retry again or return failure according to the condition
+                // The api call failed with some error, retry again or return failure according to the condition
                 if (runAttemptCount <= MAX_RETRY_COUNT) {
                     Result.retry()
                 } else {
@@ -116,26 +98,20 @@ class FirstTimeChatroomSyncWorker(
             }
 
             data.chatrooms.isEmpty() -> {
-                // The response contains no more data.
+                // The response contains no more data. Max timestamp is stored for further api calls
+                syncPreferences.setTimestampForSyncChatroom(maxTimestamp)
                 Result.success()
             }
 
             else -> {
-                //create app config
-                SyncUtil.saveAppConfig(sdkPreferences.getCommunityId() ?: "")
-
-                // Dumps the chatroom data to db
+                // Dumps the chatroom data to db and calls for further chatroom data
                 SyncUtil.saveChatroomResponse(
                     sdkPreferences.getCommunityId() ?: "",
                     userPreferences.getLMMemberId(),
                     data
                 )
-                // Chatroom data for next page is called in background
-                if (isBackgroundWorker) {
-                    page++
-                    getChatrooms(realm)
-                }
-                Result.success()
+                page++
+                getChatrooms(realm)
             }
         }
     }

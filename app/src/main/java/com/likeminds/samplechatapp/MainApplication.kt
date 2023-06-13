@@ -7,7 +7,6 @@ class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val client = LMChatClient.Builder(this)
-            .build()
+        val client = LMChatClient.Builder(this).build()
     }
 }

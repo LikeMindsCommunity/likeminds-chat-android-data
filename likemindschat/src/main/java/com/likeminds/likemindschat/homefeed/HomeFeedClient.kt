@@ -1,13 +1,21 @@
 package com.likeminds.likemindschat.homefeed
 
+import android.content.Context
+import android.util.Log
+import com.likeminds.internalsdk.db.ChatDBUtil
+import com.likeminds.internalsdk.db.models.ChatroomRO
+import com.likeminds.internalsdk.homefeed.util._HomeFeedChangeListener_
+import com.likeminds.internalsdk.sync.SyncSDK
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
+import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
+import io.realm.RealmResults
 import javax.inject.Inject
 
 class HomeFeedClient @Inject constructor() : BaseClient() {
@@ -17,7 +25,11 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
     }
 
     private val homeFeedApi by lazy {
-        groupChatSDK.homeFeedApi()
+        groupChatSDK.getHomeFeedApi()
+    }
+
+    private val homeFeedDB by lazy {
+        groupChatSDK.getHomeFeedDb()
     }
 
     /**
@@ -64,5 +76,44 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
                 ModelConverter.convertConfigAPIResponse(body)
             }
         }
+    }
+
+    fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
+        //validates the client request
+        RequestUtils.validate()
+
+        val isFirstTime = ChatDBUtil.isEmpty()
+        if (isFirstTime) {
+            Log.d("PUI", "first time")
+            SyncSDK.startFirstHomeFeedSync(context)
+        } else {
+            Log.d("PUI", "reopen")
+            SyncSDK.startReopenSyncForHomeFeed(context)
+        }
+
+        val queryListener = object : _HomeFeedChangeListener_() {
+            override fun initial(chatrooms: RealmResults<ChatroomRO>) {
+                listener.initial(listOf()) //todo
+                Log.d("PUI", "initial chatroom: ${chatrooms.size}")
+            }
+
+            override fun onChanged(
+                removedIndex: List<Int>,
+                inserted: List<Pair<Int, ChatroomRO>>,
+                changed: List<Pair<Int, ChatroomRO>>
+            ) {
+                Log.d("PUI", "inserted chatroom: ${inserted.size}")
+                Log.d("PUI", "changed chatroom: ${changed.size}")
+                listener.onChanged(removedIndex, listOf(), listOf()) //todo
+            }
+
+            override fun onError(throwable: Throwable) {
+                Log.d("PUI", "error: ${throwable.message}")
+                listener.onError(throwable)
+            }
+
+        }
+
+        homeFeedDB.getChatrooms(queryListener)
     }
 }

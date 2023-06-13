@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.work.*
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_FOLLOWED
+import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_REOPEN_CHATROOM
 import com.likeminds.internalsdk.sync.worker.*
 import java.util.concurrent.TimeUnit
 
@@ -57,6 +58,36 @@ object SyncSDK {
         }
     }
 
+    /**
+     * Sync steps for
+     * 1. Fetch app config, compute new communities if present
+     * 2. Fetch and save for page = 1 to empty response for reopen chatroom sync workers
+     * 3. Run a database worker
+     * 4. if app is not open for the first time then clean database as well
+     *
+     * Return: live data of worker
+     */
+    fun startReopenSyncForHomeFeed(context: Context): LiveData<MutableList<WorkInfo>>? {
+        if (ongoingSyncTypes.contains(SYNC_REOPEN_CHATROOM)) {
+            return null
+        }
+
+        val firstTime = ChatDBUtil.isEmpty()
+
+        ongoingSyncTypes.add(SYNC_REOPEN_CHATROOM)
+        var worker = WorkManager.getInstance(context)
+            .beginWith(reopenSyncChatroom())
+            .then(syncDatabase(SYNC_REOPEN_CHATROOM, firstTime))
+
+        if (!firstTime) {
+            worker = worker.then(cleanDatabase())
+        }
+
+        worker.enqueue()
+
+        return worker.workInfosLiveData
+    }
+
     //return first chatroom sync worker
     private fun firstTimeSyncChatroom(isBackgroundWorker: Boolean): OneTimeWorkRequest {
         return OneTimeWorkRequestBuilder<FirstTimeChatroomSyncWorker>()
@@ -68,6 +99,19 @@ object SyncSDK {
             )
             .setConstraints(networkConstraint)
             .addTag(FirstTimeChatroomSyncWorker.NAME)
+            .build()
+    }
+
+    //return reopen chatroom sync worker
+    private fun reopenSyncChatroom(): OneTimeWorkRequest {
+        return OneTimeWorkRequestBuilder<ReopenChatroomSyncWorker>()
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS
+            )
+            .setConstraints(networkConstraint)
+            .addTag(ReopenChatroomSyncWorker.NAME)
             .build()
     }
 

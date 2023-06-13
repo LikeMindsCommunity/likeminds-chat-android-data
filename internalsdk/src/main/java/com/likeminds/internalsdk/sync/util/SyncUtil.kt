@@ -4,6 +4,8 @@ import android.util.Log
 import com.likeminds.internalsdk.conversation.model._ConversationState_
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
+import com.likeminds.internalsdk.db.models.AppConfigRO
+import com.likeminds.internalsdk.db.util.toRealmList
 import com.likeminds.internalsdk.sync.model._SyncChatroomResponse_
 import io.realm.Realm
 
@@ -24,6 +26,22 @@ object SyncUtil {
     const val CONVERSATION_ID_KEY = "conversation_id"
 
     const val TAG = "SyncWorker"
+
+    fun saveAppConfig(communityId: String) {
+        if (communityId.isEmpty()) return
+        val realm = Realm.getDefaultInstance()
+        ChatDBUtil.write(realm) { localRealm ->
+            val appConfig = ChatDBUtil.getAppConfig(localRealm)
+            if (appConfig != null) {
+                appConfig.communities = communityId.toRealmList()
+            } else {
+                localRealm.insertOrUpdate(AppConfigRO.build {
+                    communities = communityId.toRealmList()
+                })
+            }
+        }
+        realm.close()
+    }
 
     // Stores chatroom data to DB
     fun saveChatroomResponse(

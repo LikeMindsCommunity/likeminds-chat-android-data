@@ -1,4 +1,4 @@
-package com.likeminds.internalsdk.homefeed
+package com.likeminds.internalsdk.homefeed.api
 
 import com.likeminds.internalsdk.homefeed.model._ConfigResponse_
 import com.likeminds.internalsdk.homefeed.model._GetExploreTabCountResponse_
