@@ -5,18 +5,37 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
-import com.likeminds.likemindschat.chatroom.model.*
+import com.likeminds.likemindschat.chatroom.model.Chatroom
+import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
 
         const val TAG = "test_client"
+    }
+
+    private val listener = object : HomeFeedChangeListener {
+        override fun initialChatrooms(chatrooms: List<Chatroom>) {
+            super.initialChatrooms(chatrooms)
+            Log.d(TAG, "MainActivity initial")
+        }
+
+        override fun changedChatrooms(
+            removedIndex: List<Int>,
+            inserted: List<Pair<Int, Chatroom>>,
+            changed: List<Pair<Int, Chatroom>>
+        ) {
+            super.changedChatrooms(removedIndex, inserted, changed)
+            Log.d(TAG, "MainActivity onChanged")
+        }
+
+        override fun error(throwable: Throwable) {
+            super.error(throwable)
+            Log.d(TAG, "MainActivity onError")
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +54,6 @@ class MainActivity : AppCompatActivity() {
             val initiateResponse = client.initiateUser(initiateUserRequest)
 
             Log.d(TAG, "initiateResponse:${initiateResponse.data?.user?.id}")
-
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     this@MainActivity,
@@ -44,86 +62,18 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
 
-            val leaveSecretChatroomRequest = LeaveSecretChatroomRequest.Builder()
-                .chatroomId(82910)
-                .isSecret(true)
-                .build()
-            val leaveSecretChatroomResponse = client.leaveSecretChatroom(leaveSecretChatroomRequest)
+            val config = client.getConfig()
+            Log.d(
+                TAG, """
+                config response:
+                microPoll: ${config.data?.enableMicroPolls}
+                audio: ${config.data?.enableAudio}
+            """.trimIndent()
+            )
 
-            Log.d(TAG, "leaveSecretChatroomResponse:${leaveSecretChatroomResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "leave: ${leaveSecretChatroomResponse.success}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val muteChatroomRequest = MuteChatroomRequest.Builder()
-                .chatroomId(82825)
-                .value(true)
-                .build()
-            val muteChatroomResponse = client.muteChatroom(muteChatroomRequest)
-
-            Log.d(TAG, "muteChatroomResponse:${muteChatroomResponse}")
 
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "muteChatroom: ${muteChatroomResponse.success}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val markReadChatroomRequest = MarkReadChatroomRequest.Builder()
-                .chatroomId(82825)
-                .build()
-            val markReadChatroomResponse = client.markReadChatroom(markReadChatroomRequest)
-
-            Log.d(TAG, "markReadChatroomResponse:${markReadChatroomResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "markReadChatroom: ${markReadChatroomResponse.success}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val shareChatroomUrlRequest = ShareChatroomUrlRequest.Builder()
-                .chatroomId("82825")
-                .domain("https://www.sample.com")
-                .build()
-            val shareChatroomUrlResponse = client.shareChatroomUrl(shareChatroomUrlRequest)
-
-            Log.d(TAG, "shareChatroomUrlResponse:${shareChatroomUrlResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "markReadChatroom: ${shareChatroomUrlResponse.data?.shareChatroomUrl?.shareUrl}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val getChatroomParticipantsRequest = GetChatroomParticipantsRequest.Builder()
-                .isChatroomSecret(false)
-                .chatroomId("82825")
-                .page(1)
-                .pageSize(1)
-                .build()
-            val getChatroomParticipantsResponse =
-                client.getChatroomParticipants(getChatroomParticipantsRequest)
-
-            Log.d(TAG, "getChatroomParticipantsResponse:${getChatroomParticipantsResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "markReadChatroom: ${getChatroomParticipantsResponse.data?.totalParticipantsCount}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                client.getChatrooms(this@MainActivity, listener)
             }
         }
     }

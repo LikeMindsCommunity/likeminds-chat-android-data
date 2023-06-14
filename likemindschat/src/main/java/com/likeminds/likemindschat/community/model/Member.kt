@@ -1,7 +1,7 @@
 package com.likeminds.likemindschat.community.model
 
 class Member private constructor(
-    val id: String?,
+    val id: String,
     val userUniqueId: String?,
     val name: String?,
     val email: String?,
@@ -27,7 +27,8 @@ class Member private constructor(
     val updatedAt: Long?
 ) {
     class Builder {
-        private var id: String? = null
+
+        private var id: String = ""
         private var userUniqueId: String? = null
         private var name: String? = null
         private var email: String? = null
@@ -52,7 +53,7 @@ class Member private constructor(
         private var hasProfileImage: Boolean? = null
         private var updatedAt: Long? = null
 
-        fun id(id: String?) = apply { this.id = id }
+        fun id(id: String) = apply { this.id = id }
         fun userUniqueId(userUniqueId: String?) = apply { this.userUniqueId = userUniqueId }
         fun name(name: String?) = apply { this.name = name }
         fun email(email: String?) = apply { this.email = email }

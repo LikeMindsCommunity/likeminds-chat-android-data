@@ -1,18 +1,15 @@
 package com.likeminds.internalsdk.db
 
-import io.realm.kotlin.dynamic.DynamicMutableRealmObject
-import io.realm.kotlin.dynamic.DynamicRealmObject
-import io.realm.kotlin.migration.AutomaticSchemaMigration
-import io.realm.kotlin.migration.RealmMigration
+import io.realm.DynamicRealm
+import io.realm.RealmMigration
 
-class RealmDBMigration : AutomaticSchemaMigration {
+class RealmDBMigration : RealmMigration {
 
-    override fun migrate(migrationContext: AutomaticSchemaMigration.MigrationContext) {
-        var oldVersion = migrationContext.oldRealm.schemaVersion()
-        var newVersion = migrationContext.newRealm.schemaVersion()
-
-
+    override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
+        var olderVersion = oldVersion
+        val schema = realm.schema
     }
+
 }
 
 const val DB_SCHEMA_NAME = "likeminds-chat-sdk"

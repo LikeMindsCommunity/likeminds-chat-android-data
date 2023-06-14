@@ -4,13 +4,13 @@ import com.google.gson.annotations.SerializedName
 
 data class _Community_(
     @SerializedName("id")
-    var id: String,
+    val id: String,
     @SerializedName("name")
-    var name: String,
+    val name: String,
     @SerializedName("image_url")
-    var imageUrl: String?,
+    val imageUrl: String?,
     @SerializedName("members_count")
-    var membersCount: Int?,
+    val membersCount: Int?,
     @SerializedName("updated_at")
-    var updatedAt: String?
+    val updatedAt: Long?
 )

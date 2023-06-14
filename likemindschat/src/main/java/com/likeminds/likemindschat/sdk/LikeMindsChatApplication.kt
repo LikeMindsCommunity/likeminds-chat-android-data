@@ -5,6 +5,7 @@ import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.di.SDKSharedResources
 import com.likeminds.likemindschat.di.DaggerLikeMindsChatComponent
 import com.likeminds.likemindschat.di.LikeMindsChatComponent
+import com.likeminds.likemindschat.di.homefeed.HomeFeedSubComponent
 import com.likeminds.likemindschat.di.chatroom.ChatroomSubComponent
 import com.likeminds.likemindschat.di.community.CommunitySubComponent
 import com.likeminds.likemindschat.di.helper.HelperSubComponent
@@ -19,12 +20,11 @@ internal class LikeMindsChatApplication private constructor() {
     @Inject
     lateinit var groupChatSDK: GroupChatSDK
 
-
     @Inject
     lateinit var sdkSharedResources: SDKSharedResources
-
     var likeMindsChatComponent: LikeMindsChatComponent? = null
     private var initiateUserSubComponent: InitiateUserSubComponent? = null
+    private var homeFeedSubComponent: HomeFeedSubComponent? = null
     private var userSubComponent: UserSubComponent? = null
     private var communitySubComponent: CommunitySubComponent? = null
     private var chatroomSubComponent: ChatroomSubComponent? = null
@@ -33,8 +33,8 @@ internal class LikeMindsChatApplication private constructor() {
     private var helperSubComponent: HelperSubComponent? = null
 
     companion object {
-        private var likeMindsChatApplicationInstance: LikeMindsChatApplication? = null
 
+        private var likeMindsChatApplicationInstance: LikeMindsChatApplication? = null
 
         @JvmStatic
         fun getInstance(): LikeMindsChatApplication {
@@ -67,6 +67,14 @@ internal class LikeMindsChatApplication private constructor() {
             initiateUserSubComponent = likeMindsChatComponent?.initiateUserComponent()?.create()
         }
         return initiateUserSubComponent
+    }
+
+    fun homeFeedComponent(): HomeFeedSubComponent? {
+        if (homeFeedSubComponent == null) {
+            homeFeedSubComponent = likeMindsChatComponent?.homeFeedComponent()?.create()
+        }
+
+        return homeFeedSubComponent
     }
 
     fun userComponent(): UserSubComponent? {

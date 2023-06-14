@@ -1,22 +1,19 @@
 package com.likeminds.likemindschat
 
 import android.app.Application
+import android.content.Context
 import com.likeminds.likemindschat.chatroom.ChatroomClient
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.helper.HelperClient
-import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
-import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
-import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
-import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
+import com.likeminds.likemindschat.helper.model.*
+import com.likeminds.likemindschat.homefeed.HomeFeedClient
+import com.likeminds.likemindschat.homefeed.model.ConfigResponse
+import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
+import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
-import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
-import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
+import com.likeminds.likemindschat.initiateUser.model.*
 import com.likeminds.likemindschat.moderation.ModerationClient
-import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
-import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
-import com.likeminds.likemindschat.moderation.model.PostReportRequest
+import com.likeminds.likemindschat.moderation.model.*
 import com.likeminds.likemindschat.poll.PollClient
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -30,6 +27,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var initiateUserClient: InitiateUserClient
+
+    @Inject
+    lateinit var homeFeedClient: HomeFeedClient
 
     @Inject
     lateinit var userClient: UserClient
@@ -62,6 +62,8 @@ class LMChatClient private constructor() {
         @JvmStatic
         private var lmChatClientInstance: LMChatClient? = null
 
+        const val TAG = "LMChatClient"
+
         @JvmStatic
         fun getInstance(): LMChatClient {
             if (lmChatClientInstance == null) {
@@ -71,12 +73,12 @@ class LMChatClient private constructor() {
         }
     }
 
-    // Exposed function to process initiate user request
+    //function to process initiate user request
     suspend fun initiateUser(initiateUserRequest: InitiateUserRequest): LMResponse<InitiateUserResponse> {
         return initiateUserClient.initiateUser(initiateUserRequest)
     }
 
-    // Exposed function to process logout request
+    //function to process logout request
     suspend fun logout(logoutRequest: LogoutRequest): LMResponse<Nothing> {
         return initiateUserClient.logout(logoutRequest)
     }
@@ -84,6 +86,21 @@ class LMChatClient private constructor() {
     // Exposed function to register device
     suspend fun registerDevice(registerDeviceRequest: RegisterDeviceRequest): LMResponse<Nothing> {
         return initiateUserClient.registerDevice(registerDeviceRequest)
+    }
+
+    //function to get explore tab count
+    suspend fun getExploreTabCount(): LMResponse<GetExploreTabCountResponse> {
+        return homeFeedClient.getExploreTabCount()
+    }
+
+    //function to get chatrooms for home feed
+    suspend fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
+        homeFeedClient.getChatrooms(context, listener)
+    }
+
+    //function to get config details
+    suspend fun getConfig(): LMResponse<ConfigResponse> {
+        return homeFeedClient.getConfig()
     }
 
     // Exposed function to get user from Db

@@ -7,7 +7,7 @@ import com.likeminds.internalsdk.poll.model._Poll_
 class _Conversation_ private constructor(
     @SerializedName("id")
     val id: String?,
-    @SerializedName("chatroom_id")
+    @SerializedName("chatroom_id", alternate = ["card_id"])
     val chatroomId: String?,
     @SerializedName("community_id")
     val communityId: String?,
@@ -29,11 +29,11 @@ class _Conversation_ private constructor(
     val date: String?,
     @SerializedName("is_edited")
     val isEdited: Boolean?,
-    @SerializedName("member_id")
+    @SerializedName("member_id", alternate = ["user_id"])
     val memberId: String?,
-    @SerializedName("reply_conversation")
-    val replyConversation: String?,
-    @SerializedName("delete_by")
+    @SerializedName("reply_conversation", alternate = ["reply_id"])
+    val replyConversationId: String?,
+    @SerializedName("delete_by", alternate = ["deleted_by_user_id"])
     val deletedBy: String?,
     @SerializedName("created_epoch")
     val createdEpoch: Long?,
@@ -72,18 +72,19 @@ class _Conversation_ private constructor(
     @SerializedName("poll_answer_text")
     val pollAnswerText: String?,
     @SerializedName("reply_chatroom_id")
-    val replyChatroomId: String?
+    val replyChatroomId: String?,
+    @SerializedName("device_id")
+    val deviceId: String?,
+    @SerializedName("has_files")
+    val hasFiles: Boolean?,
+    @SerializedName("has_reactions")
+    val hasReactions: Boolean?,
+    @SerializedName("last_updated")
+    val lastUpdated: Long?,
 ) {
 
-    fun hasAttachments(): Boolean {
-        return attachmentCount != null && attachmentCount > 0
-    }
-
-    fun hasReactions(): Boolean {
-        return !reactions.isNullOrEmpty()
-    }
-
     class Builder {
+
         private var id: String? = ""
         private var chatroomId: String? = null
         private var communityId: String? = null
@@ -97,7 +98,7 @@ class _Conversation_ private constructor(
         private var date: String? = null
         private var isEdited: Boolean? = null
         private var memberId: String? = null
-        private var replyConversation: String? = null
+        private var replyConversationId: String? = null
         private var deletedBy: String? = null
         private var createdEpoch: Long? = null
         private var attachmentCount: Int? = null
@@ -118,6 +119,10 @@ class _Conversation_ private constructor(
         private var toShowResults: Boolean? = null
         private var pollAnswerText: String? = null
         private var replyChatroomId: String? = null
+        private var deviceId: String? = null
+        private var hasFiles: Boolean? = false
+        private var hasReactions: Boolean? = false
+        private var lastUpdated: Long? = null
 
         fun id(id: String?) = apply { this.id = id }
         fun chatroomId(chatroomId: String?) = apply { this.chatroomId = chatroomId }
@@ -132,8 +137,8 @@ class _Conversation_ private constructor(
         fun date(date: String?) = apply { this.date = date }
         fun isEdited(isEdited: Boolean?) = apply { this.isEdited = isEdited }
         fun memberId(memberId: String?) = apply { this.memberId = memberId }
-        fun replyConversation(replyConversation: String?) =
-            apply { this.replyConversation = replyConversation }
+        fun replyConversationId(replyConversationId: String?) =
+            apply { this.replyConversationId = replyConversationId }
 
         fun deletedBy(deletedBy: String?) = apply { this.deletedBy = deletedBy }
         fun createdEpoch(createdEpoch: Long?) = apply { this.createdEpoch = createdEpoch }
@@ -171,6 +176,11 @@ class _Conversation_ private constructor(
         fun replyChatroomId(replyChatroomId: String?) =
             apply { this.replyChatroomId = replyChatroomId }
 
+        fun deviceId(deviceId: String?) = apply { this.deviceId = deviceId }
+        fun hasFiles(hasFiles: Boolean?) = apply { this.hasFiles = hasFiles }
+        fun hasReactions(hasReactions: Boolean?) = apply { this.hasReactions = hasReactions }
+        fun lastUpdated(lastUpdated: Long?) = apply { this.lastUpdated = lastUpdated }
+
         fun build() = _Conversation_(
             id,
             chatroomId,
@@ -185,7 +195,7 @@ class _Conversation_ private constructor(
             date,
             isEdited,
             memberId,
-            replyConversation,
+            replyConversationId,
             deletedBy,
             createdEpoch,
             attachmentCount,
@@ -205,7 +215,11 @@ class _Conversation_ private constructor(
             polls,
             toShowResults,
             pollAnswerText,
-            replyChatroomId
+            replyChatroomId,
+            deviceId,
+            hasFiles,
+            hasReactions,
+            lastUpdated
         )
     }
 
@@ -223,7 +237,7 @@ class _Conversation_ private constructor(
             .date(date)
             .isEdited(isEdited)
             .memberId(memberId)
-            .replyConversation(replyConversation)
+            .replyConversationId(replyConversationId)
             .deletedBy(deletedBy)
             .createdEpoch(createdEpoch)
             .attachmentCount(attachmentCount)
@@ -244,5 +258,9 @@ class _Conversation_ private constructor(
             .toShowResults(toShowResults)
             .pollAnswerText(pollAnswerText)
             .replyChatroomId(replyChatroomId)
+            .deviceId(deviceId)
+            .hasFiles(hasFiles)
+            .hasReactions(hasReactions)
+            .lastUpdated(lastUpdated)
     }
 }

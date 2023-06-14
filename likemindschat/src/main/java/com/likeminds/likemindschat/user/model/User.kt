@@ -1,7 +1,7 @@
 package com.likeminds.likemindschat.user.model
 
 data class User(
-    val id: Int,
+    val id: String,
     val imageUrl: String,
     val isGuest: Boolean,
     val name: String,
@@ -15,6 +15,6 @@ data class User(
 
 data class SDKClientInfo(
     val community: Int,
-    val user: Int,
+    val user: String,
     val userUniqueId: String
 )

@@ -1,45 +1,28 @@
 package com.likeminds.likemindschat.sdk
 
 import com.likeminds.internalsdk.chatroom.model.*
-import com.likeminds.internalsdk.community.model._Community_
-import com.likeminds.internalsdk.community.model._MemberAction_
-import com.likeminds.internalsdk.community.model._Member_
-import com.likeminds.internalsdk.community.model._Question_
+import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.conversation.model.*
-import com.likeminds.internalsdk.db.models.SDKClientInfoRO
-import com.likeminds.internalsdk.db.models.UserRO
-import com.likeminds.internalsdk.helper.model._DecodeUrlResponse_
-import com.likeminds.internalsdk.helper.model._GetTaggingListResponse_
-import com.likeminds.internalsdk.helper.model._GroupTag_
-import com.likeminds.internalsdk.helper.model._UserTag_
+import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.helper.model.*
+import com.likeminds.internalsdk.homefeed.model.*
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
 import com.likeminds.internalsdk.moderation.model._ReportTag_
-import com.likeminds.internalsdk.poll.model._AddPollOptionResponse_
-import com.likeminds.internalsdk.poll.model._GetPollUsersResponse_
-import com.likeminds.internalsdk.poll.model._Poll_
-import com.likeminds.internalsdk.poll.model._PostPollConversationResponse_
+import com.likeminds.internalsdk.poll.model.*
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
-import com.likeminds.likemindschat.community.model.Community
-import com.likeminds.likemindschat.community.model.Member
-import com.likeminds.likemindschat.community.model.MemberAction
-import com.likeminds.likemindschat.community.model.Question
+import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.model.*
-import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
-import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
-import com.likeminds.likemindschat.helper.model.GroupTag
-import com.likeminds.likemindschat.helper.model.UserTag
+import com.likeminds.likemindschat.helper.model.*
+import com.likeminds.likemindschat.homefeed.model.*
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
-import com.likeminds.likemindschat.poll.model.AddPollOptionResponse
-import com.likeminds.likemindschat.poll.model.GetPollUsersResponse
-import com.likeminds.likemindschat.poll.model.Poll
-import com.likeminds.likemindschat.poll.model.PostPollConversationResponse
+import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.user.model.SDKClientInfo
 import com.likeminds.likemindschat.user.model.User
 
@@ -48,7 +31,6 @@ object ModelConverter {
     /**--------------------------------
      * Internal Model -> Client Model
     --------------------------------*/
-
     // converts api InitiateUserResponse model to LM InitiateUserResponse model
     fun convertInitiateUserResponse(
         apiResponse: APIResponse<_InitiateUserResponse_>
@@ -115,6 +97,68 @@ object ModelConverter {
             _community_.imageUrl,
             _community_.membersCount,
             _community_.updatedAt,
+        )
+    }
+
+    //converts API GetExploreTabCountResponse model to LM model
+    fun convertGetExploreTabCountAPIResponse(
+        apiResponse: APIResponse<_GetExploreTabCountResponse_>
+    ): LMResponse<GetExploreTabCountResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetExploreTabCountResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal GetExploreTabCountResponse model to client model
+    private fun convertGetExploreTabCountResponse(_getExploreTabCountResponse_: _GetExploreTabCountResponse_?): GetExploreTabCountResponse? {
+        if (_getExploreTabCountResponse_ == null) return null
+        return GetExploreTabCountResponse(
+            _getExploreTabCountResponse_.unseenChatroomCount,
+            _getExploreTabCountResponse_.totalChatroomCount
+        )
+    }
+
+    fun convertConfigAPIResponse(
+        apiResponse: APIResponse<_ConfigResponse_>
+    ): LMResponse<ConfigResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertConfigAPIResponse(apiResponse.data)
+        )
+    }
+
+    private fun convertConfigAPIResponse(_configResponse_: _ConfigResponse_?): ConfigResponse? {
+        if (_configResponse_ == null) return null
+        return ConfigResponse(
+            _configResponse_.access,
+            _configResponse_.enableAudio,
+            _configResponse_.enableGifs,
+            _configResponse_.enableVoiceNote,
+            _configResponse_.enableMicroPolls,
+            convertUserDetails(_configResponse_.userDetails)
+        )
+    }
+
+    private fun convertUserDetails(_userDetails_: _UserDetail_): UserDetail {
+        return UserDetail(
+            convertUser(_userDetails_.user),
+            convertUserMetrics(_userDetails_.userMetrics)
+        )
+    }
+
+    private fun convertUserMetrics(_userMetrics_: _UserMetrics_): UserMetrics {
+        return UserMetrics(
+            _userMetrics_.firstLogin,
+            _userMetrics_.firstLoginEpoch,
+            _userMetrics_.countCommunitiesJoined,
+            _userMetrics_.nameCommunitiesJoined,
+            _userMetrics_.isAnyCommunityPromoter,
+            _userMetrics_.uniqueChatroomResponded,
+            _userMetrics_.countChatroomCreated,
+            _userMetrics_.countChatroomFollowed
         )
     }
 
@@ -482,7 +526,7 @@ object ModelConverter {
             .date(_conversation_.date)
             .isEdited(_conversation_.isEdited)
             .memberId(_conversation_.memberId)
-            .replyConversation(_conversation_.replyConversation)
+            .replyConversationId(_conversation_.replyConversationId)
             .deletedBy(_conversation_.deletedBy)
             .createdEpoch(_conversation_.createdEpoch)
             .attachmentCount(_conversation_.attachmentCount)
@@ -503,6 +547,10 @@ object ModelConverter {
             .toShowResults(_conversation_.toShowResults)
             .pollAnswerText(_conversation_.pollAnswerText)
             .replyChatroomId(_conversation_.replyChatroomId)
+            .deviceId(_conversation_.deviceId)
+            .hasFiles(_conversation_.hasFiles)
+            .hasReactions(_conversation_.hasReactions)
+            .lastUpdated(_conversation_.lastUpdated)
             .build()
     }
 
@@ -534,8 +582,6 @@ object ModelConverter {
             .meta(convertAttachmentMeta(_attachment_.meta))
             .createdAt(_attachment_.createdAt)
             .updatedAt(_attachment_.updatedAt)
-            .isRecording(_attachment_.isRecording)
-            .about(_attachment_.about)
             .build()
     }
 
@@ -571,7 +617,6 @@ object ModelConverter {
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
-
     // creates internal Poll model list from client model list
     fun createPolls(
         polls: List<Poll>
@@ -798,16 +843,16 @@ object ModelConverter {
     /**--------------------------------
      * Db Model -> Client Model
     --------------------------------*/
-
-    // converts User db model to client model
-    fun convertUser(userRO: UserRO): User {
+    // converts UserRO model to client model
+    fun convertUserRO(userRO: UserRO?): User? {
+        if (userRO == null) return null
         return User(
             userRO.id,
             userRO.imageUrl,
             userRO.isGuest,
             userRO.name,
             userRO.organizationName,
-            convertSDKClientInfo(userRO.sdkClientInfoRO),
+            convertSDKClientInfoRO(userRO.sdkClientInfoRO),
             userRO.isDeleted,
             userRO.customTitle,
             userRO.updatedAt,
@@ -815,8 +860,8 @@ object ModelConverter {
         )
     }
 
-    // converts SDKClientInfo db model to client model
-    private fun convertSDKClientInfo(sdkClientInfoRO: SDKClientInfoRO?): SDKClientInfo? {
+    // converts SDKClientInfoRO model to client model
+    private fun convertSDKClientInfoRO(sdkClientInfoRO: SDKClientInfoRO?): SDKClientInfo? {
         return sdkClientInfoRO?.let {
             SDKClientInfo(
                 it.community,
@@ -824,5 +869,197 @@ object ModelConverter {
                 it.userUniqueId
             )
         }
+    }
+
+    // converts ChatroomRO model to client model
+    fun convertChatroomRO(chatroomRO: ChatroomRO?): Chatroom? {
+        if (chatroomRO == null) return null
+        return Chatroom.Builder()
+            .id(chatroomRO.id)
+            .member(convertMemberRO(chatroomRO.member))
+            .communityId(chatroomRO.communityId)
+            .title(chatroomRO.title)
+            .state(chatroomRO.state)
+            .createdAt(chatroomRO.createdAt)
+            .type(chatroomRO.type)
+            .chatroomImageUrl(chatroomRO.chatroomImageUrl)
+            .header(chatroomRO.header)
+            .cardCreationTime(chatroomRO.cardCreationTime)
+            .totalResponseCount(chatroomRO.totalResponseCount)
+            .muteStatus(chatroomRO.muteStatus)
+            .followStatus(chatroomRO.followStatus)
+            .hasBeenNamed(chatroomRO.hasBeenNamed)
+            .date(chatroomRO.date)
+            .isTagged(chatroomRO.isTagged)
+            .isPending(chatroomRO.isPending)
+            .deletedBy(chatroomRO.deletedBy)
+            .updatedAt(chatroomRO.updatedAt)
+            .lastConversationId(chatroomRO.lastConversationId)
+            .lastConversation(convertConversationRO(chatroomRO.lastConversation))
+            .lastSeenConversationId(chatroomRO.lastSeenConversationId)
+            .lastSeenConversation(convertConversationRO(chatroomRO.lastSeenConversation))
+            .dateEpoch(chatroomRO.dateEpoch)
+            .unseenCount(chatroomRO.unseenCount)
+            .draftConversation(chatroomRO.draftConversation)
+            .isSecret(chatroomRO.isSecret)
+            .secretChatroomParticipants(chatroomRO.secretChatRoomParticipants.toList())
+            .secretChatroomLeft(chatroomRO.secretChatRoomLeft)
+            .topicId(chatroomRO.topicId)
+            .topic(convertConversationRO(chatroomRO.topic))
+            .autoFollowDone(chatroomRO.autoFollowDone)
+            .memberCanMessage(chatroomRO.memberCanMessage)
+            .isEdited(chatroomRO.isEdited)
+            .reactions(convertReactionsRO(chatroomRO.reactions))
+            .unreadConversationCount(chatroomRO.unreadConversationsCount)
+            .accessWithoutSubscription(chatroomRO.accessWithoutSubscription)
+            .externalSeen(chatroomRO.externalSeen)
+            .isConversationStored(chatroomRO.isConversationStored)
+            .isDraft(chatroomRO.isDraft)
+            .build()
+    }
+
+    // converts ConversationRO model to client model
+    fun convertConversationRO(conversationRO: ConversationRO?): Conversation? {
+        if (conversationRO == null) return null
+        return Conversation.Builder()
+            .id(conversationRO.id)
+            .chatroomId(conversationRO.chatroomId)
+            .communityId(conversationRO.communityId)
+            .member(convertMemberRO(conversationRO.member))
+            .answer(conversationRO.answer)
+            .state(conversationRO.state)
+            .createdAt(conversationRO.createdAt)
+            .createdEpoch(conversationRO.createdEpoch)
+            .attachments(convertAttachmentsRO(conversationRO.attachments.toList()))
+            .ogTags(convertLinkRO(conversationRO.link))
+            .date(conversationRO.date)
+            .isEdited(conversationRO.isEdited)
+            .lastSeen(conversationRO.lastSeen)
+            .replyConversationId(conversationRO.replyConversationId)
+            .replyConversation(convertConversationRO(conversationRO.replyConversation))
+            .deletedBy(conversationRO.deletedBy)
+            .attachmentCount(conversationRO.attachmentCount)
+            .attachmentUploaded(conversationRO.attachmentsUploaded)
+            .uploadWorkerUUID(conversationRO.uploadWorkerUUID)
+            .temporaryId(conversationRO.temporaryId)
+            .reactions(convertReactionsRO(conversationRO.reactions.toList()))
+            .isAnonymous(conversationRO.isAnonymous)
+            .allowAddOption(conversationRO.allowAddOption)
+            .pollType(conversationRO.pollType)
+            .pollTypeText(conversationRO.pollTypeText)
+            .submitTypeText(conversationRO.submitTypeText)
+            .expiryTime(conversationRO.expiryTime)
+            .multipleSelectNum(conversationRO.multipleSelectNum)
+            .multipleSelectState(conversationRO.multipleSelectState)
+            .polls(convertPollsRO(conversationRO.polls.toList()))
+            .pollAnswerText(conversationRO.pollAnswerText)
+            .toShowResults(conversationRO.toShowResults)
+            .replyChatroomId(conversationRO.replyChatRoomId)
+            .lastUpdated(conversationRO.lastUpdatedAt)
+            .build()
+    }
+
+    // converts MemberRO model to client model
+    private fun convertMemberRO(memberRO: MemberRO?): Member? {
+        if (memberRO == null) return null
+        return Member.Builder()
+            .id(memberRO.id)
+            .userUniqueId(memberRO.userUniqueId)
+            .name(memberRO.name)
+            .imageUrl(memberRO.imageUrl)
+            .state(memberRO.state)
+            .customIntroText(memberRO.customIntroText)
+            .customClickText(memberRO.customClickText)
+            .customTitle(memberRO.customTitle)
+            .communityId(memberRO.communityId)
+            .isOwner(memberRO.isOwner)
+            .isGuest(memberRO.isGuest)
+            .build()
+    }
+
+    // converts list of AttachmentRO model to client model
+    private fun convertAttachmentsRO(attachmentsRO: List<AttachmentRO>?): List<Attachment>? {
+        if (attachmentsRO.isNullOrEmpty()) return null
+        return attachmentsRO.map { attachmentRO ->
+            convertAttachmentRO(attachmentRO)
+        }
+    }
+
+    // converts AttachmentRO model to client model
+    private fun convertAttachmentRO(attachmentRO: AttachmentRO): Attachment {
+        return Attachment.Builder()
+            .id(attachmentRO.id)
+            .name(attachmentRO.name)
+            .url(attachmentRO.url)
+            .type(attachmentRO.type)
+            .index(attachmentRO.index)
+            .width(attachmentRO.width)
+            .height(attachmentRO.height)
+            .awsFolderPath(attachmentRO.awsFolderPath)
+            .localFilePath(attachmentRO.localFilePath)
+            .thumbnailUrl(attachmentRO.thumbnailUrl)
+            .thumbnailAWSFolderPath(attachmentRO.thumbnailAWSFolderPath)
+            .thumbnailLocalFilePath(attachmentRO.thumbnailLocalFilePath)
+            .meta(convertAttachmentMetaRO(attachmentRO.metaRO))
+            .createdAt(attachmentRO.createdAt)
+            .updatedAt(attachmentRO.updatedAt)
+            .build()
+    }
+
+    // converts AttachmentMetaRO model to client model
+    private fun convertAttachmentMetaRO(attachmentMetaRO: AttachmentMetaRO?): AttachmentMeta? {
+        if (attachmentMetaRO == null) return null
+        return AttachmentMeta.Builder()
+            .numberOfPage(attachmentMetaRO.numberOfPage)
+            .duration(attachmentMetaRO.duration)
+            .size(attachmentMetaRO.size)
+            .build()
+    }
+
+    // converts LinkRO model to client model
+    private fun convertLinkRO(linkRO: LinkRO?): LinkOGTags? {
+        if (linkRO == null) return null
+        return LinkOGTags.Builder()
+            .url(linkRO.url)
+            .title(linkRO.title)
+            .url(linkRO.url)
+            .description(linkRO.description)
+            .build()
+    }
+
+    // converts list of ReactionRO to client model
+    private fun convertReactionsRO(reactionsRO: List<ReactionRO>?): List<Reaction>? {
+        if (reactionsRO.isNullOrEmpty()) return null
+        return reactionsRO.map { reactionRO ->
+            convertReactionRO(reactionRO)
+        }
+    }
+
+    // converts ReactionRO model to client model
+    private fun convertReactionRO(reactionRO: ReactionRO): Reaction {
+        return Reaction.Builder()
+            .reaction(reactionRO.reaction)
+            .member(convertMemberRO(reactionRO.member))
+            .build()
+    }
+
+    // converts list of PollRO model to client model
+    private fun convertPollsRO(pollsRO: List<PollRO>): List<Poll>? {
+        return pollsRO.map { pollRO ->
+            convertPollRO(pollRO)
+        }
+    }
+
+    // converts PollRO model to client model
+    private fun convertPollRO(pollRO: PollRO): Poll {
+        return Poll.Builder()
+            .id(pollRO.id)
+            .text(pollRO.text)
+            .isSelected(pollRO.isSelected)
+            .percentage(pollRO.percentage)
+            .subText(pollRO.subText)
+            .noVotes(pollRO.noVotes)
+            .member(convertMemberRO(pollRO.member))
+            .build()
     }
 }
