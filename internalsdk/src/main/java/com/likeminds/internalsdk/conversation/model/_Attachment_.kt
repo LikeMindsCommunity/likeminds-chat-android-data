@@ -33,10 +33,6 @@ class _Attachment_ private constructor(
     val createdAt: Long?,
     @SerializedName("updatedAt")
     val updatedAt: Long?,
-    @SerializedName("is_recording")
-    val isRecording: Boolean?,
-    @SerializedName("about")
-    val about: String?
 ) {
     class Builder {
         private var id: String? = null
@@ -54,8 +50,6 @@ class _Attachment_ private constructor(
         private var meta: _AttachmentMeta_? = null
         private var createdAt: Long? = null
         private var updatedAt: Long? = null
-        private var isRecording: Boolean? = null
-        private var about: String? = null
 
         fun id(id: String?) = apply { this.id = id }
         fun name(name: String?) = apply { this.name = name }
@@ -76,9 +70,6 @@ class _Attachment_ private constructor(
         fun meta(meta: _AttachmentMeta_?) = apply { this.meta = meta }
         fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
         fun updatedAt(updatedAt: Long?) = apply { this.updatedAt = updatedAt }
-        fun isRecording(isRecording: Boolean?) = apply { this.isRecording = isRecording }
-        fun about(about: String?) = apply { this.about = about }
-
         fun build() = _Attachment_(
             id,
             name,
@@ -94,9 +85,7 @@ class _Attachment_ private constructor(
             thumbnailLocalFilePath,
             meta,
             createdAt,
-            updatedAt,
-            isRecording,
-            about
+            updatedAt
         )
     }
 
@@ -116,7 +105,5 @@ class _Attachment_ private constructor(
             .meta(meta)
             .createdAt(createdAt)
             .updatedAt(updatedAt)
-            .isRecording(isRecording)
-            .about(about)
     }
 }

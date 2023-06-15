@@ -37,9 +37,6 @@ dependencies {
     //coroutines
     implementation deps.kotlin.coroutines_core
 
-    //realm
-    implementation deps.realm.local
-
     //sentry
     implementation deps.sentry.main
     implementation deps.sentry.okhttp

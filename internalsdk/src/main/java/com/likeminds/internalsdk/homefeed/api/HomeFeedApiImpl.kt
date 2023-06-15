@@ -1,5 +1,6 @@
-package com.likeminds.internalsdk.homefeed
+package com.likeminds.internalsdk.homefeed.api
 
+import com.likeminds.internalsdk.homefeed.HomeFeedReceiver
 import com.likeminds.internalsdk.homefeed.model._ConfigResponse_
 import com.likeminds.internalsdk.homefeed.model._GetExploreTabCountResponse_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
