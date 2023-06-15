@@ -7,6 +7,7 @@ import com.likeminds.likemindschat.di.DaggerLikeMindsChatComponent
 import com.likeminds.likemindschat.di.LikeMindsChatComponent
 import com.likeminds.likemindschat.di.chatroom.ChatroomSubComponent
 import com.likeminds.likemindschat.di.community.CommunitySubComponent
+import com.likeminds.likemindschat.di.conversation.ConversationSubComponent
 import com.likeminds.likemindschat.di.helper.HelperSubComponent
 import com.likeminds.likemindschat.di.homefeed.HomeFeedSubComponent
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
@@ -33,6 +34,7 @@ internal class LikeMindsChatApplication private constructor() {
     private var pollSubComponent: PollSubComponent? = null
     private var helperSubComponent: HelperSubComponent? = null
     private var searchSubComponent: SearchSubComponent? = null
+    private var conversationSubComponent: ConversationSubComponent? = null
 
     companion object {
 
@@ -126,5 +128,12 @@ internal class LikeMindsChatApplication private constructor() {
             searchSubComponent = likeMindsChatComponent?.searchSubComponent()?.create()
         }
         return searchSubComponent
+    }
+
+    fun conversationComponent(): ConversationSubComponent? {
+        if (conversationSubComponent == null) {
+            conversationSubComponent = likeMindsChatComponent?.conversationSubComponent()?.create()
+        }
+        return conversationSubComponent
     }
 }

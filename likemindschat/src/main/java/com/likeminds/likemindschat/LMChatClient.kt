@@ -7,6 +7,9 @@ import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.CommunityClient
 import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
 import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
+import com.likeminds.likemindschat.conversation.ConversationClient
+import com.likeminds.likemindschat.conversation.model.DeleteReactionRequest
+import com.likeminds.likemindschat.conversation.model.PutReactionRequest
 import com.likeminds.likemindschat.helper.HelperClient
 import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
 import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
@@ -67,6 +70,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var searchClient: SearchClient
+
+    @Inject
+    lateinit var conversationClient: ConversationClient
 
     class Builder(val application: Application) {
 
@@ -224,5 +230,15 @@ class LMChatClient private constructor() {
     // Exposed function to search a conversation
     suspend fun searchConversation(searchConversationRequest: SearchConversationRequest): LMResponse<SearchConversationResponse> {
         return searchClient.searchConversation(searchConversationRequest)
+    }
+
+    // Exposed function to put a reaction on a conversation
+    suspend fun putReaction(putReactionRequest: PutReactionRequest): LMResponse<Nothing> {
+        return conversationClient.putReaction(putReactionRequest)
+    }
+
+    // Exposed function to delete a reaction on a conversation
+    suspend fun deleteReaction(deleteReactionRequest: DeleteReactionRequest): LMResponse<Nothing> {
+        return conversationClient.deleteReaction(deleteReactionRequest)
     }
 }

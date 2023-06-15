@@ -1,12 +1,14 @@
 package com.likeminds.likemindschat.di
 
 import android.app.Application
-import com.likeminds.internalsdk.di.modules.CommunityModule
-import com.likeminds.internalsdk.di.modules.HelperModule
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.di.chatroom.ChatroomModule
 import com.likeminds.likemindschat.di.chatroom.ChatroomSubComponent
+import com.likeminds.likemindschat.di.community.CommunityModule
 import com.likeminds.likemindschat.di.community.CommunitySubComponent
+import com.likeminds.likemindschat.di.conversation.ConversationModule
+import com.likeminds.likemindschat.di.conversation.ConversationSubComponent
+import com.likeminds.likemindschat.di.helper.HelperModule
 import com.likeminds.likemindschat.di.helper.HelperSubComponent
 import com.likeminds.likemindschat.di.homefeed.HomeFeedModule
 import com.likeminds.likemindschat.di.homefeed.HomeFeedSubComponent
@@ -38,7 +40,8 @@ import javax.inject.Singleton
         ModerationModule::class,
         PollModule::class,
         HelperModule::class,
-        HomeFeedModule::class
+        HomeFeedModule::class,
+        ConversationModule::class
     ]
 )
 internal interface LikeMindsChatComponent {
@@ -56,6 +59,7 @@ internal interface LikeMindsChatComponent {
     fun helperSubComponent(): HelperSubComponent.Factory
     fun homeFeedComponent(): HomeFeedSubComponent.Factory
     fun searchSubComponent(): SearchSubComponent.Factory
+    fun conversationSubComponent(): ConversationSubComponent.Factory
 
     @Component.Builder
     interface Builder {
