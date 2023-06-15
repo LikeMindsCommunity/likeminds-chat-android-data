@@ -7,9 +7,15 @@ import com.likeminds.internalsdk.chatroom.ChatroomApi
 import com.likeminds.internalsdk.chatroom.ChatroomApiImpl
 import com.likeminds.internalsdk.community.CommunityApi
 import com.likeminds.internalsdk.community.CommunityApiImpl
-import com.likeminds.internalsdk.db.*
+import com.likeminds.internalsdk.conversation.ConversationApi
+import com.likeminds.internalsdk.conversation.ConversationApiImpl
+import com.likeminds.internalsdk.db.DB_SCHEMA_NAME
+import com.likeminds.internalsdk.db.DB_SCHEMA_VERSION
+import com.likeminds.internalsdk.db.RealmDBMigration
 import com.likeminds.internalsdk.db.util.DbCompactOnLaunchCallback
-import com.likeminds.internalsdk.di.*
+import com.likeminds.internalsdk.di.DaggerInternalSDKComponent
+import com.likeminds.internalsdk.di.InternalSDKComponent
+import com.likeminds.internalsdk.di.SDKSharedResources
 import com.likeminds.internalsdk.helper.HelperApi
 import com.likeminds.internalsdk.helper.HelperApiImpl
 import com.likeminds.internalsdk.homefeed.api.HomeFeedApi
@@ -36,11 +42,6 @@ import com.likeminds.internalsdk.user.db.UserDbImpl
 import com.likeminds.internalsdk.user.util.UserPreferences
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import io.realm.kotlin.Realm
-import io.realm.kotlin.RealmConfiguration
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
