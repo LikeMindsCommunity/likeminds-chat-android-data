@@ -6,6 +6,7 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 
 interface ChatroomSyncApi {
 
+    //api to get chatrooms for home feed
     suspend fun syncChatrooms(
         queries: HashMap<String, Any?>
     ): NetworkResponse<APIResponse<_SyncChatroomResponse_>>

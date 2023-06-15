@@ -3,7 +3,9 @@ package com.likeminds.internalsdk.sdk.util
 import android.app.Application
 import com.likeminds.internalsdk.utils.sharedpreferences.BasePreferences
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class SDKPreferences @Inject constructor(
     application: Application
 ) : BasePreferences(SDK_PREFS, application) {

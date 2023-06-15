@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 class _Member_ private constructor(
     @SerializedName("id")
-    val id: String?,
+    val id: String,
     @SerializedName("user_unique_id")
     val userUniqueId: String?,
     @SerializedName("name")
@@ -53,7 +53,8 @@ class _Member_ private constructor(
     val updatedAt: Long?
 ) {
     class Builder {
-        private var id: String? = null
+
+        private var id: String = ""
         private var userUniqueId: String? = null
         private var name: String? = null
         private var email: String? = null
@@ -78,7 +79,7 @@ class _Member_ private constructor(
         private var hasProfileImage: Boolean? = null
         private var updatedAt: Long? = null
 
-        fun id(id: String?) = apply { this.id = id }
+        fun id(id: String) = apply { this.id = id }
         fun userUniqueId(userUniqueId: String?) = apply { this.userUniqueId = userUniqueId }
         fun name(name: String?) = apply { this.name = name }
         fun email(email: String?) = apply { this.email = email }

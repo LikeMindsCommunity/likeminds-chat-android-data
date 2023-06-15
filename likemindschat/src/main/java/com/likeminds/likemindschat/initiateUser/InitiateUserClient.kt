@@ -24,6 +24,10 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
         groupChatSDK.getSDKPreferences()
     }
 
+    private val userPreferences by lazy {
+        groupChatSDK.getUserPreference()
+    }
+
     private val sdkApi by lazy {
         groupChatSDK.getSDKApi()
     }
@@ -74,11 +78,10 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
                 val accessToken = body.data?.accessToken ?: ""
                 val refreshToken = body.data?.refreshToken ?: ""
                 val communityId = body.data?.community?.id ?: ""
+                val user = body.data?.user
 
                 val chatTokenManager = ChatTokenManager.getInstance()
                 chatTokenManager.updateTokens(accessToken, refreshToken)
-
-                sdkPreferences.setCommunityId(communityId)
 
                 if (body.data?.appAccess == false) {
                     // logout the user if app access is false
@@ -96,7 +99,17 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
                         )
                     )
                 } else {
-                    val userRO = ROConverter.convertUser(body.data?.user)
+                    val lmUUID = user?.userUniqueId ?: ""
+                    val lmMemberId = user?.id ?: ""
+                    val clientUUID = user?.sdkClientInfo?.userUniqueId ?: ""
+                    val userRO = ROConverter.convertUser(user)
+
+
+                    sdkPreferences.setCommunityId(communityId)
+                    userPreferences.setLMUUID(lmUUID)
+                    userPreferences.setLMMemberId(lmMemberId)
+                    userPreferences.setClientUUID(clientUUID)
+
                     userRO?.let {
                         userDb.saveUser(it)
                     }

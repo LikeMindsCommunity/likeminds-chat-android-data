@@ -1,6 +1,7 @@
 package com.likeminds.likemindschat
 
 import android.app.Application
+import android.content.Context
 import com.likeminds.likemindschat.chatroom.ChatroomClient
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.helper.HelperClient
@@ -8,6 +9,7 @@ import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
+import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
 import com.likeminds.likemindschat.initiateUser.model.*
 import com.likeminds.likemindschat.moderation.ModerationClient
@@ -68,6 +70,8 @@ class LMChatClient private constructor() {
         @JvmStatic
         private var lmChatClientInstance: LMChatClient? = null
 
+        const val TAG = "LMChatClient"
+
         @JvmStatic
         fun getInstance(): LMChatClient {
             if (lmChatClientInstance == null) {
@@ -95,6 +99,11 @@ class LMChatClient private constructor() {
     //function to get explore tab count
     suspend fun getExploreTabCount(): LMResponse<GetExploreTabCountResponse> {
         return homeFeedClient.getExploreTabCount()
+    }
+
+    //function to get chatrooms for home feed
+    suspend fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
+        homeFeedClient.getChatrooms(context, listener)
     }
 
     //function to get config details
