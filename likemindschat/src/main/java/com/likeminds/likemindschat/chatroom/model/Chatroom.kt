@@ -61,7 +61,6 @@ class Chatroom private constructor(
     val isDraft: Boolean?
 ) {
     class Builder {
-
         private var member: Member? = null
         private var id: String = ""
         private var title: String = ""

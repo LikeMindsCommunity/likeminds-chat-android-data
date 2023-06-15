@@ -667,7 +667,7 @@ object ModelConverter {
             .showFollowAutoTag(_chatroom_.showFollowAutoTag)
             .cardCreationTime(_chatroom_.cardCreationTime)
             .participantsCount(_chatroom_.participantsCount)
-            .totalResponseCount(_chatroom_.totalResponseCount)
+            .totalResponseCount(_chatroom_.totalResponseCount?.toInt() ?: 0)
             .muteStatus(_chatroom_.muteStatus)
             .followStatus(_chatroom_.followStatus)
             .hasBeenNamed(_chatroom_.hasBeenNamed)
