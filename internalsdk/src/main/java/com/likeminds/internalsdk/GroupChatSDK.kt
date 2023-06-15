@@ -1,26 +1,21 @@
 package com.likeminds.internalsdk
 
 import android.app.Application
+import android.util.Log
 import com.google.gson.Gson
 import com.likeminds.internalsdk.chatroom.ChatroomApi
 import com.likeminds.internalsdk.chatroom.ChatroomApiImpl
 import com.likeminds.internalsdk.community.CommunityApi
 import com.likeminds.internalsdk.community.CommunityApiImpl
-import com.likeminds.internalsdk.conversation.ConversationApi
-import com.likeminds.internalsdk.conversation.ConversationApiImpl
-import com.likeminds.internalsdk.db.DB_SCHEMA_NAME
-import com.likeminds.internalsdk.db.DB_SCHEMA_VERSION
-import com.likeminds.internalsdk.db.RealmDBMigration
-import com.likeminds.internalsdk.db.models.AppConfigRO
-import com.likeminds.internalsdk.db.models.SDKClientInfoRO
-import com.likeminds.internalsdk.db.models.UserRO
-import com.likeminds.internalsdk.di.DaggerInternalSDKComponent
-import com.likeminds.internalsdk.di.InternalSDKComponent
-import com.likeminds.internalsdk.di.SDKSharedResources
+import com.likeminds.internalsdk.db.*
+import com.likeminds.internalsdk.db.util.DbCompactOnLaunchCallback
+import com.likeminds.internalsdk.di.*
 import com.likeminds.internalsdk.helper.HelperApi
 import com.likeminds.internalsdk.helper.HelperApiImpl
-import com.likeminds.internalsdk.homefeed.HomeFeedApi
-import com.likeminds.internalsdk.homefeed.HomeFeedApiImpl
+import com.likeminds.internalsdk.homefeed.api.HomeFeedApi
+import com.likeminds.internalsdk.homefeed.api.HomeFeedApiImpl
+import com.likeminds.internalsdk.homefeed.db.HomeFeedDB
+import com.likeminds.internalsdk.homefeed.db.HomeFeedDBImpl
 import com.likeminds.internalsdk.moderation.ModerationApi
 import com.likeminds.internalsdk.moderation.ModerationApiImpl
 import com.likeminds.internalsdk.poll.PollApi
@@ -38,6 +33,9 @@ import com.likeminds.internalsdk.user.api.UserApi
 import com.likeminds.internalsdk.user.api.UserApiImpl
 import com.likeminds.internalsdk.user.db.UserDB
 import com.likeminds.internalsdk.user.db.UserDbImpl
+import com.likeminds.internalsdk.user.util.UserPreferences
+import io.realm.Realm
+import io.realm.RealmConfiguration
 import io.realm.kotlin.Realm
 import io.realm.kotlin.RealmConfiguration
 import kotlinx.coroutines.CoroutineScope
@@ -76,6 +74,9 @@ class GroupChatSDK {
     lateinit var homeFeedApi: HomeFeedApiImpl
 
     @Inject
+    lateinit var homeFeedDB: HomeFeedDBImpl
+
+    @Inject
     lateinit var chatroomApiImpl: ChatroomApiImpl
 
     @Inject
@@ -99,19 +100,13 @@ class GroupChatSDK {
     @Inject
     lateinit var sdkPreferences: SDKPreferences
 
+    @Inject
+    lateinit var userPreferences: UserPreferences
+
     companion object {
 
         private var groupChatSDK: GroupChatSDK? = null
         const val LOG_TAG = "LikeMindsChat"
-
-        fun getRealmConfiguration(): RealmConfiguration {
-            val schema = setOf(AppConfigRO::class, UserRO::class, SDKClientInfoRO::class)
-            return RealmConfiguration.Builder(schema)
-                .name(DB_SCHEMA_NAME)
-                .schemaVersion(DB_SCHEMA_VERSION)
-                .migration(RealmDBMigration())
-                .build()
-        }
 
         @JvmStatic
         fun getInstance(): GroupChatSDK {
@@ -129,10 +124,39 @@ class GroupChatSDK {
     }
 
     private fun initRealmAndMigrateAsync() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val realm = Realm.open(getRealmConfiguration())
-            realm.close()
+        Realm.init(application)
+
+        Realm.setDefaultConfiguration(getNewDbConfig())
+
+        migrateDbAsync { }
+    }
+
+    private fun migrateDbAsync(cb: (Boolean) -> Unit) {
+        val config = Realm.getDefaultConfiguration()
+        if (config == null) {
+            cb(false)
+            return
         }
+        Realm.getInstanceAsync(config, object : Realm.Callback() {
+            override fun onSuccess(realm: Realm) {
+                cb(true)
+            }
+
+            override fun onError(exception: Throwable) {
+                super.onError(exception)
+                Log.e(LOG_TAG, "migration occurred with", exception)
+                cb(false)
+            }
+        })
+    }
+
+    private fun getNewDbConfig(): RealmConfiguration {
+        return RealmConfiguration.Builder()
+            .name(DB_SCHEMA_NAME)
+            .schemaVersion(DB_SCHEMA_VERSION)
+            .migration(RealmDBMigration())
+            .compactOnLaunch(DbCompactOnLaunchCallback())
+            .build()
     }
 
     private fun initSDKComponent(sdkSharedResources: SDKSharedResources) {
@@ -146,6 +170,10 @@ class GroupChatSDK {
 
     fun getSDKPreferences(): SDKPreferences {
         return sdkPreferences
+    }
+
+    fun getUserPreference(): UserPreferences {
+        return userPreferences
     }
 
     fun getSDKApi(): SDKApi {
@@ -168,8 +196,12 @@ class GroupChatSDK {
         return communityApiImpl
     }
 
-    fun homeFeedApi(): HomeFeedApi {
+    fun getHomeFeedApi(): HomeFeedApi {
         return homeFeedApi
+    }
+
+    fun getHomeFeedDb(): HomeFeedDB {
+        return homeFeedDB
     }
 
     fun getChatroomApi(): ChatroomApi {

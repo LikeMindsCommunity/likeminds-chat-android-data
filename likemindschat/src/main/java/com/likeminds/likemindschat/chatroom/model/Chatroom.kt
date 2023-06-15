@@ -8,7 +8,7 @@ class Chatroom private constructor(
     val member: Member?,
     val id: String,
     val title: String,
-    val createdAt: String?,
+    val createdAt: Long?,
     val answerText: String?,
     val state: Int,
     val unseenCount: Int?,
@@ -22,7 +22,7 @@ class Chatroom private constructor(
     val showFollowAutoTag: Boolean?,
     val cardCreationTime: String?,
     val participantsCount: String?,
-    val totalResponseCount: String?,
+    val totalResponseCount: Int,
     val muteStatus: Boolean?,
     val followStatus: Boolean?,
     val hasBeenNamed: Boolean?,
@@ -53,14 +53,18 @@ class Chatroom private constructor(
     val externalSeen: Boolean?,
     val unreadConversationCount: Int?,
     val chatroomImageUrl: String?,
-    val accessWithoutSubscription: Boolean?
+    val accessWithoutSubscription: Boolean?,
+    val lastConversation: Conversation?,
+    val lastSeenConversation: Conversation?,
+    val draftConversation: String?,
+    val isConversationStored: Boolean,
+    val isDraft: Boolean?
 ) {
     class Builder {
-
         private var member: Member? = null
         private var id: String = ""
         private var title: String = ""
-        private var createdAt: String? = null
+        private var createdAt: Long? = null
         private var answerText: String? = null
         private var state: Int = 0
         private var unseenCount: Int? = null
@@ -74,7 +78,7 @@ class Chatroom private constructor(
         private var showFollowAutoTag: Boolean? = null
         private var cardCreationTime: String? = null
         private var participantsCount: String? = null
-        private var totalResponseCount: String? = null
+        private var totalResponseCount: Int = 0
         private var muteStatus: Boolean? = null
         private var followStatus: Boolean? = null
         private var hasBeenNamed: Boolean? = null
@@ -106,11 +110,16 @@ class Chatroom private constructor(
         private var unreadConversationCount: Int? = null
         private var chatroomImageUrl: String? = null
         private var accessWithoutSubscription: Boolean? = null
+        private var lastConversation: Conversation? = null
+        private var lastSeenConversation: Conversation? = null
+        private var draftConversation: String? = null
+        private var isConversationStored: Boolean = false
+        private var isDraft: Boolean? = null
 
         fun member(member: Member?) = apply { this.member = member }
         fun id(id: String) = apply { this.id = id }
         fun title(title: String) = apply { this.title = title }
-        fun createdAt(createdAt: String?) = apply { this.createdAt = createdAt }
+        fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
         fun answerText(answerText: String?) = apply { this.answerText = answerText }
         fun state(state: Int) = apply { this.state = state }
         fun unseenCount(unseenCount: Int?) = apply { this.unseenCount = unseenCount }
@@ -132,7 +141,7 @@ class Chatroom private constructor(
         fun participantsCount(participantsCount: String?) =
             apply { this.participantsCount = participantsCount }
 
-        fun totalResponseCount(totalResponseCount: String?) =
+        fun totalResponseCount(totalResponseCount: Int) =
             apply { this.totalResponseCount = totalResponseCount }
 
         fun muteStatus(muteStatus: Boolean?) = apply { this.muteStatus = muteStatus }
@@ -186,6 +195,20 @@ class Chatroom private constructor(
         fun accessWithoutSubscription(accessWithoutSubscription: Boolean?) =
             apply { this.accessWithoutSubscription = accessWithoutSubscription }
 
+        fun lastConversation(lastConversation: Conversation?) =
+            apply { this.lastConversation = lastConversation }
+
+        fun lastSeenConversation(lastSeenConversation: Conversation?) =
+            apply { this.lastSeenConversation = lastSeenConversation }
+
+        fun draftConversation(draftConversation: String?) =
+            apply { this.draftConversation = draftConversation }
+
+        fun isConversationStored(isConversationStored: Boolean) =
+            apply { this.isConversationStored = isConversationStored }
+
+        fun isDraft(isDraft: Boolean?) = apply { this.isDraft = isDraft }
+
         fun build() = Chatroom(
             member,
             id,
@@ -235,7 +258,12 @@ class Chatroom private constructor(
             externalSeen,
             unreadConversationCount,
             chatroomImageUrl,
-            accessWithoutSubscription
+            accessWithoutSubscription,
+            lastConversation,
+            lastSeenConversation,
+            draftConversation,
+            isConversationStored,
+            isDraft
         )
     }
 }

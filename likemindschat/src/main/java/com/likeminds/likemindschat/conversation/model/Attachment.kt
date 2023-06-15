@@ -15,9 +15,7 @@ class Attachment private constructor(
     val thumbnailLocalFilePath: String?,
     val meta: AttachmentMeta?,
     val createdAt: Long?,
-    val updatedAt: Long?,
-    val isRecording: Boolean?,
-    val about: String?
+    val updatedAt: Long?
 ) {
     class Builder {
         private var id: String? = null
@@ -35,8 +33,6 @@ class Attachment private constructor(
         private var meta: AttachmentMeta? = null
         private var createdAt: Long? = null
         private var updatedAt: Long? = null
-        private var isRecording: Boolean? = null
-        private var about: String? = null
 
         fun id(id: String?) = apply { this.id = id }
         fun name(name: String?) = apply { this.name = name }
@@ -57,8 +53,6 @@ class Attachment private constructor(
         fun meta(meta: AttachmentMeta?) = apply { this.meta = meta }
         fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
         fun updatedAt(updatedAt: Long?) = apply { this.updatedAt = updatedAt }
-        fun isRecording(isRecording: Boolean?) = apply { this.isRecording = isRecording }
-        fun about(about: String?) = apply { this.about = about }
 
         fun build() = Attachment(
             id,
@@ -75,9 +69,7 @@ class Attachment private constructor(
             thumbnailLocalFilePath,
             meta,
             createdAt,
-            updatedAt,
-            isRecording,
-            about
+            updatedAt
         )
     }
 
@@ -97,7 +89,5 @@ class Attachment private constructor(
             .meta(meta)
             .createdAt(createdAt)
             .updatedAt(updatedAt)
-            .isRecording(isRecording)
-            .about(about)
     }
 }

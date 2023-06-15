@@ -29,7 +29,7 @@ class _Conversation_ private constructor(
     val date: String?,
     @SerializedName("is_edited")
     val isEdited: Boolean?,
-    @SerializedName("member_id")
+    @SerializedName("member_id", alternate = ["user_id"])
     val memberId: String?,
     @SerializedName("reply_conversation", alternate = ["reply_id"])
     val replyConversationId: String?,

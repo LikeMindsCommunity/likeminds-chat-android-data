@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class _User_(
     @SerializedName("id")
-    val id: Int,
+    val id: String,
     @SerializedName("image_url")
     val imageUrl: String,
     @SerializedName("is_guest")
@@ -29,7 +29,7 @@ data class _SDKClientInfo_(
     @SerializedName("community")
     val community: Int,
     @SerializedName("user")
-    val user: Int,
+    val user: String,
     @SerializedName("user_unique_id")
     val userUniqueId: String
 )

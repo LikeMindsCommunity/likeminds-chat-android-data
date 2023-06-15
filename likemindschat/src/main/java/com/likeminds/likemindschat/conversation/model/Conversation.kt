@@ -18,6 +18,7 @@ class Conversation private constructor(
     val isEdited: Boolean?,
     val memberId: String?,
     val replyConversationId: String?,
+    val replyConversation: Conversation?,
     val deletedBy: String?,
     val createdEpoch: Long?,
     val attachmentCount: Int?,
@@ -45,6 +46,7 @@ class Conversation private constructor(
 ) {
 
     class Builder {
+
         private var id: String? = ""
         private var chatroomId: String? = null
         private var communityId: String? = null
@@ -58,6 +60,7 @@ class Conversation private constructor(
         private var date: String? = null
         private var isEdited: Boolean? = null
         private var memberId: String? = null
+        private var replyConversation: Conversation? = null
         private var replyConversationId: String? = null
         private var deletedBy: String? = null
         private var createdEpoch: Long? = null
@@ -99,6 +102,9 @@ class Conversation private constructor(
         fun memberId(memberId: String?) = apply { this.memberId = memberId }
         fun replyConversationId(replyConversationId: String?) =
             apply { this.replyConversationId = replyConversationId }
+
+        fun replyConversation(replyConversation: Conversation?) =
+            apply { this.replyConversation = replyConversation }
 
         fun deletedBy(deletedBy: String?) = apply { this.deletedBy = deletedBy }
         fun createdEpoch(createdEpoch: Long?) = apply { this.createdEpoch = createdEpoch }
@@ -155,6 +161,7 @@ class Conversation private constructor(
             isEdited,
             memberId,
             replyConversationId,
+            replyConversation,
             deletedBy,
             createdEpoch,
             attachmentCount,
@@ -196,6 +203,7 @@ class Conversation private constructor(
             .date(date)
             .isEdited(isEdited)
             .memberId(memberId)
+            .replyConversation(replyConversation)
             .replyConversationId(replyConversationId)
             .deletedBy(deletedBy)
             .createdEpoch(createdEpoch)
