@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
+import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import com.likeminds.likemindschat.search.model.SearchChatroomRequest
 import com.likeminds.likemindschat.search.model.SearchConversationRequest
@@ -206,6 +207,22 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(
                     this@MainActivity,
                     "searchConversationResponse: ${searchConversationResponse.data?.conversations?.size}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            val getExploreFeedRequest = GetExploreFeedRequest.Builder()
+                .orderType(0)
+                .page(1)
+                .build()
+            val getExploreFeedResponse = client.getExploreFeed(getExploreFeedRequest)
+
+            Log.d(TAG, "getExploreFeedResponse:${getExploreFeedResponse}")
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    this@MainActivity,
+                    "getExploreFeedResponse: ${getExploreFeedResponse.data?.pinnedChatroomCount}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

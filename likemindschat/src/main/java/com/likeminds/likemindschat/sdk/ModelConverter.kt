@@ -1,10 +1,7 @@
 package com.likeminds.likemindschat.sdk
 
 import com.likeminds.internalsdk.chatroom.model.*
-import com.likeminds.internalsdk.community.model._Community_
-import com.likeminds.internalsdk.community.model._MemberAction_
-import com.likeminds.internalsdk.community.model._Member_
-import com.likeminds.internalsdk.community.model._Question_
+import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.helper.model._DecodeUrlResponse_
@@ -28,10 +25,7 @@ import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
-import com.likeminds.likemindschat.community.model.Community
-import com.likeminds.likemindschat.community.model.Member
-import com.likeminds.likemindschat.community.model.MemberAction
-import com.likeminds.likemindschat.community.model.Question
+import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
 import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
@@ -517,6 +511,28 @@ object ModelConverter {
         return SearchConversationResponse(convertSearchConversations(_searchConversationResponse_.conversations))
     }
 
+    // converts api GetExploreFeedResponse model to LM GetExploreFeedResponse model
+    fun convertGetExploreFeedResponse(
+        apiResponse: APIResponse<_GetExploreFeedResponse_>
+    ): LMResponse<GetExploreFeedResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetExploreFeedResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal GetExploreFeedResponse model to client model
+    private fun convertGetExploreFeedResponse(
+        _getExploreFeedResponse_: _GetExploreFeedResponse_?
+    ): GetExploreFeedResponse? {
+        if (_getExploreFeedResponse_ == null) return null
+        return GetExploreFeedResponse(
+            convertChatrooms(_getExploreFeedResponse_.chatrooms),
+            _getExploreFeedResponse_.pinnedChatroomCount
+        )
+    }
+
     // converts internal SearchConversation model list to client model list
     private fun convertSearchConversations(
         _conversations_: List<_SearchConversation_>
@@ -643,6 +659,15 @@ object ModelConverter {
             _memberAction_.title,
             _memberAction_.route
         )
+    }
+
+    // converts internal Chatroom model list to client model list
+    private fun convertChatrooms(
+        _chatrooms_: List<_Chatroom_>
+    ): List<Chatroom> {
+        return _chatrooms_.map {
+            convertChatroom(it)
+        }
     }
 
     // converts internal Chatroom model to client model

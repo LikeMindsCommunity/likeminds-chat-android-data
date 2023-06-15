@@ -4,16 +4,27 @@ import android.app.Application
 import android.content.Context
 import com.likeminds.likemindschat.chatroom.ChatroomClient
 import com.likeminds.likemindschat.chatroom.model.*
+import com.likeminds.likemindschat.community.CommunityClient
+import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
+import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
 import com.likeminds.likemindschat.helper.HelperClient
-import com.likeminds.likemindschat.helper.model.*
+import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
+import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
+import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
+import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.*
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
+import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
+import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
 import com.likeminds.likemindschat.moderation.ModerationClient
-import com.likeminds.likemindschat.moderation.model.*
+import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
+import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
+import com.likeminds.likemindschat.moderation.model.PostReportRequest
 import com.likeminds.likemindschat.poll.PollClient
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -41,6 +52,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var chatroomClient: ChatroomClient
+
+    @Inject
+    lateinit var communityClient: CommunityClient
 
     @Inject
     lateinit var moderationClient: ModerationClient
@@ -81,12 +95,12 @@ class LMChatClient private constructor() {
         }
     }
 
-    //function to process initiate user request
+    // Exposed function to process initiate user request
     suspend fun initiateUser(initiateUserRequest: InitiateUserRequest): LMResponse<InitiateUserResponse> {
         return initiateUserClient.initiateUser(initiateUserRequest)
     }
 
-    //function to process logout request
+    // Exposed function to process logout request
     suspend fun logout(logoutRequest: LogoutRequest): LMResponse<Nothing> {
         return initiateUserClient.logout(logoutRequest)
     }
@@ -96,11 +110,12 @@ class LMChatClient private constructor() {
         return initiateUserClient.registerDevice(registerDeviceRequest)
     }
 
-    //function to get explore tab count
+    // Exposed function to get explore tab count
     suspend fun getExploreTabCount(): LMResponse<GetExploreTabCountResponse> {
         return homeFeedClient.getExploreTabCount()
     }
 
+    // Exposed function to get config details
     //function to get chatrooms for home feed
     suspend fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
         homeFeedClient.getChatrooms(context, listener)
@@ -154,6 +169,11 @@ class LMChatClient private constructor() {
     // Exposed function to get list of participants in chatroom
     suspend fun getChatroomParticipants(getChatroomParticipantsRequest: GetChatroomParticipantsRequest): LMResponse<GetChatroomParticipantsResponse> {
         return chatroomClient.getChatroomParticipants(getChatroomParticipantsRequest)
+    }
+
+    // Exposed function to get list of participants in chatroom
+    suspend fun getExploreFeed(getExploreFeedRequest: GetExploreFeedRequest): LMResponse<GetExploreFeedResponse> {
+        return communityClient.getExploreFeed(getExploreFeedRequest)
     }
 
     // Exposed function to process request to fetch report tags
