@@ -11,7 +11,6 @@ class Cohort private constructor(
     val name: String?,
     val members: List<Member>?
 ) {
-
     class Builder {
 
         private var id: Int? = null

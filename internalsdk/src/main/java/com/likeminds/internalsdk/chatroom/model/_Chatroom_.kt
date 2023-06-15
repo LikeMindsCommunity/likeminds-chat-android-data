@@ -164,7 +164,7 @@ class _Chatroom_ private constructor(
         fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
         fun answerText(answerText: String?) = apply { this.answerText = answerText }
         fun state(state: Int) = apply { this.state = state }
-        fun unseenCount(unseenCount: Int) = apply { this.unseenCount = unseenCount }
+        fun unseenCount(unseenCount: Int?) = apply { this.unseenCount = unseenCount }
         fun shareUrl(shareUrl: String?) = apply { this.shareUrl = shareUrl }
         fun communityId(communityId: String?) = apply { this.communityId = communityId }
         fun communityName(communityName: String?) = apply { this.communityName = communityName }

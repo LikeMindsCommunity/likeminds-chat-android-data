@@ -1,28 +1,54 @@
 package com.likeminds.likemindschat.sdk
 
 import com.likeminds.internalsdk.chatroom.model.*
-import com.likeminds.internalsdk.community.model.*
+import com.likeminds.internalsdk.community.model._Community_
+import com.likeminds.internalsdk.community.model._MemberAction_
+import com.likeminds.internalsdk.community.model._Member_
+import com.likeminds.internalsdk.community.model._Question_
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.*
-import com.likeminds.internalsdk.helper.model.*
-import com.likeminds.internalsdk.homefeed.model.*
+import com.likeminds.internalsdk.helper.model._DecodeUrlResponse_
+import com.likeminds.internalsdk.helper.model._GetTaggingListResponse_
+import com.likeminds.internalsdk.helper.model._GroupTag_
+import com.likeminds.internalsdk.helper.model._UserTag_
+import com.likeminds.internalsdk.homefeed.model._ConfigResponse_
+import com.likeminds.internalsdk.homefeed.model._GetExploreTabCountResponse_
+import com.likeminds.internalsdk.homefeed.model._UserDetail_
+import com.likeminds.internalsdk.homefeed.model._UserMetrics_
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
 import com.likeminds.internalsdk.moderation.model._ReportTag_
-import com.likeminds.internalsdk.poll.model.*
+import com.likeminds.internalsdk.poll.model._AddPollOptionResponse_
+import com.likeminds.internalsdk.poll.model._GetPollUsersResponse_
+import com.likeminds.internalsdk.poll.model._Poll_
+import com.likeminds.internalsdk.poll.model._PostPollConversationResponse_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
+import com.likeminds.internalsdk.search.model.*
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
-import com.likeminds.likemindschat.community.model.*
+import com.likeminds.likemindschat.community.model.Community
+import com.likeminds.likemindschat.community.model.Member
+import com.likeminds.likemindschat.community.model.MemberAction
+import com.likeminds.likemindschat.community.model.Question
 import com.likeminds.likemindschat.conversation.model.*
-import com.likeminds.likemindschat.helper.model.*
-import com.likeminds.likemindschat.homefeed.model.*
+import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
+import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
+import com.likeminds.likemindschat.helper.model.GroupTag
+import com.likeminds.likemindschat.helper.model.UserTag
+import com.likeminds.likemindschat.homefeed.model.ConfigResponse
+import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
+import com.likeminds.likemindschat.homefeed.model.UserDetail
+import com.likeminds.likemindschat.homefeed.model.UserMetrics
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
-import com.likeminds.likemindschat.poll.model.*
+import com.likeminds.likemindschat.poll.model.AddPollOptionResponse
+import com.likeminds.likemindschat.poll.model.GetPollUsersResponse
+import com.likeminds.likemindschat.poll.model.Poll
+import com.likeminds.likemindschat.poll.model.PostPollConversationResponse
+import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.SDKClientInfo
 import com.likeminds.likemindschat.user.model.User
 
@@ -412,6 +438,116 @@ object ModelConverter {
             .build()
     }
 
+    // converts api SearchChatroomResponse model to LM SearchChatroomResponse model
+    fun convertSearchChatroomResponse(
+        apiResponse: APIResponse<_SearchChatroomResponse_>
+    ): LMResponse<SearchChatroomResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertSearchChatroomResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal SearchChatroomResponse model to client model
+    private fun convertSearchChatroomResponse(
+        _searchChatroomResponse_: _SearchChatroomResponse_?
+    ): SearchChatroomResponse? {
+        if (_searchChatroomResponse_ == null) return null
+        return SearchChatroomResponse(convertSearchChatrooms(_searchChatroomResponse_.conversations))
+    }
+
+    // converts internal SearchChatroom model list to client model list
+    private fun convertSearchChatrooms(
+        _chatrooms_: List<_SearchChatroom_>
+    ): List<SearchChatroom> {
+        return _chatrooms_.map {
+            convertSearchChatroom(it)
+        }
+    }
+
+    // converts internal SearchChatroom model to client model
+    private fun convertSearchChatroom(
+        _chatroom_: _SearchChatroom_
+    ): SearchChatroom {
+        return SearchChatroom(
+            convertAttachments(_chatroom_.attachments) ?: listOf(),
+            _chatroom_.attendingStatus,
+            convertChatroom(_chatroom_.chatroom),
+            convertCommunity(_chatroom_.community),
+            _chatroom_.followStatus,
+            _chatroom_.id,
+            _chatroom_.isGuest,
+            _chatroom_.isTagged,
+            convertSearchMember(_chatroom_.member),
+            _chatroom_.muteStatus,
+            _chatroom_.secretChatroomLeft,
+            _chatroom_.state,
+            _chatroom_.updatedAt,
+            _chatroom_.isDisabled
+        )
+    }
+
+    // converts internal SearchMember model to client model
+    private fun convertSearchMember(
+        _searchMember_: _SearchMember_
+    ): SearchMember {
+        return SearchMember(
+            _searchMember_.id,
+            SearchProfile(_searchMember_.profile.name)
+        )
+    }
+
+    // converts api SearchConversationResponse model to LM SearchConversationResponse model
+    fun convertSearchConversationResponse(
+        apiResponse: APIResponse<_SearchConversationResponse_>
+    ): LMResponse<SearchConversationResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertSearchConversationResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal SearchConversationResponse model to client model
+    private fun convertSearchConversationResponse(
+        _searchConversationResponse_: _SearchConversationResponse_?
+    ): SearchConversationResponse? {
+        if (_searchConversationResponse_ == null) return null
+        return SearchConversationResponse(convertSearchConversations(_searchConversationResponse_.conversations))
+    }
+
+    // converts internal SearchConversation model list to client model list
+    private fun convertSearchConversations(
+        _conversations_: List<_SearchConversation_>
+    ): List<SearchConversation> {
+        return _conversations_.map {
+            convertSearchConversation(it)
+        }
+    }
+
+    // converts internal SearchConversation model to client model
+    private fun convertSearchConversation(
+        _conversation_: _SearchConversation_
+    ): SearchConversation {
+        return SearchConversation(
+            _conversation_.answer,
+            _conversation_.attachmentCount,
+            convertAttachments(_conversation_.attachments) ?: listOf(),
+            _conversation_.attachmentsUploaded,
+            convertChatroom(_conversation_.chatroom),
+            convertCommunity(_conversation_.community),
+            _conversation_.createdAt,
+            _conversation_.id,
+            _conversation_.isDeleted,
+            _conversation_.isEdited,
+            _conversation_.lastUpdated,
+            convertSearchMember(_conversation_.member),
+            _conversation_.state,
+        )
+    }
+
+    // converts internal Member model list to client model list
     fun convertMembers(
         _members_: List<_Member_>
     ): List<Member> {
@@ -509,6 +645,88 @@ object ModelConverter {
         )
     }
 
+    // converts internal Chatroom model to client model
+    private fun convertChatroom(
+        _chatroom_: _Chatroom_
+    ): Chatroom {
+        return Chatroom.Builder()
+            .member(convertMember(_chatroom_.member))
+            .id(_chatroom_.id)
+            .title(_chatroom_.title)
+            .createdAt(_chatroom_.createdAt)
+            .answerText(_chatroom_.answerText)
+            .state(_chatroom_.state)
+            .unseenCount(_chatroom_.unseenCount)
+            .shareUrl(_chatroom_.shareUrl)
+            .communityId(_chatroom_.communityId)
+            .communityName(_chatroom_.communityName)
+            .type(_chatroom_.type)
+            .about(_chatroom_.about)
+            .header(_chatroom_.header)
+            .showFollowTelescope(_chatroom_.showFollowTelescope)
+            .showFollowAutoTag(_chatroom_.showFollowAutoTag)
+            .cardCreationTime(_chatroom_.cardCreationTime)
+            .participantsCount(_chatroom_.participantsCount)
+            .totalResponseCount(_chatroom_.totalResponseCount?.toInt() ?: 0)
+            .muteStatus(_chatroom_.muteStatus)
+            .followStatus(_chatroom_.followStatus)
+            .hasBeenNamed(_chatroom_.hasBeenNamed)
+            .hasReactions(_chatroom_.hasReactions)
+            .date(_chatroom_.date)
+            .isTagged(_chatroom_.isTagged)
+            .isPending(_chatroom_.isPending)
+            .isPinned(_chatroom_.isPinned)
+            .isDeleted(_chatroom_.isDeleted)
+            .userId(_chatroom_.userId)
+            .deletedBy(_chatroom_.deletedBy)
+            .deletedByMember(convertMember(_chatroom_.deletedByMember))
+            .updatedAt(_chatroom_.updatedAt)
+            .lastSeenConversationId(_chatroom_.lastSeenConversationId)
+            .lastConversationId(_chatroom_.lastConversationId)
+            .dateEpoch(_chatroom_.dateEpoch)
+            .isSecret(_chatroom_.isSecret)
+            .secretChatroomParticipants(_chatroom_.secretChatroomParticipants)
+            .secretChatroomLeft(_chatroom_.secretChatroomLeft)
+            .reactions(convertReactions(_chatroom_.reactions))
+            .topicId(_chatroom_.topicId)
+            .topic(_chatroom_.topic?.let {
+                convertConversation(it)
+            })
+            .autoFollowDone(_chatroom_.autoFollowDone)
+            .isEdited(_chatroom_.isEdited)
+            .memberCanMessage(_chatroom_.memberCanMessage)
+            .cohorts(convertCohorts(_chatroom_.cohorts))
+            .externalSeen(_chatroom_.externalSeen)
+            .unreadConversationCount(_chatroom_.unreadConversationCount)
+            .chatroomImageUrl(_chatroom_.chatroomImageUrl)
+            .accessWithoutSubscription(_chatroom_.accessWithoutSubscription)
+            .build()
+    }
+
+    // converts internal Cohort model list to client model list
+    private fun convertCohorts(
+        _cohorts_: List<_Cohort_>?
+    ): List<Cohort>? {
+        return _cohorts_?.map {
+            convertCohort(it)
+        }
+    }
+
+    // converts internal Cohort model to client model
+    private fun convertCohort(
+        _cohort_: _Cohort_
+    ): Cohort {
+        return Cohort.Builder()
+            .id(_cohort_.id)
+            .totalMembers(_cohort_.totalMembers)
+            .name(_cohort_.name)
+            .members(_cohort_.members?.let {
+                convertMembers(it)
+            })
+            .build()
+    }
+
+    // converts internal Conversation model to client model
     private fun convertConversation(
         _conversation_: _Conversation_
     ): Conversation {
@@ -554,6 +772,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts internal Attachment model list to client model list
     private fun convertAttachments(
         _attachments_: List<_Attachment_>?
     ): List<Attachment>? {
@@ -563,6 +782,7 @@ object ModelConverter {
         }
     }
 
+    // converts internal Attachment model to client model
     private fun convertAttachment(
         _attachment_: _Attachment_
     ): Attachment {
@@ -585,6 +805,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts internal AttachmentMeta model to client model
     private fun convertAttachmentMeta(
         _attachmentMeta_: _AttachmentMeta_?
     ): AttachmentMeta? {
@@ -596,6 +817,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts internal Reaction model list to client model list
     private fun convertReactions(
         _reactions_: List<_Reaction_>?
     ): List<Reaction>? {
@@ -605,6 +827,7 @@ object ModelConverter {
         }
     }
 
+    // converts internal Reaction model to client model
     private fun convertReaction(
         _reaction_: _Reaction_
     ): Reaction {
@@ -617,6 +840,7 @@ object ModelConverter {
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
+
     // creates internal Poll model list from client model list
     fun createPolls(
         polls: List<Poll>
@@ -843,6 +1067,7 @@ object ModelConverter {
     /**--------------------------------
      * Db Model -> Client Model
     --------------------------------*/
+
     // converts UserRO model to client model
     fun convertUserRO(userRO: UserRO?): User? {
         if (userRO == null) return null

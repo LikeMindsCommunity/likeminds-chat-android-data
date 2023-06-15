@@ -12,6 +12,7 @@ import com.likeminds.likemindschat.di.helper.HelperSubComponent
 import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
 import com.likeminds.likemindschat.di.moderation.ModerationSubComponent
 import com.likeminds.likemindschat.di.poll.PollSubComponent
+import com.likeminds.likemindschat.di.search.SearchSubComponent
 import com.likeminds.likemindschat.di.user.UserSubComponent
 import javax.inject.Inject
 
@@ -31,6 +32,7 @@ internal class LikeMindsChatApplication private constructor() {
     private var moderationSubComponent: ModerationSubComponent? = null
     private var pollSubComponent: PollSubComponent? = null
     private var helperSubComponent: HelperSubComponent? = null
+    private var searchSubComponent: SearchSubComponent? = null
 
     companion object {
 
@@ -117,5 +119,12 @@ internal class LikeMindsChatApplication private constructor() {
             helperSubComponent = likeMindsChatComponent?.helperSubComponent()?.create()
         }
         return helperSubComponent
+    }
+
+    fun searchComponent(): SearchSubComponent? {
+        if (searchSubComponent == null) {
+            searchSubComponent = likeMindsChatComponent?.searchSubComponent()?.create()
+        }
+        return searchSubComponent
     }
 }

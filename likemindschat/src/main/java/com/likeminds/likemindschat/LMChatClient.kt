@@ -17,6 +17,11 @@ import com.likeminds.likemindschat.moderation.model.*
 import com.likeminds.likemindschat.poll.PollClient
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
+import com.likeminds.likemindschat.search.SearchClient
+import com.likeminds.likemindschat.search.model.SearchChatroomRequest
+import com.likeminds.likemindschat.search.model.SearchChatroomResponse
+import com.likeminds.likemindschat.search.model.SearchConversationRequest
+import com.likeminds.likemindschat.search.model.SearchConversationResponse
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.User
 import javax.inject.Inject
@@ -45,6 +50,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var helperClient: HelperClient
+
+    @Inject
+    lateinit var searchClient: SearchClient
 
     class Builder(val application: Application) {
 
@@ -186,5 +194,15 @@ class LMChatClient private constructor() {
     // Exposed function to fetch tagging list
     suspend fun getTaggingList(getTaggingListRequest: GetTaggingListRequest): LMResponse<GetTaggingListResponse> {
         return helperClient.getTaggingList(getTaggingListRequest)
+    }
+
+    // Exposed function to search a chatroom
+    suspend fun searchChatroom(searchChatroomRequest: SearchChatroomRequest): LMResponse<SearchChatroomResponse> {
+        return searchClient.searchChatroom(searchChatroomRequest)
+    }
+
+    // Exposed function to search a conversation
+    suspend fun searchConversation(searchConversationRequest: SearchConversationRequest): LMResponse<SearchConversationResponse> {
+        return searchClient.searchConversation(searchConversationRequest)
     }
 }
