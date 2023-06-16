@@ -4,7 +4,7 @@ import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
-import com.likeminds.likemindschat.user.model.User
+import com.likeminds.likemindschat.user.model.GetUserResponse
 import javax.inject.Inject
 
 class UserClient @Inject constructor() : BaseClient() {
@@ -17,7 +17,7 @@ class UserClient @Inject constructor() : BaseClient() {
         groupChatSDK.getUserDb()
     }
 
-    suspend fun getUser(): LMResponse<User> {
+    suspend fun getUser(): LMResponse<GetUserResponse> {
         val userRO = userDb.getUser()
         return if (userRO == null) {
             LMResponse(success = false, errorMessage = "User doesn't exist")
@@ -25,7 +25,7 @@ class UserClient @Inject constructor() : BaseClient() {
             LMResponse(
                 success = true,
                 null,
-                ModelConverter.convertUserRO(userRO)
+                ModelConverter.convertGetUserResponse(userRO)
             )
         }
     }

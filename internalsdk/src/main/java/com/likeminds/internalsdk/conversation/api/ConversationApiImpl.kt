@@ -1,5 +1,6 @@
-package com.likeminds.internalsdk.conversation
+package com.likeminds.internalsdk.conversation.api
 
+import com.likeminds.internalsdk.conversation.ConversationReceiver
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse

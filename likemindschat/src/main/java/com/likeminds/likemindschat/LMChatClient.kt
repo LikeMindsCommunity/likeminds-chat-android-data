@@ -25,7 +25,7 @@ import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.search.SearchClient
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.UserClient
-import com.likeminds.likemindschat.user.model.User
+import com.likeminds.likemindschat.user.model.GetUserResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -121,13 +121,17 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get user from Db
-    suspend fun getUser(): LMResponse<User> {
+    suspend fun getUser(): LMResponse<GetUserResponse> {
         return userClient.getUser()
     }
 
-    // Exposed function to get chatroom
     suspend fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
         return chatroomClient.getChatroom(getChatroomRequest)
+    }
+
+    // Exposed function to get chatroom actions
+    suspend fun getChatroomActions(getChatroomActionsRequest: GetChatroomActionsRequest): LMResponse<GetChatroomActionsResponse> {
+        return chatroomClient.getChatroomActions(getChatroomActionsRequest)
     }
 
     // Exposed function to follow chatroom

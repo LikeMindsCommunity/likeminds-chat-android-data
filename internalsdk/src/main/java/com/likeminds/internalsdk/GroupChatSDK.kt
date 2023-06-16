@@ -3,19 +3,17 @@ package com.likeminds.internalsdk
 import android.app.Application
 import android.util.Log
 import com.google.gson.Gson
-import com.likeminds.internalsdk.chatroom.ChatroomApi
-import com.likeminds.internalsdk.chatroom.ChatroomApiImpl
+import com.likeminds.internalsdk.chatroom.api.ChatroomApi
+import com.likeminds.internalsdk.chatroom.api.ChatroomApiImpl
+import com.likeminds.internalsdk.chatroom.db.ChatroomDB
+import com.likeminds.internalsdk.chatroom.db.ChatroomDBImpl
 import com.likeminds.internalsdk.community.CommunityApi
 import com.likeminds.internalsdk.community.CommunityApiImpl
-import com.likeminds.internalsdk.conversation.ConversationApi
-import com.likeminds.internalsdk.conversation.ConversationApiImpl
-import com.likeminds.internalsdk.db.DB_SCHEMA_NAME
-import com.likeminds.internalsdk.db.DB_SCHEMA_VERSION
-import com.likeminds.internalsdk.db.RealmDBMigration
+import com.likeminds.internalsdk.conversation.api.ConversationApi
+import com.likeminds.internalsdk.conversation.api.ConversationApiImpl
+import com.likeminds.internalsdk.db.*
 import com.likeminds.internalsdk.db.util.DbCompactOnLaunchCallback
-import com.likeminds.internalsdk.di.DaggerInternalSDKComponent
-import com.likeminds.internalsdk.di.InternalSDKComponent
-import com.likeminds.internalsdk.di.SDKSharedResources
+import com.likeminds.internalsdk.di.*
 import com.likeminds.internalsdk.helper.HelperApi
 import com.likeminds.internalsdk.helper.HelperApiImpl
 import com.likeminds.internalsdk.homefeed.api.HomeFeedApi
@@ -79,6 +77,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var chatroomApiImpl: ChatroomApiImpl
+
+    @Inject
+    lateinit var chatroomDbImpl: ChatroomDBImpl
 
     @Inject
     lateinit var moderationApiImpl: ModerationApiImpl
@@ -207,6 +208,10 @@ class GroupChatSDK {
 
     fun getChatroomApi(): ChatroomApi {
         return chatroomApiImpl
+    }
+
+    fun getChatroomDb(): ChatroomDB {
+        return chatroomDbImpl
     }
 
     fun getModerationApi(): ModerationApi {

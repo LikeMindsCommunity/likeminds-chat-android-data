@@ -25,8 +25,7 @@ import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
-import com.likeminds.likemindschat.user.model.SDKClientInfo
-import com.likeminds.likemindschat.user.model.User
+import com.likeminds.likemindschat.user.model.*
 
 object ModelConverter {
 
@@ -74,6 +73,10 @@ object ModelConverter {
             _user_.updatedAt,
             _user_.userUniqueId
         )
+    }
+
+    fun convertGetUserResponse(userRO: UserRO?): GetUserResponse {
+        return GetUserResponse(convertUserRO(userRO))
     }
 
     // converts internal SDKClientInfo model to client model
@@ -164,27 +167,31 @@ object ModelConverter {
         )
     }
 
+    fun convertGetChatroomResponse(chatroomRO: ChatroomRO?): GetChatroomResponse {
+        return GetChatroomResponse(convertChatroomRO(chatroomRO))
+    }
+
     // converts api GetChatroomResponse model to LM GetChatroomResponse model
-    fun convertGetChatroomAPIResponse(
-        apiResponse: APIResponse<_GetChatroomResponse_>
-    ): LMResponse<GetChatroomResponse> {
+    fun convertGetChatroomActionsAPIResponse(
+        apiResponse: APIResponse<_GetChatroomActionsResponse_>
+    ): LMResponse<GetChatroomActionsResponse> {
         return LMResponse(
             apiResponse.success,
             apiResponse.errorMessage,
-            convertGetChatroomResponse(apiResponse.data)
+            convertGetChatroomActionsResponse(apiResponse.data)
         )
     }
 
     // converts internal GetChatroomResponse model to client model
-    private fun convertGetChatroomResponse(
-        _getChatroomResponse_: _GetChatroomResponse_?
-    ): GetChatroomResponse? {
-        if (_getChatroomResponse_ == null) return null
-        return GetChatroomResponse(
-            _getChatroomResponse_.canAccessSecretChatroom,
-            convertChatroomActions(_getChatroomResponse_.chatroomActions),
-            _getChatroomResponse_.participantCount,
-            _getChatroomResponse_.placeHolder
+    private fun convertGetChatroomActionsResponse(
+        _getChatroomActionsResponse_: _GetChatroomActionsResponse_?
+    ): GetChatroomActionsResponse? {
+        if (_getChatroomActionsResponse_ == null) return null
+        return GetChatroomActionsResponse(
+            _getChatroomActionsResponse_.canAccessSecretChatroom,
+            convertChatroomActions(_getChatroomActionsResponse_.chatroomActions),
+            _getChatroomActionsResponse_.participantCount,
+            _getChatroomActionsResponse_.placeHolder
         )
     }
 
@@ -1312,7 +1319,7 @@ object ModelConverter {
     }
 
     // converts list of PollRO model to client model
-    private fun convertPollsRO(pollsRO: List<PollRO>): List<Poll>? {
+    private fun convertPollsRO(pollsRO: List<PollRO>): List<Poll> {
         return pollsRO.map { pollRO ->
             convertPollRO(pollRO)
         }
