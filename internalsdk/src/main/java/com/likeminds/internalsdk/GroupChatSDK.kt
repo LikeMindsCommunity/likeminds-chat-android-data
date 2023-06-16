@@ -35,6 +35,8 @@ import com.likeminds.internalsdk.search.SearchApi
 import com.likeminds.internalsdk.search.SearchApiImpl
 import com.likeminds.internalsdk.sync.api.chatroom.ChatroomSyncApi
 import com.likeminds.internalsdk.sync.api.chatroom.ChatroomSyncApiImpl
+import com.likeminds.internalsdk.sync.api.conversation.ConversationSyncApi
+import com.likeminds.internalsdk.sync.api.conversation.ConversationSyncApiImpl
 import com.likeminds.internalsdk.user.api.UserApi
 import com.likeminds.internalsdk.user.api.UserApiImpl
 import com.likeminds.internalsdk.user.db.UserDB
@@ -97,6 +99,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var chatroomSyncApiImpl: ChatroomSyncApiImpl
+
+    @Inject
+    lateinit var conversationSyncApiImpl: ConversationSyncApiImpl
 
     @Inject
     lateinit var conversationApiImpl: ConversationApiImpl
@@ -237,6 +242,10 @@ class GroupChatSDK {
 
     fun getChatroomSyncApi(): ChatroomSyncApi {
         return chatroomSyncApiImpl
+    }
+
+    fun getConversationSyncApi(): ConversationSyncApi {
+        return conversationSyncApiImpl
     }
 
     fun getConversationApi(): ConversationApi {

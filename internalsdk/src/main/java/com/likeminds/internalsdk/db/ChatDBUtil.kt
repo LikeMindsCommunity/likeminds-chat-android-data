@@ -332,4 +332,14 @@ object ChatDBUtil {
             .equalTo(DbKey.UID, uid)
             .findFirst()
     }
+
+    fun updateIsConversationStoreForChatroom(
+        chatroomId: String,
+        isConversationStored: Boolean
+    ) {
+        write { realm ->
+            val chatroomRO = getChatroom(realm, chatroomId)
+            chatroomRO?.isConversationStored = isConversationStored
+        }
+    }
 }

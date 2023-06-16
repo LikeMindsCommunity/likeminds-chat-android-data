@@ -5,7 +5,9 @@ import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
 import com.likeminds.internalsdk.db.models.AppConfigRO
 import com.likeminds.internalsdk.db.util.toRealmList
+import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.sync.model._SyncChatroomResponse_
+import com.likeminds.internalsdk.sync.model._SyncConversationResponse_
 import io.realm.Realm
 
 object SyncUtil {
@@ -229,5 +231,116 @@ object SyncUtil {
             }
         }
         realm.close()
+    }
+
+    // Stores conversation data to DB
+    fun saveConversationResponses(
+        chatroomId: String,
+        sdkPreferences: SDKPreferences,
+        dataList: ArrayList<_SyncConversationResponse_>
+    ) {
+        val realm = Realm.getDefaultInstance()
+        ChatDBUtil.write(realm) { realmWrite ->
+            dataList.forEach { data ->
+                //fetch community
+                val communityId = sdkPreferences.getCommunityId() ?: return@write
+                val community = data.communityMeta[communityId] ?: return@write
+                val communityRO =
+                    ROConverter.convertCommunity(community) ?: return@write
+                communityRO.relationshipNeeded = true
+                realmWrite.insertOrUpdate(communityRO)
+
+                //fetch chatroom
+                val chatroom = data.chatroomMeta[chatroomId.toString()] ?: return@write
+
+                //chatroom creator
+                val chatroomCreatorId = chatroom.userId
+                val chatroomCreator =
+                    data.userMeta[chatroomCreatorId.toString()] ?: return@write
+                val chatroomCreatorRO =
+                    ROConverter.convertMember(chatroomCreator, communityId) ?: return@write
+                realmWrite.insertOrUpdate(chatroomCreatorRO)
+
+                //reactions
+                val chatroomReactions = if (chatroom.hasReactions == true) {
+                    val list = data.chatroomReactionsMeta[chatroomId.toString()] ?: emptyList()
+                    list.map { reaction ->
+                        val userId = reaction.userId.toString()
+                        val user = data.userMeta[userId]
+                        reaction.toBuilder().member(user).build()
+                    }
+                } else {
+                    emptyList()
+                }
+
+                val chatroomRO = ROConverter.convertChatroom(
+                    realmWrite,
+                    chatroom,
+                    chatroomCreatorRO,
+                    reactions = chatroomReactions
+                ) ?: return@write
+                chatroomRO.relationshipNeeded = true
+                realmWrite.insertOrUpdate(chatroomRO)
+
+                data.conversations.forEach conversation@{ conversation ->
+                    val id = conversation.id
+                    //conversation creator
+                    val creatorId = conversation.memberId
+                    val creator = data.userMeta[creatorId.toString()] ?: return@conversation
+                    val creatorRO =
+                        ROConverter.convertMember(creator, communityId) ?: return@conversation
+                    realmWrite.insertOrUpdate(creatorRO)
+
+                    //reactions
+                    val reactions = if (conversation.hasReactions == true) {
+                        val list = data.conversationReactionMeta[id.toString()] ?: emptyList()
+                        list.map { reaction ->
+                            val userId = reaction.userId.toString()
+                            val user = data.userMeta[userId]
+                            reaction.toBuilder().member(user).build()
+                        }
+                    } else {
+                        emptyList()
+                    }
+
+                    //polls
+                    val conversationPolls =
+                        if (_ConversationState_.isPoll(conversation.state)) {
+                            val list = data.conversationPollMeta[id.toString()] ?: emptyList()
+                            list.sortedBy { it.id }
+                                .map { poll ->
+                                    val userId = poll.userId
+                                    val user = data.userMeta[userId]
+                                    poll.toBuilder().member(user).build()
+                                }
+                        } else {
+                            emptyList()
+                        }
+
+                    //attachment
+                    val conversationAttachment =
+                        if (conversation.attachmentUploaded == true &&
+                            (conversation.attachmentCount ?: 0) > 0
+                        ) {
+                            data.conversationAttachmentsMeta[id.toString()] ?: emptyList()
+                        } else {
+                            emptyList()
+                        }
+
+                    val conversationRO =
+                        ROConverter.convertConversation(
+                            realmWrite,
+                            conversation,
+                            creatorRO,
+                            conversationPolls,
+                            conversationAttachment,
+                            reactions
+                        ) ?: return@conversation
+                    realmWrite.insertOrUpdate(
+                        conversationRO
+                    )
+                }
+            }
+        }
     }
 }
