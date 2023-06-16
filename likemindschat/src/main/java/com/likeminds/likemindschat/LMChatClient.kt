@@ -8,34 +8,22 @@ import com.likeminds.likemindschat.community.CommunityClient
 import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
 import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
 import com.likeminds.likemindschat.conversation.ConversationClient
-import com.likeminds.likemindschat.conversation.model.DeleteReactionRequest
-import com.likeminds.likemindschat.conversation.model.PutReactionRequest
+import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.helper.HelperClient
-import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
-import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
-import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
-import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
+import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
-import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
-import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
+import com.likeminds.likemindschat.initiateUser.model.*
 import com.likeminds.likemindschat.moderation.ModerationClient
-import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
-import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
-import com.likeminds.likemindschat.moderation.model.PostReportRequest
+import com.likeminds.likemindschat.moderation.model.*
 import com.likeminds.likemindschat.poll.PollClient
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.search.SearchClient
-import com.likeminds.likemindschat.search.model.SearchChatroomRequest
-import com.likeminds.likemindschat.search.model.SearchChatroomResponse
-import com.likeminds.likemindschat.search.model.SearchConversationRequest
-import com.likeminds.likemindschat.search.model.SearchConversationResponse
+import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.User
 import javax.inject.Inject
@@ -162,11 +150,6 @@ class LMChatClient private constructor() {
         return chatroomClient.markReadChatroom(markReadChatroomRequest)
     }
 
-    // Exposed function to get chatroom's share url
-    suspend fun shareChatroomUrl(shareChatroomUrlRequest: ShareChatroomUrlRequest): LMResponse<ShareChatroomUrlResponse> {
-        return chatroomClient.shareChatroomUrl(shareChatroomUrlRequest)
-    }
-
     // Exposed function to set chatroom's topic
     suspend fun setChatroomTopic(setChatroomTopicRequest: SetChatroomTopicRequest): LMResponse<Nothing> {
         return chatroomClient.setChatroomTopic(setChatroomTopicRequest)
@@ -230,6 +213,14 @@ class LMChatClient private constructor() {
     // Exposed function to search a conversation
     suspend fun searchConversation(searchConversationRequest: SearchConversationRequest): LMResponse<SearchConversationResponse> {
         return searchClient.searchConversation(searchConversationRequest)
+    }
+
+    suspend fun postConversation(postConversationRequest: PostConversationRequest): LMResponse<PostConversationResponse> {
+        return conversationClient.postConversation(postConversationRequest)
+    }
+
+    suspend fun editConversation(editConversationRequest: EditConversationRequest): LMResponse<EditConversationResponse> {
+        return conversationClient.editConversation(editConversationRequest)
     }
 
     // Exposed function to put a reaction on a conversation

@@ -47,7 +47,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             }
             is NetworkResponse.Success -> {
                 val body = response.body
-                return ModelConverter.convertGetChatroomResponse(body)
+                ModelConverter.convertGetChatroomAPIResponse(body)
             }
         }
     }
@@ -243,52 +243,6 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
     /**
      * Converts client request model to internal model and calls the api
-     * @param shareChatroomUrlRequest - client request model to get chatroom's share url
-     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
-     * @return ShareChatroomUrlResponse - ShareChatroomUrlResponse model for shareChatroomUrlRequest
-     */
-    suspend fun shareChatroomUrl(shareChatroomUrlRequest: ShareChatroomUrlRequest): LMResponse<ShareChatroomUrlResponse> {
-        // validates the client request
-        RequestUtils.validate()
-        validateShareChatroomUrlRequest(shareChatroomUrlRequest)
-
-        // builds internal request model
-        val request =
-            _ShareChatroomUrlRequest_.Builder()
-                .chatroomId(shareChatroomUrlRequest.chatroomId)
-                .domain(shareChatroomUrlRequest.domain)
-                .build()
-
-        // calls api and processes the response accordingly
-        return when (val response = chatroomApi.shareChatroomUrl(request)) {
-            is NetworkResponse.Error -> {
-                LMResponse(
-                    success = response.body.success,
-                    errorMessage = response.body.errorMessage
-                )
-            }
-            is NetworkResponse.Success -> {
-                val body = response.body
-                return ModelConverter.convertShareChatroomUrlResponse(body)
-            }
-        }
-    }
-
-    /**
-     * validates [shareChatroomUrlRequest]
-     * @throws IllegalArgumentException - when required properties not provided
-     */
-    private fun validateShareChatroomUrlRequest(shareChatroomUrlRequest: ShareChatroomUrlRequest) {
-        if (shareChatroomUrlRequest.chatroomId.isEmpty()) {
-            RequestUtils.throwException("chatroomId")
-        }
-        if (shareChatroomUrlRequest.domain.isEmpty()) {
-            RequestUtils.throwException("domain")
-        }
-    }
-
-    /**
-     * Converts client request model to internal model and calls the api
      * @param setChatroomTopicRequest - client request model to set a conversation as topic for chatroom
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
      * @return LMResponse<Nothing> - Base LM response
@@ -365,7 +319,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             }
             is NetworkResponse.Success -> {
                 val body = response.body
-                return ModelConverter.convertGetChatroomParticipantsResponse(body)
+                ModelConverter.convertGetChatroomParticipantsAPIResponse(body)
             }
         }
     }

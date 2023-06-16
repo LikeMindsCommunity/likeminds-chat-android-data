@@ -7,10 +7,7 @@ import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
-import com.likeminds.likemindschat.search.model.SearchChatroomRequest
-import com.likeminds.likemindschat.search.model.SearchChatroomResponse
-import com.likeminds.likemindschat.search.model.SearchConversationRequest
-import com.likeminds.likemindschat.search.model.SearchConversationResponse
+import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.util.RequestUtils
 import javax.inject.Inject
 
@@ -54,7 +51,7 @@ class SearchClient @Inject constructor() : BaseClient() {
             }
             is NetworkResponse.Success -> {
                 val body = response.body
-                ModelConverter.convertSearchChatroomResponse(body)
+                ModelConverter.convertSearchChatroomAPIResponse(body)
             }
         }
     }
@@ -102,7 +99,7 @@ class SearchClient @Inject constructor() : BaseClient() {
             }
             is NetworkResponse.Success -> {
                 val body = response.body
-                ModelConverter.convertSearchConversationResponse(body)
+                ModelConverter.convertSearchConversationAPIResponse(body)
             }
         }
     }

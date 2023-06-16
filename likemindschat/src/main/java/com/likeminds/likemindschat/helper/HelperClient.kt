@@ -5,10 +5,7 @@ import com.likeminds.internalsdk.helper.model._GetTaggingListRequest_
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
-import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
-import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
-import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
+import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -48,7 +45,7 @@ class HelperClient @Inject constructor() : BaseClient() {
                 )
             }
             is NetworkResponse.Success -> {
-                ModelConverter.convertDecodeUrlResponse(response.body)
+                ModelConverter.convertDecodeUrlAPIResponse(response.body)
             }
         }
     }

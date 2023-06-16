@@ -113,7 +113,7 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
                     userRO?.let {
                         userDb.saveUser(it)
                     }
-                    ModelConverter.convertInitiateUserResponse(body)
+                    ModelConverter.convertInitiateUserAPIResponse(body)
                 }
             }
         }

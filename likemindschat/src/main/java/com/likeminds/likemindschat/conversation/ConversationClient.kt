@@ -1,13 +1,12 @@
 package com.likeminds.likemindschat.conversation
 
-import com.likeminds.internalsdk.conversation.model._DeleteReactionRequest_
-import com.likeminds.internalsdk.conversation.model._PutReactionRequest_
+import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.conversation.model.DeleteReactionRequest
-import com.likeminds.likemindschat.conversation.model.PutReactionRequest
+import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
+import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import javax.inject.Inject
 
@@ -19,6 +18,113 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
     private val conversationApi by lazy {
         groupChatSDK.getConversationApi()
+    }
+
+    suspend fun postConversation(postConversationRequest: PostConversationRequest): LMResponse<PostConversationResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validatePostConversationRequest(postConversationRequest)
+
+        val request = _CreateConversationRequest_.Builder()
+            .chatroomId(postConversationRequest.chatroomId)
+            .text(postConversationRequest.text)
+            .shareLink(postConversationRequest.shareLink)
+            .ogTags(ModelConverter.createLinkOGTags(postConversationRequest.ogTags))
+            .repliedConversationId(postConversationRequest.repliedConversationId)
+            .attachmentCount(postConversationRequest.attachmentCount)
+            .temporaryId(postConversationRequest.temporaryId)
+            .repliedChatroomId(postConversationRequest.repliedChatroomId)
+            .build()
+
+        return when (val response = conversationApi.createConversation(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                val body = response.body
+                ModelConverter.convertPostConversationAPIResponse(body)
+            }
+        }
+    }
+
+    private fun validatePostConversationRequest(postConversationRequest: PostConversationRequest) {
+        if (postConversationRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+        if (postConversationRequest.text.isEmpty()
+            && (postConversationRequest.attachmentCount ?: 0) <= 0
+        ) {
+            RequestUtils.throwException("text")
+        }
+    }
+
+    suspend fun editConversation(editConversationRequest: EditConversationRequest): LMResponse<EditConversationResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validateEditConversationRequest(editConversationRequest)
+
+        val request = _EditConversationRequest_.Builder()
+            .conversationId(editConversationRequest.conversationId)
+            .text(editConversationRequest.text)
+            .shareLink(editConversationRequest.shareLink)
+            .build()
+
+        return when (val response = conversationApi.editConversation(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                val body = response.body
+                ModelConverter.convertEditConversationAPIResponse(body)
+            }
+        }
+    }
+
+    private fun validateEditConversationRequest(editConversationRequest: EditConversationRequest) {
+        if (editConversationRequest.conversationId.isEmpty()) {
+            RequestUtils.throwException("conversationId")
+        }
+        if (editConversationRequest.text.isEmpty()) {
+            RequestUtils.throwException("text")
+        }
+    }
+
+    suspend fun deleteConversations(deleteConversationRequest: DeleteConversationRequest): LMResponse<DeleteConversationResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validateDeleteConversationRequest(deleteConversationRequest)
+
+        val request = _DeleteConversationRequest_.Builder()
+            .conversationIds(deleteConversationRequest.conversationIds)
+            .build()
+
+        return when (val response = conversationApi.deleteConversation(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    response.body.success,
+                    response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                val body = response.body
+                ModelConverter.convertDeleteConversationAPIResponse(body)
+            }
+        }
+    }
+
+    private fun validateDeleteConversationRequest(deleteConversationRequest: DeleteConversationRequest) {
+        if (deleteConversationRequest.conversationIds.isEmpty()) {
+            RequestUtils.throwException("conversationIds")
+        }
     }
 
     /**
@@ -48,6 +154,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
                 LMResponse(
                     success = response.body.success
@@ -95,6 +202,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
                 LMResponse(
                     success = response.body.success

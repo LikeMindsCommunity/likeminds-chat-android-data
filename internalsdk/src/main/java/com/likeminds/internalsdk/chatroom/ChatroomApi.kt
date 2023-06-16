@@ -31,11 +31,6 @@ interface ChatroomApi {
         request: _MarkReadChatroomRequest_
     ): NetworkResponse<APIResponse<Nothing>>
 
-    // api to get chatroom's share url
-    suspend fun shareChatroomUrl(
-        request: _ShareChatroomUrlRequest_
-    ): NetworkResponse<APIResponse<_ShareChatroomUrlResponse_>>
-
     // api to set conversation as chatroom's topic
     suspend fun setChatroomTopic(
         request: _SetChatroomTopicRequest_

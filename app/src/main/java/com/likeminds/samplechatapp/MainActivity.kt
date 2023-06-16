@@ -6,17 +6,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.chatroom.model.*
-import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
 import com.likeminds.likemindschat.conversation.model.DeleteReactionRequest
 import com.likeminds.likemindschat.conversation.model.PutReactionRequest
+import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import com.likeminds.likemindschat.search.model.SearchChatroomRequest
 import com.likeminds.likemindschat.search.model.SearchConversationRequest
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -113,22 +110,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(
                     this@MainActivity,
                     "markReadChatroom: ${markReadChatroomResponse.success}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val shareChatroomUrlRequest = ShareChatroomUrlRequest.Builder()
-                .chatroomId("82825")
-                .domain("https://www.sample.com")
-                .build()
-            val shareChatroomUrlResponse = client.shareChatroomUrl(shareChatroomUrlRequest)
-
-            Log.d(TAG, "shareChatroomUrlResponse:${shareChatroomUrlResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "markReadChatroom: ${shareChatroomUrlResponse.data?.shareChatroomUrl?.shareUrl}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

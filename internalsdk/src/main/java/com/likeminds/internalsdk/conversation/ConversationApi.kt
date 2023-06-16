@@ -1,11 +1,22 @@
 package com.likeminds.internalsdk.conversation
 
-import com.likeminds.internalsdk.conversation.model._DeleteReactionRequest_
-import com.likeminds.internalsdk.conversation.model._PutReactionRequest_
+import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 
 interface ConversationApi {
+
+    suspend fun createConversation(
+        request: _CreateConversationRequest_
+    ): NetworkResponse<APIResponse<_CreateConversationResponse_>>
+
+    suspend fun editConversation(
+        request: _EditConversationRequest_
+    ): NetworkResponse<APIResponse<_EditConversationResponse_>>
+
+    suspend fun deleteConversation(
+        request: _DeleteConversationRequest_
+    ): NetworkResponse<APIResponse<_DeleteConversationResponse_>>
 
     // api to react on a conversation
     suspend fun putReaction(
