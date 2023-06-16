@@ -11,4 +11,24 @@ class ChatroomDBImpl @Inject constructor(
     override suspend fun getChatroom(chatroomId: String): ChatroomRO? {
         return chatroomReceiver.getChatroom(chatroomId)
     }
+
+    override fun updateChatroomFollowStatus(chatroomId: String, value: Boolean) {
+        chatroomReceiver.updateChatroomFollowStatus(chatroomId, value)
+    }
+
+    override fun updateChatroomMuteStatus(chatroomId: String, value: Boolean) {
+        chatroomReceiver.updateChatroomMuteStatus(chatroomId, value)
+    }
+
+    override fun updateSecretChatroomLeaveStatus(chatroomId: String) {
+        chatroomReceiver.updateSecretChatroomLeaveStatus(chatroomId)
+    }
+
+    override fun updateChatroomTitle(chatroomId: String, updatedTitle: String) {
+        chatroomReceiver.updateChatroomTitle(chatroomId, updatedTitle)
+    }
+
+    override fun updateChatroomTopic(chatroomId: String, topicId: String) {
+        chatroomReceiver.updateChatroomTopic(chatroomId, topicId)
+    }
 }

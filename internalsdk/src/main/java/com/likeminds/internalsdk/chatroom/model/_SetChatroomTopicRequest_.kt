@@ -4,16 +4,17 @@ import com.google.gson.annotations.SerializedName
 
 class _SetChatroomTopicRequest_ private constructor(
     @SerializedName("chatroom_id")
-    val chatroomId: Int,
+    val chatroomId: String,
     @SerializedName("conversation_id")
-    val conversationId: Int
+    val conversationId: String
 ) {
     class Builder {
-        private var chatroomId: Int = -1
-        private var conversationId: Int = -1
 
-        fun chatroomId(chatroomId: Int) = apply { this.chatroomId = chatroomId }
-        fun conversationId(conversationId: Int) = apply { this.conversationId = conversationId }
+        private var chatroomId: String = ""
+        private var conversationId: String = ""
+
+        fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
+        fun conversationId(conversationId: String) = apply { this.conversationId = conversationId }
 
         fun build() = _SetChatroomTopicRequest_(chatroomId, conversationId)
     }

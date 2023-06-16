@@ -126,6 +126,13 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             }
 
             is NetworkResponse.Success -> {
+
+                //if success -> make the db call
+                chatroomDB.updateChatroomFollowStatus(
+                    followChatroomRequest.chatroomId,
+                    followChatroomRequest.value
+                )
+
                 LMResponse(
                     success = response.body.success
                 )
@@ -174,6 +181,9 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             }
 
             is NetworkResponse.Success -> {
+                //if success -> make the db call
+                chatroomDB.updateSecretChatroomLeaveStatus(leaveSecretChatroomRequest.chatroomId)
+
                 LMResponse(
                     success = response.body.success
                 )
@@ -186,7 +196,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateLeaveSecretChatroomRequest(leaveSecretChatroomRequest: LeaveSecretChatroomRequest) {
-        if (leaveSecretChatroomRequest.chatroomId == -1) {
+        if (leaveSecretChatroomRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
     }
@@ -219,6 +229,11 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             }
 
             is NetworkResponse.Success -> {
+                //if success -> make the db call
+                chatroomDB.updateChatroomMuteStatus(
+                    muteChatroomRequest.chatroomId,
+                    muteChatroomRequest.value
+                )
                 LMResponse(
                     success = response.body.success
                 )
@@ -231,7 +246,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateMuteChatroomRequest(muteChatroomRequest: MuteChatroomRequest) {
-        if (muteChatroomRequest.chatroomId == -1) {
+        if (muteChatroomRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
     }
@@ -308,6 +323,13 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             }
 
             is NetworkResponse.Success -> {
+
+                //if success -> make the db call
+                chatroomDB.updateChatroomTopic(
+                    setChatroomTopicRequest.chatroomId,
+                    setChatroomTopicRequest.conversationId
+                )
+
                 LMResponse(
                     success = response.body.success
                 )
@@ -320,10 +342,10 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateSetChatroomTopicRequest(setChatroomTopicRequest: SetChatroomTopicRequest) {
-        if (setChatroomTopicRequest.chatroomId == -1) {
+        if (setChatroomTopicRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
-        if (setChatroomTopicRequest.conversationId == -1) {
+        if (setChatroomTopicRequest.conversationId.isEmpty()) {
             RequestUtils.throwException("conversationId")
         }
     }

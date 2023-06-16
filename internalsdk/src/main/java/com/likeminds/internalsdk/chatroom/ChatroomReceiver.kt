@@ -88,4 +88,54 @@ class ChatroomReceiver @Inject constructor(
         realm.close()
         return chatroomRO
     }
+
+    fun updateChatroomFollowStatus(chatroomId: String, value: Boolean) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatroomRO ->
+                chatroomRO.followStatus = value
+                if (value) {
+                    val currentMillis = System.currentTimeMillis()
+                    chatroomRO.updatedAt = currentMillis
+                }
+            }
+        })
+    }
+
+    fun updateChatroomMuteStatus(chatroomId: String, value: Boolean) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatroomRO ->
+                chatroomRO.muteStatus = value
+            }
+        })
+    }
+
+    fun updateSecretChatroomLeaveStatus(chatroomId: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatroomRO ->
+                chatroomRO.followStatus = false
+                chatroomRO.secretChatRoomLeft = true
+            }
+        })
+    }
+
+    fun updateChatroomTitle(chatroomId: String, updatedTitle: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatRoom ->
+                chatRoom.title = updatedTitle
+                chatRoom.isEdited = true
+            }
+        })
+    }
+
+    fun updateChatroomTopic(chatroomId: String, topicId: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatroomRO ->
+                chatroomRO.topicId = topicId
+                val topic = ChatDBUtil.getConversation(it, topicId)
+                if (topic != null) {
+                    chatroomRO.topic = topic
+                }
+            }
+        })
+    }
 }
