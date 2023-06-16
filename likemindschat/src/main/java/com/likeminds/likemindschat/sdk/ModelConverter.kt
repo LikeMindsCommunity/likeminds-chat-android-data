@@ -988,6 +988,10 @@ object ModelConverter {
         )
     }
 
+    fun convertGetConversationResponse(conversationRO: ConversationRO?): GetConversationResponse {
+        return GetConversationResponse(convertConversationRO(conversationRO))
+    }
+
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/

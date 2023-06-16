@@ -11,6 +11,8 @@ import com.likeminds.internalsdk.community.CommunityApi
 import com.likeminds.internalsdk.community.CommunityApiImpl
 import com.likeminds.internalsdk.conversation.api.ConversationApi
 import com.likeminds.internalsdk.conversation.api.ConversationApiImpl
+import com.likeminds.internalsdk.conversation.db.ConversationDB
+import com.likeminds.internalsdk.conversation.db.ConversationDbImpl
 import com.likeminds.internalsdk.db.*
 import com.likeminds.internalsdk.db.util.DbCompactOnLaunchCallback
 import com.likeminds.internalsdk.di.*
@@ -98,6 +100,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var conversationApiImpl: ConversationApiImpl
+
+    @Inject
+    lateinit var conversationDBImpl: ConversationDbImpl
 
     @Inject
     lateinit var sdkPreferences: SDKPreferences
@@ -236,5 +241,9 @@ class GroupChatSDK {
 
     fun getConversationApi(): ConversationApi {
         return conversationApiImpl
+    }
+
+    fun getConversationDB(): ConversationDB {
+        return conversationDBImpl
     }
 }

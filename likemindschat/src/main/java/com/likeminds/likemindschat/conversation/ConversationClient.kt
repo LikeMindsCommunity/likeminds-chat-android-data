@@ -20,6 +20,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
         groupChatSDK.getConversationApi()
     }
 
+    private val conversationDB by lazy {
+        groupChatSDK.getConversationDB()
+    }
+
     suspend fun postConversation(postConversationRequest: PostConversationRequest): LMResponse<PostConversationResponse> {
         // validates the client request
         RequestUtils.validate()
@@ -62,6 +66,32 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    fun getConversation(getConversationRequest: GetConversationRequest): LMResponse<GetConversationResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validateGetConversationRequest(getConversationRequest)
+
+        val conversationRO = conversationDB.getConversation(getConversationRequest.conversationId)
+        return if (conversationRO == null) {
+            LMResponse(
+                success = false,
+                errorMessage = "Conversation w.r.t conversation id not found"
+            )
+        } else {
+            LMResponse(
+                success = true,
+                errorMessage = null,
+                ModelConverter.convertGetConversationResponse(conversationRO)
+            )
+        }
+    }
+
+    private fun validateGetConversationRequest(getConversationRequest: GetConversationRequest) {
+        if (getConversationRequest.conversationId.isEmpty()) {
+            RequestUtils.throwException("conversationId")
+        }
+    }
+
     suspend fun editConversation(editConversationRequest: EditConversationRequest): LMResponse<EditConversationResponse> {
         // validates the client request
         RequestUtils.validate()
@@ -83,6 +113,13 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+                val conversation = body.data?.conversation
+
+                //if success -> make db query
+                conversation?.let {
+                    conversationDB.updateEditedConversation(it.id ?: "", it.answer, it.ogTags)
+                }
+
                 ModelConverter.convertEditConversationAPIResponse(body)
             }
         }
@@ -116,6 +153,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+
+                //if success -> make db query
+                conversationDB.updateDeletedConversations(deleteConversationRequest.conversationIds)
+
                 ModelConverter.convertDeleteConversationAPIResponse(body)
             }
         }
@@ -156,6 +197,14 @@ class ConversationClient @Inject constructor() : BaseClient() {
             }
 
             is NetworkResponse.Success -> {
+
+                putReactionRequest.conversationId?.let { conversationId ->
+                    conversationDB.updateConversationReaction(
+                        putReactionRequest.reaction,
+                        conversationId
+                    )
+                }
+
                 LMResponse(
                     success = response.body.success
                 )
@@ -204,6 +253,11 @@ class ConversationClient @Inject constructor() : BaseClient() {
             }
 
             is NetworkResponse.Success -> {
+
+                deleteReactionRequest.conversationId?.let {
+                    conversationDB.removeConversationReaction(it)
+                }
+
                 LMResponse(
                     success = response.body.success
                 )

@@ -20,6 +20,10 @@ class PollClient @Inject constructor() : BaseClient() {
         groupChatSDK.getPollApi()
     }
 
+    private val conversationDB by lazy {
+        groupChatSDK.getConversationDB()
+    }
+
     /**
      * Converts client request model to internal model and calls the api
      * @param postPollConversationRequest - client request model to post a poll conversation
@@ -43,6 +47,7 @@ class PollClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage,
                 )
             }
+
             is NetworkResponse.Success -> {
                 val body = response.body
                 ModelConverter.convertPostPollConversationAPIResponse(body)
@@ -93,9 +98,11 @@ class PollClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validateAddPollOptionRequest(addPollOptionRequest)
 
+        val conversationId = addPollOptionRequest.conversationId
+
         // builds internal request model
         val request = _AddPollOptionRequest_.Builder()
-            .conversationId(addPollOptionRequest.conversationId)
+            .conversationId(conversationId)
             .poll(ModelConverter.createPoll(addPollOptionRequest.poll))
             .build()
 
@@ -107,8 +114,16 @@ class PollClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage,
                 )
             }
+
             is NetworkResponse.Success -> {
                 val body = response.body
+
+                val createdPoll = body.data?.poll
+
+                createdPoll?.let {
+                    conversationDB.updatePollConversationAddItem(conversationId, it)
+                }
+
                 ModelConverter.convertAddPollOptionAPIResponse(body)
             }
         }
@@ -139,10 +154,13 @@ class PollClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validateSubmitPollRequest(submitPollRequest)
 
+        val conversationId = submitPollRequest.conversationId
+        val _polls_ = ModelConverter.createPolls(submitPollRequest.polls)
+
         // builds internal request model
         val request = _SubmitPollRequest_.Builder()
-            .conversationId(submitPollRequest.conversationId)
-            .polls(ModelConverter.createPolls(submitPollRequest.polls))
+            .conversationId(conversationId)
+            .polls(_polls_)
             .build()
 
         // calls api and processes the response accordingly
@@ -153,7 +171,15 @@ class PollClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage,
                 )
             }
+
             is NetworkResponse.Success -> {
+
+                //if success -> make db call
+                conversationDB.updateConversationSubmitPoll(
+                    conversationId,
+                    _polls_
+                )
+
                 LMResponse(
                     success = response.body.success,
                 )
@@ -206,6 +232,7 @@ class PollClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage,
                 )
             }
+
             is NetworkResponse.Success -> {
                 val body = response.body
                 ModelConverter.convertGetPollUsersAPIResponse(body)

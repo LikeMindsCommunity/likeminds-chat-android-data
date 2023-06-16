@@ -219,12 +219,20 @@ class LMChatClient private constructor() {
         return searchClient.searchConversation(searchConversationRequest)
     }
 
+    fun getConversation(getConversationRequest: GetConversationRequest): LMResponse<GetConversationResponse> {
+        return conversationClient.getConversation(getConversationRequest)
+    }
+
     suspend fun postConversation(postConversationRequest: PostConversationRequest): LMResponse<PostConversationResponse> {
         return conversationClient.postConversation(postConversationRequest)
     }
 
     suspend fun editConversation(editConversationRequest: EditConversationRequest): LMResponse<EditConversationResponse> {
         return conversationClient.editConversation(editConversationRequest)
+    }
+
+    suspend fun deleteConversation(deleteConversationRequest: DeleteConversationRequest): LMResponse<DeleteConversationResponse> {
+        return conversationClient.deleteConversations(deleteConversationRequest)
     }
 
     // Exposed function to put a reaction on a conversation
