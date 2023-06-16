@@ -51,6 +51,12 @@ class ConversationReceiver @Inject constructor(
         return conversationNetworkApi.deleteReaction(request)
     }
 
+    suspend fun putMultimedia(
+        request: _PutMultimediaRequest_
+    ): NetworkResponse<APIResponse<_PutMultimediaResponse_>> {
+        return conversationNetworkApi.putMultimedia(request)
+    }
+
     /**
      * Db Functions
      */

@@ -244,4 +244,8 @@ class LMChatClient private constructor() {
     suspend fun deleteReaction(deleteReactionRequest: DeleteReactionRequest): LMResponse<Nothing> {
         return conversationClient.deleteReaction(deleteReactionRequest)
     }
+
+    suspend fun putMultimedia(putMultimediaRequest: PutMultimediaRequest): LMResponse<PutMultimediaResponse> {
+        return conversationClient.putMultimedia(putMultimediaRequest)
+    }
 }

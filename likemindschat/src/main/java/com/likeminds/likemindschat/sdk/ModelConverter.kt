@@ -794,7 +794,7 @@ object ModelConverter {
     }
 
     // converts internal AttachmentMeta model to client model
-    private fun convertAttachmentMeta(
+    fun convertAttachmentMeta(
         _attachmentMeta_: _AttachmentMeta_?
     ): AttachmentMeta? {
         if (_attachmentMeta_ == null) return null
@@ -992,6 +992,18 @@ object ModelConverter {
         return GetConversationResponse(convertConversationRO(conversationRO))
     }
 
+    fun convertPutMultimediaAPIResponse(apiResponse: APIResponse<_PutMultimediaResponse_>): LMResponse<PutMultimediaResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertPutMultmediaResponse(apiResponse.data)
+        )
+    }
+
+    private fun convertPutMultmediaResponse(data: _PutMultimediaResponse_?): PutMultimediaResponse {
+        return PutMultimediaResponse(data?.conversation?.let { convertConversation(it) })
+    }
+
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
@@ -1115,6 +1127,15 @@ object ModelConverter {
             .title(linkOGTags.title)
             .image(linkOGTags.image)
             .description(linkOGTags.description)
+            .build()
+    }
+
+    fun createAttachmentMeta(attachmentMeta: AttachmentMeta?): _AttachmentMeta_? {
+        if (attachmentMeta == null) return null
+        return _AttachmentMeta_.Builder()
+            .numberOfPage(attachmentMeta.numberOfPage)
+            .duration(attachmentMeta.duration)
+            .size(attachmentMeta.size)
             .build()
     }
 

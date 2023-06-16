@@ -27,4 +27,9 @@ interface ConversationApi {
     suspend fun deleteReaction(
         request: _DeleteReactionRequest_
     ): NetworkResponse<APIResponse<Nothing>>
+
+    //api to upload conversation
+    suspend fun putMultimedia(
+        request: _PutMultimediaRequest_
+    ): NetworkResponse<APIResponse<_PutMultimediaResponse_>>
 }

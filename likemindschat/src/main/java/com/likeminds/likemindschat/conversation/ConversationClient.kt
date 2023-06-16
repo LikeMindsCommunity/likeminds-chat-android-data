@@ -274,4 +274,48 @@ class ConversationClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("conversationId")
         }
     }
+
+    suspend fun putMultimedia(
+        putMultimediaRequest: PutMultimediaRequest
+    ): LMResponse<PutMultimediaResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validatePutMultimediaRequest(putMultimediaRequest)
+
+        val request = _PutMultimediaRequest_.Builder()
+            .conversationId(putMultimediaRequest.conversationId)
+            .name(putMultimediaRequest.name)
+            .url(putMultimediaRequest.url)
+            .thumbnailUrl(putMultimediaRequest.thumbnailUrl)
+            .type(putMultimediaRequest.type)
+            .filesCount(putMultimediaRequest.filesCount)
+            .index(putMultimediaRequest.index)
+            .width(putMultimediaRequest.width)
+            .height(putMultimediaRequest.height)
+            .meta(ModelConverter.createAttachmentMeta(putMultimediaRequest.meta))
+            .build()
+
+        return when (val response = conversationApi.putMultimedia(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                val body = response.body
+                ModelConverter.convertPutMultimediaAPIResponse(body)
+            }
+        }
+    }
+
+    private fun validatePutMultimediaRequest(putMultimediaRequest: PutMultimediaRequest) {
+        if (putMultimediaRequest.conversationId.isEmpty()) {
+            RequestUtils.throwException("conversationId")
+        }
+        if (putMultimediaRequest.url.isEmpty()) {
+            RequestUtils.throwException("url")
+        }
+    }
 }

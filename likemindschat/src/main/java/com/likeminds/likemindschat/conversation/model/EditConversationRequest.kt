@@ -1,13 +1,8 @@
 package com.likeminds.likemindschat.conversation.model
 
-import com.google.gson.annotations.SerializedName
-
 class EditConversationRequest private constructor(
-    @SerializedName("conversation_id")
     val conversationId: String,
-    @SerializedName("text")
     val text: String,
-    @SerializedName("share_link")
     val shareLink: String?
 ) {
 

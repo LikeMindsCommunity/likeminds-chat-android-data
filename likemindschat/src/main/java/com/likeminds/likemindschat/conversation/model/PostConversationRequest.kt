@@ -1,23 +1,13 @@
 package com.likeminds.likemindschat.conversation.model
 
-import com.google.gson.annotations.SerializedName
-
 class PostConversationRequest private constructor(
-    @SerializedName("chatroom_id")
     val chatroomId: String,
-    @SerializedName("text")
     val text: String,
-    @SerializedName("share_link")
     val shareLink: String?,
-    @SerializedName("og_tags")
     val ogTags: LinkOGTags?,
-    @SerializedName("replied_conversation_id")
     val repliedConversationId: String?,
-    @SerializedName("attachment_count")
     val attachmentCount: Int?,
-    @SerializedName("temporary_id")
     val temporaryId: String?,
-    @SerializedName("replied_chatroom_id")
     val repliedChatroomId: String?
 ) {
 
