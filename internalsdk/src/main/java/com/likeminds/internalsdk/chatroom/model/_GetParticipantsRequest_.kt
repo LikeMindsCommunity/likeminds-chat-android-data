@@ -2,7 +2,7 @@ package com.likeminds.internalsdk.chatroom.model
 
 import com.google.gson.annotations.SerializedName
 
-class _GetChatroomParticipantsRequest_ private constructor(
+class _GetParticipantsRequest_ private constructor(
     @SerializedName("is_secret")
     val isChatroomSecret: Boolean,
     @SerializedName("chatroom_id")
@@ -31,7 +31,7 @@ class _GetChatroomParticipantsRequest_ private constructor(
         fun page(page: Int) = apply { this.page = page }
         fun pageSize(pageSize: Int) = apply { this.pageSize = pageSize }
 
-        fun build() = _GetChatroomParticipantsRequest_(
+        fun build() = _GetParticipantsRequest_(
             isChatroomSecret,
             chatroomId,
             participantName,

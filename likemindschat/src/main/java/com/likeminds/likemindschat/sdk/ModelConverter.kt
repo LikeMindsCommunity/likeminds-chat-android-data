@@ -258,10 +258,10 @@ object ModelConverter {
         )
     }
 
-    // converts api GetChatroomParticipantsResponse model to LM GetChatroomParticipantsResponse model
-    fun convertGetChatroomParticipantsResponse(
-        apiResponse: APIResponse<_GetChatroomParticipantsResponse_>
-    ): LMResponse<GetChatroomParticipantsResponse> {
+    // converts api GetParticipantsResponse model to LM GetParticipantsResponse model
+    fun convertGetParticipantsResponse(
+        apiResponse: APIResponse<_GetParticipantsResponse_>
+    ): LMResponse<GetParticipantsResponse> {
         return LMResponse(
             apiResponse.success,
             apiResponse.errorMessage,
@@ -269,15 +269,15 @@ object ModelConverter {
         )
     }
 
-    // converts internal GetChatroomParticipantsResponse model to client model
+    // converts internal GetParticipantsResponse model to client model
     private fun convertGetChatroomParticipantsResponse(
-        _getChatroomParticipantsResponse_: _GetChatroomParticipantsResponse_?
-    ): GetChatroomParticipantsResponse? {
-        if (_getChatroomParticipantsResponse_ == null) return null
-        return GetChatroomParticipantsResponse(
-            _getChatroomParticipantsResponse_.canEditParticipant,
-            convertParticipantsData(_getChatroomParticipantsResponse_.participants),
-            _getChatroomParticipantsResponse_.totalParticipantsCount
+        _getParticipantsResponse_: _GetParticipantsResponse_?
+    ): GetParticipantsResponse? {
+        if (_getParticipantsResponse_ == null) return null
+        return GetParticipantsResponse(
+            _getParticipantsResponse_.canEditParticipant,
+            convertParticipantsData(_getParticipantsResponse_.participants),
+            _getParticipantsResponse_.totalParticipantsCount
         )
     }
 

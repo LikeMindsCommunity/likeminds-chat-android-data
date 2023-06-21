@@ -133,14 +133,14 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
 
-            val getChatroomParticipantsRequest = GetChatroomParticipantsRequest.Builder()
+            val getParticipantsRequest = GetParticipantsRequest.Builder()
                 .isChatroomSecret(false)
                 .chatroomId("82825")
                 .page(1)
                 .pageSize(1)
                 .build()
             val getChatroomParticipantsResponse =
-                client.getChatroomParticipants(getChatroomParticipantsRequest)
+                client.getParticipants(getParticipantsRequest)
 
             Log.d(TAG, "getChatroomParticipantsResponse:${getChatroomParticipantsResponse}")
 
