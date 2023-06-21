@@ -59,9 +59,9 @@ class ChatroomReceiver @Inject constructor(private val chatroomNetworkApi: Chatr
         return chatroomNetworkApi.setChatroomTopic(request)
     }
 
-    suspend fun getChatroomParticipants(
-        request: _GetChatroomParticipantsRequest_
-    ): NetworkResponse<APIResponse<_GetChatroomParticipantsResponse_>> {
+    suspend fun getParticipants(
+        request: _GetParticipantsRequest_
+    ): NetworkResponse<APIResponse<_GetParticipantsResponse_>> {
         val queries = HashMap<String, Any?>()
         // Set query parameters for request
         queries[IS_SECRET_KEY] = request.isChatroomSecret
@@ -72,6 +72,6 @@ class ChatroomReceiver @Inject constructor(private val chatroomNetworkApi: Chatr
         queries[PAGE_KEY] = request.page
         queries[PAGE_SIZE_KEY] = request.pageSize
 
-        return chatroomNetworkApi.getChatroomParticipants(queries)
+        return chatroomNetworkApi.getParticipants(queries)
     }
 }

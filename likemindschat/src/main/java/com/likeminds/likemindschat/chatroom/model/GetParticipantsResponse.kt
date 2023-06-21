@@ -1,6 +1,6 @@
 package com.likeminds.likemindschat.chatroom.model
 
-data class GetChatroomParticipantsResponse(
+data class GetParticipantsResponse(
     val canEditParticipant: Boolean,
     val participants: List<ParticipantData>,
     val totalParticipantsCount: Int

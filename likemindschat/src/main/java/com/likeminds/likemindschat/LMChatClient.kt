@@ -107,7 +107,7 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get list of participants in chatroom
-    suspend fun getChatroomParticipants(getChatroomParticipantsRequest: GetChatroomParticipantsRequest): LMResponse<GetChatroomParticipantsResponse> {
-        return chatroomClient.getChatroomParticipants(getChatroomParticipantsRequest)
+    suspend fun getParticipants(getParticipantsRequest: GetParticipantsRequest): LMResponse<GetParticipantsResponse> {
+        return chatroomClient.getParticipants(getParticipantsRequest)
     }
 }

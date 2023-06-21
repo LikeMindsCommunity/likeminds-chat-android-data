@@ -1,6 +1,6 @@
 package com.likeminds.likemindschat.chatroom.model
 
-class GetChatroomParticipantsRequest private constructor(
+class GetParticipantsRequest private constructor(
     val isChatroomSecret: Boolean,
     val chatroomId: String,
     val participantName: String?,
@@ -24,7 +24,7 @@ class GetChatroomParticipantsRequest private constructor(
         fun page(page: Int) = apply { this.page = page }
         fun pageSize(pageSize: Int) = apply { this.pageSize = pageSize }
 
-        fun build() = GetChatroomParticipantsRequest(
+        fun build() = GetParticipantsRequest(
             isChatroomSecret,
             chatroomId,
             participantName,
