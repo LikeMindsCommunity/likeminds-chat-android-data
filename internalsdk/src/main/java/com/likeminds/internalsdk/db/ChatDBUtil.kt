@@ -305,6 +305,17 @@ object ChatDBUtil {
         chatroomRO.relationshipNeeded = false
     }
 
+    fun getConversationMember(
+        realm: Realm,
+        conversation: _Conversation_
+    ): MemberRO? {
+        return getMember(
+            realm,
+            conversation.communityId,
+            conversation.memberId ?: conversation.member?.id
+        )
+    }
+
     /**
      * To get a specific [MemberRO] of a community
      *

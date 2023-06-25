@@ -1,5 +1,6 @@
 package com.likeminds.internalsdk.conversation.db
 
+import com.likeminds.internalsdk.conversation.model._Conversation_
 import com.likeminds.internalsdk.conversation.model._LinkOGTags_
 import com.likeminds.internalsdk.db.models.ConversationRO
 import com.likeminds.internalsdk.poll.model._Poll_
@@ -7,6 +8,8 @@ import com.likeminds.internalsdk.poll.model._Poll_
 interface ConversationDB {
 
     fun getConversation(conversationId: String): ConversationRO?
+
+    fun saveTemporaryConversationAsync(conversation: _Conversation_)
 
     fun updateEditedConversation(
         conversationId: String,

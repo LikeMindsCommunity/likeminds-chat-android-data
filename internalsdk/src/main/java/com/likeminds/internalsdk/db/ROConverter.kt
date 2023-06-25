@@ -106,6 +106,119 @@ object ROConverter {
     }
 
     /**
+     * Use this function to convert for api response
+     *
+     * convert [_Conversation_] to [ConversationRO]
+     * @param realm: instance of realm
+     * @param conversation: Conversation object to converted
+     * @param member: [MemberRO] object of conversation's creator
+     * @param loggedInMemberId: Id of logged in member
+     * */
+    fun convertConversation(
+        realm: Realm,
+        conversation: _Conversation_?,
+        member: MemberRO? = null,
+        loggedInMemberId: String? = null
+    ): ConversationRO? {
+        /**
+         * Conversation is invalid without chatroomId, conversationId, Member object
+         */
+        if (conversation == null) return null
+        val chatroomId = conversation.chatroomId ?: return null
+        val communityId = conversation.communityId ?: return null
+        val memberRO = member ?: ChatDBUtil.getConversationMember(
+            realm,
+            conversation
+        ) ?: return null
+
+        val savedAnswer = if (conversation.hasReactions == true ||
+            _ConversationState_.isPoll(conversation.state) ||
+            ((conversation.attachmentCount ?: 0) > 0) ||
+            conversation.replyConversationId != null
+        ) {
+            ChatDBUtil.getConversation(realm, conversation.id)
+        } else {
+            null
+        }
+
+        val replyConversation = if (!conversation.replyConversationId.isNullOrEmpty()) {
+            savedAnswer?.replyConversation ?: ChatDBUtil.getConversation(
+                realm,
+                conversation.replyConversationId
+            )
+        } else {
+            null
+        }
+
+        val attachmentList = convertUpdatedAttachments(
+            chatroomId,
+            communityId,
+            conversation.attachments,
+            savedAnswer?.attachments
+        )
+        val reactionsList = convertReactions(
+            realm,
+            communityId,
+            conversation.reactions
+        )
+        val pollsList = convertPolls(realm, conversation.polls as? MutableList<_Poll_>, communityId)
+
+        //Clear embedded object list if already present else calling insertToRealmOrUpdate will duplicate it
+        savedAnswer?.reactions?.deleteAllFromRealm()
+        savedAnswer?.attachments?.deleteAllFromRealm()
+        savedAnswer?.polls?.deleteAllFromRealm()
+
+        var createdEpoch = conversation.createdEpoch ?: 0L
+        createdEpoch = if (TimeUtil.isInMillis(createdEpoch)) {
+            createdEpoch
+        } else {
+            createdEpoch * 1000
+        }
+        return ConversationRO.build(
+            conversation.id ?: "",
+            conversation.answer,
+            conversation.state,
+            createdEpoch
+        ) {
+            this.communityId = communityId
+            this.member = memberRO
+            this.chatroomId = chatroomId
+            createdAt = conversation.createdAt
+            attachments = attachmentList
+            link = convertLink(chatroomId, communityId, conversation.ogTags)
+            date = conversation.date
+            isEdited = conversation.isEdited
+            replyConversationId = conversation.replyConversationId
+            this.replyConversation = replyConversation
+            deletedBy = conversation.deletedBy
+            attachmentCount = conversation.attachmentCount
+            attachmentsUploaded = conversation.attachmentUploaded
+            uploadWorkerUUID = savedAnswer?.uploadWorkerUUID ?: conversation.uploadWorkerUUID
+            localSavedEpoch = conversation.localCreatedEpoch ?: 0L
+            temporaryId = if (memberRO.id == loggedInMemberId) {
+                conversation.temporaryId
+            } else {
+                null
+            }
+            reactions = reactionsList
+            isAnonymous = conversation.isAnonymous
+            allowAddOption = conversation.allowAddOption
+            pollType = conversation.pollType
+            pollTypeText = conversation.pollTypeText
+            submitTypeText = conversation.submitTypeText
+            expiryTime = conversation.expiryTime
+            multipleSelectNum = conversation.multipleSelectNum
+            multipleSelectState = conversation.multipleSelectState
+            polls = pollsList
+            toShowResults = conversation.toShowResults
+            pollAnswerText = conversation.pollAnswerText
+            replyChatRoomId = conversation.replyChatroomId
+        }
+    }
+
+    /**
+     * Use this function to convert sync conversation/chatroom
+     *
      * convert [_Conversation_] to [ConversationRO]
      * @param realm: instance of realm
      * @param conversation: Conversation object to converted
@@ -288,6 +401,44 @@ object ROConverter {
     }
 
     /**
+     * convert [ConversationRO] to [LastConversationRO]
+     */
+    fun convertConversationToLastConversation(
+        conversation: ConversationRO?
+    ): LastConversationRO? {
+        if (conversation == null) return null
+        val chatroomId = conversation.chatroomId
+        val communityId = conversation.communityId
+
+        var createdEpoch = conversation.createdEpoch
+        createdEpoch = if (TimeUtil.isInMillis(createdEpoch)) {
+            createdEpoch
+        } else {
+            createdEpoch * 1000
+        }
+
+        return LastConversationRO.build(
+            conversation.id,
+            conversation.answer,
+            conversation.state,
+            createdEpoch
+        ) {
+            this.communityId = communityId
+            this.member = conversation.member
+            this.chatroomId = chatroomId
+            link = conversation.link
+            createdAt = conversation.createdAt
+            date = conversation.date
+            deletedBy = conversation.deletedBy
+            this.attachments = conversation.attachments
+            attachmentCount = conversation.attachmentCount
+            attachmentsUploaded = conversation.attachmentsUploaded
+            uploadWorkerUUID =
+                conversation.uploadWorkerUUID // to maintain the upload worker uuid in case of retry upload
+        }
+    }
+
+    /**
      * convert [_Conversation_] to [LastConversationRO] from new sync workers
      * @param realm: instance of realm
      * @param conversation: Conversation object to converted
@@ -464,8 +615,8 @@ object ROConverter {
     }
 
     /**
-     * convert [AttachmentRO] to [AttachmentMetaRO]
-     * @param meta: [AttachmentRO] to be converted
+     * convert [AttachmentRO] to [AttachmentRO]
+     * @param attachment: [AttachmentRO] to be converted
      * */
     private fun convertAttachment(
         chatroomId: String,
@@ -573,6 +724,32 @@ object ROConverter {
         return ReactionRO.build {
             member = memberRO
             this.reaction = reaction.reaction
+        }
+    }
+
+    private fun convertReactions(
+        realm: Realm,
+        communityId: String?,
+        reactions: List<_Reaction_>?
+    ): RealmList<ReactionRO> {
+        return reactions.orEmpty().reversed().mapNotNull { reaction ->
+            convertReaction(realm, reaction, communityId)
+        }.toRealmList()
+    }
+
+    private fun convertReaction(
+        realm: Realm,
+        reaction: _Reaction_,
+        communityId: String?,
+    ): ReactionRO? {
+        val memberRO = ChatDBUtil.getMember(
+            realm,
+            communityId,
+            reaction.member.id
+        ) ?: return null
+        return ReactionRO.build {
+            this.reaction = reaction.reaction
+            member = memberRO
         }
     }
 

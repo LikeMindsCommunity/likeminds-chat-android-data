@@ -11,6 +11,7 @@ import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.Realm
+import io.realm.RealmList
 import javax.inject.Inject
 
 class ConversationReceiver @Inject constructor(
@@ -60,6 +61,56 @@ class ConversationReceiver @Inject constructor(
     /**
      * Db Functions
      */
+
+    fun saveTemporaryConversationAsync(conversation: _Conversation_) {
+        ChatDBUtil.writeAsync({ realm ->
+            //get logged in member
+            val userRO = realm.where(UserRO::class.java).findFirst()
+
+            val conversationRO =
+                ROConverter.convertConversation(realm, conversation, loggedInMemberId = userRO?.id)
+            if (conversationRO != null) {
+                ChatDBUtil.getChatroom(realm, conversationRO.chatroomId)?.let { chatroomRO ->
+                    //add the conversation to db
+                    if (chatroomRO.conversations.isEmpty()) {
+                        chatroomRO.conversations = RealmList(conversationRO)
+                    } else {
+                        chatroomRO.conversations.add(conversationRO)
+                    }
+                    //Make the chatroom followed, if it is not already followed
+                    if (chatroomRO.followStatus != true) {
+                        chatroomRO.followStatus = true
+                    }
+                    //Save this conversation as the last conversation
+                    if (conversationRO.createdEpoch > (chatroomRO.lastConversationRO?.createdEpoch
+                            ?: 0)
+                    ) {
+                        val lastConversation = chatroomRO.conversations.last(null)
+                        val lastConversationRO =
+                            ROConverter.convertConversationToLastConversation(lastConversation)
+                                ?: return@writeAsync
+                        chatroomRO.lastConversationRO = realm.copyToRealm(lastConversationRO)
+                    }
+                    if (conversationRO.createdEpoch > (chatroomRO.lastSeenConversation?.createdEpoch
+                            ?: 0L)
+                    ) {
+                        chatroomRO.lastSeenConversation = chatroomRO.conversations
+                            ?.last(null)
+                    }
+                    //Update the chatroom timestamp for sorting of chatrooms
+                    if ((conversationRO.state == STATE_NORMAL || conversationRO.state == STATE_FOLLOWED || conversationRO.state == STATE_POLL) && conversationRO.createdEpoch > (chatroomRO.updatedAt
+                            ?: 0)
+                    ) {
+                        chatroomRO.updatedAt = conversationRO.createdEpoch
+                    }
+
+                    //Update the total response count of this chatroom
+                    chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
+                    chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                }
+            }
+        })
+    }
 
     fun getConversation(conversationId: String): ConversationRO? {
         val realm = Realm.getDefaultInstance()

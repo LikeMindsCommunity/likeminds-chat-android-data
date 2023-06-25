@@ -1,6 +1,7 @@
 package com.likeminds.internalsdk.conversation.db
 
 import com.likeminds.internalsdk.conversation.ConversationReceiver
+import com.likeminds.internalsdk.conversation.model._Conversation_
 import com.likeminds.internalsdk.conversation.model._LinkOGTags_
 import com.likeminds.internalsdk.db.models.ConversationRO
 import com.likeminds.internalsdk.poll.model._Poll_
@@ -12,6 +13,10 @@ class ConversationDbImpl @Inject constructor(
 
     override fun getConversation(conversationId: String): ConversationRO? {
         return conversationReceiver.getConversation(conversationId)
+    }
+
+    override fun saveTemporaryConversationAsync(conversation: _Conversation_) {
+        conversationReceiver.saveTemporaryConversationAsync(conversation)
     }
 
     override fun updateEditedConversation(

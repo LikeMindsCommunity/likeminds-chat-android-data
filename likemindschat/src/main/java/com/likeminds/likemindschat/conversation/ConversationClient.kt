@@ -66,6 +66,16 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    fun saveTemporaryConversationAsync(saveTemporaryConversationRequest: SaveTemporaryConversationRequest) {
+        // validates the client request
+        RequestUtils.validate()
+
+        val _conversation_ =
+            ModelConverter.createConversation(saveTemporaryConversationRequest.conversation)
+
+        conversationDB.saveTemporaryConversationAsync(_conversation_)
+    }
+
     fun getConversation(getConversationRequest: GetConversationRequest): LMResponse<GetConversationResponse> {
         // validates the client request
         RequestUtils.validate()

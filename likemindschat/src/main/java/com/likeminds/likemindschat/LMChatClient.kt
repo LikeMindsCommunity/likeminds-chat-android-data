@@ -219,6 +219,10 @@ class LMChatClient private constructor() {
         return searchClient.searchConversation(searchConversationRequest)
     }
 
+    fun saveTemporaryConversationAsync(saveTemporaryConversationRequest: SaveTemporaryConversationRequest) {
+        conversationClient.saveTemporaryConversationAsync(saveTemporaryConversationRequest)
+    }
+
     fun getConversation(getConversationRequest: GetConversationRequest): LMResponse<GetConversationResponse> {
         return conversationClient.getConversation(getConversationRequest)
     }

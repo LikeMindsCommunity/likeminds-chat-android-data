@@ -1008,10 +1008,68 @@ object ModelConverter {
      * Client Model -> Internal Model
     --------------------------------*/
 
+    fun createConversation(conversation: Conversation): _Conversation_ {
+        return _Conversation_.Builder()
+            .id(conversation.id)
+            .chatroomId(conversation.chatroomId)
+            .communityId(conversation.communityId)
+            .member(createMember(conversation.member))
+            .answer(conversation.answer)
+            .createdAt(conversation.createdAt)
+            .state(conversation.state)
+            .attachments(createAttachments(conversation.attachments))
+            .lastSeen(conversation.lastSeen)
+            .ogTags(createLinkOGTags(conversation.ogTags))
+            .date(conversation.date)
+            .isEdited(conversation.isEdited)
+            .memberId(conversation.memberId)
+            .replyConversationId(conversation.replyConversationId)
+            .deletedBy(conversation.deletedBy)
+            .createdEpoch(conversation.createdEpoch)
+            .attachmentCount(conversation.attachmentCount)
+            .attachmentUploaded(conversation.attachmentUploaded)
+            .uploadWorkerUUID(conversation.uploadWorkerUUID)
+            .temporaryId(conversation.temporaryId)
+            .localCreatedEpoch(conversation.localCreatedEpoch)
+            .reactions(createReactions(conversation.reactions))
+            .isAnonymous(conversation.isAnonymous)
+            .allowAddOption(conversation.allowAddOption)
+            .pollType(conversation.pollType)
+            .pollTypeText(conversation.pollTypeText)
+            .submitTypeText(conversation.submitTypeText)
+            .expiryTime(conversation.expiryTime)
+            .multipleSelectNum(conversation.multipleSelectNum)
+            .multipleSelectState(conversation.multipleSelectState)
+            .polls(createPolls(conversation.polls))
+            .toShowResults(conversation.toShowResults)
+            .pollAnswerText(conversation.pollAnswerText)
+            .replyChatroomId(conversation.replyChatroomId)
+            .deviceId(conversation.deviceId)
+            .hasFiles(conversation.hasFiles)
+            .hasReactions(conversation.hasReactions)
+            .lastUpdated(conversation.lastUpdated)
+            .build()
+    }
+
+    fun createReactions(reactions: List<Reaction>?): List<_Reaction_>? {
+        if (reactions.isNullOrEmpty()) return null
+        return reactions.map { reaction ->
+            createReaction(reaction)
+        }
+    }
+
+    fun createReaction(reaction: Reaction): _Reaction_ {
+        return _Reaction_.Builder()
+            .reaction(reaction.reaction)
+            .member(createMember(reaction.member))
+            .build()
+    }
+
     // creates internal Poll model list from client model list
     fun createPolls(
-        polls: List<Poll>
-    ): List<_Poll_> {
+        polls: List<Poll>?
+    ): List<_Poll_>? {
+        if (polls.isNullOrEmpty()) return null
         return polls.map {
             createPoll(it)
         }
@@ -1127,6 +1185,33 @@ object ModelConverter {
             .title(linkOGTags.title)
             .image(linkOGTags.image)
             .description(linkOGTags.description)
+            .build()
+    }
+
+    fun createAttachments(attachments: List<Attachment>?): List<_Attachment_>? {
+        if (attachments.isNullOrEmpty()) return null
+        return attachments.map {
+            createAttachment(it)
+        }
+    }
+
+    fun createAttachment(attachment: Attachment): _Attachment_ {
+        return _Attachment_.Builder()
+            .id(attachment.id)
+            .name(attachment.name)
+            .url(attachment.url)
+            .type(attachment.type)
+            .index(attachment.index)
+            .width(attachment.width)
+            .height(attachment.height)
+            .awsFolderPath(attachment.awsFolderPath)
+            .localFilePath(attachment.localFilePath)
+            .thumbnailUrl(attachment.thumbnailUrl)
+            .thumbnailAWSFolderPath(attachment.thumbnailAWSFolderPath)
+            .thumbnailLocalFilePath(attachment.thumbnailLocalFilePath)
+            .meta(createAttachmentMeta(attachment.meta))
+            .createdAt(attachment.createdAt)
+            .updatedAt(attachment.updatedAt)
             .build()
     }
 
