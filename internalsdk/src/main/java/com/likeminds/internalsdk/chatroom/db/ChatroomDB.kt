@@ -16,7 +16,7 @@ interface ChatroomDB {
 
     fun updateChatroomTopic(chatroomId: String, topicId: String)
 
-    fun updateChatroomReaction(reaction: String, chatroomId: String, memberUid: String)
+    fun updateChatroomReaction(reaction: String, chatroomId: String, memberId: String)
 
     fun removeChatroomReaction(chatroomId: String)
 

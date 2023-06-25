@@ -1,9 +1,10 @@
 package com.likeminds.internalsdk.chatroom
 
+import android.os.Build
 import com.likeminds.internalsdk.chatroom.api.ChatroomNetworkApi
 import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
-import com.likeminds.internalsdk.db.models.ChatroomRO
+import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.Realm
@@ -134,6 +135,56 @@ class ChatroomReceiver @Inject constructor(
                 val topic = ChatDBUtil.getConversation(it, topicId)
                 if (topic != null) {
                     chatroomRO.topic = topic
+                }
+            }
+        })
+    }
+
+    fun updateChatroomReaction(
+        reaction: String,
+        chatroomId: String,
+        memberId: String
+    ) {
+        ChatDBUtil.writeAsync({ realm ->
+            ChatDBUtil.getChatroom(realm, chatroomId)?.let { chatroomRO ->
+
+                //get logged in member
+                val userRO = realm.where(UserRO::class.java).findFirst()
+
+                val index = chatroomRO.reactions.indexOfFirst {
+                    it.member?.id == userRO?.id
+                }
+                val memberObj =
+                    ChatDBUtil.getMember(realm, chatroomRO.communityId, memberId) ?: return@let
+                val messageReaction = ReactionRO.build() {
+                    this.reaction = reaction
+                    member = memberObj
+                }
+                if (index >= 0) {
+                    chatroomRO.reactions[index] = messageReaction
+                } else {
+                    chatroomRO.reactions.add(0, messageReaction)
+                }
+            }
+        })
+    }
+
+    fun removeChatroomReaction(chatroomId: String) {
+        ChatDBUtil.writeAsync({ realm ->
+            ChatDBUtil.getChatroom(realm, chatroomId)?.let { chatroom ->
+                //get logged in member
+                val userRO = realm.where(UserRO::class.java).findFirst()
+
+                //Remove member previous reactions if any
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    chatroom.reactions.removeIf { reaction ->
+                        reaction.member?.id == userRO?.id
+                    }
+                } else {
+                    val reactionRO = chatroom.reactions.find { reaction ->
+                        reaction.member?.id == userRO?.id
+                    }
+                    chatroom.reactions.remove(reactionRO)
                 }
             }
         })

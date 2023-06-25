@@ -31,4 +31,12 @@ class ChatroomDBImpl @Inject constructor(
     override fun updateChatroomTopic(chatroomId: String, topicId: String) {
         chatroomReceiver.updateChatroomTopic(chatroomId, topicId)
     }
+
+    override fun updateChatroomReaction(reaction: String, chatroomId: String, memberId: String) {
+        chatroomReceiver.updateChatroomReaction(reaction, chatroomId, memberId)
+    }
+
+    override fun removeChatroomReaction(chatroomId: String) {
+        chatroomReceiver.removeChatroomReaction(chatroomId)
+    }
 }
