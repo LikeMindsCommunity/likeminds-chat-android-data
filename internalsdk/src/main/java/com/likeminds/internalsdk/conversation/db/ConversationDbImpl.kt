@@ -19,6 +19,13 @@ class ConversationDbImpl @Inject constructor(
         conversationReceiver.saveTemporaryConversationAsync(conversation)
     }
 
+    override fun savePostedConversationAsync(
+        conversation: _Conversation_,
+        isFromNotification: Boolean
+    ) {
+        conversationReceiver.savePostedConversationAsync(conversation, isFromNotification)
+    }
+
     override fun updateEditedConversation(
         conversationId: String,
         conversationText: String,

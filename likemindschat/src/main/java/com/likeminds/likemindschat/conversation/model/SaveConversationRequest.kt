@@ -1,6 +1,6 @@
 package com.likeminds.likemindschat.conversation.model
 
-class SaveTemporaryConversationRequest private constructor(
+class SaveConversationRequest private constructor(
     val conversation: Conversation
 ) {
 
@@ -10,6 +10,6 @@ class SaveTemporaryConversationRequest private constructor(
 
         fun conversation(conversation: Conversation) = apply { this.conversation = conversation }
 
-        fun build() = SaveTemporaryConversationRequest(conversation)
+        fun build() = SaveConversationRequest(conversation)
     }
 }

@@ -94,11 +94,74 @@ class ConversationReceiver @Inject constructor(
                     if (conversationRO.createdEpoch > (chatroomRO.lastSeenConversation?.createdEpoch
                             ?: 0L)
                     ) {
-                        chatroomRO.lastSeenConversation = chatroomRO.conversations
-                            ?.last(null)
+                        chatroomRO.lastSeenConversation = chatroomRO.conversations.last(null)
                     }
                     //Update the chatroom timestamp for sorting of chatrooms
                     if ((conversationRO.state == STATE_NORMAL || conversationRO.state == STATE_FOLLOWED || conversationRO.state == STATE_POLL) && conversationRO.createdEpoch > (chatroomRO.updatedAt
+                            ?: 0)
+                    ) {
+                        chatroomRO.updatedAt = conversationRO.createdEpoch
+                    }
+
+                    //Update the total response count of this chatroom
+                    chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
+                    chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                }
+            }
+        })
+    }
+
+    fun savePostedConversationAsync(
+        conversation: _Conversation_,
+        isFromNotification: Boolean
+    ) {
+        ChatDBUtil.writeAsync({ realm ->
+
+            //get logged in member
+            val userRO = realm.where(UserRO::class.java).findFirst()
+
+            val conversationRO =
+                ROConverter.convertConversation(realm, conversation, loggedInMemberId = userRO?.id)
+                    ?: return@writeAsync
+
+            ChatDBUtil.getChatroom(realm, conversation.chatroomId)?.let { chatroomRO ->
+                //add the conversation to db
+                if (chatroomRO.conversations.isEmpty()) {
+                    chatroomRO.conversations = RealmList(conversationRO)
+                } else {
+                    //delete the temporary conversation if present
+                    if (!isFromNotification) {
+                        chatroomRO.conversations.where()
+                            .equalTo(DbKey.ID, conversationRO.temporaryId)
+                            .findFirst()
+                            ?.deleteFromRealm()
+                    }
+                    chatroomRO.conversations.add(conversationRO)
+                }
+                //Save this conversation as the last conversation
+                if (conversationRO.createdEpoch > (chatroomRO.lastConversationRO?.createdEpoch
+                        ?: 0)
+                ) {
+                    val lastConversation = chatroomRO.conversations?.last(null)
+                    val lastConversationRO =
+                        ROConverter.convertConversationToLastConversation(lastConversation)
+                            ?: return@writeAsync
+                    chatroomRO.lastConversationRO = realm.copyToRealm(lastConversationRO)
+                }
+                //Save this conversation as the last seen conversation
+                if (conversationRO.createdEpoch > (chatroomRO.lastSeenConversation?.createdEpoch
+                        ?: 0L)
+                ) {
+                    chatroomRO.lastSeenConversation = chatroomRO.conversations.last(null)
+                    chatroomRO.lastSeenConversationId = chatroomRO.conversations.last(null)?.id
+                }
+                if (isFromNotification) {
+                    //Make the chatroom followed, if it is not already followed
+                    if (chatroomRO.followStatus != true) {
+                        chatroomRO.followStatus = true
+                    }
+                    //Update the chatroom timestamp for sorting of chatrooms
+                    if ((conversationRO.state == STATE_NORMAL || conversationRO.state == STATE_FOLLOWED) && conversationRO.createdEpoch > (chatroomRO.updatedAt
                             ?: 0)
                     ) {
                         chatroomRO.updatedAt = conversationRO.createdEpoch

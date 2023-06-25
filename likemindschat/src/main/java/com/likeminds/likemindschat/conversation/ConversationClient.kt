@@ -66,14 +66,25 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
-    fun saveTemporaryConversationAsync(saveTemporaryConversationRequest: SaveTemporaryConversationRequest) {
+    fun saveTemporaryConversationAsync(saveConversationRequest: SaveConversationRequest) {
         // validates the client request
         RequestUtils.validate()
 
         val _conversation_ =
-            ModelConverter.createConversation(saveTemporaryConversationRequest.conversation)
+            ModelConverter.createConversation(saveConversationRequest.conversation)
 
         conversationDB.saveTemporaryConversationAsync(_conversation_)
+    }
+
+    fun savePostedConversationAsync(
+        saveConversationRequest: SaveConversationRequest,
+        isFromNotification: Boolean
+    ) {
+        // validates the client request
+        RequestUtils.validate()
+
+        val _conversation_ = ModelConverter.createConversation(saveConversationRequest.conversation)
+        conversationDB.savePostedConversationAsync(_conversation_, isFromNotification)
     }
 
     fun getConversation(getConversationRequest: GetConversationRequest): LMResponse<GetConversationResponse> {

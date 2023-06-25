@@ -219,8 +219,15 @@ class LMChatClient private constructor() {
         return searchClient.searchConversation(searchConversationRequest)
     }
 
-    fun saveTemporaryConversationAsync(saveTemporaryConversationRequest: SaveTemporaryConversationRequest) {
-        conversationClient.saveTemporaryConversationAsync(saveTemporaryConversationRequest)
+    fun saveTemporaryConversationAsync(saveConversationRequest: SaveConversationRequest) {
+        conversationClient.saveTemporaryConversationAsync(saveConversationRequest)
+    }
+
+    fun savePostedConversationAsync(
+        saveConversationRequest: SaveConversationRequest,
+        isFromNotification: Boolean
+    ) {
+        conversationClient.savePostedConversationAsync(saveConversationRequest, isFromNotification)
     }
 
     fun getConversation(getConversationRequest: GetConversationRequest): LMResponse<GetConversationResponse> {

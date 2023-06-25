@@ -11,6 +11,11 @@ interface ConversationDB {
 
     fun saveTemporaryConversationAsync(conversation: _Conversation_)
 
+    fun savePostedConversationAsync(
+        conversation: _Conversation_,
+        isFromNotification: Boolean
+    )
+
     fun updateEditedConversation(
         conversationId: String,
         conversationText: String,
