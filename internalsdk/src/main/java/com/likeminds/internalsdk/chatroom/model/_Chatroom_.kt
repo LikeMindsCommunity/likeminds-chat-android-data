@@ -5,6 +5,7 @@ import com.likeminds.internalsdk.community.model._Member_
 import com.likeminds.internalsdk.conversation.model._Conversation_
 import com.likeminds.internalsdk.conversation.model._Reaction_
 
+// todo: createdAt
 class _Chatroom_ private constructor(
     @SerializedName("member")
     val member: _Member_?,
@@ -12,8 +13,8 @@ class _Chatroom_ private constructor(
     val id: String,
     @SerializedName("title")
     val title: String,
-    @SerializedName("created_at")
-    val createdAt: Long?,
+//    @SerializedName("created_at")
+//    val createdAt: Long?,
     @SerializedName("answer_text")
     val answerText: String?,
     @SerializedName("state")
@@ -111,7 +112,7 @@ class _Chatroom_ private constructor(
         private var member: _Member_? = null
         private var id: String = ""
         private var title: String = ""
-        private var createdAt: Long? = null
+//        private var createdAt: Long? = null
         private var answerText: String? = null
         private var state: Int = 0
         private var unseenCount: Int? = null
@@ -161,7 +162,7 @@ class _Chatroom_ private constructor(
         fun member(member: _Member_?) = apply { this.member = member }
         fun id(id: String) = apply { this.id = id }
         fun title(title: String) = apply { this.title = title }
-        fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
+//        fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
         fun answerText(answerText: String?) = apply { this.answerText = answerText }
         fun state(state: Int) = apply { this.state = state }
         fun unseenCount(unseenCount: Int?) = apply { this.unseenCount = unseenCount }
@@ -241,7 +242,7 @@ class _Chatroom_ private constructor(
             member,
             id,
             title,
-            createdAt,
+//            createdAt,
             answerText,
             state,
             unseenCount,

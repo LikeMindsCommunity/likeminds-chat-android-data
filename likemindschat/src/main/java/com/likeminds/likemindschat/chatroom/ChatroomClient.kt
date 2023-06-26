@@ -24,6 +24,12 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         groupChatSDK.getChatroomDb()
     }
 
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param getChatroomRequest - client request model to fetch chatroom
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return GetChatroomResponse - GetChatroomResponse model for getChatroomRequest
+     */
     suspend fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
         // validates the client request
         RequestUtils.validate()
@@ -352,27 +358,27 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
     /**
      * Converts client request model to internal model and calls the api
-     * @param getChatroomParticipantsRequest - client request model to get list of participants in chatroom
+     * @param getParticipantsRequest - client request model to get list of participants in chatroom
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
-     * @return GetChatroomParticipantsResponse - GetChatroomParticipantsResponse model for getChatroomParticipantsRequest
+     * @return GetParticipantsResponse - GetParticipantsResponse model for getParticipantsRequest
      */
-    suspend fun getChatroomParticipants(getChatroomParticipantsRequest: GetChatroomParticipantsRequest): LMResponse<GetChatroomParticipantsResponse> {
+    suspend fun getParticipants(getParticipantsRequest: GetParticipantsRequest): LMResponse<GetParticipantsResponse> {
         // validates the client request
         RequestUtils.validate()
-        validateGetChatroomParticipantsRequest(getChatroomParticipantsRequest)
+        validateGetParticipantsRequest(getParticipantsRequest)
 
         // builds internal request model
         val request =
-            _GetChatroomParticipantsRequest_.Builder()
-                .isChatroomSecret(getChatroomParticipantsRequest.isChatroomSecret)
-                .chatroomId(getChatroomParticipantsRequest.chatroomId)
-                .participantName(getChatroomParticipantsRequest.participantName)
-                .page(getChatroomParticipantsRequest.page)
-                .pageSize(getChatroomParticipantsRequest.pageSize)
+            _GetParticipantsRequest_.Builder()
+                .isChatroomSecret(getParticipantsRequest.isChatroomSecret)
+                .chatroomId(getParticipantsRequest.chatroomId)
+                .participantName(getParticipantsRequest.participantName)
+                .page(getParticipantsRequest.page)
+                .pageSize(getParticipantsRequest.pageSize)
                 .build()
 
         // calls api and processes the response accordingly
-        return when (val response = chatroomApi.getChatroomParticipants(request)) {
+        return when (val response = chatroomApi.getParticipants(request)) {
             is NetworkResponse.Error -> {
                 LMResponse(
                     success = response.body.success,
@@ -382,17 +388,17 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
-                ModelConverter.convertGetChatroomParticipantsAPIResponse(body)
+                return ModelConverter.convertGetParticipantsResponse(body)
             }
         }
     }
 
     /**
-     * validates [getChatroomParticipantsRequest]
+     * validates [getParticipantsRequest]
      * @throws IllegalArgumentException - when required properties not provided
      */
-    private fun validateGetChatroomParticipantsRequest(getChatroomParticipantsRequest: GetChatroomParticipantsRequest) {
-        if (getChatroomParticipantsRequest.chatroomId.isEmpty()) {
+    private fun validateGetParticipantsRequest(getParticipantsRequest: GetParticipantsRequest) {
+        if (getParticipantsRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
     }

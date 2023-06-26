@@ -8,7 +8,7 @@ class Chatroom private constructor(
     val member: Member?,
     val id: String,
     val title: String,
-    val createdAt: Long?,
+//    val createdAt: Long?,
     val answerText: String?,
     val state: Int,
     val unseenCount: Int?,
@@ -64,7 +64,7 @@ class Chatroom private constructor(
         private var member: Member? = null
         private var id: String = ""
         private var title: String = ""
-        private var createdAt: Long? = null
+//        private var createdAt: Long? = null
         private var answerText: String? = null
         private var state: Int = 0
         private var unseenCount: Int? = null
@@ -119,7 +119,7 @@ class Chatroom private constructor(
         fun member(member: Member?) = apply { this.member = member }
         fun id(id: String) = apply { this.id = id }
         fun title(title: String) = apply { this.title = title }
-        fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
+//        fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
         fun answerText(answerText: String?) = apply { this.answerText = answerText }
         fun state(state: Int) = apply { this.state = state }
         fun unseenCount(unseenCount: Int?) = apply { this.unseenCount = unseenCount }
@@ -213,7 +213,7 @@ class Chatroom private constructor(
             member,
             id,
             title,
-            createdAt,
+//            createdAt,
             answerText,
             state,
             unseenCount,

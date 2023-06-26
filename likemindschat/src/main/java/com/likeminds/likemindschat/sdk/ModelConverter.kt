@@ -226,15 +226,15 @@ object ModelConverter {
         )
     }
 
-    // converts internal GetChatroomParticipantsResponse model to client model
+    // converts internal GetParticipantsResponse model to client model
     private fun convertGetChatroomParticipantsResponse(
-        _getChatroomParticipantsResponse_: _GetChatroomParticipantsResponse_?
-    ): GetChatroomParticipantsResponse? {
-        if (_getChatroomParticipantsResponse_ == null) return null
-        return GetChatroomParticipantsResponse(
-            _getChatroomParticipantsResponse_.canEditParticipant,
-            convertParticipantsData(_getChatroomParticipantsResponse_.participants),
-            _getChatroomParticipantsResponse_.totalParticipantsCount
+        _getParticipantsResponse_: _GetParticipantsResponse_?
+    ): GetParticipantsResponse? {
+        if (_getParticipantsResponse_ == null) return null
+        return GetParticipantsResponse(
+            _getParticipantsResponse_.canEditParticipant,
+            convertParticipantsData(_getParticipantsResponse_.participants),
+            _getParticipantsResponse_.totalParticipantsCount
         )
     }
 
@@ -635,7 +635,7 @@ object ModelConverter {
             .member(convertMember(_chatroom_.member))
             .id(_chatroom_.id)
             .title(_chatroom_.title)
-            .createdAt(_chatroom_.createdAt)
+//            .createdAt(_chatroom_.createdAt)
             .answerText(_chatroom_.answerText)
             .state(_chatroom_.state)
             .unseenCount(_chatroom_.unseenCount)
@@ -1272,7 +1272,7 @@ object ModelConverter {
             .communityId(chatroomRO.communityId)
             .title(chatroomRO.title)
             .state(chatroomRO.state)
-            .createdAt(chatroomRO.createdAt)
+//            .createdAt(chatroomRO.createdAt)
             .type(chatroomRO.type)
             .chatroomImageUrl(chatroomRO.chatroomImageUrl)
             .header(chatroomRO.header)
