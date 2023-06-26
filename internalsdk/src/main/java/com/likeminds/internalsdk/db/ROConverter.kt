@@ -745,7 +745,7 @@ object ROConverter {
         val memberRO = ChatDBUtil.getMember(
             realm,
             communityId,
-            reaction.member.id
+            reaction.member?.id
         ) ?: return null
         return ReactionRO.build {
             this.reaction = reaction.reaction

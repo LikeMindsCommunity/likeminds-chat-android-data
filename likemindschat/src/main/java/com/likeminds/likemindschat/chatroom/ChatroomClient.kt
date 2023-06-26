@@ -388,7 +388,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
-                return ModelConverter.convertGetParticipantsResponse(body)
+                return ModelConverter.convertGetParticipantsAPIResponse(body)
             }
         }
     }

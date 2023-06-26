@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             val leaveSecretChatroomRequest = LeaveSecretChatroomRequest.Builder()
-                .chatroomId(82910)
+                .chatroomId("82910")
                 .isSecret(true)
                 .build()
             val leaveSecretChatroomResponse = client.leaveSecretChatroom(leaveSecretChatroomRequest)
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             val muteChatroomRequest = MuteChatroomRequest.Builder()
-                .chatroomId(82825)
+                .chatroomId("82825")
                 .value(true)
                 .build()
             val muteChatroomResponse = client.muteChatroom(muteChatroomRequest)

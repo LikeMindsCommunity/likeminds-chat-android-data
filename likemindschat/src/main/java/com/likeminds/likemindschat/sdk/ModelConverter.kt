@@ -216,18 +216,18 @@ object ModelConverter {
     }
 
     // converts api GetChatroomParticipantsResponse model to LM GetChatroomParticipantsResponse model
-    fun convertGetChatroomParticipantsAPIResponse(
-        apiResponse: APIResponse<_GetChatroomParticipantsResponse_>
-    ): LMResponse<GetChatroomParticipantsResponse> {
+    fun convertGetParticipantsAPIResponse(
+        apiResponse: APIResponse<_GetParticipantsResponse_>
+    ): LMResponse<GetParticipantsResponse> {
         return LMResponse(
             apiResponse.success,
             apiResponse.errorMessage,
-            convertGetChatroomParticipantsResponse(apiResponse.data)
+            convertGetParticipantsResponse(apiResponse.data)
         )
     }
 
     // converts internal GetParticipantsResponse model to client model
-    private fun convertGetChatroomParticipantsResponse(
+    private fun convertGetParticipantsResponse(
         _getParticipantsResponse_: _GetParticipantsResponse_?
     ): GetParticipantsResponse? {
         if (_getParticipantsResponse_ == null) return null

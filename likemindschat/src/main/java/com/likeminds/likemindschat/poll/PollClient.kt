@@ -160,7 +160,7 @@ class PollClient @Inject constructor() : BaseClient() {
         // builds internal request model
         val request = _SubmitPollRequest_.Builder()
             .conversationId(conversationId)
-            .polls(_polls_)
+            .polls(_polls_ ?: emptyList())
             .build()
 
         // calls api and processes the response accordingly
@@ -175,10 +175,12 @@ class PollClient @Inject constructor() : BaseClient() {
             is NetworkResponse.Success -> {
 
                 //if success -> make db call
-                conversationDB.updateConversationSubmitPoll(
-                    conversationId,
-                    _polls_
-                )
+                _polls_?.let { polls ->
+                    conversationDB.updateConversationSubmitPoll(
+                        conversationId,
+                        polls
+                    )
+                }
 
                 LMResponse(
                     success = response.body.success,
