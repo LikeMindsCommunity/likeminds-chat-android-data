@@ -10,8 +10,11 @@ import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
-import io.realm.Realm
-import io.realm.RealmList
+import io.realm.*
+import io.realm.kotlin.toChangesetFlow
+import io.realm.rx.CollectionChange
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import javax.inject.Inject
 
 class ConversationReceiver @Inject constructor(
@@ -61,6 +64,127 @@ class ConversationReceiver @Inject constructor(
     /**
      * Db Functions
      */
+
+    fun getConversationsBelow(
+        chatroomId: String,
+        limit: Int,
+        keyId: String?,
+        keyTimestamp: Long?
+    ): RealmResults<ConversationRO> {
+        val realm = Realm.getDefaultInstance()
+
+        val conversations = realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            .greaterThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp ?: 0L)
+            .notEqualTo(DbKey.ID, keyId ?: "")
+            //filter empty conversation with failed attachments
+            .not()
+            .beginGroup()
+            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
+            .and()
+            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
+            .endGroup()
+            .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
+            .limit(limit.toLong())
+            .findAll()
+
+        realm.close()
+        return conversations
+    }
+
+    fun getConversationsAbove(
+        chatroomId: String,
+        limit: Int,
+        keyId: String?,
+        keyTimestamp: Long?
+    ): RealmResults<ConversationRO> {
+        val realm = Realm.getDefaultInstance()
+        val conversations = realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            .lessThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp ?: 0L)
+            .notEqualTo(DbKey.ID, keyId ?: "")
+            //filter empty conversation with failed attachments
+            .not()
+            .beginGroup()
+            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
+            .and()
+            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
+            .endGroup()
+            .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING, DbKey.ID, Sort.DESCENDING)
+            .limit(limit.toLong())
+            .findAll()
+            .where()
+            .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
+            .findAll()
+        realm.close()
+        return conversations
+    }
+
+    fun getTopConversations(
+        chatroomId: String,
+        limit: Int
+    ): RealmResults<ConversationRO> {
+        val realm = Realm.getDefaultInstance()
+        val conversations = realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            //filter empty conversation with failed attachments
+            .not()
+            .beginGroup()
+            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
+            .and()
+            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
+            .endGroup()
+            .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
+            .limit(limit.toLong())
+            .findAll()
+        realm.close()
+        return conversations
+    }
+
+    fun getBottomConversations(
+        chatroomId: String,
+        limit: Int
+    ): RealmResults<ConversationRO> {
+        val realm = Realm.getDefaultInstance()
+        val conversations = realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            //filter empty conversation with failed attachments
+            .not()
+            .beginGroup()
+            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
+            .and()
+            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
+            .endGroup()
+            .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING, DbKey.ID, Sort.DESCENDING)
+            .limit(limit.toLong())
+            .findAll()
+            .where()
+            .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
+            .findAll()
+        realm.close()
+        return conversations
+    }
+
+    fun observeConversations(
+        realm: Realm,
+        chatroomId: String
+    ): Flow<CollectionChange<RealmResults<ConversationRO>>> {
+        return realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            //filter empty conversation with failed attachments
+            .not()
+            .beginGroup()
+            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
+            .and()
+            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
+            .endGroup()
+            .findAllAsync()
+            .toChangesetFlow()
+            .filter {
+                it.collection.isLoaded && it.changeset != null
+                        && it.changeset?.state == OrderedCollectionChangeSet.State.UPDATE
+            }
+    }
 
     fun saveTemporaryConversationAsync(conversation: _Conversation_) {
         ChatDBUtil.writeAsync({ realm ->

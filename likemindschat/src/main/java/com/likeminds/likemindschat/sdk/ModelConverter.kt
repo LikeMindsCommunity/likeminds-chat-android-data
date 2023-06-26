@@ -992,6 +992,13 @@ object ModelConverter {
         return GetConversationResponse(convertConversationRO(conversationRO))
     }
 
+    fun convertGetConversationsResponse(conversationsRO: List<ConversationRO>): GetConversationsResponse {
+        return GetConversationsResponse(
+            convertConversationsRO(conversationsRO.toList()),
+            conversationsRO.count()
+        )
+    }
+
     fun convertPutMultimediaAPIResponse(apiResponse: APIResponse<_PutMultimediaResponse_>): LMResponse<PutMultimediaResponse> {
         return LMResponse(
             apiResponse.success,
@@ -1301,6 +1308,12 @@ object ModelConverter {
             .isConversationStored(chatroomRO.isConversationStored)
             .isDraft(chatroomRO.isDraft)
             .build()
+    }
+
+    fun convertConversationsRO(conversationsRO: List<ConversationRO>?): List<Conversation>? {
+        return conversationsRO?.mapNotNull {
+            convertConversationRO(it)
+        }
     }
 
     // converts ConversationRO model to client model

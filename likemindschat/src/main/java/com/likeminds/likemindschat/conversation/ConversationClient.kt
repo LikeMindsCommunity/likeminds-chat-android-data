@@ -1,13 +1,18 @@
 package com.likeminds.likemindschat.conversation
 
 import com.likeminds.internalsdk.conversation.model.*
+import com.likeminds.internalsdk.db.models.ConversationRO
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.conversation.model.*
+import com.likeminds.likemindschat.conversation.util.ConversationChangeListener
+import com.likeminds.likemindschat.conversation.util.GetConversationType
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
+import io.realm.Realm
+import io.realm.RealmResults
 import javax.inject.Inject
 
 class ConversationClient @Inject constructor() : BaseClient() {
@@ -22,6 +27,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
     private val conversationDB by lazy {
         groupChatSDK.getConversationDB()
+    }
+
+    private val chatroomDB by lazy {
+        groupChatSDK.getChatroomDb()
     }
 
     suspend fun postConversation(postConversationRequest: PostConversationRequest): LMResponse<PostConversationResponse> {
@@ -63,6 +72,172 @@ class ConversationClient @Inject constructor() : BaseClient() {
             && (postConversationRequest.attachmentCount ?: 0) <= 0
         ) {
             RequestUtils.throwException("text")
+        }
+    }
+
+    suspend fun observeConversations(
+        chatroomId: String,
+        listener: ConversationChangeListener
+    ) {
+        //validates the client request
+        RequestUtils.validate()
+
+        val realm = Realm.getDefaultInstance()
+
+        val flowOfConversations = conversationDB.observeConversations(realm, chatroomId)
+
+        flowOfConversations.collect { collectionChange ->
+            val insertions = getConversationFromChanges(
+                collectionChange.collection,
+                collectionChange.changeset?.insertions
+            )
+
+            val changes = getConversationFromChanges(
+                collectionChange.collection,
+                collectionChange.changeset?.changes
+            )
+
+            val postedConversation = insertions?.filter { conversation ->
+                !conversation.temporaryId.isNullOrEmpty()
+            }?.mapNotNull { conversation ->
+                ModelConverter.convertConversationRO(conversation)
+            }
+
+            val newConversations = insertions?.filter { conversation ->
+                conversation.temporaryId.isNullOrEmpty()
+            }?.mapNotNull { conversation ->
+                ModelConverter.convertConversationRO(conversation)
+            }
+
+            val changedConversations = changes?.mapNotNull { conversation ->
+                ModelConverter.convertConversationRO(conversation)
+            }
+
+            listener.getPostedConversations(postedConversation)
+            listener.getNewConversations(newConversations)
+            listener.getChangedConversations(changedConversations)
+        }
+
+        realm.close()
+    }
+
+    private fun getConversationFromChanges(
+        list: RealmResults<ConversationRO>,
+        indexes: IntArray?,
+    ): List<ConversationRO>? {
+        if (list.isEmpty()) {
+            return null
+        }
+        return indexes?.map { index ->
+            list[index]!!
+        }
+    }
+
+    fun getConversations(getConversationsRequest: GetConversationsRequest): LMResponse<GetConversationsResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validateGetConversationsRequest(getConversationsRequest)
+
+        val type = getConversationsRequest.type
+        val chatroomId = getConversationsRequest.chatroomId
+        val limit = getConversationsRequest.limit
+        val conversation = getConversationsRequest.conversation
+
+        return when (type) {
+            GetConversationType.NONE -> {
+                LMResponse(
+                    success = false,
+                    errorMessage = "queryType not specified."
+                )
+            }
+
+            GetConversationType.BELOW -> {
+                val _conversations_ = conversationDB.getConversationsBelow(
+                    chatroomId,
+                    limit,
+                    conversation?.id,
+                    conversation?.createdEpoch
+                )
+                LMResponse(
+                    success = true,
+                    errorMessage = null,
+                    ModelConverter.convertGetConversationsResponse(_conversations_)
+                )
+            }
+
+            GetConversationType.ABOVE -> {
+                val _conversations_ = conversationDB.getConversationsAbove(
+                    chatroomId,
+                    limit,
+                    conversation?.id,
+                    conversation?.createdEpoch
+                )
+                LMResponse(
+                    success = true,
+                    errorMessage = null,
+                    ModelConverter.convertGetConversationsResponse(_conversations_)
+                )
+            }
+
+            GetConversationType.TOP -> {
+                val _conversations_ = conversationDB.getTopConversations(chatroomId, limit)
+                LMResponse(
+                    success = true,
+                    errorMessage = null,
+                    ModelConverter.convertGetConversationsResponse(_conversations_)
+                )
+            }
+
+            GetConversationType.BOTTOM -> {
+                val _conversations_ = conversationDB.getBottomConversations(chatroomId, limit)
+                LMResponse(
+                    success = true,
+                    errorMessage = null,
+                    ModelConverter.convertGetConversationsResponse(_conversations_)
+                )
+            }
+
+            GetConversationType.INTERMEDIATE -> {
+                val medianConversation = conversationDB.getConversation(conversation?.id ?: "")
+
+                if (medianConversation == null) {
+                    LMResponse(
+                        success = false,
+                        errorMessage = "Conversation w.r.t conversation not found."
+                    )
+                } else {
+                    val aboveConversations = conversationDB.getConversationsAbove(
+                        chatroomId,
+                        limit,
+                        conversation?.id,
+                        conversation?.createdEpoch
+                    )
+                    val belowConversations = conversationDB.getConversationsBelow(
+                        chatroomId,
+                        limit,
+                        conversation?.id,
+                        conversation?.createdEpoch
+                    )
+
+                    val conversations = aboveConversations + medianConversation + belowConversations
+
+                    LMResponse(
+                        success = true,
+                        errorMessage = null,
+                        ModelConverter.convertGetConversationsResponse(conversations)
+                    )
+                }
+            }
+        }
+    }
+
+    private fun validateGetConversationsRequest(getConversationsRequest: GetConversationsRequest) {
+        if (getConversationsRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+
+        if (getConversationsRequest.type == GetConversationType.NONE) {
+            RequestUtils.throwException("queryType")
         }
     }
 

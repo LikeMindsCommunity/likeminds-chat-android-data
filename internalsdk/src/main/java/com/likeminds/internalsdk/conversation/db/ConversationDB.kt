@@ -4,10 +4,43 @@ import com.likeminds.internalsdk.conversation.model._Conversation_
 import com.likeminds.internalsdk.conversation.model._LinkOGTags_
 import com.likeminds.internalsdk.db.models.ConversationRO
 import com.likeminds.internalsdk.poll.model._Poll_
+import io.realm.Realm
+import io.realm.RealmResults
+import io.realm.rx.CollectionChange
+import kotlinx.coroutines.flow.Flow
 
 interface ConversationDB {
 
     fun getConversation(conversationId: String): ConversationRO?
+
+    fun getConversationsBelow(
+        chatroomId: String,
+        limit: Int,
+        keyId: String?,
+        keyTimestamp: Long?
+    ): RealmResults<ConversationRO>
+
+    fun getConversationsAbove(
+        chatroomId: String,
+        limit: Int,
+        keyId: String?,
+        keyTimestamp: Long?
+    ): RealmResults<ConversationRO>
+
+    fun getTopConversations(
+        chatroomId: String,
+        limit: Int
+    ): RealmResults<ConversationRO>
+
+    fun getBottomConversations(
+        chatroomId: String,
+        limit: Int
+    ): RealmResults<ConversationRO>
+
+    fun observeConversations(
+        realm: Realm,
+        chatroomId: String
+    ): Flow<CollectionChange<RealmResults<ConversationRO>>>
 
     fun saveTemporaryConversationAsync(conversation: _Conversation_)
 

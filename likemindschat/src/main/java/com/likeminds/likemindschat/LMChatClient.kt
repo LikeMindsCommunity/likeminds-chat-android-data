@@ -9,6 +9,7 @@ import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
 import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
 import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
+import com.likeminds.likemindschat.conversation.util.ConversationChangeListener
 import com.likeminds.likemindschat.helper.HelperClient
 import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
@@ -217,6 +218,17 @@ class LMChatClient private constructor() {
     // Exposed function to search a conversation
     suspend fun searchConversation(searchConversationRequest: SearchConversationRequest): LMResponse<SearchConversationResponse> {
         return searchClient.searchConversation(searchConversationRequest)
+    }
+
+    suspend fun observeConversations(
+        chatroomId: String,
+        listener: ConversationChangeListener
+    ) {
+        conversationClient.observeConversations(chatroomId, listener)
+    }
+
+    fun getConversations(getConversationsRequest: GetConversationsRequest): LMResponse<GetConversationsResponse> {
+        return conversationClient.getConversations(getConversationsRequest)
     }
 
     fun saveTemporaryConversationAsync(saveConversationRequest: SaveConversationRequest) {
