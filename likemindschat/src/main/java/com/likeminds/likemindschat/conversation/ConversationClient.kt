@@ -29,10 +29,12 @@ class ConversationClient @Inject constructor() : BaseClient() {
         groupChatSDK.getConversationDB()
     }
 
-    private val chatroomDB by lazy {
-        groupChatSDK.getChatroomDb()
-    }
-
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param postConversationRequest - client request model to post a conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<PostConversationResponse> - Base LM response[PostConversationResponse]
+     */
     suspend fun postConversation(postConversationRequest: PostConversationRequest): LMResponse<PostConversationResponse> {
         // validates the client request
         RequestUtils.validate()
@@ -59,11 +61,23 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+
+                val conversation = body.data?.conversation
+
+                conversation?.let {
+                    //todo change true as per request
+                    conversationDB.savePostedConversation(it, true)
+                }
+
                 ModelConverter.convertPostConversationAPIResponse(body)
             }
         }
     }
 
+    /**
+     * validates [postConversationRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validatePostConversationRequest(postConversationRequest: PostConversationRequest) {
         if (postConversationRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
@@ -75,12 +89,20 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * write the observer query and returns the data in listener
+     * @param chatroomId: id of the chatroom
+     * @param listener: [ConversationChangeListener] listener to observe conversation
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
     suspend fun observeConversations(
         chatroomId: String,
         listener: ConversationChangeListener
     ) {
         //validates the client request
         RequestUtils.validate()
+        validateObserveConversationRequest(chatroomId)
 
         val realm = Realm.getDefaultInstance()
 
@@ -121,6 +143,16 @@ class ConversationClient @Inject constructor() : BaseClient() {
         realm.close()
     }
 
+    /**
+     * validates [chatroomId]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateObserveConversationRequest(chatroomId: String) {
+        if (chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+    }
+
     private fun getConversationFromChanges(
         list: RealmResults<ConversationRO>,
         indexes: IntArray?,
@@ -133,6 +165,13 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * write the query and returns the conversations as per situations
+     * @param getConversationsRequest - client request model to get conversations
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<GetConversationsResponse> - Base LM response[GetConversationsResponse]
+     */
     fun getConversations(getConversationsRequest: GetConversationsRequest): LMResponse<GetConversationsResponse> {
         // validates the client request
         RequestUtils.validate()
@@ -152,7 +191,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
             }
 
             GetConversationType.BELOW -> {
-                val _conversations_ = conversationDB.getConversationsBelow(
+                val conversations = conversationDB.getConversationsBelow(
                     chatroomId,
                     limit,
                     conversation?.id,
@@ -161,12 +200,12 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 LMResponse(
                     success = true,
                     errorMessage = null,
-                    ModelConverter.convertGetConversationsResponse(_conversations_)
+                    ModelConverter.convertGetConversationsResponse(conversations)
                 )
             }
 
             GetConversationType.ABOVE -> {
-                val _conversations_ = conversationDB.getConversationsAbove(
+                val conversations = conversationDB.getConversationsAbove(
                     chatroomId,
                     limit,
                     conversation?.id,
@@ -175,25 +214,25 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 LMResponse(
                     success = true,
                     errorMessage = null,
-                    ModelConverter.convertGetConversationsResponse(_conversations_)
+                    ModelConverter.convertGetConversationsResponse(conversations)
                 )
             }
 
             GetConversationType.TOP -> {
-                val _conversations_ = conversationDB.getTopConversations(chatroomId, limit)
+                val conversations = conversationDB.getTopConversations(chatroomId, limit)
                 LMResponse(
                     success = true,
                     errorMessage = null,
-                    ModelConverter.convertGetConversationsResponse(_conversations_)
+                    ModelConverter.convertGetConversationsResponse(conversations)
                 )
             }
 
             GetConversationType.BOTTOM -> {
-                val _conversations_ = conversationDB.getBottomConversations(chatroomId, limit)
+                val conversations = conversationDB.getBottomConversations(chatroomId, limit)
                 LMResponse(
                     success = true,
                     errorMessage = null,
-                    ModelConverter.convertGetConversationsResponse(_conversations_)
+                    ModelConverter.convertGetConversationsResponse(conversations)
                 )
             }
 
@@ -231,6 +270,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [getConversationsRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateGetConversationsRequest(getConversationsRequest: GetConversationsRequest) {
         if (getConversationsRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
@@ -241,27 +284,35 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
-    fun saveTemporaryConversationAsync(saveConversationRequest: SaveConversationRequest) {
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param saveConversationRequest - client request model to save a temporary conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * */
+    fun saveTemporaryConversation(saveConversationRequest: SaveConversationRequest) {
         // validates the client request
         RequestUtils.validate()
+        validateSaveConversationRequest(saveConversationRequest)
 
-        val _conversation_ =
+        val conversation =
             ModelConverter.createConversation(saveConversationRequest.conversation)
 
-        conversationDB.saveTemporaryConversationAsync(_conversation_)
+        conversationDB.saveTemporaryConversation(conversation)
     }
 
-    fun savePostedConversationAsync(
-        saveConversationRequest: SaveConversationRequest,
-        isFromNotification: Boolean
-    ) {
-        // validates the client request
-        RequestUtils.validate()
-
-        val _conversation_ = ModelConverter.createConversation(saveConversationRequest.conversation)
-        conversationDB.savePostedConversationAsync(_conversation_, isFromNotification)
+    private fun validateSaveConversationRequest(saveConversationRequest: SaveConversationRequest) {
+        if (saveConversationRequest.conversation.id.isNullOrEmpty()) {
+            RequestUtils.throwException("conversation")
+        }
     }
 
+    /**
+     * return a single conversation from local db
+     * @param getConversationRequest: client request model to get a conversation
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<GetConversationResponse> - Base LM response[GetConversationResponse]
+     */
     fun getConversation(getConversationRequest: GetConversationRequest): LMResponse<GetConversationResponse> {
         // validates the client request
         RequestUtils.validate()
@@ -282,12 +333,22 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [getConversationRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateGetConversationRequest(getConversationRequest: GetConversationRequest) {
         if (getConversationRequest.conversationId.isEmpty()) {
             RequestUtils.throwException("conversationId")
         }
     }
 
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param editConversationRequest - client request model to edit a conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<EditConversationResponse> - Base LM response[EditConversationResponse]
+     */
     suspend fun editConversation(editConversationRequest: EditConversationRequest): LMResponse<EditConversationResponse> {
         // validates the client request
         RequestUtils.validate()
@@ -321,6 +382,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [editConversationRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateEditConversationRequest(editConversationRequest: EditConversationRequest) {
         if (editConversationRequest.conversationId.isEmpty()) {
             RequestUtils.throwException("conversationId")
@@ -330,6 +395,12 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param deleteConversationRequest - client request model to post a conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<DeleteConversationRequest> - Base LM response[DeleteConversationRequest]
+     */
     suspend fun deleteConversations(deleteConversationRequest: DeleteConversationRequest): LMResponse<DeleteConversationResponse> {
         // validates the client request
         RequestUtils.validate()
@@ -358,6 +429,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [deleteConversationRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateDeleteConversationRequest(deleteConversationRequest: DeleteConversationRequest) {
         if (deleteConversationRequest.conversationIds.isEmpty()) {
             RequestUtils.throwException("conversationIds")
@@ -471,6 +546,12 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param putMultimediaRequest - client request model to post a conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<PutMultimediaResponse> - Base LM response[PutMultimediaResponse]
+     */
     suspend fun putMultimedia(
         putMultimediaRequest: PutMultimediaRequest
     ): LMResponse<PutMultimediaResponse> {
@@ -506,6 +587,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [putMultimediaRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validatePutMultimediaRequest(putMultimediaRequest: PutMultimediaRequest) {
         if (putMultimediaRequest.conversationId.isEmpty()) {
             RequestUtils.throwException("conversationId")

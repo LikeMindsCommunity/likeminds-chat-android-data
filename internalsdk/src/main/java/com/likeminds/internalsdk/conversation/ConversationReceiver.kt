@@ -186,7 +186,7 @@ class ConversationReceiver @Inject constructor(
             }
     }
 
-    fun saveTemporaryConversationAsync(conversation: _Conversation_) {
+    fun saveTemporaryConversation(conversation: _Conversation_) {
         ChatDBUtil.writeAsync({ realm ->
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
@@ -235,7 +235,7 @@ class ConversationReceiver @Inject constructor(
         })
     }
 
-    fun savePostedConversationAsync(
+    fun savePostedConversation(
         conversation: _Conversation_,
         isFromNotification: Boolean
     ) {

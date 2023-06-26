@@ -131,11 +131,11 @@ object ModelConverter {
         return LMResponse(
             apiResponse.success,
             apiResponse.errorMessage,
-            convertConfigAPIResponse(apiResponse.data)
+            convertConfigResponse(apiResponse.data)
         )
     }
 
-    private fun convertConfigAPIResponse(_configResponse_: _ConfigResponse_?): ConfigResponse? {
+    private fun convertConfigResponse(_configResponse_: _ConfigResponse_?): ConfigResponse? {
         if (_configResponse_ == null) return null
         return ConfigResponse(
             _configResponse_.access,

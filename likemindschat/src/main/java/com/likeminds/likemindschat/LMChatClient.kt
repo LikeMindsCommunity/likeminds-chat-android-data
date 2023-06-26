@@ -220,6 +220,7 @@ class LMChatClient private constructor() {
         return searchClient.searchConversation(searchConversationRequest)
     }
 
+    // Exposed function to observe new conversations
     suspend fun observeConversations(
         chatroomId: String,
         listener: ConversationChangeListener
@@ -227,33 +228,40 @@ class LMChatClient private constructor() {
         conversationClient.observeConversations(chatroomId, listener)
     }
 
+    // Exposed function to get conversations
     fun getConversations(getConversationsRequest: GetConversationsRequest): LMResponse<GetConversationsResponse> {
         return conversationClient.getConversations(getConversationsRequest)
     }
 
-    fun saveTemporaryConversationAsync(saveConversationRequest: SaveConversationRequest) {
-        conversationClient.saveTemporaryConversationAsync(saveConversationRequest)
+    // Exposed function to save temporary conversation
+    fun saveTemporaryConversation(saveConversationRequest: SaveConversationRequest) {
+        conversationClient.saveTemporaryConversation(saveConversationRequest)
     }
 
+    // Exposed function to save posted conversation
     fun savePostedConversationAsync(
         saveConversationRequest: SaveConversationRequest,
         isFromNotification: Boolean
     ) {
-        conversationClient.savePostedConversationAsync(saveConversationRequest, isFromNotification)
+        conversationClient.savePostedConversation(saveConversationRequest, isFromNotification)
     }
 
+    // Exposed function to get a single conversation
     fun getConversation(getConversationRequest: GetConversationRequest): LMResponse<GetConversationResponse> {
         return conversationClient.getConversation(getConversationRequest)
     }
 
+    // Exposed function to post conversation
     suspend fun postConversation(postConversationRequest: PostConversationRequest): LMResponse<PostConversationResponse> {
         return conversationClient.postConversation(postConversationRequest)
     }
 
+    // Exposed function to edit conversation
     suspend fun editConversation(editConversationRequest: EditConversationRequest): LMResponse<EditConversationResponse> {
         return conversationClient.editConversation(editConversationRequest)
     }
 
+    // Exposed function to delete conversation
     suspend fun deleteConversation(deleteConversationRequest: DeleteConversationRequest): LMResponse<DeleteConversationResponse> {
         return conversationClient.deleteConversations(deleteConversationRequest)
     }

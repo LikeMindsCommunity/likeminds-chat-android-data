@@ -63,15 +63,15 @@ class ConversationDbImpl @Inject constructor(
         return conversationReceiver.observeConversations(realm, chatroomId)
     }
 
-    override fun saveTemporaryConversationAsync(conversation: _Conversation_) {
-        conversationReceiver.saveTemporaryConversationAsync(conversation)
+    override fun saveTemporaryConversation(conversation: _Conversation_) {
+        conversationReceiver.saveTemporaryConversation(conversation)
     }
 
-    override fun savePostedConversationAsync(
+    override fun savePostedConversation(
         conversation: _Conversation_,
         isFromNotification: Boolean
     ) {
-        conversationReceiver.savePostedConversationAsync(conversation, isFromNotification)
+        conversationReceiver.savePostedConversation(conversation, isFromNotification)
     }
 
     override fun updateEditedConversation(

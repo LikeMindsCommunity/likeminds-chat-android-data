@@ -42,9 +42,9 @@ interface ConversationDB {
         chatroomId: String
     ): Flow<CollectionChange<RealmResults<ConversationRO>>>
 
-    fun saveTemporaryConversationAsync(conversation: _Conversation_)
+    fun saveTemporaryConversation(conversation: _Conversation_)
 
-    fun savePostedConversationAsync(
+    fun savePostedConversation(
         conversation: _Conversation_,
         isFromNotification: Boolean
     )
