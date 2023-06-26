@@ -75,10 +75,6 @@ object ModelConverter {
         )
     }
 
-    fun convertGetUserResponse(userRO: UserRO?): GetUserResponse {
-        return GetUserResponse(convertUserRO(userRO))
-    }
-
     // converts internal SDKClientInfo model to client model
     private fun convertSDKClientInfo(
         _sdkClientInfo_: _SDKClientInfo_?
@@ -125,6 +121,7 @@ object ModelConverter {
         )
     }
 
+    //converts API ConfigResponse model to LM model
     fun convertConfigAPIResponse(
         apiResponse: APIResponse<_ConfigResponse_>
     ): LMResponse<ConfigResponse> {
@@ -135,6 +132,7 @@ object ModelConverter {
         )
     }
 
+    //converts internal ConfigResponse model to client model
     private fun convertConfigResponse(_configResponse_: _ConfigResponse_?): ConfigResponse? {
         if (_configResponse_ == null) return null
         return ConfigResponse(
@@ -147,6 +145,7 @@ object ModelConverter {
         )
     }
 
+    //converts internal UserDetail model to client model
     private fun convertUserDetails(_userDetails_: _UserDetail_): UserDetail {
         return UserDetail(
             convertUser(_userDetails_.user),
@@ -154,6 +153,7 @@ object ModelConverter {
         )
     }
 
+    //converts internal UserMetrics model to client model
     private fun convertUserMetrics(_userMetrics_: _UserMetrics_): UserMetrics {
         return UserMetrics(
             _userMetrics_.firstLogin,
@@ -165,10 +165,6 @@ object ModelConverter {
             _userMetrics_.countChatroomCreated,
             _userMetrics_.countChatroomFollowed
         )
-    }
-
-    fun convertGetChatroomResponse(chatroomRO: ChatroomRO?): GetChatroomResponse {
-        return GetChatroomResponse(convertChatroomRO(chatroomRO))
     }
 
     // converts api GetChatroomResponse model to LM GetChatroomResponse model
@@ -521,7 +517,7 @@ object ModelConverter {
     }
 
     // converts internal Member model list to client model list
-    fun convertMembers(
+    private fun convertMembers(
         _members_: List<_Member_>
     ): List<Member> {
         return _members_.map {
@@ -708,6 +704,7 @@ object ModelConverter {
             .build()
     }
 
+    // converts list of internal Conversation model to client model
     private fun convertConversations(conversations: List<_Conversation_>): List<Conversation> {
         return conversations.map { conversation ->
             convertConversation(conversation)
@@ -794,7 +791,7 @@ object ModelConverter {
     }
 
     // converts internal AttachmentMeta model to client model
-    fun convertAttachmentMeta(
+    private fun convertAttachmentMeta(
         _attachmentMeta_: _AttachmentMeta_?
     ): AttachmentMeta? {
         if (_attachmentMeta_ == null) return null
@@ -936,8 +933,9 @@ object ModelConverter {
         )
     }
 
+    //converts API PostConversationResponse model to LM model
     fun convertPostConversationAPIResponse(
-        apiResponse: APIResponse<_CreateConversationResponse_>
+        apiResponse: APIResponse<_PostConversationResponse_>
     ): LMResponse<PostConversationResponse> {
         return LMResponse(
             apiResponse.success,
@@ -946,16 +944,18 @@ object ModelConverter {
         )
     }
 
+    //converts internal PostConversationResponse model to client model
     private fun convertPostConversationResponse(
-        _createConversationResponse_: _CreateConversationResponse_?
+        _postConversationResponse_: _PostConversationResponse_?
     ): PostConversationResponse? {
-        if (_createConversationResponse_ == null) return null
+        if (_postConversationResponse_ == null) return null
         return PostConversationResponse(
-            convertConversation(_createConversationResponse_.conversation),
-            _createConversationResponse_.id
+            convertConversation(_postConversationResponse_.conversation),
+            _postConversationResponse_.id
         )
     }
 
+    //converts API EditConversationResponse model to LM model
     fun convertEditConversationAPIResponse(
         apiResponse: APIResponse<_EditConversationResponse_>
     ): LMResponse<EditConversationResponse> {
@@ -966,11 +966,13 @@ object ModelConverter {
         )
     }
 
+    //converts internal EditConversationResponse model to client model
     private fun convertEditConversationResponse(_editConversationResponse_: _EditConversationResponse_?): EditConversationResponse? {
         if (_editConversationResponse_ == null) return null
         return EditConversationResponse(convertConversation(_editConversationResponse_.conversation))
     }
 
+    //converts API DeleteConversationResponse model to LM model
     fun convertDeleteConversationAPIResponse(
         apiResponse: APIResponse<_DeleteConversationResponse_>
     ): LMResponse<DeleteConversationResponse> {
@@ -981,6 +983,7 @@ object ModelConverter {
         )
     }
 
+    //converts internal DeleteConversationResponse model to client model
     private fun convertDeleteConversationResponse(_deleteConversationResponse_: _DeleteConversationResponse_?): DeleteConversationResponse? {
         if (_deleteConversationResponse_ == null) return null
         return DeleteConversationResponse(
@@ -988,26 +991,17 @@ object ModelConverter {
         )
     }
 
-    fun convertGetConversationResponse(conversationRO: ConversationRO?): GetConversationResponse {
-        return GetConversationResponse(convertConversationRO(conversationRO))
-    }
-
-    fun convertGetConversationsResponse(conversationsRO: List<ConversationRO>): GetConversationsResponse {
-        return GetConversationsResponse(
-            convertConversationsRO(conversationsRO.toList()),
-            conversationsRO.count()
-        )
-    }
-
+    //converts API PutMultimediaResponse model to LM model
     fun convertPutMultimediaAPIResponse(apiResponse: APIResponse<_PutMultimediaResponse_>): LMResponse<PutMultimediaResponse> {
         return LMResponse(
             apiResponse.success,
             apiResponse.errorMessage,
-            convertPutMultmediaResponse(apiResponse.data)
+            convertPutMultimediaResponse(apiResponse.data)
         )
     }
 
-    private fun convertPutMultmediaResponse(data: _PutMultimediaResponse_?): PutMultimediaResponse {
+    //converts internal PutMultimediaResponse model to client model
+    private fun convertPutMultimediaResponse(data: _PutMultimediaResponse_?): PutMultimediaResponse {
         return PutMultimediaResponse(data?.conversation?.let { convertConversation(it) })
     }
 
@@ -1015,6 +1009,7 @@ object ModelConverter {
      * Client Model -> Internal Model
     --------------------------------*/
 
+    //create internal Conversation from client model
     fun createConversation(conversation: Conversation): _Conversation_ {
         return _Conversation_.Builder()
             .id(conversation.id)
@@ -1058,14 +1053,16 @@ object ModelConverter {
             .build()
     }
 
-    fun createReactions(reactions: List<Reaction>?): List<_Reaction_>? {
+    //create list of internal Reaction from client model
+    private fun createReactions(reactions: List<Reaction>?): List<_Reaction_>? {
         if (reactions.isNullOrEmpty()) return null
         return reactions.map { reaction ->
             createReaction(reaction)
         }
     }
 
-    fun createReaction(reaction: Reaction): _Reaction_ {
+    //create internal Reaction from client model
+    private fun createReaction(reaction: Reaction): _Reaction_ {
         return _Reaction_.Builder()
             .reaction(reaction.reaction)
             .member(createMember(reaction.member))
@@ -1185,6 +1182,7 @@ object ModelConverter {
         )
     }
 
+    // creates internal LinkOGTags model from client model
     fun createLinkOGTags(linkOGTags: LinkOGTags?): _LinkOGTags_? {
         if (linkOGTags == null) return null
         return _LinkOGTags_.Builder()
@@ -1195,14 +1193,16 @@ object ModelConverter {
             .build()
     }
 
-    fun createAttachments(attachments: List<Attachment>?): List<_Attachment_>? {
+    // creates internal Attachment model list from client model list
+    private fun createAttachments(attachments: List<Attachment>?): List<_Attachment_>? {
         if (attachments.isNullOrEmpty()) return null
         return attachments.map {
             createAttachment(it)
         }
     }
 
-    fun createAttachment(attachment: Attachment): _Attachment_ {
+    // creates internal Attachment model from client model
+    private fun createAttachment(attachment: Attachment): _Attachment_ {
         return _Attachment_.Builder()
             .id(attachment.id)
             .name(attachment.name)
@@ -1222,6 +1222,7 @@ object ModelConverter {
             .build()
     }
 
+    // creates internal AttachmentMeta model from client model
     fun createAttachmentMeta(attachmentMeta: AttachmentMeta?): _AttachmentMeta_? {
         if (attachmentMeta == null) return null
         return _AttachmentMeta_.Builder()
@@ -1232,11 +1233,37 @@ object ModelConverter {
     }
 
     /**--------------------------------
+     * Db Model -> Client Response Model
+    --------------------------------*/
+    //convert [UserRO] to [GetUserResponse]
+    fun convertGetUserResponse(userRO: UserRO?): GetUserResponse {
+        return GetUserResponse(convertUserRO(userRO))
+    }
+
+    // convert [chatroomRO] to [GetChatroomResponse]
+    fun convertGetChatroomResponse(chatroomRO: ChatroomRO?): GetChatroomResponse {
+        return GetChatroomResponse(convertChatroomRO(chatroomRO))
+    }
+
+    //convert [ConversationRO] to [GetConversationResponse]
+    fun convertGetConversationResponse(conversationRO: ConversationRO?): GetConversationResponse {
+        return GetConversationResponse(convertConversationRO(conversationRO))
+    }
+
+    //convert list of [ConversationRO] to [GetConversationsResponse]
+    fun convertGetConversationsResponse(conversationsRO: List<ConversationRO>): GetConversationsResponse {
+        return GetConversationsResponse(
+            convertConversationsRO(conversationsRO.toList()),
+            conversationsRO.count()
+        )
+    }
+
+    /**--------------------------------
      * Db Model -> Client Model
     --------------------------------*/
 
     // converts UserRO model to client model
-    fun convertUserRO(userRO: UserRO?): User? {
+    private fun convertUserRO(userRO: UserRO?): User? {
         if (userRO == null) return null
         return User(
             userRO.id,
@@ -1310,7 +1337,8 @@ object ModelConverter {
             .build()
     }
 
-    fun convertConversationsRO(conversationsRO: List<ConversationRO>?): List<Conversation>? {
+    // converts list of ConversationRO model to client model
+    private fun convertConversationsRO(conversationsRO: List<ConversationRO>?): List<Conversation>? {
         return conversationsRO?.mapNotNull {
             convertConversationRO(it)
         }

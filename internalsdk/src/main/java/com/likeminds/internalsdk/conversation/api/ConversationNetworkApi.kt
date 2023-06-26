@@ -8,9 +8,9 @@ import retrofit2.http.*
 interface ConversationNetworkApi {
 
     @POST("conversation")
-    suspend fun createConversation(
-        @Body request: _CreateConversationRequest_
-    ): NetworkResponse<APIResponse<_CreateConversationResponse_>>
+    suspend fun postConversation(
+        @Body request: _PostConversationRequest_
+    ): NetworkResponse<APIResponse<_PostConversationResponse_>>
 
     @PUT("conversation")
     suspend fun editConversation(

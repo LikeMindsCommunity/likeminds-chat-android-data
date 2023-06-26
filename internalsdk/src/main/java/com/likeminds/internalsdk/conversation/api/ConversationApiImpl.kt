@@ -10,10 +10,10 @@ class ConversationApiImpl @Inject constructor(
     private val conversationReceiver: ConversationReceiver
 ) : ConversationApi {
 
-    override suspend fun createConversation(
-        request: _CreateConversationRequest_
-    ): NetworkResponse<APIResponse<_CreateConversationResponse_>> {
-        return conversationReceiver.createConversation(request)
+    override suspend fun postConversation(
+        request: _PostConversationRequest_
+    ): NetworkResponse<APIResponse<_PostConversationResponse_>> {
+        return conversationReceiver.postConversation(request)
     }
 
     override suspend fun editConversation(

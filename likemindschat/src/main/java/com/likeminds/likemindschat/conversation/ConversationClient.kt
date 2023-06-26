@@ -40,7 +40,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validatePostConversationRequest(postConversationRequest)
 
-        val request = _CreateConversationRequest_.Builder()
+        val request = _PostConversationRequest_.Builder()
             .chatroomId(postConversationRequest.chatroomId)
             .text(postConversationRequest.text)
             .shareLink(postConversationRequest.shareLink)
@@ -51,7 +51,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
             .repliedChatroomId(postConversationRequest.repliedChatroomId)
             .build()
 
-        return when (val response = conversationApi.createConversation(request)) {
+        return when (val response = conversationApi.postConversation(request)) {
             is NetworkResponse.Error -> {
                 LMResponse(
                     success = response.body.success,

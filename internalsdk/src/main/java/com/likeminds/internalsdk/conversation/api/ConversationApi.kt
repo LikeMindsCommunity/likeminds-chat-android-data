@@ -6,14 +6,17 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 
 interface ConversationApi {
 
-    suspend fun createConversation(
-        request: _CreateConversationRequest_
-    ): NetworkResponse<APIResponse<_CreateConversationResponse_>>
+    // api to post conversation
+    suspend fun postConversation(
+        request: _PostConversationRequest_
+    ): NetworkResponse<APIResponse<_PostConversationResponse_>>
 
+    // api to edit conversation
     suspend fun editConversation(
         request: _EditConversationRequest_
     ): NetworkResponse<APIResponse<_EditConversationResponse_>>
 
+    // api to delete conversation
     suspend fun deleteConversation(
         request: _DeleteConversationRequest_
     ): NetworkResponse<APIResponse<_DeleteConversationResponse_>>

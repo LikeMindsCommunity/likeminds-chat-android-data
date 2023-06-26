@@ -11,8 +11,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface ConversationDB {
 
+    //query to get a single conversation
     fun getConversation(conversationId: String): ConversationRO?
 
+    //query to get conversations below a particular conversation
     fun getConversationsBelow(
         chatroomId: String,
         limit: Int,
@@ -20,6 +22,7 @@ interface ConversationDB {
         keyTimestamp: Long?
     ): RealmResults<ConversationRO>
 
+    //query to get conversations above a particular conversation
     fun getConversationsAbove(
         chatroomId: String,
         limit: Int,
@@ -27,41 +30,52 @@ interface ConversationDB {
         keyTimestamp: Long?
     ): RealmResults<ConversationRO>
 
+    //query to get top most conversations
     fun getTopConversations(
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO>
 
+    //query to get bottom most conversations
     fun getBottomConversations(
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO>
 
+    //query to get observe conversations
     fun observeConversations(
         realm: Realm,
         chatroomId: String
     ): Flow<CollectionChange<RealmResults<ConversationRO>>>
 
+    //query to get save temporary conversation
     fun saveTemporaryConversation(conversation: _Conversation_)
 
+    //query to get save posted conversation
     fun savePostedConversation(
         conversation: _Conversation_,
         isFromNotification: Boolean
     )
 
+    //query to update edited conversation
     fun updateEditedConversation(
         conversationId: String,
         conversationText: String,
         linkOgTags: _LinkOGTags_?
     )
 
+    //query to update conversation after submitting poll
     fun updateConversationSubmitPoll(conversationId: String, allPollItems: List<_Poll_>)
 
+    //query to update conversation after adding option
     fun updatePollConversationAddItem(conversationId: String, newPollItem: _Poll_)
 
+    //query to update once user deletes conversation
     fun updateDeletedConversations(conversationsId: List<String>)
 
+    //query to update conversation once user add a reaction
     fun updateConversationReaction(reaction: String, conversationId: String)
 
+    //query to update conversation once user remove a reaction
     fun removeConversationReaction(conversationId: String)
 }

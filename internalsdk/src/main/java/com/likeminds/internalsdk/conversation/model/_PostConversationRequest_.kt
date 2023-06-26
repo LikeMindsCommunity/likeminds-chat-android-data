@@ -2,7 +2,7 @@ package com.likeminds.internalsdk.conversation.model
 
 import com.google.gson.annotations.SerializedName
 
-class _CreateConversationRequest_ private constructor(
+class _PostConversationRequest_ private constructor(
     @SerializedName("chatroom_id")
     val chatroomId: String,
     @SerializedName("text")
@@ -46,7 +46,7 @@ class _CreateConversationRequest_ private constructor(
         fun repliedChatroomId(repliedChatroomId: String?) =
             apply { this.repliedChatroomId = repliedChatroomId }
 
-        fun build() = _CreateConversationRequest_(
+        fun build() = _PostConversationRequest_(
             chatroomId,
             text,
             shareLink,

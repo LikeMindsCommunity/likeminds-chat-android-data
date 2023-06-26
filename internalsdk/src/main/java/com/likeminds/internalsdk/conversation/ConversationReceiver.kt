@@ -25,10 +25,10 @@ class ConversationReceiver @Inject constructor(
      * API Functions
      */
 
-    suspend fun createConversation(
-        request: _CreateConversationRequest_
-    ): NetworkResponse<APIResponse<_CreateConversationResponse_>> {
-        return conversationNetworkApi.createConversation(request)
+    suspend fun postConversation(
+        request: _PostConversationRequest_
+    ): NetworkResponse<APIResponse<_PostConversationResponse_>> {
+        return conversationNetworkApi.postConversation(request)
     }
 
     suspend fun editConversation(
