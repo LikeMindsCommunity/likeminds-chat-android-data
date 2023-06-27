@@ -1,14 +1,15 @@
 package com.likeminds.internalsdk.helper.model
 
 import com.google.gson.annotations.SerializedName
+import com.likeminds.internalsdk.user.model._User_
 
 data class _GetTaggingListResponse_(
     @SerializedName("group_tags")
     val groupTags: List<_GroupTag_>,
     @SerializedName("chatroom_participants")
-    val chatroomParticipants: List<_UserTag_>,
+    val chatroomParticipants: List<_User_>,
     @SerializedName("community_members")
-    val communityMembers: List<_UserTag_>
+    val communityMembers: List<_User_>
 )
 
 data class _GroupTag_(
@@ -22,17 +23,4 @@ data class _GroupTag_(
     val tag: String,
     @SerializedName("image_url")
     val imageUrl: String
-)
-
-data class _UserTag_(
-    @SerializedName("id")
-    val id: Int,
-    @SerializedName("image_url")
-    val imageUrl: String,
-    @SerializedName("is_guest")
-    val isGuest: Boolean,
-    @SerializedName("name")
-    val name: String,
-    @SerializedName("user_unique_id")
-    val userUniqueId: String
 )

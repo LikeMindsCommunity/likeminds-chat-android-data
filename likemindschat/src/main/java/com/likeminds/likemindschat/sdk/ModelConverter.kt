@@ -880,33 +880,20 @@ object ModelConverter {
 
     // converts internal chatroomParticipants list to client model list
     private fun convertChatroomParticipants(
-        _chatroomParticipants_: List<_UserTag_>
-    ): List<UserTag> {
+        _chatroomParticipants_: List<_User_>
+    ): List<User> {
         return _chatroomParticipants_.map {
-            convertUserTag(it)
+            convertUser(it)
         }
     }
 
     // converts internal communityMembers list to client model list
     private fun convertCommunityMembers(
-        _communityMembers_: List<_UserTag_>
-    ): List<UserTag> {
+        _communityMembers_: List<_User_>
+    ): List<User> {
         return _communityMembers_.map {
-            convertUserTag(it)
+            convertUser(it)
         }
-    }
-
-    // converts internal UserTag model to client model
-    private fun convertUserTag(
-        _userTag_: _UserTag_
-    ): UserTag {
-        return UserTag(
-            _userTag_.id,
-            _userTag_.imageUrl,
-            _userTag_.isGuest,
-            _userTag_.name,
-            _userTag_.userUniqueId,
-        )
     }
 
     //converts API PostConversationResponse model to LM model
