@@ -9,6 +9,8 @@ import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.search.model.SearchChatroomRequest
+import com.likeminds.likemindschat.search.model.SearchConversationRequest
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
@@ -139,9 +141,38 @@ class MainActivity : AppCompatActivity() {
             """.trimIndent()
             )
 
-            withContext(Dispatchers.Main) {
-                client.getChatrooms(this@MainActivity, listener)
-            }
+            val searchChatroomResponse =
+                client.searchChatroom(
+                    SearchChatroomRequest.Builder()
+                        .search("chat")
+                        .searchType("title")
+                        .page(1)
+                        .followStatus(true)
+                        .pageSize(10)
+                        .build()
+                )
+
+            Log.d(
+                TAG, """
+                searchChatroomResponse: ${searchChatroomResponse.data?.chatrooms}
+            """.trimIndent()
+            )
+
+            val searchConversationResponse =
+                client.searchConversation(
+                    SearchConversationRequest.Builder()
+                        .page(1)
+                        .pageSize(10)
+                        .followStatus(true)
+                        .search("Hey")
+                        .build()
+                )
+
+            Log.d(
+                TAG, """
+                searchConversationResponse: ${searchConversationResponse.data?.conversations}
+            """.trimIndent()
+            )
         }
     }
 }
