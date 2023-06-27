@@ -6,13 +6,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.chatroom.model.*
-import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
-import com.likeminds.likemindschat.conversation.model.DeleteReactionRequest
-import com.likeminds.likemindschat.conversation.model.PutReactionRequest
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
-import com.likeminds.likemindschat.search.model.SearchChatroomRequest
-import com.likeminds.likemindschat.search.model.SearchConversationRequest
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
@@ -50,9 +45,9 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val initiateUserRequest = InitiateUserRequest.Builder()
-                .apiKey("c4570b5a-46a4-4bb1-b82b-c89f4ea386c5")
-                .userId("123456789")
-                .userName("Sid")
+                .apiKey("bc7017d0-8d17-4ce6-8951-5d580755fb68")
+                .userId("785555")
+                .userName("Ishaan")
                 .deviceId("123333")
                 .isGuest(false)
                 .build()
@@ -67,179 +62,35 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
 
-            val leaveSecretChatroomRequest = LeaveSecretChatroomRequest.Builder()
-                .chatroomId("82910")
-                .isSecret(true)
-                .build()
-            val leaveSecretChatroomResponse = client.leaveSecretChatroom(leaveSecretChatroomRequest)
+            val uuid = initiateResponse.data?.user?.sdkClientInfo?.uuid ?: ""
 
-            Log.d(TAG, "leaveSecretChatroomResponse:${leaveSecretChatroomResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "leave: ${leaveSecretChatroomResponse.success}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val muteChatroomRequest = MuteChatroomRequest.Builder()
-                .chatroomId("82825")
-                .value(true)
-                .build()
-            val muteChatroomResponse = client.muteChatroom(muteChatroomRequest)
-
-            Log.d(TAG, "muteChatroomResponse:${muteChatroomResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "muteChatroom: ${muteChatroomResponse.success}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val markReadChatroomRequest = MarkReadChatroomRequest.Builder()
-                .chatroomId(82825)
-                .build()
-            val markReadChatroomResponse = client.markReadChatroom(markReadChatroomRequest)
-
-            Log.d(TAG, "markReadChatroomResponse:${markReadChatroomResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "markReadChatroom: ${markReadChatroomResponse.success}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val getParticipantsRequest = GetParticipantsRequest.Builder()
-                .isChatroomSecret(false)
-                .chatroomId("82825")
-                .page(1)
-                .pageSize(1)
-                .build()
-            val getChatroomParticipantsResponse =
-                client.getParticipants(getParticipantsRequest)
-
-            Log.d(TAG, "getChatroomParticipantsResponse:${getChatroomParticipantsResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "markReadChatroom: ${getChatroomParticipantsResponse.data?.totalParticipantsCount}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            val count = client.getExploreTabCount()
-
-            Log.d(
-                TAG, """
-                count total: ${count.data?.totalChatroomCount}
-                count new: ${count.data?.unseenChatroomCount}
-            """.trimIndent()
+            val followResponse = client.followChatroom(
+                FollowChatroomRequest.Builder()
+                    .value(true)
+                    .chatroomId("82318")
+                    .uuid(uuid)
+                    .build()
             )
 
-            val config = client.getConfig()
+            Log.d(TAG, "followResponse :${followResponse.success}")
+
+            val participantsResponse =
+                client.getParticipants(
+                    GetParticipantsRequest.Builder()
+                        .chatroomId("82318")
+                        .page(1)
+                        .pageSize(10)
+                        .isChatroomSecret(false)
+                        .build()
+                )
+
             Log.d(
-                TAG, """
-                config response:
-                microPoll: ${config.data?.enableMicroPolls}
-                audio: ${config.data?.enableAudio}
-            """.trimIndent()
+                TAG, "participants response: ${
+                    participantsResponse.data?.participants?.map {
+                        it.sdkClientInfo?.uuid
+                    }
+                }"
             )
-
-
-            withContext(Dispatchers.Main) {
-                client.getChatrooms(this@MainActivity, listener)
-            }
-
-            val searchChatroomRequest = SearchChatroomRequest.Builder()
-                .search("gen")
-                .searchType("header")
-                .followStatus(true)
-                .page(1)
-                .pageSize(10)
-                .build()
-            val searchChatroomResponse =
-                client.searchChatroom(searchChatroomRequest)
-
-            Log.d(TAG, "searchChatroomResponse:${searchChatroomResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "searchChatroom: ${searchChatroomResponse.data?.chatrooms?.size}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val searchConversationRequest = SearchConversationRequest.Builder()
-                .search("convo")
-                .followStatus(true)
-                .page(1)
-                .pageSize(10)
-                .build()
-            val searchConversationResponse =
-                client.searchConversation(searchConversationRequest)
-
-            Log.d(TAG, "searchConversationResponse:${searchConversationResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "searchConversationResponse: ${searchConversationResponse.data?.conversations?.size}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val getExploreFeedRequest = GetExploreFeedRequest.Builder()
-                .orderType(0)
-                .page(1)
-                .build()
-            val getExploreFeedResponse = client.getExploreFeed(getExploreFeedRequest)
-
-            Log.d(TAG, "getExploreFeedResponse:${getExploreFeedResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "getExploreFeedResponse: ${getExploreFeedResponse.data?.pinnedChatroomCount}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val putReactionRequest = PutReactionRequest.Builder()
-                .conversationId("281178")
-                .reaction("❤️")
-                .build()
-            val putReactionResponse = client.putReaction(putReactionRequest)
-
-            Log.d(TAG, "putReactionResponse:${putReactionResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "putReactionResponse: ${putReactionResponse.success}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-
-            val deleteReactionRequest = DeleteReactionRequest.Builder()
-                .conversationId("281178")
-                .build()
-            val deleteReactionResponse = client.deleteReaction(deleteReactionRequest)
-
-            Log.d(TAG, "deleteReactionResponse:${deleteReactionResponse}")
-
-            withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    this@MainActivity,
-                    "deleteReactionResponse: ${deleteReactionResponse.success}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
         }
     }
 }
