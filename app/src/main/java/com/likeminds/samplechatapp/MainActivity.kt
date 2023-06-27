@@ -21,7 +21,13 @@ class MainActivity : AppCompatActivity() {
     private val listener = object : HomeFeedChangeListener {
         override fun initialChatrooms(chatrooms: List<Chatroom>) {
             super.initialChatrooms(chatrooms)
-            Log.d(TAG, "MainActivity initial")
+            Log.d(TAG, "MainActivity initial" +
+                    "${
+                        chatrooms.map {
+                            it.member?.sdkClientInfo?.uuid
+                        }
+                    }"
+            )
         }
 
         override fun changedChatrooms(
@@ -30,7 +36,22 @@ class MainActivity : AppCompatActivity() {
             changed: List<Pair<Int, Chatroom>>
         ) {
             super.changedChatrooms(removedIndex, inserted, changed)
-            Log.d(TAG, "MainActivity onChanged")
+            Log.d(
+                TAG, "MainActivity onChanged" +
+                        """
+                        inserted: ${
+                            inserted.map {
+                                it.second.member?.sdkClientInfo?.uuid
+                            }
+                        }
+                        
+                        changed: ${
+                            changed.map {
+                                it.second.member?.sdkClientInfo?.uuid
+                            }
+                        }
+                    """.trimIndent()
+            )
         }
 
         override fun error(throwable: Throwable) {
@@ -110,6 +131,17 @@ class MainActivity : AppCompatActivity() {
                 }
             """.trimIndent()
             )
+
+            val configResponse = client.getConfig()
+            Log.d(
+                TAG, """
+                configResponse: ${configResponse.data?.userDetails?.user?.sdkClientInfo?.uuid}
+            """.trimIndent()
+            )
+
+            withContext(Dispatchers.Main) {
+                client.getChatrooms(this@MainActivity, listener)
+            }
         }
     }
 }

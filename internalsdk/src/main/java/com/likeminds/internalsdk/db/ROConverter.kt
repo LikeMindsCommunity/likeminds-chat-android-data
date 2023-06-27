@@ -398,6 +398,7 @@ object ROConverter {
             community = sdkClientInfo.community
             user = sdkClientInfo.user
             userUniqueId = sdkClientInfo.userUniqueId
+            uuid = sdkClientInfo.uuid
         }
     }
 
