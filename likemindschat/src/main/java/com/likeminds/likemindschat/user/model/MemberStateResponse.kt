@@ -9,7 +9,6 @@ data class MemberStateResponse(
     val isGuest: Boolean,
     val isOwner: Boolean,
     val name: String,
-    val organisationName: String?,
     val managerRights: List<ManagementRightPermissionData>?,
     val memberRights: List<ManagementRightPermissionData>,
     val updatedAt: Long

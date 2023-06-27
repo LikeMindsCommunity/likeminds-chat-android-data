@@ -1,15 +1,15 @@
 package com.likeminds.internalsdk.helper.model
 
 import com.google.gson.annotations.SerializedName
-import com.likeminds.internalsdk.user.model._User_
+import com.likeminds.internalsdk.community.model._Member_
 
 data class _GetTaggingListResponse_(
     @SerializedName("group_tags")
     val groupTags: List<_GroupTag_>,
     @SerializedName("chatroom_participants")
-    val chatroomParticipants: List<_User_>,
+    val chatroomParticipants: List<_Member_>,
     @SerializedName("community_members")
-    val communityMembers: List<_User_>
+    val communityMembers: List<_Member_>
 )
 
 data class _GroupTag_(

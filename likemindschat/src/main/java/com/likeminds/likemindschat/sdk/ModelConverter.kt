@@ -155,7 +155,7 @@ object ModelConverter {
     //converts internal UserDetail model to client model
     private fun convertUserDetails(_userDetails_: _UserDetail_): UserDetail {
         return UserDetail(
-            convertUser(_userDetails_.user),
+            convertMember(_userDetails_.member),
             convertUserMetrics(_userDetails_.userMetrics)
         )
     }
@@ -236,7 +236,7 @@ object ModelConverter {
         if (_getParticipantsResponse_ == null) return null
         return GetParticipantsResponse(
             _getParticipantsResponse_.canEditParticipant,
-            convertUsers(_getParticipantsResponse_.participants),
+            convertMembers(_getParticipantsResponse_.participants),
             _getParticipantsResponse_.totalParticipantsCount
         )
     }
@@ -510,13 +510,9 @@ object ModelConverter {
             .id(_member_.id)
             .userUniqueId(_member_.userUniqueId)
             .name(_member_.name)
-            .email(_member_.email)
-            .headline(_member_.headline)
-            .city(_member_.city)
             .imageUrl(_member_.imageUrl)
             .questionAnswers(convertQuestions(_member_.questionAnswers))
             .state(_member_.state)
-            .removeState(_member_.removeState)
             .isGuest(_member_.isGuest)
             .customIntroText(_member_.customIntroText)
             .customClickText(_member_.customClickText)
@@ -879,19 +875,19 @@ object ModelConverter {
 
     // converts internal chatroomParticipants list to client model list
     private fun convertChatroomParticipants(
-        _chatroomParticipants_: List<_User_>
-    ): List<User> {
+        _chatroomParticipants_: List<_Member_>
+    ): List<Member> {
         return _chatroomParticipants_.map {
-            convertUser(it)
+            convertMember(it)
         }
     }
 
     // converts internal communityMembers list to client model list
     private fun convertCommunityMembers(
-        _communityMembers_: List<_User_>
-    ): List<User> {
+        _communityMembers_: List<_Member_>
+    ): List<Member> {
         return _communityMembers_.map {
-            convertUser(it)
+            convertMember(it)
         }
     }
 
@@ -993,7 +989,6 @@ object ModelConverter {
             member.isGuest,
             member.isOwner ?: false,
             member.name,
-            member.organisationName,
             convertManagerRights(_memberStateResponse_.managerRights),
             convertMemberRights(_memberStateResponse_.memberRights),
             member.updatedAt ?: 0L
@@ -1132,13 +1127,9 @@ object ModelConverter {
             .id(member.id)
             .userUniqueId(member.userUniqueId)
             .name(member.name)
-            .email(member.email)
-            .headline(member.headline)
-            .city(member.city)
             .imageUrl(member.imageUrl)
             .questionAnswers(createQuestions(member.questionAnswers))
             .state(member.state)
-            .removeState(member.removeState)
             .isGuest(member.isGuest)
             .customIntroText(member.customIntroText)
             .customClickText(member.customClickText)

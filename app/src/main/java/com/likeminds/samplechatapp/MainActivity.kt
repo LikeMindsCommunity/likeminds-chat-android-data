@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
             val configResponse = client.getConfig()
             Log.d(
                 TAG, """
-                configResponse: ${configResponse.data?.userDetails?.user?.sdkClientInfo?.uuid}
+                configResponse: ${configResponse.data?.userDetails?.member?.sdkClientInfo?.uuid}
             """.trimIndent()
             )
 

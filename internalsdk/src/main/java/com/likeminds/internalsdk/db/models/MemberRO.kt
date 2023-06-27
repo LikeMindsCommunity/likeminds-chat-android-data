@@ -14,9 +14,10 @@ open class MemberRO(
     var customClickText: String? = null,
     var customTitle: String? = null,
     var communityId: Int? = null,
-    var isOwner: Boolean? = null,
-    var isGuest: Boolean? = false,
-    var userUniqueId: String? = null,
+    var isOwner: Boolean = false,
+    var isGuest: Boolean = false,
+    var userUniqueId: String = "",
+    var uuid: String = "",
     var sdkClientInfoRO: SDKClientInfoRO? = null
 ) : RealmObject() {
 
@@ -33,6 +34,7 @@ open class MemberRO(
         builder.isOwner,
         builder.isGuest,
         builder.userUniqueId,
+        builder.uuid,
         builder.sdkClientInfoRO
     )
 
@@ -54,9 +56,10 @@ open class MemberRO(
         var customClickText: String? = null
         var customTitle: String? = null
         var communityId: Int? = null
-        var isOwner: Boolean? = null
-        var isGuest: Boolean? = false
-        var userUniqueId: String? = null
+        var isOwner: Boolean = false
+        var isGuest: Boolean = false
+        var userUniqueId: String = ""
+        var uuid: String = ""
         var sdkClientInfoRO: SDKClientInfoRO? = null
 
         fun build() = MemberRO(this)
