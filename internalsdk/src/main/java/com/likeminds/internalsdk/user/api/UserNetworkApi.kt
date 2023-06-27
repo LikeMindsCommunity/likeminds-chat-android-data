@@ -18,4 +18,7 @@ interface UserNetworkApi {
         @Header("x-device-id") deviceId: String,
         @Body request: _RegisterDeviceRequest_
     ): NetworkResponse<APIResponse<Nothing>>
+
+    @GET("community/member/state")
+    suspend fun getMemberState(): NetworkResponse<APIResponse<_MemberStateResponse_>>
 }

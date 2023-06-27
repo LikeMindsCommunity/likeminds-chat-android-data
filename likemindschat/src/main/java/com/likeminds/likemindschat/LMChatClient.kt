@@ -27,6 +27,7 @@ import com.likeminds.likemindschat.search.SearchClient
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.GetUserResponse
+import com.likeminds.likemindschat.user.model.MemberStateResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -93,6 +94,11 @@ class LMChatClient private constructor() {
     // Exposed function to process initiate user request
     suspend fun initiateUser(initiateUserRequest: InitiateUserRequest): LMResponse<InitiateUserResponse> {
         return initiateUserClient.initiateUser(initiateUserRequest)
+    }
+
+    // Exposed function to process initiate user request
+    suspend fun getMemberState(): LMResponse<MemberStateResponse> {
+        return userClient.getMemberState()
     }
 
     // Exposed function to process logout request

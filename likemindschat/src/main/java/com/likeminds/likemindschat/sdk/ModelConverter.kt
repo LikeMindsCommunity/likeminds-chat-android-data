@@ -11,8 +11,7 @@ import com.likeminds.internalsdk.moderation.model._ReportTag_
 import com.likeminds.internalsdk.poll.model.*
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.search.model.*
-import com.likeminds.internalsdk.user.model._SDKClientInfo_
-import com.likeminds.internalsdk.user.model._User_
+import com.likeminds.internalsdk.user.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
@@ -966,6 +965,72 @@ object ModelConverter {
     //converts internal PutMultimediaResponse model to client model
     private fun convertPutMultimediaResponse(data: _PutMultimediaResponse_?): PutMultimediaResponse {
         return PutMultimediaResponse(data?.conversation?.let { convertConversation(it) })
+    }
+
+    // converts api MemberStateResponse model to LM MemberStateResponse model
+    fun convertMemberStateResponse(
+        apiResponse: APIResponse<_MemberStateResponse_>
+    ): LMResponse<MemberStateResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertMemberStateResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal MemberStateResponse model to client model
+    private fun convertMemberStateResponse(
+        _memberStateResponse_: _MemberStateResponse_?
+    ): MemberStateResponse? {
+        val member = _memberStateResponse_?.member
+        if (_memberStateResponse_ == null || member == null) return null
+        return MemberStateResponse(
+            member.id,
+            _memberStateResponse_.state,
+            member.userUniqueId,
+            member.customTitle,
+            member.imageUrl,
+            member.isGuest,
+            member.isOwner ?: false,
+            member.name,
+            member.organisationName,
+            convertManagerRights(_memberStateResponse_.managerRights),
+            convertMemberRights(_memberStateResponse_.memberRights),
+            member.updatedAt ?: 0L
+        )
+    }
+
+    // converts internal ManagementRightPermissionData model list of manager rights to client model list
+    private fun convertManagerRights(
+        _rights_: List<_ManagementRightPermissionData_>?
+    ): List<ManagementRightPermissionData>? {
+        if (_rights_ == null) return null
+        return _rights_.map {
+            convertManagementRightPermission(it)
+        }
+    }
+
+    // converts internal ManagementRightPermissionData model list of member rights client model list
+    private fun convertMemberRights(
+        _rights_: List<_ManagementRightPermissionData_>
+    ): List<ManagementRightPermissionData> {
+        return _rights_.map {
+            convertManagementRightPermission(it)
+        }
+    }
+
+    // converts internal ManagementRightPermissionData model to client model
+    private fun convertManagementRightPermission(
+        _right_: _ManagementRightPermissionData_
+    ): ManagementRightPermissionData {
+        return ManagementRightPermissionData(
+            _right_.id,
+            _right_.isLocked,
+            _right_.isSelected,
+            _right_.state,
+            _right_.title,
+            _right_.subtitle
+        )
     }
 
     /**--------------------------------

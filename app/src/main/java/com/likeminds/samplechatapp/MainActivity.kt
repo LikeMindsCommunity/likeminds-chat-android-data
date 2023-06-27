@@ -192,6 +192,19 @@ class MainActivity : AppCompatActivity() {
                 }
             """.trimIndent()
             )
+
+            val memberStateResponse = client.getMemberState()
+
+            Log.d(
+                TAG, """
+                memberStateResponse: ${memberStateResponse.data?.state}
+                memberStateResponse: ${
+                    memberStateResponse.data?.memberRights?.map {
+                        it.title
+                    }
+                }
+            """.trimIndent()
+            )
         }
     }
 }
