@@ -238,14 +238,6 @@ class LMChatClient private constructor() {
         conversationClient.saveTemporaryConversation(saveConversationRequest)
     }
 
-    // Exposed function to save posted conversation
-    fun savePostedConversationAsync(
-        saveConversationRequest: SaveConversationRequest,
-        isFromNotification: Boolean
-    ) {
-        conversationClient.savePostedConversation(saveConversationRequest, isFromNotification)
-    }
-
     // Exposed function to get a single conversation
     fun getConversation(getConversationRequest: GetConversationRequest): LMResponse<GetConversationResponse> {
         return conversationClient.getConversation(getConversationRequest)

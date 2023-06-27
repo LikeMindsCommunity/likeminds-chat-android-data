@@ -1,16 +1,9 @@
 package com.likeminds.likemindschat.chatroom.model
 
+import com.likeminds.likemindschat.user.model.User
+
 data class GetParticipantsResponse(
     val canEditParticipant: Boolean,
-    val participants: List<ParticipantData>,
+    val participants: List<User>,
     val totalParticipantsCount: Int
-)
-
-data class ParticipantData(
-    val id: String,
-    val imageUrl: String,
-    val isGuest: Boolean?,
-    val name: String,
-    val userUniqueId: String,
-    val customTitle: String?
 )

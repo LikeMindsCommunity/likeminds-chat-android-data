@@ -350,7 +350,7 @@ object ROConverter {
             name = user.name
             isGuest = user.isGuest
             organizationName = user.organisationName
-            updatedAt = user.updatedAt
+            updatedAt = user.updatedAt ?: 0L
             sdkClientInfoRO = convertSDKClientInfo(user.sdkClientInfo)
             isDeleted = user.isDeleted
             customTitle = user.customTitle

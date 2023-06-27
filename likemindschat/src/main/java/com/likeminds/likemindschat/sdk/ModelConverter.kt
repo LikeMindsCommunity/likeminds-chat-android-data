@@ -57,6 +57,12 @@ object ModelConverter {
         )
     }
 
+    private fun convertUsers(_users_: List<_User_>): List<User> {
+        return _users_.map {
+            convertUser(it)
+        }
+    }
+
     // converts internal User model to client model
     private fun convertUser(
         _user_: _User_
@@ -231,31 +237,8 @@ object ModelConverter {
         if (_getParticipantsResponse_ == null) return null
         return GetParticipantsResponse(
             _getParticipantsResponse_.canEditParticipant,
-            convertParticipantsData(_getParticipantsResponse_.participants),
+            convertUsers(_getParticipantsResponse_.participants),
             _getParticipantsResponse_.totalParticipantsCount
-        )
-    }
-
-    // converts internal ParticipantData model list to client model list
-    private fun convertParticipantsData(
-        _participants_: List<_ParticipantData_>
-    ): List<ParticipantData> {
-        return _participants_.map {
-            convertParticipantData(it)
-        }
-    }
-
-    // converts internal ParticipantData model to client model
-    private fun convertParticipantData(
-        _participant_: _ParticipantData_
-    ): ParticipantData {
-        return ParticipantData(
-            _participant_.id,
-            _participant_.imageUrl,
-            _participant_.isGuest,
-            _participant_.name,
-            _participant_.userUniqueId,
-            _participant_.customTitle,
         )
     }
 

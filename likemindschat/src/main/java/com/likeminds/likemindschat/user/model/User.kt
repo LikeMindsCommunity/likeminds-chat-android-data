@@ -9,7 +9,7 @@ data class User(
     val sdkClientInfo: SDKClientInfo?,
     val isDeleted: Boolean?,
     val customTitle: String?,
-    val updatedAt: Long,
+    val updatedAt: Long?,
     val userUniqueId: String,
     val uuid: String
 )

@@ -20,7 +20,7 @@ data class _User_(
     @SerializedName("custom_title")
     val customTitle: String?,
     @SerializedName("updated_at")
-    val updatedAt: Long,
+    val updatedAt: Long?,
     @SerializedName("user_unique_id")
     val userUniqueId: String,
     @SerializedName("uuid")
