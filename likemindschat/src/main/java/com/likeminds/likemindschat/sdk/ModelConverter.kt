@@ -71,7 +71,8 @@ object ModelConverter {
             _user_.isDeleted,
             _user_.customTitle,
             _user_.updatedAt,
-            _user_.userUniqueId
+            _user_.userUniqueId,
+            _user_.uuid
         )
     }
 
@@ -83,7 +84,8 @@ object ModelConverter {
             SDKClientInfo(
                 it.community,
                 it.user,
-                it.userUniqueId
+                it.userUniqueId,
+                it.uuid
             )
         }
     }
@@ -1275,7 +1277,8 @@ object ModelConverter {
             userRO.isDeleted,
             userRO.customTitle,
             userRO.updatedAt,
-            userRO.userUniqueId
+            userRO.userUniqueId,
+            userRO.uuid
         )
     }
 
@@ -1285,7 +1288,8 @@ object ModelConverter {
             SDKClientInfo(
                 it.community,
                 it.user,
-                it.userUniqueId
+                it.userUniqueId,
+                it.uuid
             )
         }
     }

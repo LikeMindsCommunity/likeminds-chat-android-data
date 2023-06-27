@@ -16,6 +16,7 @@ open class UserRO(
     var sdkClientInfoRO: SDKClientInfoRO? = null,
     var isDeleted: Boolean? = null,
     var customTitle: String? = null,
+    var uuid: String = ""
 ) : RealmObject() {
 
     private constructor(builder: Builder) : this(
@@ -28,7 +29,8 @@ open class UserRO(
         builder.updatedAt,
         builder.sdkClientInfoRO,
         builder.isDeleted,
-        builder.customTitle
+        builder.customTitle,
+        builder.uuid
     )
 
     companion object {
@@ -50,6 +52,7 @@ open class UserRO(
         var sdkClientInfoRO: SDKClientInfoRO? = null
         var isDeleted: Boolean? = null
         var customTitle: String? = null
+        var uuid: String = ""
 
         fun build() = UserRO(this)
     }

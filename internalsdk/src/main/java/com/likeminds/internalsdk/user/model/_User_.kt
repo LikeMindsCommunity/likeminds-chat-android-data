@@ -22,7 +22,9 @@ data class _User_(
     @SerializedName("updated_at")
     val updatedAt: Long,
     @SerializedName("user_unique_id")
-    val userUniqueId: String
+    val userUniqueId: String,
+    @SerializedName("uuid")
+    val uuid: String
 )
 
 data class _SDKClientInfo_(
@@ -31,5 +33,7 @@ data class _SDKClientInfo_(
     @SerializedName("user")
     val user: String,
     @SerializedName("user_unique_id")
-    val userUniqueId: String
+    val userUniqueId: String,
+    @SerializedName("uuid")
+    val uuid: String
 )
