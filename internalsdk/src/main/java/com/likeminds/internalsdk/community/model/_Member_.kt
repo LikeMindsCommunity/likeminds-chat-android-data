@@ -1,6 +1,7 @@
 package com.likeminds.internalsdk.community.model
 
 import com.google.gson.annotations.SerializedName
+import com.likeminds.internalsdk.user.model._SDKClientInfo_
 
 class _Member_ private constructor(
     @SerializedName("id")
@@ -50,8 +51,11 @@ class _Member_ private constructor(
     @SerializedName("has_profile_image")
     val hasProfileImage: Boolean?,
     @SerializedName("updated_at")
-    val updatedAt: Long?
+    val updatedAt: Long?,
+    @SerializedName("sdk_client_info")
+    val sdkClientInfo: _SDKClientInfo_?
 ) {
+
     class Builder {
 
         private var id: String = ""
@@ -78,6 +82,7 @@ class _Member_ private constructor(
         private var attendingStatus: Boolean? = null
         private var hasProfileImage: Boolean? = null
         private var updatedAt: Long? = null
+        private var sdkClientInfo: _SDKClientInfo_? = null
 
         fun id(id: String) = apply { this.id = id }
         fun userUniqueId(userUniqueId: String?) = apply { this.userUniqueId = userUniqueId }
@@ -113,6 +118,8 @@ class _Member_ private constructor(
             apply { this.hasProfileImage = hasProfileImage }
 
         fun updatedAt(updatedAt: Long?) = apply { this.updatedAt = updatedAt }
+        fun sdkClientInfo(sdkClientInfo: _SDKClientInfo_?) =
+            apply { this.sdkClientInfo = sdkClientInfo }
 
         fun build() = _Member_(
             id,
@@ -138,7 +145,8 @@ class _Member_ private constructor(
             route,
             attendingStatus,
             hasProfileImage,
-            updatedAt
+            updatedAt,
+            sdkClientInfo
         )
     }
 
@@ -167,5 +175,6 @@ class _Member_ private constructor(
             .attendingStatus(attendingStatus)
             .hasProfileImage(hasProfileImage)
             .updatedAt(updatedAt)
+            .sdkClientInfo(sdkClientInfo)
     }
 }

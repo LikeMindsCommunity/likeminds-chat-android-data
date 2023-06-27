@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.chatroom.model.*
+import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
 import kotlinx.coroutines.*
@@ -90,6 +91,24 @@ class MainActivity : AppCompatActivity() {
                         it.sdkClientInfo?.uuid
                     }
                 }"
+            )
+
+            val communityFeedResponse = client.getExploreFeed(
+                GetExploreFeedRequest.Builder()
+                    .page(1)
+                    .isPinned(false)
+                    .orderType(0)
+                    .build()
+            )
+
+            Log.d(
+                TAG, """
+                communityFeedResponse: ${
+                    communityFeedResponse.data?.chatrooms?.map {
+                        it.member?.sdkClientInfo?.uuid
+                    }
+                }
+            """.trimIndent()
             )
         }
     }

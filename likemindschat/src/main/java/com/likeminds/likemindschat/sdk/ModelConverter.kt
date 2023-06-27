@@ -542,6 +542,7 @@ object ModelConverter {
             .attendingStatus(_member_.attendingStatus)
             .hasProfileImage(_member_.hasProfileImage)
             .updatedAt(_member_.updatedAt)
+            .sdkClientInfo(convertSDKClientInfo(_member_.sdkClientInfo))
             .build()
     }
 
@@ -1110,6 +1111,7 @@ object ModelConverter {
             .attendingStatus(member.attendingStatus)
             .hasProfileImage(member.hasProfileImage)
             .updatedAt(member.updatedAt)
+            .sdkClientInfo(createSDKClientInfo(member.sdkClientInfo))
             .build()
     }
 
@@ -1215,6 +1217,16 @@ object ModelConverter {
             .duration(attachmentMeta.duration)
             .size(attachmentMeta.size)
             .build()
+    }
+
+    fun createSDKClientInfo(sdkClientInfo: SDKClientInfo?): _SDKClientInfo_? {
+        if (sdkClientInfo == null) return null
+        return _SDKClientInfo_(
+            sdkClientInfo.community,
+            sdkClientInfo.user,
+            sdkClientInfo.userUniqueId,
+            sdkClientInfo.uuid
+        )
     }
 
     /**--------------------------------
@@ -1387,6 +1399,7 @@ object ModelConverter {
             .communityId(memberRO.communityId)
             .isOwner(memberRO.isOwner)
             .isGuest(memberRO.isGuest)
+            .sdkClientInfo(convertSDKClientInfoRO(memberRO.sdkClientInfoRO))
             .build()
     }
 

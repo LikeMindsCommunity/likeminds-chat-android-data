@@ -384,6 +384,7 @@ object ROConverter {
             isOwner = member.isOwner
             isGuest = member.isGuest
             userUniqueId = member.userUniqueId
+            sdkClientInfoRO = convertSDKClientInfo(member.sdkClientInfo)
         }
     }
 
