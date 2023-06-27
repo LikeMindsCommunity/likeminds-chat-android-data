@@ -411,22 +411,12 @@ object ModelConverter {
             _chatroom_.id,
             _chatroom_.isGuest,
             _chatroom_.isTagged,
-            convertSearchMember(_chatroom_.member),
+            convertMember(_chatroom_.member),
             _chatroom_.muteStatus,
             _chatroom_.secretChatroomLeft,
             _chatroom_.state,
             _chatroom_.updatedAt,
             _chatroom_.isDisabled
-        )
-    }
-
-    // converts internal SearchMember model to client model
-    private fun convertSearchMember(
-        _searchMember_: _SearchMember_
-    ): SearchMember {
-        return SearchMember(
-            _searchMember_.id,
-            SearchProfile(_searchMember_.profile.name)
         )
     }
 
@@ -474,7 +464,7 @@ object ModelConverter {
             _conversation_.isDeleted,
             _conversation_.isEdited,
             _conversation_.lastUpdated,
-            convertSearchMember(_conversation_.member),
+            convertMember(_conversation_.member),
             _conversation_.state,
         )
     }
