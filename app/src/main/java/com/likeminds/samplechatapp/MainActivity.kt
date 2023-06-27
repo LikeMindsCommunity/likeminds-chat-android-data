@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
+import com.likeminds.likemindschat.conversation.model.PostConversationRequest
 import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
@@ -203,6 +204,21 @@ class MainActivity : AppCompatActivity() {
                         it.title
                     }
                 }
+            """.trimIndent()
+            )
+
+            val postConversationResponse =
+                client.postConversation(
+                    PostConversationRequest.Builder()
+                        .chatroomId("82318")
+                        .temporaryId("-${System.currentTimeMillis()}")
+                        .text("Hey From test data layer")
+                        .build()
+                )
+
+            Log.d(
+                TAG, """
+                postConversationResponse: ${postConversationResponse.data?.conversation?.member?.sdkClientInfo?.uuid}
             """.trimIndent()
             )
         }
