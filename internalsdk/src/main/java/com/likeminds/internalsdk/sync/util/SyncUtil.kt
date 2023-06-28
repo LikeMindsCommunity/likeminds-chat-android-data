@@ -5,7 +5,6 @@ import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
 import com.likeminds.internalsdk.db.models.AppConfigRO
 import com.likeminds.internalsdk.db.util.toRealmList
-import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.sync.model._SyncChatroomResponse_
 import com.likeminds.internalsdk.sync.model._SyncConversationResponse_
 import io.realm.Realm
@@ -48,7 +47,7 @@ object SyncUtil {
     // Stores chatroom data to DB
     fun saveChatroomResponse(
         communityId: String,
-        loggedInMemberId: String,
+        loggedInUUID: String,
         data: _SyncChatroomResponse_
     ) {
         val chatrooms = data.chatrooms
@@ -155,7 +154,7 @@ object SyncUtil {
                             topicCreatorRO,
                             topicConversationPolls,
                             topicConversationAttachments,
-                            loggedInMemberId = loggedInMemberId
+                            loggedInUUID = loggedInUUID
                         )
                     if (topicCreatorRO != null) {
                         realmWrite.insertOrUpdate(topicCreatorRO)
@@ -208,7 +207,8 @@ object SyncUtil {
                         lastSeenConversation,
                         lastSeenConversationCreatorRO,
                         lastSeenConversationPolls,
-                        lastSeenConversationAttachments
+                        lastSeenConversationAttachments,
+                        loggedInUUID = loggedInUUID
                     )
                     if (lastSeenConversationRO != null) {
                         realmWrite.insertOrUpdate(lastSeenConversationRO)
@@ -236,14 +236,14 @@ object SyncUtil {
     // Stores conversation data to DB
     fun saveConversationResponses(
         chatroomId: String,
-        sdkPreferences: SDKPreferences,
+        communityId: String,
+        loggedInUUID: String,
         dataList: ArrayList<_SyncConversationResponse_>
     ) {
         val realm = Realm.getDefaultInstance()
         ChatDBUtil.write(realm) { realmWrite ->
             dataList.forEach { data ->
                 //fetch community
-                val communityId = sdkPreferences.getCommunityId() ?: return@write
                 val community = data.communityMeta[communityId] ?: return@write
                 val communityRO =
                     ROConverter.convertCommunity(community) ?: return@write
@@ -334,7 +334,8 @@ object SyncUtil {
                             creatorRO,
                             conversationPolls,
                             conversationAttachment,
-                            reactions
+                            reactions,
+                            loggedInUUID = loggedInUUID
                         ) ?: return@conversation
                     realmWrite.insertOrUpdate(
                         conversationRO

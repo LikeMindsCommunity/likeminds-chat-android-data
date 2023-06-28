@@ -203,12 +203,12 @@ object ChatDBUtil {
      * Make sure to pass this inside a write transaction and all the parameters have to be managed object
      *  @param chatroomRO: chatroom object
      *  @param conversations: list of conversations
-     *  @param loggedInMemberId: id of loggedInMember
+     *  @param loggedInUUID: uuid of loggedInMember
      */
     fun updateRelationshipsOfChatroom(
         chatroomRO: ChatroomRO,
         conversations: RealmResults<ConversationRO>,
-        loggedInMemberId: String
+        loggedInUUID: String
     ) {
         //Add inverse relationships for conversations
         chatroomRO.conversations = conversations.toRealmList()
@@ -260,7 +260,7 @@ object ChatDBUtil {
                     .beginGroup()
                     .equalTo(DbKey.STATE, STATE_FOLLOWED)
                     .and()
-                    .equalTo(DbKey.MEMBER_OBJECT_ID, loggedInMemberId)
+                    .equalTo(DbKey.MEMBER_OBJECT_ID, loggedInUUID)
                     .endGroup()
                     .endGroup()
                     .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING)

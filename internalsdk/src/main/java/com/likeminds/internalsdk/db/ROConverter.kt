@@ -112,13 +112,13 @@ object ROConverter {
      * @param realm: instance of realm
      * @param conversation: Conversation object to converted
      * @param member: [MemberRO] object of conversation's creator
-     * @param loggedInMemberId: Id of logged in member
+     * @param loggedInUUID: uuid of logged in member
      * */
     fun convertConversation(
         realm: Realm,
         conversation: _Conversation_?,
         member: MemberRO? = null,
-        loggedInMemberId: String? = null
+        loggedInUUID: String? = null
     ): ConversationRO? {
         /**
          * Conversation is invalid without chatroomId, conversationId, Member object
@@ -195,11 +195,14 @@ object ROConverter {
             attachmentsUploaded = conversation.attachmentUploaded
             uploadWorkerUUID = savedAnswer?.uploadWorkerUUID ?: conversation.uploadWorkerUUID
             localSavedEpoch = conversation.localCreatedEpoch ?: 0L
-            temporaryId = if (memberRO.id == loggedInMemberId) {
+
+            val creatorUUID = memberRO.sdkClientInfoRO?.uuid
+            temporaryId = if (creatorUUID == loggedInUUID) {
                 conversation.temporaryId
             } else {
                 null
             }
+
             reactions = reactionsList
             isAnonymous = conversation.isAnonymous
             allowAddOption = conversation.allowAddOption
@@ -234,7 +237,7 @@ object ROConverter {
         polls: List<_Poll_>?,
         attachments: List<_Attachment_>?,
         reactions: List<_ReactionMeta_>? = null,
-        loggedInMemberId: String? = null
+        loggedInUUID: String? = null
     ): ConversationRO? {
         if (conversation == null || creator == null) return null
         val chatroomId = conversation.chatroomId ?: return null
@@ -316,7 +319,9 @@ object ROConverter {
             this.link = linkRO
 
             localSavedEpoch = conversation.localCreatedEpoch ?: 0L
-            temporaryId = if (creator.id == loggedInMemberId) {
+
+            val creatorUUID = creator.sdkClientInfoRO?.uuid
+            temporaryId = if (creatorUUID == loggedInUUID) {
                 conversation.temporaryId
             } else {
                 null
