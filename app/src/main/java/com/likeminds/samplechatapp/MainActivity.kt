@@ -11,6 +11,7 @@ import com.likeminds.likemindschat.conversation.model.PostConversationRequest
 import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.poll.model.GetPollUsersRequest
 import com.likeminds.likemindschat.search.model.SearchChatroomRequest
 import com.likeminds.likemindschat.search.model.SearchConversationRequest
 import kotlinx.coroutines.*
@@ -219,6 +220,19 @@ class MainActivity : AppCompatActivity() {
             Log.d(
                 TAG, """
                 postConversationResponse: ${postConversationResponse.data?.conversation?.member?.sdkClientInfo?.uuid}
+            """.trimIndent()
+            )
+
+            val pollUsers = client.getPollUsers(
+                GetPollUsersRequest.Builder()
+                    .pollId("3455")
+                    .conversationId("283559")
+                    .build()
+            )
+
+            Log.d(
+                TAG, """
+                pollUsers: ${pollUsers.data?.members?.map { it.sdkClientInfo?.uuid }}
             """.trimIndent()
             )
         }
