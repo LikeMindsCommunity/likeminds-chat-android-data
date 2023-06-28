@@ -528,6 +528,7 @@ object ModelConverter {
             .hasProfileImage(_member_.hasProfileImage)
             .updatedAt(_member_.updatedAt)
             .sdkClientInfo(convertSDKClientInfo(_member_.sdkClientInfo))
+            .uuid(_member_.uuid)
             .build()
     }
 
@@ -1145,6 +1146,7 @@ object ModelConverter {
             .hasProfileImage(member.hasProfileImage)
             .updatedAt(member.updatedAt)
             .sdkClientInfo(createSDKClientInfo(member.sdkClientInfo))
+            .uuid(member.uuid)
             .build()
     }
 
@@ -1433,6 +1435,7 @@ object ModelConverter {
             .isOwner(memberRO.isOwner)
             .isGuest(memberRO.isGuest)
             .sdkClientInfo(convertSDKClientInfoRO(memberRO.sdkClientInfoRO))
+            .uuid(memberRO.uuid)
             .build()
     }
 

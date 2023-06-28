@@ -23,7 +23,8 @@ class Member private constructor(
     val attendingStatus: Boolean?,
     val hasProfileImage: Boolean?,
     val updatedAt: Long?,
-    val sdkClientInfo: SDKClientInfo?
+    val sdkClientInfo: SDKClientInfo?,
+    val uuid: String
 ) {
 
     class Builder {
@@ -49,6 +50,7 @@ class Member private constructor(
         private var hasProfileImage: Boolean? = null
         private var updatedAt: Long? = null
         private var sdkClientInfo: SDKClientInfo? = null
+        private var uuid: String = ""
 
         fun id(id: String) = apply { this.id = id }
         fun userUniqueId(userUniqueId: String) = apply { this.userUniqueId = userUniqueId }
@@ -84,6 +86,8 @@ class Member private constructor(
         fun sdkClientInfo(sdkClientInfo: SDKClientInfo?) =
             apply { this.sdkClientInfo = sdkClientInfo }
 
+        fun uuid(uuid: String) = apply { this.uuid = uuid }
+
         fun build() = Member(
             id,
             userUniqueId,
@@ -105,7 +109,8 @@ class Member private constructor(
             attendingStatus,
             hasProfileImage,
             updatedAt,
-            sdkClientInfo
+            sdkClientInfo,
+            uuid
         )
     }
 
@@ -131,5 +136,6 @@ class Member private constructor(
             .hasProfileImage(hasProfileImage)
             .updatedAt(updatedAt)
             .sdkClientInfo(sdkClientInfo)
+            .uuid(uuid)
     }
 }

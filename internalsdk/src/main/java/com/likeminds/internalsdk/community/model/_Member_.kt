@@ -45,7 +45,9 @@ class _Member_ private constructor(
     @SerializedName("updated_at")
     val updatedAt: Long?,
     @SerializedName("sdk_client_info")
-    val sdkClientInfo: _SDKClientInfo_?
+    val sdkClientInfo: _SDKClientInfo_?,
+    @SerializedName("uuid")
+    val uuid: String,
 ) {
 
     class Builder {
@@ -71,6 +73,7 @@ class _Member_ private constructor(
         private var hasProfileImage: Boolean? = null
         private var updatedAt: Long? = null
         private var sdkClientInfo: _SDKClientInfo_? = null
+        private var uuid: String = ""
 
         fun id(id: String) = apply { this.id = id }
         fun userUniqueId(userUniqueId: String) = apply { this.userUniqueId = userUniqueId }
@@ -105,6 +108,8 @@ class _Member_ private constructor(
         fun sdkClientInfo(sdkClientInfo: _SDKClientInfo_?) =
             apply { this.sdkClientInfo = sdkClientInfo }
 
+        fun uuid(uuid: String) = apply { this.uuid = uuid }
+
         fun build() = _Member_(
             id,
             userUniqueId,
@@ -126,7 +131,8 @@ class _Member_ private constructor(
             attendingStatus,
             hasProfileImage,
             updatedAt,
-            sdkClientInfo
+            sdkClientInfo,
+            uuid
         )
     }
 
@@ -152,5 +158,6 @@ class _Member_ private constructor(
             .hasProfileImage(hasProfileImage)
             .updatedAt(updatedAt)
             .sdkClientInfo(sdkClientInfo)
+            .uuid(uuid)
     }
 }
