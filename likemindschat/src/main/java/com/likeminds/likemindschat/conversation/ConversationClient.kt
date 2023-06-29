@@ -1,7 +1,11 @@
 package com.likeminds.likemindschat.conversation
 
+import android.content.Context
+import androidx.lifecycle.MediatorLiveData
+import androidx.work.WorkInfo
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.ConversationRO
+import com.likeminds.internalsdk.sync.SyncSDK
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
@@ -162,6 +166,35 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
         return indexes?.map { index ->
             list[index]!!
+        }
+    }
+
+    /**
+     * 0 -> First time blocker
+     * 1 -> First time background
+     * 2 -> Reopen background
+     */
+    fun loadConversations(
+        context: Context,
+        type: Int,
+        chatroomId: String
+    ): MediatorLiveData<WorkInfo.State>? {
+        return when (type) {
+            0 -> {
+                SyncSDK.startFirstTimeSyncForChatroom(context, chatroomId)
+            }
+
+            1 -> {
+                SyncSDK.startFirstTimeSyncForChatroom(context, chatroomId)
+            }
+
+            2 -> {
+                SyncSDK.startFirstTimeSyncForChatroom(context, chatroomId)
+            }
+
+            else -> {
+                null
+            }
         }
     }
 
