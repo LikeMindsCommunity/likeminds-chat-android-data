@@ -32,7 +32,7 @@ data class _User_(
 data class _SDKClientInfo_(
     @SerializedName("community")
     val community: Int,
-    @SerializedName("user", alternate = ["id"])
+    @SerializedName("user")
     val user: String,
     @SerializedName("user_unique_id")
     val userUniqueId: String,
