@@ -235,6 +235,10 @@ class MainActivity : AppCompatActivity() {
                 pollUsers: ${pollUsers.data?.members?.map { it.sdkClientInfo?.uuid }}
             """.trimIndent()
             )
+
+            withContext(Dispatchers.Main) {
+                client.getChatrooms(this@MainActivity, listener)
+            }
         }
     }
 }
