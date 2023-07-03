@@ -10,8 +10,7 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.conversation.model.*
-import com.likeminds.likemindschat.conversation.util.ConversationChangeListener
-import com.likeminds.likemindschat.conversation.util.GetConversationType
+import com.likeminds.likemindschat.conversation.util.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -169,26 +168,21 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
-    /**
-     * 0 -> First time blocker
-     * 1 -> First time background
-     * 2 -> Reopen background
-     */
     fun loadConversations(
         context: Context,
-        type: Int,
+        type: LoadConversationType,
         chatroomId: String
     ): MediatorLiveData<WorkInfo.State>? {
         return when (type) {
-            0 -> {
+            LoadConversationType.FIRST_TIME -> {
                 SyncSDK.startFirstTimeSyncForChatroom(context, chatroomId)
             }
 
-            1 -> {
+            LoadConversationType.FIRST_TIME_BACKGROUND -> {
                 SyncSDK.startFirstTimeSyncForChatroom(context, chatroomId)
             }
 
-            2 -> {
+            LoadConversationType.REOPEN -> {
                 SyncSDK.startFirstTimeSyncForChatroom(context, chatroomId)
             }
 

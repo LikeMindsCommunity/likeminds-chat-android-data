@@ -2,6 +2,8 @@ package com.likeminds.likemindschat
 
 import android.app.Application
 import android.content.Context
+import androidx.lifecycle.MediatorLiveData
+import androidx.work.WorkInfo
 import com.likeminds.likemindschat.chatroom.ChatroomClient
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.CommunityClient
@@ -10,6 +12,7 @@ import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
 import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.conversation.util.ConversationChangeListener
+import com.likeminds.likemindschat.conversation.util.LoadConversationType
 import com.likeminds.likemindschat.helper.HelperClient
 import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
@@ -228,6 +231,15 @@ class LMChatClient private constructor() {
         conversationClient.observeConversations(chatroomId, listener)
     }
 
+    //Exposed function to load conversation in db
+    fun loadConversations(
+        context: Context,
+        type: LoadConversationType,
+        chatroomId: String
+    ): MediatorLiveData<WorkInfo.State>? {
+        return conversationClient.loadConversations(context, type, chatroomId)
+    }
+
     // Exposed function to get conversations
     fun getConversations(getConversationsRequest: GetConversationsRequest): LMResponse<GetConversationsResponse> {
         return conversationClient.getConversations(getConversationsRequest)
@@ -236,14 +248,6 @@ class LMChatClient private constructor() {
     // Exposed function to save temporary conversation
     fun saveTemporaryConversation(saveConversationRequest: SaveConversationRequest) {
         conversationClient.saveTemporaryConversation(saveConversationRequest)
-    }
-
-    // Exposed function to save posted conversation
-    fun savePostedConversationAsync(
-        saveConversationRequest: SaveConversationRequest,
-        isFromNotification: Boolean
-    ) {
-        conversationClient.savePostedConversation(saveConversationRequest, isFromNotification)
     }
 
     // Exposed function to get a single conversation
