@@ -14,6 +14,8 @@ import com.likeminds.internalsdk.homefeed.model._UserDetail_
 import com.likeminds.internalsdk.homefeed.model._UserMetrics_
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
 import com.likeminds.internalsdk.moderation.model._ReportTag_
+import com.likeminds.internalsdk.notification.model._ChatroomNotificationData_
+import com.likeminds.internalsdk.notification.model._GetConversationNotificationUnreadResponse_
 import com.likeminds.internalsdk.poll.model._AddPollOptionResponse_
 import com.likeminds.internalsdk.poll.model._GetPollUsersResponse_
 import com.likeminds.internalsdk.poll.model._Poll_
@@ -38,6 +40,8 @@ import com.likeminds.likemindschat.homefeed.model.UserMetrics
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
+import com.likeminds.likemindschat.notification.model.ChatroomNotificationData
+import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
 import com.likeminds.likemindschat.poll.model.AddPollOptionResponse
 import com.likeminds.likemindschat.poll.model.GetPollUsersResponse
 import com.likeminds.likemindschat.poll.model.Poll
@@ -560,6 +564,63 @@ object ModelConverter {
             _conversation_.lastUpdated,
             convertSearchMember(_conversation_.member),
             _conversation_.state,
+        )
+    }
+
+    // converts api GetConversationNotificationUnreadResponse model to LM GetConversationNotificationUnreadResponse model
+    fun convertGetConversationNotificationUnreadResponse(
+        apiResponse: APIResponse<_GetConversationNotificationUnreadResponse_>
+    ): LMResponse<GetConversationNotificationUnreadResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetConversationNotificationUnreadResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal GetConversationNotificationUnreadResponse model to client model
+    private fun convertGetConversationNotificationUnreadResponse(
+        _getConversationNotificationUnreadResponse_: _GetConversationNotificationUnreadResponse_?
+    ): GetConversationNotificationUnreadResponse? {
+        if (_getConversationNotificationUnreadResponse_ == null) {
+            return null
+        }
+        return GetConversationNotificationUnreadResponse(
+            convertChatroomNotificationDataList(_getConversationNotificationUnreadResponse_.unreadConversation)
+        )
+    }
+
+    // converts internal ChatroomNotificationData model list to client model list
+    private fun convertChatroomNotificationDataList(
+        _unreadConversation_: List<_ChatroomNotificationData_>
+    ): List<ChatroomNotificationData> {
+        return _unreadConversation_.map {
+            convertChatroomNotificationData(it)
+        }
+    }
+
+    // converts internal ChatroomNotificationData model to client model
+    private fun convertChatroomNotificationData(
+        _chatroomNotificationData_: _ChatroomNotificationData_
+    ): ChatroomNotificationData {
+        return ChatroomNotificationData(
+            _chatroomNotificationData_.communityName,
+            _chatroomNotificationData_.chatroomName,
+            _chatroomNotificationData_.chatroomTitle,
+            _chatroomNotificationData_.chatroomUserName,
+            _chatroomNotificationData_.chatroomUserImage,
+            _chatroomNotificationData_.chatroomId,
+            _chatroomNotificationData_.communityImage,
+            _chatroomNotificationData_.communityId,
+            _chatroomNotificationData_.route,
+            _chatroomNotificationData_.chatroomUnreadConversationCount,
+            _chatroomNotificationData_.chatroomLastConversation,
+            _chatroomNotificationData_.chatroomLastConversationUserName,
+            _chatroomNotificationData_.chatroomLastConversationUserImage,
+            _chatroomNotificationData_.routeChild,
+            _chatroomNotificationData_.chatroomLastConversationUserTimestamp,
+            convertAttachments(_chatroomNotificationData_.attachments),
+            _chatroomNotificationData_.sortKey
         )
     }
 
