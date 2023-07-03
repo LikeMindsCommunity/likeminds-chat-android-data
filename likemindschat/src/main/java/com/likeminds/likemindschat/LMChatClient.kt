@@ -248,7 +248,7 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to fetch unread conversation for notification
-    suspend fun notificationClient(): LMResponse<GetConversationNotificationUnreadResponse> {
+    suspend fun getUnreadConversationNotification(): LMResponse<GetConversationNotificationUnreadResponse> {
         return notificationClient.getUnreadConversationNotification()
     }
 }
