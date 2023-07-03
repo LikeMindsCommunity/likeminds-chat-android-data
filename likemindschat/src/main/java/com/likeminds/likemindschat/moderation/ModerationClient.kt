@@ -5,9 +5,7 @@ import com.likeminds.internalsdk.moderation.model._PostReportRequest_
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
-import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
-import com.likeminds.likemindschat.moderation.model.PostReportRequest
+import com.likeminds.likemindschat.moderation.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -79,7 +77,7 @@ class ModerationClient @Inject constructor() : BaseClient() {
         val request = _PostReportRequest_.Builder()
             .tagId(postReportRequest.tagId)
             .reason(postReportRequest.reason)
-            .reportedMemberId(postReportRequest.reportedMemberId)
+            .uuid(postReportRequest.uuid)
             .reportedConversationId(postReportRequest.reportedConversationId)
             .reportedChatroomId(postReportRequest.reportedChatroomId)
             .reportedLink(postReportRequest.reportedLink)
