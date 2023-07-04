@@ -6,7 +6,7 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 
 interface ChatroomApi {
 
-    // api to get chatroom
+    // api to get chatroom actions
     suspend fun getChatroomActions(
         request: _GetChatroomActionsRequest_
     ): NetworkResponse<APIResponse<_GetChatroomActionsResponse_>>

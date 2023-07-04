@@ -17,9 +17,9 @@ interface ConversationApi {
     ): NetworkResponse<APIResponse<_EditConversationResponse_>>
 
     // api to delete conversation
-    suspend fun deleteConversation(
-        request: _DeleteConversationRequest_
-    ): NetworkResponse<APIResponse<_DeleteConversationResponse_>>
+    suspend fun deleteConversations(
+        request: _DeleteConversationsRequest_
+    ): NetworkResponse<APIResponse<_DeleteConversationsResponse_>>
 
     // api to react on a conversation
     suspend fun putReaction(
@@ -31,7 +31,7 @@ interface ConversationApi {
         request: _DeleteReactionRequest_
     ): NetworkResponse<APIResponse<Nothing>>
 
-    //api to upload conversation
+    //api to upload conversation media
     suspend fun putMultimedia(
         request: _PutMultimediaRequest_
     ): NetworkResponse<APIResponse<_PutMultimediaResponse_>>

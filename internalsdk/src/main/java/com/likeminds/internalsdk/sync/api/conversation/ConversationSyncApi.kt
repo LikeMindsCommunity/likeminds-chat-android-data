@@ -6,6 +6,7 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 
 interface ConversationSyncApi {
 
+    //api to get conversations through sync apis
     suspend fun syncConversations(
         queries: HashMap<String, Any>
     ): NetworkResponse<APIResponse<_SyncConversationResponse_>>

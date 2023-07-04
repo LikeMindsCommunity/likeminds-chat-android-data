@@ -10,19 +10,19 @@ import com.likeminds.internalsdk.poll.model._Poll_
 
 data class _SyncConversationResponse_(
     @SerializedName("user_meta")
-    var userMeta: Map<String, _Member_>,
+    val userMeta: Map<String, _Member_>,
     @SerializedName("community_meta")
-    var communityMeta: Map<String, _Community_>,
+    val communityMeta: Map<String, _Community_>,
     @SerializedName("chatroom_meta")
-    var chatroomMeta: Map<String, _Chatroom_>,
+    val chatroomMeta: Map<String, _Chatroom_>,
     @SerializedName("conversations_data")
-    var conversations: List<_Conversation_>,
+    val conversations: List<_Conversation_>,
     @SerializedName("chatroom_reactions_meta")
-    var chatroomReactionsMeta: Map<String, List<_ReactionMeta_>>,
+    val chatroomReactionsMeta: Map<String, List<_ReactionMeta_>>,
     @SerializedName("conv_reactions_meta")
-    var conversationReactionMeta: Map<String, List<_ReactionMeta_>>,
+    val conversationReactionMeta: Map<String, List<_ReactionMeta_>>,
     @SerializedName("conv_attachments_meta")
-    var conversationAttachmentsMeta: Map<String, List<_Attachment_>>,
+    val conversationAttachmentsMeta: Map<String, List<_Attachment_>>,
     @SerializedName("conv_polls_meta")
-    var conversationPollMeta: Map<String, List<_Poll_>>
+    val conversationPollMeta: Map<String, List<_Poll_>>
 )

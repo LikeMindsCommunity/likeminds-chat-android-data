@@ -18,4 +18,10 @@ class EditConversationRequest private constructor(
 
         fun build() = EditConversationRequest(conversationId, text, shareLink)
     }
+
+    fun toBuilder(): Builder {
+        return Builder().conversationId(conversationId)
+            .text(text)
+            .shareLink(shareLink)
+    }
 }

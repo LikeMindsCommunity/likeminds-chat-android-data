@@ -149,6 +149,10 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * returns list of [Pair] of [Int] and [Chatroom] as per indexes received in
+     * @param indexArray
+     */
     private fun getIndexedChatrooms(indexArray: IntArray): List<Pair<Int, Chatroom>> {
         return indexArray.toList().mapNotNull { index ->
             val chatroomRO = collection?.get(index)

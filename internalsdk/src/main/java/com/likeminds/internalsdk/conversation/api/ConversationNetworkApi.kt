@@ -18,9 +18,9 @@ interface ConversationNetworkApi {
     ): NetworkResponse<APIResponse<_EditConversationResponse_>>
 
     @HTTP(method = "DELETE", path = "conversation", hasBody = true)
-    suspend fun deleteConversation(
-        @Body request: _DeleteConversationRequest_
-    ): NetworkResponse<APIResponse<_DeleteConversationResponse_>>
+    suspend fun deleteConversations(
+        @Body request: _DeleteConversationsRequest_
+    ): NetworkResponse<APIResponse<_DeleteConversationsResponse_>>
 
     @PUT("conversation/reaction")
     suspend fun putReaction(

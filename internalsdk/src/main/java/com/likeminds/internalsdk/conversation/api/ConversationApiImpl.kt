@@ -22,10 +22,10 @@ class ConversationApiImpl @Inject constructor(
         return conversationReceiver.editConversation(request)
     }
 
-    override suspend fun deleteConversation(
-        request: _DeleteConversationRequest_
-    ): NetworkResponse<APIResponse<_DeleteConversationResponse_>> {
-        return conversationReceiver.deleteConversation(request)
+    override suspend fun deleteConversations(
+        request: _DeleteConversationsRequest_
+    ): NetworkResponse<APIResponse<_DeleteConversationsResponse_>> {
+        return conversationReceiver.deleteConversations(request)
     }
 
     override suspend fun putReaction(

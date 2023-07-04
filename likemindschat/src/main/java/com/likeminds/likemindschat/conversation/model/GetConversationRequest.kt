@@ -12,4 +12,8 @@ class GetConversationRequest private constructor(
 
         fun build() = GetConversationRequest(conversationId)
     }
+
+    fun toBuilder(): Builder {
+        return Builder().conversationId(conversationId)
+    }
 }

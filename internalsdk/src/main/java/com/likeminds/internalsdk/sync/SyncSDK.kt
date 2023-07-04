@@ -135,11 +135,9 @@ object SyncSDK {
     }
 
     /**
-     * Sync steps for guest chatrooms
+     * Sync steps for chatrooms
      * 1. Fetch and save for page = 1 for conversation sync
      * 2. Run a database worker to create relationship for responses till now
-     * 3. Fetch and save for page = 2 till empty response for conversation sync
-     * 4. Run a database worker to create relationship for responses till now
      * @return Returns LiveData<State> for step 1 and 2 to observe the work states
      */
     fun startFirstTimeSyncForChatroom(
@@ -167,6 +165,12 @@ object SyncSDK {
         }
     }
 
+    /**
+     * Sync steps for chatrooms
+     * 3. Fetch and save for page = 2 till empty response for conversation sync
+     * 4. Run a database worker to create relationship for responses till now
+     * @return Returns LiveData<State> for step 1 and 2 to observe the work states
+     */
     fun startFirstTimeBackgroundSync(
         context: Context,
         chatroomId: String
