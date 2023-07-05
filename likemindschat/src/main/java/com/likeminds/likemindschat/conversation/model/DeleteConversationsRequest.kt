@@ -1,6 +1,6 @@
 package com.likeminds.likemindschat.conversation.model
 
-class DeleteConversationRequest private constructor(
+class DeleteConversationsRequest private constructor(
     val conversationIds: List<String>
 ) {
 
@@ -11,6 +11,10 @@ class DeleteConversationRequest private constructor(
         fun conversationIds(conversationIds: List<String>) =
             apply { this.conversationIds = conversationIds }
 
-        fun build() = DeleteConversationRequest(conversationIds)
+        fun build() = DeleteConversationsRequest(conversationIds)
+    }
+
+    fun toBuilder(): Builder {
+        return Builder().conversationIds(conversationIds)
     }
 }

@@ -2,7 +2,7 @@ package com.likeminds.internalsdk.conversation.model
 
 import com.google.gson.annotations.SerializedName
 
-class _DeleteConversationRequest_ private constructor(
+class _DeleteConversationsRequest_ private constructor(
     @SerializedName("conversation_ids")
     val conversationIds: List<String>
 ) {
@@ -14,6 +14,10 @@ class _DeleteConversationRequest_ private constructor(
         fun conversationIds(conversationIds: List<String>) =
             apply { this.conversationIds = conversationIds }
 
-        fun build() = _DeleteConversationRequest_(conversationIds)
+        fun build() = _DeleteConversationsRequest_(conversationIds)
+    }
+
+    fun toBuilder(): Builder {
+        return Builder().conversationIds(conversationIds)
     }
 }

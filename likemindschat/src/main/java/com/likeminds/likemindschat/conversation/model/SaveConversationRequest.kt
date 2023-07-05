@@ -12,4 +12,8 @@ class SaveConversationRequest private constructor(
 
         fun build() = SaveConversationRequest(conversation)
     }
+
+    fun toBuilder(): Builder {
+        return Builder().conversation(conversation)
+    }
 }

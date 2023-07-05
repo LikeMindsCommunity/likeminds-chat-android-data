@@ -29,11 +29,11 @@ class FirstTimeConversationSyncWorker(
     workerParameters: WorkerParameters
 ) : Worker(context, workerParameters) {
 
-    private val collabmatesSdk = GroupChatSDK.getInstance()
+    private val groupChatSDK = GroupChatSDK.getInstance()
     private val sdkPreferences = SDKPreferences(context as Application)
     private val syncPreferences = SyncPreferences(context as Application)
     private val userPreferences = UserPreferences(context as Application)
-    private val api = collabmatesSdk.getConversationSyncApi()
+    private val api = groupChatSDK.getConversationSyncApi()
 
     private var dataList = ArrayList<_SyncConversationResponse_>()
 

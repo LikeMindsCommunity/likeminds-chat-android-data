@@ -37,10 +37,10 @@ class ConversationReceiver @Inject constructor(
         return conversationNetworkApi.editConversation(request)
     }
 
-    suspend fun deleteConversation(
-        request: _DeleteConversationRequest_
-    ): NetworkResponse<APIResponse<_DeleteConversationResponse_>> {
-        return conversationNetworkApi.deleteConversation(request)
+    suspend fun deleteConversations(
+        request: _DeleteConversationsRequest_
+    ): NetworkResponse<APIResponse<_DeleteConversationsResponse_>> {
+        return conversationNetworkApi.deleteConversations(request)
     }
 
     suspend fun putReaction(

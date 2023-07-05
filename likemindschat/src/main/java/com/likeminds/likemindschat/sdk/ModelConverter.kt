@@ -932,21 +932,21 @@ object ModelConverter {
     }
 
     //converts API DeleteConversationResponse model to LM model
-    fun convertDeleteConversationAPIResponse(
-        apiResponse: APIResponse<_DeleteConversationResponse_>
-    ): LMResponse<DeleteConversationResponse> {
+    fun convertDeleteConversationsAPIResponse(
+        apiResponse: APIResponse<_DeleteConversationsResponse_>
+    ): LMResponse<DeleteConversationsResponse> {
         return LMResponse(
             apiResponse.success,
             apiResponse.errorMessage,
-            convertDeleteConversationResponse(apiResponse.data)
+            convertDeleteConversationsResponse(apiResponse.data)
         )
     }
 
     //converts internal DeleteConversationResponse model to client model
-    private fun convertDeleteConversationResponse(_deleteConversationResponse_: _DeleteConversationResponse_?): DeleteConversationResponse? {
-        if (_deleteConversationResponse_ == null) return null
-        return DeleteConversationResponse(
-            convertConversations(_deleteConversationResponse_.conversations)
+    private fun convertDeleteConversationsResponse(_deleteConversationsResponse_: _DeleteConversationsResponse_?): DeleteConversationsResponse? {
+        if (_deleteConversationsResponse_ == null) return null
+        return DeleteConversationsResponse(
+            convertConversations(_deleteConversationsResponse_.conversations)
         )
     }
 

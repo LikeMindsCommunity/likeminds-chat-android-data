@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class _EditConversationResponse_(
     @SerializedName("conversation")
-    var conversation: _Conversation_
+    val conversation: _Conversation_
 )
