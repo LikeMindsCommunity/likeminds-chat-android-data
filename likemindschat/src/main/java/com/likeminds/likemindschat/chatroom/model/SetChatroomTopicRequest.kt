@@ -1,15 +1,16 @@
 package com.likeminds.likemindschat.chatroom.model
 
 class SetChatroomTopicRequest private constructor(
-    val chatroomId: Int,
-    val conversationId: Int
+    val chatroomId: String,
+    val conversationId: String
 ) {
     class Builder {
-        private var chatroomId: Int = 0
-        private var conversationId: Int = 0
 
-        fun chatroomId(chatroomId: Int) = apply { this.chatroomId = chatroomId }
-        fun conversationId(conversationId: Int) = apply { this.conversationId = conversationId }
+        private var chatroomId: String = ""
+        private var conversationId: String = ""
+
+        fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
+        fun conversationId(conversationId: String) = apply { this.conversationId = conversationId }
 
         fun build() = SetChatroomTopicRequest(chatroomId, conversationId)
     }

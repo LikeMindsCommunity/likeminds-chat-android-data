@@ -2,8 +2,10 @@ package com.likeminds.internalsdk.sync
 
 import android.content.Context
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.work.*
 import com.likeminds.internalsdk.db.ChatDBUtil
+import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_CHATROOM
 import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_FIRST_TIME_HOME_FEED
 import com.likeminds.internalsdk.sync.SyncType.Companion.SYNC_REOPEN_HOME_FEED
 import com.likeminds.internalsdk.sync.worker.*
@@ -68,7 +70,7 @@ object SyncSDK {
         val firstTime = ChatDBUtil.isEmpty()
 
         ongoingSyncTypes.add(SYNC_REOPEN_HOME_FEED)
-        var worker = WorkManager.getInstance(context)
+        val worker = WorkManager.getInstance(context)
             .beginWith(reopenSyncChatroom())
             .then(syncDatabase(SYNC_REOPEN_HOME_FEED, firstTime))
 
@@ -129,6 +131,140 @@ object SyncSDK {
                 TimeUnit.MILLISECONDS
             )
             .addTag(DatabaseSyncWorker.NAME)
+            .build()
+    }
+
+    /**
+     * Sync steps for chatrooms
+     * 1. Fetch and save for page = 1 for conversation sync
+     * 2. Run a database worker to create relationship for responses till now
+     * @return Returns LiveData<State> for step 1 and 2 to observe the work states
+     */
+    fun startFirstTimeSyncForChatroom(
+        context: Context,
+        chatroomId: String
+    ): MediatorLiveData<WorkInfo.State> {
+        val blockerWork = WorkManager.getInstance(context)
+            .beginWith(firstTimeSyncConversation(chatroomId, false))
+            .then(syncDatabase(SYNC_CHATROOM, chatroomId = chatroomId))
+
+        blockerWork.enqueue()
+        //MediatorLiveData is a subclass of live data, it will observe the list of worker's live data
+        //and post value according to the logic
+        return MediatorLiveData<WorkInfo.State>().apply {
+            addSource(blockerWork.workInfosLiveData) { workInfoList ->
+                //Post the status of only the database sync worker as that is the last worker and
+                //we want to observe the completion of the last worker
+                val workInfo = workInfoList.firstOrNull {
+                    it.tags.contains(DatabaseSyncWorker.NAME)
+                }
+                if (workInfo != null) {
+                    value = workInfo.state
+                }
+            }
+        }
+    }
+
+    /**
+     * Sync steps for chatrooms
+     * 3. Fetch and save for page = 2 till empty response for conversation sync
+     * 4. Run a database worker to create relationship for responses till now
+     * @return Returns LiveData<State> for step 1 and 2 to observe the work states
+     */
+    fun startFirstTimeBackgroundSync(
+        context: Context,
+        chatroomId: String
+    ): MediatorLiveData<WorkInfo.State> {
+        val work = WorkManager.getInstance(context)
+            .beginWith(firstTimeSyncConversation(chatroomId, true))
+            .then(syncDatabase(SYNC_CHATROOM, chatroomId = chatroomId))
+        work.enqueue()
+        return MediatorLiveData<WorkInfo.State>().apply {
+            addSource(work.workInfosLiveData) { workInfoList ->
+                //Post the status of only the database sync worker as that is the last worker and
+                //we want to observe the completion of the last worker
+                val workInfo = workInfoList.firstOrNull {
+                    it.tags.contains(DatabaseSyncWorker.NAME)
+                }
+                if (workInfo != null) {
+                    value = workInfo.state
+                }
+            }
+        }
+    }
+
+    /**
+     * Sync steps for guest chatrooms
+     * 1. Fetch and save for page = 1 till empty response for conversation sync
+     * 2. Run a database worker to create relationship for responses till now
+     * @return Returns LiveData<State> to observe the work states
+     */
+    fun startReopenSyncForChatroom(
+        context: Context,
+        chatroomId: String,
+        conversationId: String? = null
+    ): MediatorLiveData<WorkInfo.State> {
+        val work = WorkManager.getInstance(context)
+            .beginWith(reopenSyncConversation(chatroomId, conversationId))
+            .then(syncDatabase(SYNC_CHATROOM, chatroomId = chatroomId))
+        work.enqueue()
+        //MediatorLiveData is a subclass of live data, it will observe the list of worker's live data
+        //and post value according to the logic
+        return MediatorLiveData<WorkInfo.State>().apply {
+            addSource(work.workInfosLiveData) { workInfoList ->
+                //Post the status of only the database sync worker as that is the last worker and
+                //we want to observe the completion of the last worker
+                val workInfo = workInfoList.firstOrNull {
+                    it.tags.contains(DatabaseSyncWorker.NAME)
+                }
+                if (workInfo != null) {
+                    value = workInfo.state
+                }
+            }
+        }
+    }
+
+    //return first conversation sync worker
+    private fun firstTimeSyncConversation(
+        chatroomId: String,
+        isBackgroundWorker: Boolean
+    ): OneTimeWorkRequest {
+        return OneTimeWorkRequestBuilder<FirstTimeConversationSyncWorker>()
+            .setInputData(
+                workDataOf(
+                    FirstTimeConversationSyncWorker.INPUT_DATA_CHATROOM_ID to chatroomId,
+                    FirstTimeConversationSyncWorker.INPUT_DATA_BACKGROUND_WORKER to isBackgroundWorker
+                )
+            )
+            .setConstraints(networkConstraint)
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS
+            )
+            .addTag(FirstTimeConversationSyncWorker.NAME)
+            .build()
+    }
+
+    //return reopen conversation sync worker
+    private fun reopenSyncConversation(
+        chatroomId: String,
+        conversationId: String?
+    ): OneTimeWorkRequest {
+        return OneTimeWorkRequestBuilder<ReopenConversationSyncWorker>()
+            .setInputData(
+                workDataOf(
+                    ReopenConversationSyncWorker.INPUT_DATA_CHATROOM_ID to chatroomId,
+                    ReopenConversationSyncWorker.INPUT_DATA_CONVERSATION_ID to conversationId
+                )
+            )
+            .setConstraints(networkConstraint)
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS
+            )
+            .addTag(ReopenConversationSyncWorker.NAME)
             .build()
     }
 }

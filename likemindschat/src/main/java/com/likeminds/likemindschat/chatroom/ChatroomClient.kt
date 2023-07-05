@@ -20,6 +20,10 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         groupChatSDK.getChatroomApi()
     }
 
+    private val chatroomDB by lazy {
+        groupChatSDK.getChatroomDb()
+    }
+
     /**
      * Converts client request model to internal model and calls the api
      * @param getChatroomRequest - client request model to fetch chatroom
@@ -31,24 +35,18 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validateGetChatroomRequest(getChatroomRequest)
 
-        // builds internal request model
-        val request =
-            _GetChatroomRequest_.Builder()
-                .chatroomId(getChatroomRequest.chatroomId)
-                .build()
-
-        // calls api and processes the response accordingly
-        return when (val response = chatroomApi.getChatroom(request)) {
-            is NetworkResponse.Error -> {
-                LMResponse(
-                    success = response.body.success,
-                    errorMessage = response.body.errorMessage
-                )
-            }
-            is NetworkResponse.Success -> {
-                val body = response.body
-                return ModelConverter.convertGetChatroomResponse(body)
-            }
+        val chatroomRO = chatroomDB.getChatroom(getChatroomRequest.chatroomId)
+        return if (chatroomRO == null) {
+            LMResponse(
+                success = false,
+                errorMessage = "Chatroom with respect to chatroomId not found."
+            )
+        } else {
+            LMResponse(
+                success = true,
+                errorMessage = null,
+                ModelConverter.convertGetChatroomResponse(chatroomRO)
+            )
         }
     }
 
@@ -58,6 +56,49 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      */
     private fun validateGetChatroomRequest(getChatroomRequest: GetChatroomRequest) {
         if (getChatroomRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+    }
+
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param getChatroomActionRequest - client request model to fetch chatroom
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return [GetChatroomActionsResponse] - GetChatroomActionsResponse model for [getChatroomActions]
+     */
+    suspend fun getChatroomActions(getChatroomActionRequest: GetChatroomActionsRequest): LMResponse<GetChatroomActionsResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validateGetChatroomActionsRequest(getChatroomActionRequest)
+
+        // builds internal request model
+        val request =
+            _GetChatroomActionsRequest_.Builder()
+                .chatroomId(getChatroomActionRequest.chatroomId)
+                .build()
+
+        // calls api and processes the response accordingly
+        return when (val response = chatroomApi.getChatroomActions(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                val body = response.body
+                ModelConverter.convertGetChatroomActionsAPIResponse(body)
+            }
+        }
+    }
+
+    /**
+     * validates [getChatroomActionRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateGetChatroomActionsRequest(getChatroomActionRequest: GetChatroomActionsRequest) {
+        if (getChatroomActionRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
     }
@@ -89,7 +130,15 @@ class ChatroomClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
+
+                //if success -> make the db call
+                chatroomDB.updateChatroomFollowStatus(
+                    followChatroomRequest.chatroomId,
+                    followChatroomRequest.value
+                )
+
                 LMResponse(
                     success = response.body.success
                 )
@@ -136,7 +185,11 @@ class ChatroomClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
+                //if success -> make the db call
+                chatroomDB.updateSecretChatroomLeaveStatus(leaveSecretChatroomRequest.chatroomId)
+
                 LMResponse(
                     success = response.body.success
                 )
@@ -149,7 +202,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateLeaveSecretChatroomRequest(leaveSecretChatroomRequest: LeaveSecretChatroomRequest) {
-        if (leaveSecretChatroomRequest.chatroomId == -1) {
+        if (leaveSecretChatroomRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
     }
@@ -180,7 +233,13 @@ class ChatroomClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
+                //if success -> make the db call
+                chatroomDB.updateChatroomMuteStatus(
+                    muteChatroomRequest.chatroomId,
+                    muteChatroomRequest.value
+                )
                 LMResponse(
                     success = response.body.success
                 )
@@ -193,7 +252,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateMuteChatroomRequest(muteChatroomRequest: MuteChatroomRequest) {
-        if (muteChatroomRequest.chatroomId == -1) {
+        if (muteChatroomRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
     }
@@ -223,6 +282,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
                 LMResponse(
                     success = response.body.success
@@ -238,52 +298,6 @@ class ChatroomClient @Inject constructor() : BaseClient() {
     private fun validateMarkReadChatroomRequest(markReadChatroomRequest: MarkReadChatroomRequest) {
         if (markReadChatroomRequest.chatroomId == -1) {
             RequestUtils.throwException("chatroomId")
-        }
-    }
-
-    /**
-     * Converts client request model to internal model and calls the api
-     * @param shareChatroomUrlRequest - client request model to get chatroom's share url
-     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
-     * @return ShareChatroomUrlResponse - ShareChatroomUrlResponse model for shareChatroomUrlRequest
-     */
-    suspend fun shareChatroomUrl(shareChatroomUrlRequest: ShareChatroomUrlRequest): LMResponse<ShareChatroomUrlResponse> {
-        // validates the client request
-        RequestUtils.validate()
-        validateShareChatroomUrlRequest(shareChatroomUrlRequest)
-
-        // builds internal request model
-        val request =
-            _ShareChatroomUrlRequest_.Builder()
-                .chatroomId(shareChatroomUrlRequest.chatroomId)
-                .domain(shareChatroomUrlRequest.domain)
-                .build()
-
-        // calls api and processes the response accordingly
-        return when (val response = chatroomApi.shareChatroomUrl(request)) {
-            is NetworkResponse.Error -> {
-                LMResponse(
-                    success = response.body.success,
-                    errorMessage = response.body.errorMessage
-                )
-            }
-            is NetworkResponse.Success -> {
-                val body = response.body
-                return ModelConverter.convertShareChatroomUrlResponse(body)
-            }
-        }
-    }
-
-    /**
-     * validates [shareChatroomUrlRequest]
-     * @throws IllegalArgumentException - when required properties not provided
-     */
-    private fun validateShareChatroomUrlRequest(shareChatroomUrlRequest: ShareChatroomUrlRequest) {
-        if (shareChatroomUrlRequest.chatroomId.isEmpty()) {
-            RequestUtils.throwException("chatroomId")
-        }
-        if (shareChatroomUrlRequest.domain.isEmpty()) {
-            RequestUtils.throwException("domain")
         }
     }
 
@@ -313,7 +327,15 @@ class ChatroomClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
+
+                //if success -> make the db call
+                chatroomDB.updateChatroomTopic(
+                    setChatroomTopicRequest.chatroomId,
+                    setChatroomTopicRequest.conversationId
+                )
+
                 LMResponse(
                     success = response.body.success
                 )
@@ -326,10 +348,10 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateSetChatroomTopicRequest(setChatroomTopicRequest: SetChatroomTopicRequest) {
-        if (setChatroomTopicRequest.chatroomId == -1) {
+        if (setChatroomTopicRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
-        if (setChatroomTopicRequest.conversationId == -1) {
+        if (setChatroomTopicRequest.conversationId.isEmpty()) {
             RequestUtils.throwException("conversationId")
         }
     }
@@ -363,9 +385,10 @@ class ChatroomClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
                 val body = response.body
-                return ModelConverter.convertGetParticipantsResponse(body)
+                ModelConverter.convertGetParticipantsAPIResponse(body)
             }
         }
     }

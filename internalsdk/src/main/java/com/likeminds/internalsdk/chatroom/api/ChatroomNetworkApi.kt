@@ -1,4 +1,4 @@
-package com.likeminds.internalsdk.chatroom
+package com.likeminds.internalsdk.chatroom.api
 
 import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
@@ -9,9 +9,9 @@ interface ChatroomNetworkApi {
 
     @GET("chatroom")
     @Headers("x-accept-version: v2")
-    suspend fun getChatroom(
+    suspend fun getChatroomActions(
         @Query("chatroom_id") chatroomId: String
-    ): NetworkResponse<APIResponse<_GetChatroomResponse_>>
+    ): NetworkResponse<APIResponse<_GetChatroomActionsResponse_>>
 
     @PUT("chatroom/follow")
     suspend fun followChatroom(
@@ -32,12 +32,6 @@ interface ChatroomNetworkApi {
     suspend fun markReadChatroom(
         @Body request: _MarkReadChatroomRequest_
     ): NetworkResponse<APIResponse<Nothing>>
-
-    @GET("chatroom/share")
-    suspend fun shareChatroomUrl(
-        @Query("chatroom_id") chatroomId: String,
-        @Query("domain") domain: String
-    ): NetworkResponse<APIResponse<_ShareChatroomUrlResponse_>>
 
     @PUT("conversation/topic")
     suspend fun setChatroomTopic(

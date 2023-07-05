@@ -2,7 +2,7 @@ package com.likeminds.internalsdk.chatroom.model
 
 import com.google.gson.annotations.SerializedName
 
-data class _GetChatroomResponse_(
+data class _GetChatroomActionsResponse_(
     @SerializedName("can_access_secret_chatroom")
     val canAccessSecretChatroom: Boolean,
     @SerializedName("chatroom_actions")

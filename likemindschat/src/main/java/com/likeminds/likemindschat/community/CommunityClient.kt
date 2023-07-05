@@ -49,7 +49,7 @@ class CommunityClient @Inject constructor() : BaseClient() {
             }
             is NetworkResponse.Success -> {
                 val body = response.body
-                ModelConverter.convertGetExploreFeedResponse(body)
+                ModelConverter.convertGetExploreFeedAPIResponse(body)
             }
         }
     }

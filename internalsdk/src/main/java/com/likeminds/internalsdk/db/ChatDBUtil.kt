@@ -201,6 +201,9 @@ object ChatDBUtil {
 
     /**
      * Make sure to pass this inside a write transaction and all the parameters have to be managed object
+     *  @param chatroomRO: chatroom object
+     *  @param conversations: list of conversations
+     *  @param loggedInMemberId: id of loggedInMember
      */
     fun updateRelationshipsOfChatroom(
         chatroomRO: ChatroomRO,
@@ -306,6 +309,25 @@ object ChatDBUtil {
     }
 
     /**
+     * to get conversation creator
+     *
+     * @param realm: Instance of realm
+     * @param conversation: object of conversation
+     *
+     * @return [MemberRO]: creator of conversation
+     */
+    fun getConversationMember(
+        realm: Realm,
+        conversation: _Conversation_
+    ): MemberRO? {
+        return getMember(
+            realm,
+            conversation.communityId,
+            conversation.memberId ?: conversation.member?.id
+        )
+    }
+
+    /**
      * To get a specific [MemberRO] of a community
      *
      * @param realm: Instance of realm
@@ -331,5 +353,21 @@ object ChatDBUtil {
         return realm.where(MemberRO::class.java)
             .equalTo(DbKey.UID, uid)
             .findFirst()
+    }
+
+    /**
+     * to update chatroom's [isConversationStored]
+     *
+     * @param chatroomId: id of chatroom to be updated
+     * @param isConversationStored: value of [isConversationStored] -> true or false
+     */
+    fun updateIsConversationStoreForChatroom(
+        chatroomId: String,
+        isConversationStored: Boolean
+    ) {
+        write { realm ->
+            val chatroomRO = getChatroom(realm, chatroomId)
+            chatroomRO?.isConversationStored = isConversationStored
+        }
     }
 }

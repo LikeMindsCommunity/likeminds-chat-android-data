@@ -1,5 +1,6 @@
-package com.likeminds.internalsdk.chatroom
+package com.likeminds.internalsdk.chatroom.api
 
+import com.likeminds.internalsdk.chatroom.ChatroomReceiver
 import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
@@ -9,10 +10,10 @@ class ChatroomApiImpl @Inject constructor(
     private val chatroomReceiver: ChatroomReceiver
 ) : ChatroomApi {
 
-    override suspend fun getChatroom(
-        request: _GetChatroomRequest_
-    ): NetworkResponse<APIResponse<_GetChatroomResponse_>> {
-        return chatroomReceiver.getChatroom(request)
+    override suspend fun getChatroomActions(
+        request: _GetChatroomActionsRequest_
+    ): NetworkResponse<APIResponse<_GetChatroomActionsResponse_>> {
+        return chatroomReceiver.getChatroomActions(request)
     }
 
     override suspend fun followChatroom(
@@ -37,12 +38,6 @@ class ChatroomApiImpl @Inject constructor(
         request: _MarkReadChatroomRequest_
     ): NetworkResponse<APIResponse<Nothing>> {
         return chatroomReceiver.markReadChatroom(request)
-    }
-
-    override suspend fun shareChatroomUrl(
-        request: _ShareChatroomUrlRequest_
-    ): NetworkResponse<APIResponse<_ShareChatroomUrlResponse_>> {
-        return chatroomReceiver.shareChatroomUrl(request)
     }
 
     override suspend fun setChatroomTopic(

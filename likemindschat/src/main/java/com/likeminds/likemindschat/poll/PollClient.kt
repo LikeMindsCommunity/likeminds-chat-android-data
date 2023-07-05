@@ -1,9 +1,6 @@
 package com.likeminds.likemindschat.poll
 
-import com.likeminds.internalsdk.poll.model._AddPollOptionRequest_
-import com.likeminds.internalsdk.poll.model._GetPollUsersRequest_
-import com.likeminds.internalsdk.poll.model._PostPollConversationRequest_
-import com.likeminds.internalsdk.poll.model._SubmitPollRequest_
+import com.likeminds.internalsdk.poll.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
@@ -21,6 +18,10 @@ class PollClient @Inject constructor() : BaseClient() {
 
     private val pollApi by lazy {
         groupChatSDK.getPollApi()
+    }
+
+    private val conversationDB by lazy {
+        groupChatSDK.getConversationDB()
     }
 
     /**
@@ -46,9 +47,10 @@ class PollClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage,
                 )
             }
+
             is NetworkResponse.Success -> {
                 val body = response.body
-                ModelConverter.convertPostPollConversationResponse(body)
+                ModelConverter.convertPostPollConversationAPIResponse(body)
             }
         }
     }
@@ -96,9 +98,11 @@ class PollClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validateAddPollOptionRequest(addPollOptionRequest)
 
+        val conversationId = addPollOptionRequest.conversationId
+
         // builds internal request model
         val request = _AddPollOptionRequest_.Builder()
-            .conversationId(addPollOptionRequest.conversationId)
+            .conversationId(conversationId)
             .poll(ModelConverter.createPoll(addPollOptionRequest.poll))
             .build()
 
@@ -110,9 +114,17 @@ class PollClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage,
                 )
             }
+
             is NetworkResponse.Success -> {
                 val body = response.body
-                ModelConverter.convertAddPollOptionResponse(body)
+
+                val createdPoll = body.data?.poll
+
+                createdPoll?.let {
+                    conversationDB.updatePollConversationAddItem(conversationId, it)
+                }
+
+                ModelConverter.convertAddPollOptionAPIResponse(body)
             }
         }
     }
@@ -142,10 +154,13 @@ class PollClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validateSubmitPollRequest(submitPollRequest)
 
+        val conversationId = submitPollRequest.conversationId
+        val _polls_ = ModelConverter.createPolls(submitPollRequest.polls)
+
         // builds internal request model
         val request = _SubmitPollRequest_.Builder()
-            .conversationId(submitPollRequest.conversationId)
-            .polls(ModelConverter.createPolls(submitPollRequest.polls))
+            .conversationId(conversationId)
+            .polls(_polls_ ?: emptyList())
             .build()
 
         // calls api and processes the response accordingly
@@ -156,7 +171,17 @@ class PollClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage,
                 )
             }
+
             is NetworkResponse.Success -> {
+
+                //if success -> make db call
+                _polls_?.let { polls ->
+                    conversationDB.updateConversationSubmitPoll(
+                        conversationId,
+                        polls
+                    )
+                }
+
                 LMResponse(
                     success = response.body.success,
                 )
@@ -209,9 +234,10 @@ class PollClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage,
                 )
             }
+
             is NetworkResponse.Success -> {
                 val body = response.body
-                ModelConverter.convertGetPollUsersResponse(body)
+                ModelConverter.convertGetPollUsersAPIResponse(body)
             }
         }
     }
