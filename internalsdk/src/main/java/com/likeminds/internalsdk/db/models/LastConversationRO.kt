@@ -20,7 +20,8 @@ open class LastConversationRO(
     var createdEpoch: Long = 0L,
     var chatroomId: String = "",
     var communityId: String = "",
-    var link: LinkRO? = null
+    var link: LinkRO? = null,
+    var deletedByMember: MemberRO? = null
 ) : RealmObject() {
 
     private constructor(builder: Builder) : this(
@@ -38,7 +39,8 @@ open class LastConversationRO(
         builder.createdEpoch,
         builder.chatroomId,
         builder.communityId,
-        builder.link
+        builder.link,
+        builder.deletedByMember
     )
 
     companion object {
@@ -70,6 +72,7 @@ open class LastConversationRO(
         var attachmentCount: Int? = null
         var attachmentsUploaded: Boolean? = null
         var uploadWorkerUUID: String? = null
+        var deletedByMember: MemberRO? = null
 
         fun build() = LastConversationRO(this)
     }

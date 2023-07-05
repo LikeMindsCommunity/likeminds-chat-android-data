@@ -237,7 +237,8 @@ object ROConverter {
         polls: List<_Poll_>?,
         attachments: List<_Attachment_>?,
         reactions: List<_ReactionMeta_>? = null,
-        loggedInUUID: String? = null
+        loggedInUUID: String? = null,
+        deletedByMemberRO: MemberRO? = null
     ): ConversationRO? {
         if (conversation == null || creator == null) return null
         val chatroomId = conversation.chatroomId ?: return null
@@ -312,6 +313,7 @@ object ROConverter {
             this.replyConversation = replyConversation
 
             deletedBy = conversation.deletedBy
+            this.deletedByMember = deletedByMemberRO
             attachmentCount = conversation.attachmentCount
             attachmentsUploaded = conversation.attachmentUploaded
             uploadWorkerUUID = savedAnswer?.uploadWorkerUUID
@@ -456,7 +458,8 @@ object ROConverter {
         realm: Realm,
         conversation: _Conversation_?,
         creator: MemberRO?,
-        attachments: List<_Attachment_>?
+        attachments: List<_Attachment_>?,
+        deletedByMember: MemberRO? = null
     ): LastConversationRO? {
         if (conversation == null || creator == null) return null
         val chatroomId = conversation.chatroomId ?: return null
@@ -502,6 +505,7 @@ object ROConverter {
             attachmentCount = conversation.attachmentCount
             date = conversation.date
             deletedBy = conversation.deletedBy
+            this.deletedByMember = deletedByMember
             attachmentsUploaded = conversation.attachmentUploaded
             uploadWorkerUUID = savedAnswer?.uploadWorkerUUID
             this.createdEpoch = createdEpoch

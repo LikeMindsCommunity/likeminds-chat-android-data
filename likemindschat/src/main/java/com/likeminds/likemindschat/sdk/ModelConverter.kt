@@ -1416,6 +1416,7 @@ object ModelConverter {
             .toShowResults(conversationRO.toShowResults)
             .replyChatroomId(conversationRO.replyChatRoomId)
             .lastUpdated(conversationRO.lastUpdatedAt)
+            .deletedByMember(convertMemberRO(conversationRO.deletedByMember))
             .build()
     }
 

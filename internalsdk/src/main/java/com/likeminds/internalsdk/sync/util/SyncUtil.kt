@@ -74,6 +74,16 @@ object SyncUtil {
                 val lastConversation =
                     data.conversationMeta[lastConversationId.toString()] ?: return@forEach
 
+                //isConversation Deleted
+                val lastConversationDeletedByMemberRO = if (lastConversation.deletedBy != null) {
+                    val lastConversationDeletedById = lastConversation.deletedBy
+                    val lastConversationDeletedBy =
+                        data.userMeta[lastConversationDeletedById.toString()]
+                    ROConverter.convertMember(lastConversationDeletedBy, communityId)
+                } else {
+                    null
+                }
+
                 //poll check
                 val lastConversationPolls =
                     if (_ConversationState_.isPoll(lastConversation.state)) {
@@ -111,7 +121,8 @@ object SyncUtil {
                     realm,
                     lastConversation,
                     lastConversationCreatorRO,
-                    lastConversationAttachment
+                    lastConversationAttachment,
+                    lastConversationDeletedByMemberRO
                 ) ?: return@forEach
 
                 realmWrite.insertOrUpdate(lastConversationRO)
@@ -124,6 +135,16 @@ object SyncUtil {
                     val topicCreator = data.userMeta[topic?.memberId.toString()]
                     val topicCreatorRO =
                         ROConverter.convertMember(topicCreator, communityId)
+
+                    //isConversation Deleted
+                    val topicConversationDeletedByMemberRO = if (topic?.deletedBy != null) {
+                        val topicConversationDeletedById = topic.deletedBy
+                        val topicConversationDeletedBy =
+                            data.userMeta[topicConversationDeletedById.toString()]
+                        ROConverter.convertMember(topicConversationDeletedBy, communityId)
+                    } else {
+                        null
+                    }
 
                     //topic poll check
                     val topicConversationPolls =
@@ -154,7 +175,8 @@ object SyncUtil {
                             topicCreatorRO,
                             topicConversationPolls,
                             topicConversationAttachments,
-                            loggedInUUID = loggedInUUID
+                            loggedInUUID = loggedInUUID,
+                            deletedByMemberRO = topicConversationDeletedByMemberRO
                         )
                     if (topicCreatorRO != null) {
                         realmWrite.insertOrUpdate(topicCreatorRO)
@@ -176,6 +198,16 @@ object SyncUtil {
                             lastSeenConversationCreator,
                             communityId
                         )
+
+                    val lastSeenConversationDeletedByMemberRO =
+                        if (lastSeenConversation?.deletedBy != null) {
+                            val lastSeenConversationDeletedById = lastSeenConversation.deletedBy
+                            val lastSeenConversationDeletedBy =
+                                data.userMeta[lastSeenConversationDeletedById.toString()]
+                            ROConverter.convertMember(lastSeenConversationDeletedBy, communityId)
+                        } else {
+                            null
+                        }
 
                     //last seen poll check
                     val lastSeenConversationPolls =
@@ -208,7 +240,8 @@ object SyncUtil {
                         lastSeenConversationCreatorRO,
                         lastSeenConversationPolls,
                         lastSeenConversationAttachments,
-                        loggedInUUID = loggedInUUID
+                        loggedInUUID = loggedInUUID,
+                        deletedByMemberRO = lastSeenConversationDeletedByMemberRO
                     )
                     if (lastSeenConversationRO != null) {
                         realmWrite.insertOrUpdate(lastSeenConversationRO)
@@ -291,6 +324,15 @@ object SyncUtil {
                         ROConverter.convertMember(creator, communityId) ?: return@conversation
                     realmWrite.insertOrUpdate(creatorRO)
 
+                    val deletedByMemberRO = if (conversation.deletedBy != null) {
+                        val deletedById = conversation.deletedBy
+                        val deletedByMember =
+                            data.userMeta[deletedById.toString()]
+                        ROConverter.convertMember(deletedByMember, communityId)
+                    } else {
+                        null
+                    }
+
                     //reactions
                     val reactions = if (conversation.hasReactions == true) {
                         val list = data.conversationReactionMeta[id.toString()] ?: emptyList()
@@ -335,7 +377,8 @@ object SyncUtil {
                             conversationPolls,
                             conversationAttachment,
                             reactions,
-                            loggedInUUID = loggedInUUID
+                            loggedInUUID = loggedInUUID,
+                            deletedByMemberRO = deletedByMemberRO
                         ) ?: return@conversation
                     realmWrite.insertOrUpdate(
                         conversationRO
