@@ -234,7 +234,7 @@ class LMChatClient private constructor() {
         context: Context,
         type: LoadConversationType,
         chatroomId: String
-    ): MediatorLiveData<WorkInfo.State>? {
+    ): MediatorLiveData<WorkInfo.State> {
         return conversationClient.loadConversations(context, type, chatroomId)
     }
 
