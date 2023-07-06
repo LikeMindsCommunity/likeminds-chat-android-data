@@ -296,7 +296,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateMarkReadChatroomRequest(markReadChatroomRequest: MarkReadChatroomRequest) {
-        if (markReadChatroomRequest.chatroomId == -1) {
+        if (markReadChatroomRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
     }
