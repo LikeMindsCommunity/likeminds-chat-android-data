@@ -8,7 +8,7 @@ class ChatroomDBImpl @Inject constructor(
     private val chatroomReceiver: ChatroomReceiver
 ) : ChatroomDB {
 
-    override suspend fun getChatroom(chatroomId: String): ChatroomRO? {
+    override fun getChatroom(chatroomId: String): ChatroomRO? {
         return chatroomReceiver.getChatroom(chatroomId)
     }
 

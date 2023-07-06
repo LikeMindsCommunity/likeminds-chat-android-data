@@ -17,7 +17,7 @@ class UserClient @Inject constructor() : BaseClient() {
         groupChatSDK.getUserDb()
     }
 
-    suspend fun getUser(): LMResponse<GetUserResponse> {
+    fun getUser(): LMResponse<GetUserResponse> {
         val userRO = userDb.getUser()
         return if (userRO == null) {
             LMResponse(success = false, errorMessage = "User doesn't exist")

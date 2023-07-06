@@ -5,7 +5,7 @@ import com.likeminds.internalsdk.db.models.ChatroomRO
 interface ChatroomDB {
 
     //query to get chatroom
-    suspend fun getChatroom(chatroomId: String): ChatroomRO?
+    fun getChatroom(chatroomId: String): ChatroomRO?
 
     //query to update follow status
     fun updateChatroomFollowStatus(chatroomId: String, value: Boolean)

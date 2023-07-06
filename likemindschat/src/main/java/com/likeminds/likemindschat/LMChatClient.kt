@@ -124,11 +124,11 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get user from Db
-    suspend fun getUser(): LMResponse<GetUserResponse> {
+    fun getUser(): LMResponse<GetUserResponse> {
         return userClient.getUser()
     }
 
-    suspend fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
+    fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
         return chatroomClient.getChatroom(getChatroomRequest)
     }
 

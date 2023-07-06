@@ -30,7 +30,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
      * @return GetChatroomResponse - GetChatroomResponse model for getChatroomRequest
      */
-    suspend fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
+    fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
         // validates the client request
         RequestUtils.validate()
         validateGetChatroomRequest(getChatroomRequest)
