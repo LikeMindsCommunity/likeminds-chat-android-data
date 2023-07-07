@@ -6,9 +6,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.chatroom.model.Chatroom
+import com.likeminds.likemindschat.chatroom.model.GetChatroomRequest
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,8 +49,8 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val initiateUserRequest = InitiateUserRequest.Builder()
-                .apiKey("c4570b5a-46a4-4bb1-b82b-c89f4ea386c5")
-                .userId("123456789")
+                .apiKey("62723803-8577-4314-b3bd-c65dce56c1df")
+                .userId("siddharth-4")
                 .userName("Sid")
                 .deviceId("123333")
                 .isGuest(false)
@@ -61,6 +65,14 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
+            val getChatroom = client.getChatroom(
+                GetChatroomRequest.Builder()
+                    .chatroomId("74936")
+                    .build()
+            )
+
+            Log.d(TAG, "getChatroom: ${getChatroom.data?.chatroom}")
         }
     }
 }

@@ -1,11 +1,12 @@
 package com.likeminds.internalsdk.chatroom.db
 
 import com.likeminds.internalsdk.db.models.ChatroomRO
+import io.realm.Realm
 
 interface ChatroomDB {
 
     //query to get chatroom
-    fun getChatroom(chatroomId: String): ChatroomRO?
+    fun getChatroom(realm: Realm, chatroomId: String): ChatroomRO?
 
     //query to update follow status
     fun updateChatroomFollowStatus(chatroomId: String, value: Boolean)

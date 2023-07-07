@@ -8,6 +8,7 @@ import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
+import io.realm.Realm
 import javax.inject.Inject
 
 class ChatroomClient @Inject constructor() : BaseClient() {
@@ -35,8 +36,12 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validateGetChatroomRequest(getChatroomRequest)
 
-        val chatroomRO = chatroomDB.getChatroom(getChatroomRequest.chatroomId)
-        return if (chatroomRO == null) {
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = chatroomDB.getChatroom(realm, getChatroomRequest.chatroomId)
+        val getChatroomResponse = ModelConverter.convertGetChatroomResponse(chatroomRO)
+        val chatroom = ModelConverter.convertGetChatroomResponse(chatroomRO).chatroom
+        realm.close()
+        return if (chatroom == null) {
             LMResponse(
                 success = false,
                 errorMessage = "Chatroom with respect to chatroomId not found."
@@ -45,7 +50,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             LMResponse(
                 success = true,
                 errorMessage = null,
-                ModelConverter.convertGetChatroomResponse(chatroomRO)
+                getChatroomResponse
             )
         }
     }

@@ -4,7 +4,9 @@ import android.os.Build
 import com.likeminds.internalsdk.chatroom.api.ChatroomNetworkApi
 import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
-import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.db.models.ChatroomRO
+import com.likeminds.internalsdk.db.models.ReactionRO
+import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.Realm
@@ -83,11 +85,8 @@ class ChatroomReceiver @Inject constructor(
      * DB Functions
      */
 
-    fun getChatroom(chatroomId: String): ChatroomRO? {
-        val realm = Realm.getDefaultInstance()
-        val chatroomRO = ChatDBUtil.getChatroom(realm, chatroomId)
-        realm.close()
-        return chatroomRO
+    fun getChatroom(realm: Realm, chatroomId: String): ChatroomRO? {
+        return ChatDBUtil.getChatroom(realm, chatroomId)
     }
 
     fun updateChatroomFollowStatus(chatroomId: String, value: Boolean) {
