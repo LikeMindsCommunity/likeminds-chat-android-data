@@ -69,8 +69,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 val conversation = body.data?.conversation
 
                 conversation?.let {
-                    //todo change true as per request
-                    conversationDB.savePostedConversation(it, true)
+                    conversationDB.savePostedConversation(
+                        it,
+                        postConversationRequest.isFromNotification
+                    )
                 }
 
                 ModelConverter.convertPostConversationAPIResponse(body)
