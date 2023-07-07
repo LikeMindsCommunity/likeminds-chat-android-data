@@ -15,17 +15,19 @@ class ConversationDbImpl @Inject constructor(
     private val conversationReceiver: ConversationReceiver
 ) : ConversationDB {
 
-    override fun getConversation(conversationId: String): ConversationRO? {
-        return conversationReceiver.getConversation(conversationId)
+    override fun getConversation(realm: Realm, conversationId: String): ConversationRO? {
+        return conversationReceiver.getConversation(realm, conversationId)
     }
 
     override fun getConversationsBelow(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
         keyTimestamp: Long?
     ): RealmResults<ConversationRO> {
         return conversationReceiver.getConversationsBelow(
+            realm,
             chatroomId,
             limit,
             keyId,
@@ -34,26 +36,43 @@ class ConversationDbImpl @Inject constructor(
     }
 
     override fun getConversationsAbove(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
         keyTimestamp: Long?
     ): RealmResults<ConversationRO> {
-        return conversationReceiver.getConversationsAbove(chatroomId, limit, keyId, keyTimestamp)
+        return conversationReceiver.getConversationsAbove(
+            realm,
+            chatroomId,
+            limit,
+            keyId,
+            keyTimestamp
+        )
     }
 
     override fun getTopConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO> {
-        return conversationReceiver.getTopConversations(chatroomId, limit)
+        return conversationReceiver.getTopConversations(
+            realm,
+            chatroomId,
+            limit
+        )
     }
 
     override fun getBottomConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO> {
-        return conversationReceiver.getBottomConversations(chatroomId, limit)
+        return conversationReceiver.getBottomConversations(
+            realm,
+            chatroomId,
+            limit
+        )
     }
 
     override fun observeConversations(

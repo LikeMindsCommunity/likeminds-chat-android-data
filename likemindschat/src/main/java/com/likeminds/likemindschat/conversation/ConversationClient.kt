@@ -236,10 +236,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
             GetConversationType.BOTTOM -> {
                 getBottomConversations(chatroomId, limit)
             }
-
-            GetConversationType.INTERMEDIATE -> {
-                getIntermediateConversation(chatroomId, limit, conversation)
-            }
         }
     }
 
@@ -263,16 +259,20 @@ class ConversationClient @Inject constructor() : BaseClient() {
         limit: Int,
         belowConversation: Conversation?
     ): LMResponse<GetConversationsResponse> {
-        val conversations = conversationDB.getConversationsBelow(
+        val realm = Realm.getDefaultInstance()
+        val conversationsRO = conversationDB.getConversationsBelow(
+            realm,
             chatroomId,
             limit,
             belowConversation?.id,
             belowConversation?.createdEpoch
         )
+        val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
+        realm.close()
         return LMResponse(
             success = true,
             errorMessage = null,
-            ModelConverter.convertGetConversationsResponse(conversations)
+            conversations
         )
     }
 
@@ -282,16 +282,20 @@ class ConversationClient @Inject constructor() : BaseClient() {
         limit: Int,
         conversation: Conversation?
     ): LMResponse<GetConversationsResponse> {
-        val conversations = conversationDB.getConversationsAbove(
+        val realm = Realm.getDefaultInstance()
+        val conversationsRO = conversationDB.getConversationsAbove(
+            realm,
             chatroomId,
             limit,
             conversation?.id,
             conversation?.createdEpoch
         )
+        val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
+        realm.close()
         return LMResponse(
             success = true,
             errorMessage = null,
-            ModelConverter.convertGetConversationsResponse(conversations)
+            conversations
         )
     }
 
@@ -300,11 +304,18 @@ class ConversationClient @Inject constructor() : BaseClient() {
         chatroomId: String,
         limit: Int
     ): LMResponse<GetConversationsResponse> {
-        val conversations = conversationDB.getTopConversations(chatroomId, limit)
+        val realm = Realm.getDefaultInstance()
+        val conversationsRO = conversationDB.getTopConversations(
+            realm,
+            chatroomId,
+            limit
+        )
+        val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
+        realm.close()
         return LMResponse(
             success = true,
             errorMessage = null,
-            ModelConverter.convertGetConversationsResponse(conversations)
+            conversations
         )
     }
 
@@ -313,48 +324,15 @@ class ConversationClient @Inject constructor() : BaseClient() {
         chatroomId: String,
         limit: Int
     ): LMResponse<GetConversationsResponse> {
-        val conversations = conversationDB.getBottomConversations(chatroomId, limit)
+        val realm = Realm.getDefaultInstance()
+        val conversationsRO = conversationDB.getBottomConversations(realm, chatroomId, limit)
+        val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
+        realm.close()
         return LMResponse(
             success = true,
             errorMessage = null,
-            ModelConverter.convertGetConversationsResponse(conversations)
+            conversations
         )
-    }
-
-    private fun getIntermediateConversation(
-        chatroomId: String,
-        limit: Int,
-        conversation: Conversation?
-    ): LMResponse<GetConversationsResponse> {
-        val medianConversation = conversationDB.getConversation(conversation?.id ?: "")
-
-        return if (medianConversation == null) {
-            LMResponse(
-                success = false,
-                errorMessage = "Conversation w.r.t conversation not found."
-            )
-        } else {
-            val aboveConversations = conversationDB.getConversationsAbove(
-                chatroomId,
-                limit,
-                conversation?.id,
-                conversation?.createdEpoch
-            )
-            val belowConversations = conversationDB.getConversationsBelow(
-                chatroomId,
-                limit,
-                conversation?.id,
-                conversation?.createdEpoch
-            )
-
-            val conversations = aboveConversations + medianConversation + belowConversations
-
-            LMResponse(
-                success = true,
-                errorMessage = null,
-                ModelConverter.convertGetConversationsResponse(conversations)
-            )
-        }
     }
 
     /**
@@ -391,7 +369,9 @@ class ConversationClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validateGetConversationRequest(getConversationRequest)
 
-        val conversationRO = conversationDB.getConversation(getConversationRequest.conversationId)
+        val realm = Realm.getDefaultInstance()
+        val conversationRO =
+            conversationDB.getConversation(realm, getConversationRequest.conversationId)
         return if (conversationRO == null) {
             LMResponse(
                 success = false,

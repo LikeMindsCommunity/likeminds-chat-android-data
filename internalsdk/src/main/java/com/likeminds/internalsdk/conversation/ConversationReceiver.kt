@@ -5,7 +5,9 @@ import com.likeminds.internalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
-import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.db.models.ConversationRO
+import com.likeminds.internalsdk.db.models.ReactionRO
+import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
@@ -66,14 +68,13 @@ class ConversationReceiver @Inject constructor(
      */
 
     fun getConversationsBelow(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
         keyTimestamp: Long?
     ): RealmResults<ConversationRO> {
-        val realm = Realm.getDefaultInstance()
-
-        val conversations = realm.where(ConversationRO::class.java)
+        return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             .greaterThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp ?: 0L)
             .notEqualTo(DbKey.ID, keyId ?: "")
@@ -87,19 +88,16 @@ class ConversationReceiver @Inject constructor(
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .limit(limit.toLong())
             .findAll()
-
-        realm.close()
-        return conversations
     }
 
     fun getConversationsAbove(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
         keyTimestamp: Long?
     ): RealmResults<ConversationRO> {
-        val realm = Realm.getDefaultInstance()
-        val conversations = realm.where(ConversationRO::class.java)
+        return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             .lessThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp ?: 0L)
             .notEqualTo(DbKey.ID, keyId ?: "")
@@ -116,16 +114,14 @@ class ConversationReceiver @Inject constructor(
             .where()
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .findAll()
-        realm.close()
-        return conversations
     }
 
     fun getTopConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO> {
-        val realm = Realm.getDefaultInstance()
-        val conversations = realm.where(ConversationRO::class.java)
+        return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             //filter empty conversation with failed attachments
             .not()
@@ -137,16 +133,14 @@ class ConversationReceiver @Inject constructor(
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .limit(limit.toLong())
             .findAll()
-        realm.close()
-        return conversations
     }
 
     fun getBottomConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO> {
-        val realm = Realm.getDefaultInstance()
-        val conversations = realm.where(ConversationRO::class.java)
+        return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             //filter empty conversation with failed attachments
             .not()
@@ -161,8 +155,6 @@ class ConversationReceiver @Inject constructor(
             .where()
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .findAll()
-        realm.close()
-        return conversations
     }
 
     fun observeConversations(
@@ -299,11 +291,8 @@ class ConversationReceiver @Inject constructor(
         })
     }
 
-    fun getConversation(conversationId: String): ConversationRO? {
-        val realm = Realm.getDefaultInstance()
-        val conversationRO = ChatDBUtil.getConversation(realm, conversationId)
-        realm.close()
-        return conversationRO
+    fun getConversation(realm: Realm, conversationId: String): ConversationRO? {
+        return ChatDBUtil.getConversation(realm, conversationId)
     }
 
     fun updateEditedConversation(

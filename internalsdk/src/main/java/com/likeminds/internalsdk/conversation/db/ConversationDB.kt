@@ -12,10 +12,11 @@ import kotlinx.coroutines.flow.Flow
 interface ConversationDB {
 
     //query to get a single conversation
-    fun getConversation(conversationId: String): ConversationRO?
+    fun getConversation(realm: Realm, conversationId: String): ConversationRO?
 
     //query to get conversations below a particular conversation
     fun getConversationsBelow(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
@@ -24,6 +25,7 @@ interface ConversationDB {
 
     //query to get conversations above a particular conversation
     fun getConversationsAbove(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
@@ -32,12 +34,14 @@ interface ConversationDB {
 
     //query to get top most conversations
     fun getTopConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO>
 
     //query to get bottom most conversations
     fun getBottomConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO>

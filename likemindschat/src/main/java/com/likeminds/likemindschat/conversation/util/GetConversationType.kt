@@ -5,6 +5,5 @@ enum class GetConversationType {
     BELOW,
     ABOVE,
     TOP,
-    BOTTOM,
-    INTERMEDIATE
+    BOTTOM
 }
