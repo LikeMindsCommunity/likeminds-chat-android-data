@@ -21,7 +21,7 @@ open class AttachmentMetaRO(
         inline fun build(block: Builder.() -> Unit) = Builder().apply(block).build()
     }
 
-    class Builder() {
+    class Builder {
 
         var numberOfPage: Int? = null
         var size: Long? = null

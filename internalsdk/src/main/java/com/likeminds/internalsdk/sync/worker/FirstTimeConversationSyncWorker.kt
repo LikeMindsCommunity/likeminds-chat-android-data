@@ -14,7 +14,6 @@ import com.likeminds.internalsdk.sync.util.SyncUtil
 import com.likeminds.internalsdk.utils.MAX_RETRY_COUNT
 import com.likeminds.internalsdk.utils.measureExecution
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
-import io.realm.Realm
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -35,7 +34,7 @@ class FirstTimeConversationSyncWorker(
 
     private var dataList = ArrayList<_SyncConversationResponse_>()
 
-    var maxTimestamp = System.currentTimeMillis()
+    private var maxTimestamp = System.currentTimeMillis()
     val chatroomId = workerParameters.inputData.getString(INPUT_DATA_CHATROOM_ID) ?: ""
     private val isBackgroundWorker =
         workerParameters.inputData.getBoolean(INPUT_DATA_BACKGROUND_WORKER, false)
@@ -60,11 +59,9 @@ class FirstTimeConversationSyncWorker(
 
     override fun doWork(): Result {
         return measureExecution("$NAME, isBackgroundWorker: $isBackgroundWorker") {
-            val realm = Realm.getDefaultInstance()
             val result = runBlocking {
-                getConversations(realm)
+                getConversations()
             }
-            realm.close()
             return@measureExecution result
         }
     }
@@ -73,7 +70,7 @@ class FirstTimeConversationSyncWorker(
      * Fetch conversations, save fetched conversations and update last timestamp
      * @return Success or Failure
      */
-    private suspend fun getConversations(realm: Realm): Result {
+    private suspend fun getConversations(): Result {
         if (chatroomId.isEmpty()) return Result.failure()
         val queries = HashMap<String, Any>()
         // Set query parameters for request
@@ -151,13 +148,13 @@ class FirstTimeConversationSyncWorker(
                     if (page % 5 != 1) {
                         dataList.add(data)
                         page++
-                        getConversations(realm)
+                        getConversations()
                     } else {
                         dataList.add(data)
                         SyncUtil.saveConversationResponses(chatroomId, sdkPreferences, dataList)
                         dataList.clear()
                         page++
-                        getConversations(realm)
+                        getConversations()
                     }
                 }
             }

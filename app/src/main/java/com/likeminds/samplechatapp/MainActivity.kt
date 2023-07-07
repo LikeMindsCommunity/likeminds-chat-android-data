@@ -7,14 +7,15 @@ import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.chatroom.model.Chatroom
 import com.likeminds.likemindschat.chatroom.model.GetChatroomRequest
+import com.likeminds.likemindschat.conversation.util.LoadConversationType
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.likeminds.samplechatapp.databinding.ActivityMainBinding
+import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
 
     companion object {
 
@@ -44,7 +45,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         val client = LMChatClient.getInstance()
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -71,8 +74,19 @@ class MainActivity : AppCompatActivity() {
                     .chatroomId("74936")
                     .build()
             )
-
             Log.d(TAG, "getChatroom: ${getChatroom.data?.chatroom}")
+        }
+
+        binding.tvClick.setOnClickListener {
+            val worker = client.loadConversations(
+                this@MainActivity,
+                LoadConversationType.FIRST_TIME,
+                "74936"
+            )
+
+            worker.observe(this) { state ->
+                Log.d(TAG, "loadConversation: $state")
+            }
         }
     }
 }

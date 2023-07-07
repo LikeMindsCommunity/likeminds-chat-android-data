@@ -189,11 +189,11 @@ class ConversationClient @Inject constructor() : BaseClient() {
             }
 
             LoadConversationType.FIRST_TIME_BACKGROUND -> {
-                SyncSDK.startFirstTimeSyncForChatroom(context, chatroomId)
+                SyncSDK.startFirstTimeBackgroundSync(context, chatroomId)
             }
 
             LoadConversationType.REOPEN -> {
-                SyncSDK.startFirstTimeSyncForChatroom(context, chatroomId)
+                SyncSDK.startReopenSyncForChatroom(context, chatroomId)
             }
         }
     }

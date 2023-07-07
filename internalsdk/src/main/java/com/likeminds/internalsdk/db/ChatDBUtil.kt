@@ -58,7 +58,7 @@ object ChatDBUtil {
      *
      * @return [Boolean] whether write is successful or not
      **/
-    private fun write(block: (realm: Realm) -> Unit): Boolean {
+    fun write(block: (realm: Realm) -> Unit): Boolean {
         ONGOING_WRITE_TRANSACTION.incrementAndGet()
         Realm.getDefaultInstance().use { realm ->
             return try {

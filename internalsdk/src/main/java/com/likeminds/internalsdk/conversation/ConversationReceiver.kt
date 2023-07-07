@@ -5,9 +5,7 @@ import com.likeminds.internalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
-import com.likeminds.internalsdk.db.models.ConversationRO
-import com.likeminds.internalsdk.db.models.ReactionRO
-import com.likeminds.internalsdk.db.models.UserRO
+import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
@@ -258,7 +256,7 @@ class ConversationReceiver @Inject constructor(
                 if (conversationRO.createdEpoch > (chatroomRO.lastConversationRO?.createdEpoch
                         ?: 0)
                 ) {
-                    val lastConversation = chatroomRO.conversations?.last(null)
+                    val lastConversation = chatroomRO.conversations.last(null)
                     val lastConversationRO =
                         ROConverter.convertConversationToLastConversation(lastConversation)
                             ?: return@writeAsync

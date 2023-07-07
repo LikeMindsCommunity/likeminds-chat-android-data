@@ -239,8 +239,7 @@ object SyncUtil {
         sdkPreferences: SDKPreferences,
         dataList: ArrayList<_SyncConversationResponse_>
     ) {
-        val realm = Realm.getDefaultInstance()
-        ChatDBUtil.write(realm) { realmWrite ->
+        ChatDBUtil.write { realmWrite ->
             dataList.forEach { data ->
                 //fetch community
                 val communityId = sdkPreferences.getCommunityId() ?: return@write
@@ -251,7 +250,7 @@ object SyncUtil {
                 realmWrite.insertOrUpdate(communityRO)
 
                 //fetch chatroom
-                val chatroom = data.chatroomMeta[chatroomId.toString()] ?: return@write
+                val chatroom = data.chatroomMeta[chatroomId] ?: return@write
 
                 //chatroom creator
                 val chatroomCreatorId = chatroom.userId
@@ -263,7 +262,7 @@ object SyncUtil {
 
                 //reactions
                 val chatroomReactions = if (chatroom.hasReactions == true) {
-                    val list = data.chatroomReactionsMeta[chatroomId.toString()] ?: emptyList()
+                    val list = data.chatroomReactionsMeta[chatroomId] ?: emptyList()
                     list.map { reaction ->
                         val userId = reaction.userId.toString()
                         val user = data.userMeta[userId]
@@ -336,6 +335,7 @@ object SyncUtil {
                             conversationAttachment,
                             reactions
                         ) ?: return@conversation
+
                     realmWrite.insertOrUpdate(
                         conversationRO
                     )
