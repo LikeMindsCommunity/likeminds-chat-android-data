@@ -285,9 +285,9 @@ object ROConverter {
         val linkRO = convertLink(chatroomId, communityId, conversation.ogTags)
 
         //Clear embedded object list if already present else calling insertToRealmOrUpdate will duplicate it
-        savedAnswer?.attachments?.clear()
-        savedAnswer?.reactions?.clear()
-        savedAnswer?.polls?.clear()
+        savedAnswer?.attachments?.deleteAllFromRealm()
+        savedAnswer?.reactions?.deleteAllFromRealm()
+        savedAnswer?.polls?.deleteAllFromRealm()
 
         return ConversationRO.build(
             conversation.id.toString(),
