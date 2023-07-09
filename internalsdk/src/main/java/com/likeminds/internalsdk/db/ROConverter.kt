@@ -113,13 +113,13 @@ object ROConverter {
      * @param realm: instance of realm
      * @param conversation: Conversation object to converted
      * @param member: [MemberRO] object of conversation's creator
-     * @param loggedInMemberId: Id of logged in member
+     * @param loggedInMember: Object of logged in member
      * */
     fun convertConversation(
         realm: Realm,
         conversation: _Conversation_?,
         member: MemberRO? = null,
-        loggedInMemberId: String? = null
+        loggedInMember: UserRO?
     ): ConversationRO? {
         /**
          * Conversation is invalid without chatroomId, conversationId, Member object
@@ -130,7 +130,7 @@ object ROConverter {
         val memberRO = member ?: ChatDBUtil.getConversationMember(
             realm,
             conversation
-        ) ?: return null
+        ) ?: convertUserToMember(loggedInMember, communityId) ?: return null
 
         val savedAnswer = if (conversation.hasReactions == true ||
             _ConversationState_.isPoll(conversation.state) ||
@@ -196,7 +196,7 @@ object ROConverter {
             attachmentsUploaded = conversation.attachmentUploaded
             uploadWorkerUUID = savedAnswer?.uploadWorkerUUID ?: conversation.uploadWorkerUUID
             localSavedEpoch = conversation.localCreatedEpoch ?: 0L
-            temporaryId = if (memberRO.id == loggedInMemberId) {
+            temporaryId = if (memberRO.id == loggedInMember?.id) {
                 conversation.temporaryId
             } else {
                 null
@@ -364,6 +364,31 @@ object ROConverter {
             isDeleted = user.isDeleted
             customTitle = user.customTitle
         }
+    }
+
+    /**
+     * convert [UserRO] to [MemberRO] and save it [MemberRO] table
+     * @param userRO: object of [UserRO]
+     * @param communityId: id of community
+     *
+     * @return [MemberRO]: object created
+     */
+    private fun convertUserToMember(userRO: UserRO?, communityId: String?): MemberRO? {
+        if (userRO == null) return null
+        val userId = userRO.id
+        val uid = "$userId#$communityId"
+        val memberRO = MemberRO.build(uid, userId) {
+            name = userRO.name
+            imageUrl = userRO.imageUrl
+            customTitle = userRO.customTitle
+            userUniqueId = userRO.userUniqueId
+            isGuest = userRO.isGuest
+        }
+        ChatDBUtil.writeAsync({
+            it.insertOrUpdate(memberRO)
+        })
+
+        return memberRO
     }
 
     /**

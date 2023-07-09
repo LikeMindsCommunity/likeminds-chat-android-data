@@ -182,15 +182,11 @@ class ConversationReceiver @Inject constructor(
             val userRO = realm.where(UserRO::class.java).findFirst()
 
             val conversationRO =
-                ROConverter.convertConversation(realm, conversation, loggedInMemberId = userRO?.id)
+                ROConverter.convertConversation(realm, conversation, loggedInMember = userRO)
             if (conversationRO != null) {
                 ChatDBUtil.getChatroom(realm, conversationRO.chatroomId)?.let { chatroomRO ->
                     //add the conversation to db
-                    if (chatroomRO.conversations.isEmpty()) {
-                        chatroomRO.conversations = RealmList(conversationRO)
-                    } else {
-                        chatroomRO.conversations.add(conversationRO)
-                    }
+                    chatroomRO.conversations.add(conversationRO)
                     //Make the chatroom followed, if it is not already followed
                     if (chatroomRO.followStatus != true) {
                         chatroomRO.followStatus = true
@@ -235,13 +231,13 @@ class ConversationReceiver @Inject constructor(
             val userRO = realm.where(UserRO::class.java).findFirst()
 
             val conversationRO =
-                ROConverter.convertConversation(realm, conversation, loggedInMemberId = userRO?.id)
+                ROConverter.convertConversation(realm, conversation, loggedInMember = userRO)
                     ?: return@writeAsync
 
             ChatDBUtil.getChatroom(realm, conversation.chatroomId)?.let { chatroomRO ->
                 //add the conversation to db
                 if (chatroomRO.conversations.isEmpty()) {
-                    chatroomRO.conversations = RealmList(conversationRO)
+                    chatroomRO.conversations.add(conversationRO)
                 } else {
                     //delete the temporary conversation if present
                     if (!isFromNotification) {
