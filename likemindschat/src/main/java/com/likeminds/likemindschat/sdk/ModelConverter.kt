@@ -1322,7 +1322,7 @@ object ModelConverter {
             .id(chatroomRO.id)
             .member(convertMemberRO(chatroomRO.member))
             .communityId(chatroomRO.communityId)
-            .communityName(chatroomRO.communities?.first()?.name)
+            .communityName(chatroomRO.communities?.firstOrNull()?.name)
             .title(chatroomRO.title)
             .state(chatroomRO.state)
             .createdAt(chatroomRO.createdAt)
