@@ -58,9 +58,12 @@ class Chatroom private constructor(
     val lastSeenConversation: Conversation?,
     val draftConversation: String?,
     val isConversationStored: Boolean,
-    val isDraft: Boolean?
+    val isDraft: Boolean?,
+    val totalAllResponseCount: Int?
 ) {
+
     class Builder {
+
         private var member: Member? = null
         private var id: String = ""
         private var title: String = ""
@@ -115,6 +118,7 @@ class Chatroom private constructor(
         private var draftConversation: String? = null
         private var isConversationStored: Boolean = false
         private var isDraft: Boolean? = null
+        private var totalAllResponseCount: Int? = null
 
         fun member(member: Member?) = apply { this.member = member }
         fun id(id: String) = apply { this.id = id }
@@ -208,6 +212,8 @@ class Chatroom private constructor(
             apply { this.isConversationStored = isConversationStored }
 
         fun isDraft(isDraft: Boolean?) = apply { this.isDraft = isDraft }
+        fun totalAllResponseCount(totalAllResponseCount: Int?) =
+            apply { this.totalAllResponseCount = totalAllResponseCount }
 
         fun build() = Chatroom(
             member,
@@ -263,7 +269,66 @@ class Chatroom private constructor(
             lastSeenConversation,
             draftConversation,
             isConversationStored,
-            isDraft
+            isDraft,
+            totalAllResponseCount
         )
+    }
+
+    fun toBuilder(): Builder {
+        return Builder().member(member)
+            .id(id)
+            .title(title)
+            .createdAt(createdAt)
+            .answerText(answerText)
+            .state(state)
+            .unseenCount(unseenCount)
+            .shareUrl(shareUrl)
+            .communityId(communityId)
+            .communityName(communityName)
+            .type(type)
+            .about(about)
+            .header(header)
+            .showFollowTelescope(showFollowTelescope)
+            .showFollowAutoTag(showFollowAutoTag)
+            .cardCreationTime(cardCreationTime)
+            .participantsCount(participantsCount)
+            .totalResponseCount(totalResponseCount)
+            .muteStatus(muteStatus)
+            .followStatus(followStatus)
+            .hasBeenNamed(hasBeenNamed)
+            .hasReactions(hasReactions)
+            .date(date)
+            .isTagged(isTagged)
+            .isPending(isPending)
+            .isPinned(isPinned)
+            .isDeleted(isDeleted)
+            .userId(userId)
+            .deletedBy(deletedBy)
+            .deletedByMember(deletedByMember)
+            .updatedAt(updatedAt)
+            .lastSeenConversationId(lastSeenConversationId)
+            .lastConversationId(lastConversationId)
+            .dateEpoch(dateEpoch)
+            .isSecret(isSecret)
+            .secretChatroomParticipants(secretChatroomParticipants)
+            .secretChatroomLeft(secretChatroomLeft)
+            .reactions(reactions)
+            .topic(topic)
+            .topicId(topicId)
+            .autoFollowDone(autoFollowDone)
+            .isEdited(isEdited)
+            .access(access)
+            .memberCanMessage(memberCanMessage)
+            .cohorts(cohorts)
+            .externalSeen(externalSeen)
+            .unreadConversationCount(unreadConversationCount)
+            .chatroomImageUrl(chatroomImageUrl)
+            .accessWithoutSubscription(accessWithoutSubscription)
+            .lastConversation(lastConversation)
+            .lastSeenConversation(lastSeenConversation)
+            .draftConversation(draftConversation)
+            .isConversationStored(isConversationStored)
+            .isDraft(isDraft)
+            .totalAllResponseCount(totalAllResponseCount)
     }
 }
