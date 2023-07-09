@@ -1334,6 +1334,7 @@ object ModelConverter {
             .externalSeen(chatroomRO.externalSeen)
             .isConversationStored(chatroomRO.isConversationStored)
             .isDraft(chatroomRO.isDraft)
+            .totalAllResponseCount(chatroomRO.totalAllResponseCount)
             .build()
     }
 

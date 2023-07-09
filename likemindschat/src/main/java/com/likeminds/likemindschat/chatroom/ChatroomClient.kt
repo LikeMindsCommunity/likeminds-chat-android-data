@@ -39,7 +39,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         val realm = Realm.getDefaultInstance()
         val chatroomRO = chatroomDB.getChatroom(realm, getChatroomRequest.chatroomId)
         val getChatroomResponse = ModelConverter.convertGetChatroomResponse(chatroomRO)
-        val chatroom = ModelConverter.convertGetChatroomResponse(chatroomRO).chatroom
+        val chatroom = getChatroomResponse.chatroom
         realm.close()
         return if (chatroom == null) {
             LMResponse(
