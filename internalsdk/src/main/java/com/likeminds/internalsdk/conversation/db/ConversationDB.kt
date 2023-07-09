@@ -46,6 +46,20 @@ interface ConversationDB {
         limit: Int
     ): RealmResults<ConversationRO>
 
+    fun getConversationsAboveCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int
+
+    fun getConversationsBelowCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int
+
     //query to get observe conversations
     fun observeConversations(
         realm: Realm,

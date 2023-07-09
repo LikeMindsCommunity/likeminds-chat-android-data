@@ -51,6 +51,24 @@ class ConversationDbImpl @Inject constructor(
         )
     }
 
+    override fun getConversationsAboveCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return conversationReceiver.getConversationsAboveCount(realm, chatroomId, keyId, keyTimestamp)
+    }
+
+    override fun getConversationsBelowCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return conversationReceiver.getConversationsBelowCount(realm, chatroomId, keyId, keyTimestamp)
+    }
+
     override fun getTopConversations(
         realm: Realm,
         chatroomId: String,

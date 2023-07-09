@@ -10,6 +10,7 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.conversation.model.*
+import com.likeminds.likemindschat.conversation.util.GetConversationCountType
 import com.likeminds.likemindschat.conversation.util.GetConversationType
 import com.likeminds.likemindschat.conversation.util.LoadConversationType
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -334,6 +335,104 @@ class ConversationClient @Inject constructor() : BaseClient() {
             success = true,
             errorMessage = null,
             conversations
+        )
+    }
+
+    /**
+     * runs the query and returns the conversations above count
+     * @param getConversationsCountRequest - client request model to get conversations count
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<GetConversationsResponse> - Base LM response[GetConversationsResponse]
+     */
+    fun getConversationsCount(getConversationsCountRequest: GetConversationsCountRequest): LMResponse<GetConversationsCountResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validateGetConversationsCountRequest(getConversationsCountRequest)
+
+        val chatroomId = getConversationsCountRequest.chatroomId
+        val conversationId = getConversationsCountRequest.conversation.id ?: ""
+        val createdEpoch = getConversationsCountRequest.conversation.createdEpoch ?: 0
+
+        return when (getConversationsCountRequest.type) {
+            GetConversationCountType.NONE -> {
+                LMResponse(
+                    success = false,
+                    errorMessage = "queryType not specified."
+                )
+            }
+            GetConversationCountType.BELOW -> {
+                getConversationsBelowCount(
+                    chatroomId,
+                    conversationId,
+                    createdEpoch
+                )
+            }
+            GetConversationCountType.ABOVE -> {
+                getConversationsAboveCount(
+                    chatroomId,
+                    conversationId,
+                    createdEpoch,
+                )
+            }
+        }
+    }
+
+    /**
+     * validates [getConversationsCountRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateGetConversationsCountRequest(getConversationsCountRequest: GetConversationsCountRequest) {
+        if (getConversationsCountRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+
+        if (getConversationsCountRequest.type == GetConversationCountType.NONE) {
+            RequestUtils.throwException("queryType")
+        }
+    }
+
+    // gets count of conversations above the provided conversation
+    private fun getConversationsAboveCount(
+        chatroomId: String,
+        conversationId: String,
+        createdEpoch: Long
+    ): LMResponse<GetConversationsCountResponse> {
+        val realm = Realm.getDefaultInstance()
+        val count = conversationDB.getConversationsAboveCount(
+            realm,
+            chatroomId,
+            conversationId,
+            createdEpoch
+        )
+        realm.close()
+        val aboveConversationsCount = ModelConverter.convertGetConversationsCountResponse(count)
+        return LMResponse(
+            success = true,
+            errorMessage = null,
+            aboveConversationsCount
+        )
+    }
+
+    // gets count of conversations below the provided conversation
+    private fun getConversationsBelowCount(
+        chatroomId: String,
+        conversationId: String,
+        createdEpoch: Long
+    ): LMResponse<GetConversationsCountResponse> {
+        val realm = Realm.getDefaultInstance()
+        val count = conversationDB.getConversationsBelowCount(
+            realm,
+            chatroomId,
+            conversationId,
+            createdEpoch
+        )
+        realm.close()
+        val belowConversationsCount = ModelConverter.convertGetConversationsCountResponse(count)
+        return LMResponse(
+            success = true,
+            errorMessage = null,
+            belowConversationsCount
         )
     }
 

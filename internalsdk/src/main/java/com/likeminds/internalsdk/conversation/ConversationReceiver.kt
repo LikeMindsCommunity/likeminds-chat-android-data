@@ -5,12 +5,17 @@ import com.likeminds.internalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
-import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.db.models.ConversationRO
+import com.likeminds.internalsdk.db.models.ReactionRO
+import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
-import io.realm.*
+import io.realm.OrderedCollectionChangeSet
+import io.realm.Realm
+import io.realm.RealmResults
+import io.realm.Sort
 import io.realm.kotlin.toChangesetFlow
 import io.realm.rx.CollectionChange
 import kotlinx.coroutines.flow.Flow
@@ -112,6 +117,34 @@ class ConversationReceiver @Inject constructor(
             .where()
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .findAll()
+    }
+
+    fun getConversationsAboveCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            .lessThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp)
+            .notEqualTo(DbKey.ID, keyId)
+            .count()
+            .toInt()
+    }
+
+    fun getConversationsBelowCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            .greaterThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp)
+            .notEqualTo(DbKey.ID, keyId)
+            .count()
+            .toInt()
     }
 
     fun getTopConversations(
