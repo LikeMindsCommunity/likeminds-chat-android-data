@@ -1,8 +1,12 @@
 package com.likeminds.likemindschat.conversation
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.FirebaseDatabase
+import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.ConversationRO
 import com.likeminds.internalsdk.sync.SyncSDK
@@ -10,6 +14,7 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.conversation.model.*
+import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
 import com.likeminds.likemindschat.conversation.util.GetConversationCountType
 import com.likeminds.likemindschat.conversation.util.GetConversationType
 import com.likeminds.likemindschat.conversation.util.LoadConversationType
@@ -195,6 +200,75 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
             LoadConversationType.REOPEN -> {
                 SyncSDK.startReopenSyncForChatroom(context, chatroomId)
+            }
+        }
+    }
+
+    /**
+     * Observe live conversations
+     */
+    suspend fun observeLiveConversations(
+        context: Context,
+        chatroomId: String
+    ) {
+        val app = FirebaseApp.getInstance("secondary")
+        val dataBaseReference = FirebaseDatabase.getInstance(app).reference
+            .child("collabcards")
+            .child(chatroomId)
+        dataBaseReference.keepSynced(true)
+
+        dataBaseReference.childEventListener().collect { result ->
+            when (result) {
+                is LiveConversationResponse.ChildAdded -> {
+                    val latestConversation = result.response?.answerId
+                    if (!latestConversation.isNullOrEmpty()) {
+                        SyncSDK.startReopenSyncForChatroom(
+                            context,
+                            chatroomId,
+                            latestConversation
+                        )
+                    }
+                }
+
+                is LiveConversationResponse.ChildChanged -> {
+                    val latestConversation = result.response?.answerId
+                    if (!latestConversation.isNullOrEmpty()) {
+                        SyncSDK.startReopenSyncForChatroom(
+                            context,
+                            chatroomId,
+                            latestConversation
+                        )
+                    }
+                }
+
+                is LiveConversationResponse.ChildMoved -> {
+                    val latestConversation = result.response?.answerId
+                    if (!latestConversation.isNullOrEmpty()) {
+                        SyncSDK.startReopenSyncForChatroom(
+                            context,
+                            chatroomId,
+                            latestConversation
+                        )
+                    }
+                }
+
+                is LiveConversationResponse.ChildRemoved -> {
+                    val latestConversation = result.response?.answerId
+                    if (!latestConversation.isNullOrEmpty()) {
+                        SyncSDK.startReopenSyncForChatroom(
+                            context,
+                            chatroomId,
+                            latestConversation
+                        )
+                    }
+                }
+
+                is LiveConversationResponse.OnCancelled -> {
+                    Log.e(
+                        GroupChatSDK.LOG_TAG,
+                        "live conversation failed: ${result.errorMessage}"
+                    )
+                }
             }
         }
     }

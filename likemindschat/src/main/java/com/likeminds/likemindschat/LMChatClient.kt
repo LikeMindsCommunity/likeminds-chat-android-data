@@ -249,6 +249,14 @@ class LMChatClient private constructor() {
         return conversationClient.loadConversations(context, type, chatroomId)
     }
 
+    //Exposed function to observe live conversations
+    suspend fun observeLiveConversations(
+        context: Context,
+        chatroomId: String
+    ) {
+        return conversationClient.observeLiveConversations(context, chatroomId)
+    }
+
     // Exposed function to get conversations
     fun getConversations(getConversationsRequest: GetConversationsRequest): LMResponse<GetConversationsResponse> {
         return conversationClient.getConversations(getConversationsRequest)
