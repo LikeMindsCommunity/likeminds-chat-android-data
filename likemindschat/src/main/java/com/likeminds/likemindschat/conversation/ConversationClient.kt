@@ -511,6 +511,31 @@ class ConversationClient @Inject constructor() : BaseClient() {
     }
 
     /**
+     * deletes a conversation from local db permanently
+     * @param deleteConversationPermanentlyRequest - client request model to delete a conversation from local db permanently
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * */
+    fun deleteConversationPermanently(deleteConversationPermanentlyRequest: DeleteConversationPermanentlyRequest) {
+        // validates the client request
+        RequestUtils.validate()
+        validateDeleteConversationPermanentlyRequest(deleteConversationPermanentlyRequest)
+
+        conversationDB.deleteConversationPermanently(
+            deleteConversationPermanentlyRequest.conversationId,
+            deleteConversationPermanentlyRequest.chatroomId
+        )
+    }
+
+    private fun validateDeleteConversationPermanentlyRequest(deleteConversationPermanentlyRequest: DeleteConversationPermanentlyRequest) {
+        if (deleteConversationPermanentlyRequest.conversationId.isEmpty()) {
+            RequestUtils.throwException("conversationId")
+        }
+        if (deleteConversationPermanentlyRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+    }
+
+    /**
      * save conversation in local db
      * @param saveConversationRequest - client request model to save a temporary conversation
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided

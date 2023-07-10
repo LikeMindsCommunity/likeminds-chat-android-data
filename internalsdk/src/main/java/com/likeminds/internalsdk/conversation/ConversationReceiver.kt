@@ -209,6 +209,29 @@ class ConversationReceiver @Inject constructor(
             }
     }
 
+    fun deleteConversationPermanently(conversationId: String, chatroomId: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let {  chatroomRO ->
+                val conversation = ChatDBUtil.getConversation(it, conversationId)
+                    ?: return@writeAsync
+                //Delete the conversation
+                conversation.deleteFromRealm()
+
+                //Update the total response count of this chatroom
+                chatroomRO.totalResponseCount = chatroomRO.totalResponseCount - 1
+                chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount - 1
+
+                val lastConversation = chatroomRO.conversations.where()
+                    .equalTo(DbKey.STATE, STATE_NORMAL)
+                    .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING)
+                    .findFirst() ?: return@writeAsync
+                chatroomRO.lastConversation = lastConversation
+                chatroomRO.lastSeenConversation = lastConversation
+                chatroomRO.lastSeenConversationId = lastConversation.id
+            }
+        })
+    }
+
     fun saveTemporaryConversation(conversation: _Conversation_) {
         ChatDBUtil.writeAsync({ realm ->
             //get logged in member

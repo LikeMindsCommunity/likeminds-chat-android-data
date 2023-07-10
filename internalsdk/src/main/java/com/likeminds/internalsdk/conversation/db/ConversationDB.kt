@@ -66,6 +66,8 @@ interface ConversationDB {
         chatroomId: String
     ): Flow<CollectionChange<RealmResults<ConversationRO>>>
 
+    fun deleteConversationPermanently(conversationId: String, chatroomId: String)
+
     //query to get save temporary conversation
     fun saveTemporaryConversation(conversation: _Conversation_)
 

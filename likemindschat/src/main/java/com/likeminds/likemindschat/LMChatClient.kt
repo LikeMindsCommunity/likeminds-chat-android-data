@@ -277,6 +277,11 @@ class LMChatClient private constructor() {
         return conversationClient.getConversationsCount(getConversationsCountRequest)
     }
 
+    // Exposed function to delete a conversation permanently
+    fun deleteConversationPermanently(deleteConversationPermanentlyRequest: DeleteConversationPermanentlyRequest) {
+        return conversationClient.deleteConversationPermanently(deleteConversationPermanentlyRequest)
+    }
+
     // Exposed function to save temporary conversation
     fun saveTemporaryConversation(saveConversationRequest: SaveConversationRequest) {
         conversationClient.saveTemporaryConversation(saveConversationRequest)

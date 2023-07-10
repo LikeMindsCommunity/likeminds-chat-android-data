@@ -110,6 +110,10 @@ class ConversationDbImpl @Inject constructor(
         return conversationReceiver.observeConversations(realm, chatroomId)
     }
 
+    override fun deleteConversationPermanently(conversationId: String, chatroomId: String) {
+        return conversationReceiver.deleteConversationPermanently(conversationId, chatroomId)
+    }
+
     override fun saveTemporaryConversation(conversation: _Conversation_) {
         conversationReceiver.saveTemporaryConversation(conversation)
     }
