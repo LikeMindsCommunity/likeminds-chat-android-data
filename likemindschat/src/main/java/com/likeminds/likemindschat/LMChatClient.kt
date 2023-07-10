@@ -125,8 +125,16 @@ class LMChatClient private constructor() {
 
     // Exposed function to get config details
     //function to get chatrooms for home feed
-    suspend fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
-        homeFeedClient.getChatrooms(context, listener)
+    suspend fun getChatrooms(
+        context: Context,
+        communityId: String,
+        listener: HomeFeedChangeListener
+    ) {
+        homeFeedClient.getChatrooms(
+            context,
+            communityId,
+            listener
+        )
     }
 
     //function to get config details
