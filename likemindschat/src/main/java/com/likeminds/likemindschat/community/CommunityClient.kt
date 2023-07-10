@@ -70,11 +70,16 @@ class CommunityClient @Inject constructor() : BaseClient() {
     }
 
     /**
-     * Fetches the user from local db
+     * Fetches the member from local db
      * @param getMemberRequest - client request model to get member
+     * @throws IllegalArgumentException - when LMFeedClient is not instantiated or required properties are not provided
      * @return GetMemberResponse - GetMemberResponse model for getMember request
      */
     fun getMember(getMemberRequest: GetMemberRequest): LMResponse<GetMemberResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validateGetMemberRequest(getMemberRequest)
+
         val realm = Realm.getDefaultInstance()
         val communityId = groupChatSDK.sdkPreferences.getCommunityId() ?: ""
         Log.d("SDK", "getMember: $communityId")
@@ -94,6 +99,16 @@ class CommunityClient @Inject constructor() : BaseClient() {
                 null,
                 getMemberResponse
             )
+        }
+    }
+
+    /**
+     * validates [getMemberRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateGetMemberRequest(getMemberRequest: GetMemberRequest) {
+        if (getMemberRequest.memberId.isEmpty()) {
+            RequestUtils.throwException("memberId")
         }
     }
 }

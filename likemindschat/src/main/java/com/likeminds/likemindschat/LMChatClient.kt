@@ -15,10 +15,7 @@ import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.conversation.util.LoadConversationType
 import com.likeminds.likemindschat.helper.HelperClient
-import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
-import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
-import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
-import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
+import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
@@ -229,6 +226,12 @@ class LMChatClient private constructor() {
     suspend fun getTaggingList(getTaggingListRequest: GetTaggingListRequest): LMResponse<GetTaggingListResponse> {
         return helperClient.getTaggingList(getTaggingListRequest)
     }
+
+    // Exposed function to get whether DB is empty or not
+    fun getIsDBEmpty(): LMResponse<GetIsDBEmptyResponse> {
+        return helperClient.getIsDBEmpty()
+    }
+
 
     // Exposed function to search a chatroom
     suspend fun searchChatroom(searchChatroomRequest: SearchChatroomRequest): LMResponse<SearchChatroomResponse> {
