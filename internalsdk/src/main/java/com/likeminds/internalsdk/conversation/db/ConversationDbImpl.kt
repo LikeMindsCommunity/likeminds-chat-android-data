@@ -57,7 +57,12 @@ class ConversationDbImpl @Inject constructor(
         keyId: String,
         keyTimestamp: Long
     ): Int {
-        return conversationReceiver.getConversationsAboveCount(realm, chatroomId, keyId, keyTimestamp)
+        return conversationReceiver.getConversationsAboveCount(
+            realm,
+            chatroomId,
+            keyId,
+            keyTimestamp
+        )
     }
 
     override fun getConversationsBelowCount(
@@ -66,7 +71,12 @@ class ConversationDbImpl @Inject constructor(
         keyId: String,
         keyTimestamp: Long
     ): Int {
-        return conversationReceiver.getConversationsBelowCount(realm, chatroomId, keyId, keyTimestamp)
+        return conversationReceiver.getConversationsBelowCount(
+            realm,
+            chatroomId,
+            keyId,
+            keyTimestamp
+        )
     }
 
     override fun getTopConversations(
@@ -117,6 +127,10 @@ class ConversationDbImpl @Inject constructor(
         linkOgTags: _LinkOGTags_?
     ) {
         conversationReceiver.updateEditedConversation(conversationId, conversationText, linkOgTags)
+    }
+
+    override fun updateConversationUploadWorkerUUID(conversationId: String, uuid: String) {
+        conversationReceiver.updateConversationUploadWorkerUUID(conversationId, uuid)
     }
 
     override fun updateConversationSubmitPoll(conversationId: String, allPollItems: List<_Poll_>) {

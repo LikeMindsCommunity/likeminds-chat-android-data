@@ -340,6 +340,14 @@ class ConversationReceiver @Inject constructor(
         })
     }
 
+    fun updateConversationUploadWorkerUUID(conversationId: String, uuid: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getConversation(it, conversationId)?.let { conversation ->
+                conversation.uploadWorkerUUID = uuid
+            }
+        })
+    }
+
     fun updateConversationSubmitPoll(conversationId: String, allPollItems: List<_Poll_>) {
         ChatDBUtil.writeAsync({ realm ->
             ChatDBUtil.getConversation(realm, conversationId)?.let { conversation ->

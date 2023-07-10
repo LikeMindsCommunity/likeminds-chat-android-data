@@ -180,7 +180,6 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
 
     private fun observeLiveHomeFeed(context: Context) {
         val communityId = groupChatSDK.sdkPreferences.getCommunityId() ?: ""
-        Log.d("SDK", "observeLiveHomeFeed: $communityId")
         val firebaseApp = FirebaseApp.getInstance("secondary")
         databaseReference = FirebaseDatabase.getInstance(firebaseApp).reference
             .child("community")

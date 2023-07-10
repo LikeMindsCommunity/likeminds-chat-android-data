@@ -282,6 +282,13 @@ class LMChatClient private constructor() {
         conversationClient.saveTemporaryConversation(saveConversationRequest)
     }
 
+    // Exposed function to update conversation upload worker uuid
+    fun updateConversationUploadWorkerUUID(updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest) {
+        conversationClient.updateConversationUploadWorkerUUID(
+            updateConversationUploadWorkerUUIDRequest
+        )
+    }
+
     // Exposed function to get a single conversation
     fun getConversation(getConversationRequest: GetConversationRequest): LMResponse<GetConversationResponse> {
         return conversationClient.getConversation(getConversationRequest)

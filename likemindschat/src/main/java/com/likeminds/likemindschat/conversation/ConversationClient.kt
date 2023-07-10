@@ -533,6 +533,33 @@ class ConversationClient @Inject constructor() : BaseClient() {
     }
 
     /**
+     * update conversation uuid in local db
+     * @param updateConversationUploadWorkerUUIDRequest - client request model to update conversation upload worker
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * */
+    fun updateConversationUploadWorkerUUID(updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest) {
+        // validates the client request
+        RequestUtils.validate()
+        validateUpdateConversationUploadWorkerUUIDRequest(updateConversationUploadWorkerUUIDRequest)
+
+        conversationDB.updateConversationUploadWorkerUUID(
+            updateConversationUploadWorkerUUIDRequest.conversationId,
+            updateConversationUploadWorkerUUIDRequest.uuid
+        )
+    }
+
+    private fun validateUpdateConversationUploadWorkerUUIDRequest(
+        updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest
+    ) {
+        if (updateConversationUploadWorkerUUIDRequest.conversationId.isEmpty()) {
+            RequestUtils.throwException("conversationId")
+        }
+        if (updateConversationUploadWorkerUUIDRequest.uuid.isEmpty()) {
+            RequestUtils.throwException("uuid")
+        }
+    }
+
+    /**
      * return a single conversation from local db
      * @param getConversationRequest: client request model to get a conversation
      *

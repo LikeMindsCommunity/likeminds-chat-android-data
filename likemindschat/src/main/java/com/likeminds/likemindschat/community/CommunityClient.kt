@@ -1,6 +1,5 @@
 package com.likeminds.likemindschat.community
 
-import android.util.Log
 import com.likeminds.internalsdk.community.model._GetExploreFeedRequest_
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
@@ -82,7 +81,6 @@ class CommunityClient @Inject constructor() : BaseClient() {
 
         val realm = Realm.getDefaultInstance()
         val communityId = groupChatSDK.sdkPreferences.getCommunityId() ?: ""
-        Log.d("SDK", "getMember: $communityId")
         val memberRO = ChatDBUtil.getMember(
             realm,
             communityId,
