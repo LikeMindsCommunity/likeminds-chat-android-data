@@ -75,6 +75,9 @@ interface ConversationDB {
         isFromNotification: Boolean
     )
 
+    //query to update temporary conversation
+    fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long)
+
     //query to update edited conversation
     fun updateEditedConversation(
         conversationId: String,

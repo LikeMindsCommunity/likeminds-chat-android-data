@@ -533,6 +533,31 @@ class ConversationClient @Inject constructor() : BaseClient() {
     }
 
     /**
+     * updates temporary conversation in local db
+     * @param updateTemporaryConversationRequest - client request model to update temporary conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * */
+    fun updateTemporaryConversation(updateTemporaryConversationRequest: UpdateTemporaryConversationRequest) {
+        // validates the client request
+        RequestUtils.validate()
+        validateUpdateTemporaryConversationRequest(updateTemporaryConversationRequest)
+
+        conversationDB.updateTemporaryConversation(
+            updateTemporaryConversationRequest.conversationId,
+            updateTemporaryConversationRequest.localSavedEpoch
+        )
+    }
+
+    private fun validateUpdateTemporaryConversationRequest(updateTemporaryConversationRequest: UpdateTemporaryConversationRequest) {
+        if (updateTemporaryConversationRequest.conversationId.isEmpty()) {
+            RequestUtils.throwException("conversationId")
+        }
+        if (updateTemporaryConversationRequest.localSavedEpoch == -1L) {
+            RequestUtils.throwException("localSavedEpoch")
+        }
+    }
+
+    /**
      * update conversation uuid in local db
      * @param updateConversationUploadWorkerUUIDRequest - client request model to update conversation upload worker
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided

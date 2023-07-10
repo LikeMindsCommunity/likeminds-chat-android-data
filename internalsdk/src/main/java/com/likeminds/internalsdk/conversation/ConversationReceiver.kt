@@ -318,6 +318,14 @@ class ConversationReceiver @Inject constructor(
         })
     }
 
+    fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getConversation(it, conversationId)?.let { conversation ->
+                conversation.localSavedEpoch = localSavedEpoch
+            }
+        })
+    }
+
     fun getConversation(realm: Realm, conversationId: String): ConversationRO? {
         return ChatDBUtil.getConversation(realm, conversationId)
     }

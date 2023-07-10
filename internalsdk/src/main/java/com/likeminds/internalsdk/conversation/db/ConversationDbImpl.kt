@@ -121,6 +121,10 @@ class ConversationDbImpl @Inject constructor(
         conversationReceiver.savePostedConversation(conversation, isFromNotification)
     }
 
+    override fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long) {
+        conversationReceiver.updateTemporaryConversation(conversationId, localSavedEpoch)
+    }
+
     override fun updateEditedConversation(
         conversationId: String,
         conversationText: String,
