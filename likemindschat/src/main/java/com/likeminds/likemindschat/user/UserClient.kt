@@ -17,6 +17,10 @@ class UserClient @Inject constructor() : BaseClient() {
         groupChatSDK.getUserDb()
     }
 
+    /**
+     * Fetches the user from local db
+     * @return GetUserResponse - GetUserResponse model for getUser request
+     */
     fun getUser(): LMResponse<GetUserResponse> {
         val userRO = userDb.getUser()
         return if (userRO == null) {

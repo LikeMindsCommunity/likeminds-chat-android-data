@@ -99,7 +99,6 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
      */
     suspend fun getChatrooms(
         context: Context,
-        communityId: String,
         listener: HomeFeedChangeListener
     ) {
         //validates the client request
@@ -120,7 +119,7 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
             SyncSDK.startReopenSyncForHomeFeed(context)
         }
 
-        observeLiveHomeFeed(context, communityId)
+        observeLiveHomeFeed(context)
 
         //[Flow] of the [CollectionChange] of the Chatrooms
         val flowOfChatrooms = homeFeedDB.getChatrooms(realm)
@@ -179,10 +178,9 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
         }
     }
 
-    private fun observeLiveHomeFeed(
-        context: Context,
-        communityId: String
-    ) {
+    private fun observeLiveHomeFeed(context: Context) {
+        val communityId = groupChatSDK.sdkPreferences.getCommunityId() ?: ""
+        Log.d("SDK", "observeLiveHomeFeed: $communityId")
         val firebaseApp = FirebaseApp.getInstance("secondary")
         databaseReference = FirebaseDatabase.getInstance(firebaseApp).reference
             .child("community")
@@ -193,8 +191,6 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
                 //validates the client request
                 RequestUtils.validate()
 
-                //create realm object
-                val realm = Realm.getDefaultInstance()
                 //check whether db is empty or not
                 val isFirstTime = ChatDBUtil.isEmpty()
 

@@ -9,6 +9,8 @@ import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.CommunityClient
 import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
 import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
+import com.likeminds.likemindschat.community.model.GetMemberRequest
+import com.likeminds.likemindschat.community.model.GetMemberResponse
 import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.conversation.util.LoadConversationType
@@ -125,16 +127,8 @@ class LMChatClient private constructor() {
 
     // Exposed function to get config details
     //function to get chatrooms for home feed
-    suspend fun getChatrooms(
-        context: Context,
-        communityId: String,
-        listener: HomeFeedChangeListener
-    ) {
-        homeFeedClient.getChatrooms(
-            context,
-            communityId,
-            listener
-        )
+    suspend fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
+        homeFeedClient.getChatrooms(context, listener)
     }
 
     //function to get config details
@@ -145,6 +139,11 @@ class LMChatClient private constructor() {
     // Exposed function to get user from Db
     fun getUser(): LMResponse<GetUserResponse> {
         return userClient.getUser()
+    }
+
+    // Exposed function to get member from Db
+    fun getMember(getMemberRequest: GetMemberRequest): LMResponse<GetMemberResponse> {
+        return communityClient.getMember(getMemberRequest)
     }
 
     fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {

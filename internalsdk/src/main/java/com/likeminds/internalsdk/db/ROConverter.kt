@@ -1,6 +1,5 @@
 package com.likeminds.internalsdk.db
 
-import android.util.Log
 import com.likeminds.internalsdk.chatroom.model._Chatroom_
 import com.likeminds.internalsdk.community.model._Community_
 import com.likeminds.internalsdk.community.model._Member_
@@ -259,13 +258,6 @@ object ROConverter {
             } else {
                 null
             }
-
-        Log.d(
-            "test_case", """
-            new conversation: ${conversation.id} ${conversation.answer} ${attachments?.size}
-            old conversation: ${savedAnswer?.id} ${savedAnswer?.answer} ${savedAnswer?.attachments?.size}
-        """.trimIndent()
-        )
 
         //get attachments as per saved and new conversation
         val updatedAttachments = convertUpdatedAttachments(
@@ -548,33 +540,28 @@ object ROConverter {
     ): RealmList<AttachmentRO> {
         return when {
             oldAttachments.isNullOrEmpty() && attachments.isNullOrEmpty() -> {
-                Log.d("test_client", "case 1")
                 RealmList()
             }
 
             oldAttachments.isNullOrEmpty() && !attachments.isNullOrEmpty() -> {
-                Log.d("test_client", "case 2")
                 attachments.map { attachment ->
                     convertAttachment(chatroomId, communityId, attachment)
                 }.toRealmList()
             }
 
             !oldAttachments.isNullOrEmpty() && attachments.isNullOrEmpty() -> {
-                Log.d("test_client", "case 3")
                 oldAttachments.map { attachment ->
                     convertAttachment(chatroomId, communityId, attachment)
                 }.toRealmList()
             }
 
             oldAttachments!!.size > attachments!!.size -> {
-                Log.d("test_client", "case 4")
                 oldAttachments.map { oldAttachment ->
                     convertAttachment(chatroomId, communityId, oldAttachment)
                 }.toRealmList()
             }
 
             else -> {
-                Log.d("test_client", "case 5")
                 attachments.map { attachment ->
                     convertAttachment(chatroomId, communityId, attachment)
                 }.toRealmList()

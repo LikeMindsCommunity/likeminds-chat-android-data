@@ -1255,9 +1255,15 @@ object ModelConverter {
     /**--------------------------------
      * Db Model -> Client Response Model
     --------------------------------*/
+
     //convert [UserRO] to [GetUserResponse]
     fun convertGetUserResponse(userRO: UserRO?): GetUserResponse {
         return GetUserResponse(convertUserRO(userRO))
+    }
+
+    //convert [MemberRO] to [GetMemberResponse]
+    fun convertGetMemberResponse(memberRO: MemberRO?): GetMemberResponse {
+        return GetMemberResponse(convertMemberRO(memberRO))
     }
 
     // convert [chatroomRO] to [GetChatroomResponse]
