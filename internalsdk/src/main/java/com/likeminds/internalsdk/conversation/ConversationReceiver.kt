@@ -5,12 +5,17 @@ import com.likeminds.internalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
-import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.db.models.ConversationRO
+import com.likeminds.internalsdk.db.models.ReactionRO
+import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
-import io.realm.*
+import io.realm.OrderedCollectionChangeSet
+import io.realm.Realm
+import io.realm.RealmResults
+import io.realm.Sort
 import io.realm.kotlin.toChangesetFlow
 import io.realm.rx.CollectionChange
 import kotlinx.coroutines.flow.Flow
@@ -114,6 +119,34 @@ class ConversationReceiver @Inject constructor(
             .findAll()
     }
 
+    fun getConversationsAboveCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            .lessThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp)
+            .notEqualTo(DbKey.ID, keyId)
+            .count()
+            .toInt()
+    }
+
+    fun getConversationsBelowCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            .greaterThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp)
+            .notEqualTo(DbKey.ID, keyId)
+            .count()
+            .toInt()
+    }
+
     fun getTopConversations(
         realm: Realm,
         chatroomId: String,
@@ -174,6 +207,29 @@ class ConversationReceiver @Inject constructor(
                 it.collection.isLoaded && it.changeset != null
                         && it.changeset?.state == OrderedCollectionChangeSet.State.UPDATE
             }
+    }
+
+    fun deleteConversationPermanently(conversationId: String, chatroomId: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let {  chatroomRO ->
+                val conversation = ChatDBUtil.getConversation(it, conversationId)
+                    ?: return@writeAsync
+                //Delete the conversation
+                conversation.deleteFromRealm()
+
+                //Update the total response count of this chatroom
+                chatroomRO.totalResponseCount = chatroomRO.totalResponseCount - 1
+                chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount - 1
+
+                val lastConversation = chatroomRO.conversations.where()
+                    .equalTo(DbKey.STATE, STATE_NORMAL)
+                    .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING)
+                    .findFirst() ?: return@writeAsync
+                chatroomRO.lastConversation = lastConversation
+                chatroomRO.lastSeenConversation = lastConversation
+                chatroomRO.lastSeenConversationId = lastConversation.id
+            }
+        })
     }
 
     fun saveTemporaryConversation(conversation: _Conversation_) {
@@ -285,6 +341,14 @@ class ConversationReceiver @Inject constructor(
         })
     }
 
+    fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getConversation(it, conversationId)?.let { conversation ->
+                conversation.localSavedEpoch = localSavedEpoch
+            }
+        })
+    }
+
     fun getConversation(realm: Realm, conversationId: String): ConversationRO? {
         return ChatDBUtil.getConversation(realm, conversationId)
     }
@@ -303,6 +367,14 @@ class ConversationReceiver @Inject constructor(
                     conversation.communityId,
                     linkOgTags
                 )
+            }
+        })
+    }
+
+    fun updateConversationUploadWorkerUUID(conversationId: String, uuid: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getConversation(it, conversationId)?.let { conversation ->
+                conversation.uploadWorkerUUID = uuid
             }
         })
     }

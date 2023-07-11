@@ -46,11 +46,27 @@ interface ConversationDB {
         limit: Int
     ): RealmResults<ConversationRO>
 
+    fun getConversationsAboveCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int
+
+    fun getConversationsBelowCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int
+
     //query to get observe conversations
     fun observeConversations(
         realm: Realm,
         chatroomId: String
     ): Flow<CollectionChange<RealmResults<ConversationRO>>>
+
+    fun deleteConversationPermanently(conversationId: String, chatroomId: String)
 
     //query to get save temporary conversation
     fun saveTemporaryConversation(conversation: _Conversation_)
@@ -61,12 +77,19 @@ interface ConversationDB {
         isFromNotification: Boolean
     )
 
+    //query to update temporary conversation
+    fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long)
+
     //query to update edited conversation
     fun updateEditedConversation(
         conversationId: String,
         conversationText: String,
         linkOgTags: _LinkOGTags_?
     )
+
+    //query to update conversation upload worker uuid
+    fun updateConversationUploadWorkerUUID(conversationId: String, uuid: String)
+
 
     //query to update conversation after submitting poll
     fun updateConversationSubmitPoll(conversationId: String, allPollItems: List<_Poll_>)

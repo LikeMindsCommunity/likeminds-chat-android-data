@@ -4,11 +4,20 @@ import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.*
-import com.likeminds.internalsdk.helper.model.*
-import com.likeminds.internalsdk.homefeed.model.*
+import com.likeminds.internalsdk.helper.model._DecodeUrlResponse_
+import com.likeminds.internalsdk.helper.model._GetTaggingListResponse_
+import com.likeminds.internalsdk.helper.model._GroupTag_
+import com.likeminds.internalsdk.helper.model._UserTag_
+import com.likeminds.internalsdk.homefeed.model._ConfigResponse_
+import com.likeminds.internalsdk.homefeed.model._GetExploreTabCountResponse_
+import com.likeminds.internalsdk.homefeed.model._UserDetail_
+import com.likeminds.internalsdk.homefeed.model._UserMetrics_
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
 import com.likeminds.internalsdk.moderation.model._ReportTag_
-import com.likeminds.internalsdk.poll.model.*
+import com.likeminds.internalsdk.poll.model._AddPollOptionResponse_
+import com.likeminds.internalsdk.poll.model._GetPollUsersResponse_
+import com.likeminds.internalsdk.poll.model._Poll_
+import com.likeminds.internalsdk.poll.model._PostPollConversationResponse_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.search.model.*
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
@@ -18,14 +27,25 @@ import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.model.*
-import com.likeminds.likemindschat.helper.model.*
-import com.likeminds.likemindschat.homefeed.model.*
+import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
+import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
+import com.likeminds.likemindschat.helper.model.GroupTag
+import com.likeminds.likemindschat.helper.model.UserTag
+import com.likeminds.likemindschat.homefeed.model.ConfigResponse
+import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
+import com.likeminds.likemindschat.homefeed.model.UserDetail
+import com.likeminds.likemindschat.homefeed.model.UserMetrics
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
-import com.likeminds.likemindschat.poll.model.*
+import com.likeminds.likemindschat.poll.model.AddPollOptionResponse
+import com.likeminds.likemindschat.poll.model.GetPollUsersResponse
+import com.likeminds.likemindschat.poll.model.Poll
+import com.likeminds.likemindschat.poll.model.PostPollConversationResponse
 import com.likeminds.likemindschat.search.model.*
-import com.likeminds.likemindschat.user.model.*
+import com.likeminds.likemindschat.user.model.GetUserResponse
+import com.likeminds.likemindschat.user.model.SDKClientInfo
+import com.likeminds.likemindschat.user.model.User
 
 object ModelConverter {
 
@@ -1235,9 +1255,15 @@ object ModelConverter {
     /**--------------------------------
      * Db Model -> Client Response Model
     --------------------------------*/
+
     //convert [UserRO] to [GetUserResponse]
     fun convertGetUserResponse(userRO: UserRO?): GetUserResponse {
         return GetUserResponse(convertUserRO(userRO))
+    }
+
+    //convert [MemberRO] to [GetMemberResponse]
+    fun convertGetMemberResponse(memberRO: MemberRO?): GetMemberResponse {
+        return GetMemberResponse(convertMemberRO(memberRO))
     }
 
     // convert [chatroomRO] to [GetChatroomResponse]
@@ -1256,6 +1282,11 @@ object ModelConverter {
             convertConversationsRO(conversationsRO.toList()),
             conversationsRO.count()
         )
+    }
+
+    //convert list of [ConversationRO] to [GetConversationsResponse]
+    fun convertGetConversationsCountResponse(count: Int): GetConversationsCountResponse {
+        return GetConversationsCountResponse(count)
     }
 
     /**--------------------------------
@@ -1297,6 +1328,7 @@ object ModelConverter {
             .id(chatroomRO.id)
             .member(convertMemberRO(chatroomRO.member))
             .communityId(chatroomRO.communityId)
+            .communityName(chatroomRO.communities?.firstOrNull()?.name)
             .title(chatroomRO.title)
             .state(chatroomRO.state)
             .createdAt(chatroomRO.createdAt)

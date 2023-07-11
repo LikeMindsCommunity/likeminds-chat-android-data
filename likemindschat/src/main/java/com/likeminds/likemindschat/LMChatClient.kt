@@ -9,6 +9,8 @@ import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.CommunityClient
 import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
 import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
+import com.likeminds.likemindschat.community.model.GetMemberRequest
+import com.likeminds.likemindschat.community.model.GetMemberResponse
 import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.conversation.util.LoadConversationType
@@ -19,14 +21,22 @@ import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.*
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
+import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
+import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
 import com.likeminds.likemindschat.moderation.ModerationClient
-import com.likeminds.likemindschat.moderation.model.*
+import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
+import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
+import com.likeminds.likemindschat.moderation.model.PostReportRequest
 import com.likeminds.likemindschat.poll.PollClient
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.search.SearchClient
-import com.likeminds.likemindschat.search.model.*
+import com.likeminds.likemindschat.search.model.SearchChatroomRequest
+import com.likeminds.likemindschat.search.model.SearchChatroomResponse
+import com.likeminds.likemindschat.search.model.SearchConversationRequest
+import com.likeminds.likemindschat.search.model.SearchConversationResponse
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.GetUserResponse
 import javax.inject.Inject
@@ -128,6 +138,11 @@ class LMChatClient private constructor() {
         return userClient.getUser()
     }
 
+    // Exposed function to get member from Db
+    fun getMember(getMemberRequest: GetMemberRequest): LMResponse<GetMemberResponse> {
+        return communityClient.getMember(getMemberRequest)
+    }
+
     fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
         return chatroomClient.getChatroom(getChatroomRequest)
     }
@@ -212,6 +227,12 @@ class LMChatClient private constructor() {
         return helperClient.getTaggingList(getTaggingListRequest)
     }
 
+    // Exposed function to get whether DB is empty or not
+    fun getIsDBEmpty(): LMResponse<GetIsDBEmptyResponse> {
+        return helperClient.getIsDBEmpty()
+    }
+
+
     // Exposed function to search a chatroom
     suspend fun searchChatroom(searchChatroomRequest: SearchChatroomRequest): LMResponse<SearchChatroomResponse> {
         return searchClient.searchChatroom(searchChatroomRequest)
@@ -238,14 +259,44 @@ class LMChatClient private constructor() {
         return conversationClient.loadConversations(context, type, chatroomId)
     }
 
+    //Exposed function to observe live conversations
+    suspend fun observeLiveConversations(
+        context: Context,
+        chatroomId: String
+    ) {
+        return conversationClient.observeLiveConversations(context, chatroomId)
+    }
+
     // Exposed function to get conversations
     fun getConversations(getConversationsRequest: GetConversationsRequest): LMResponse<GetConversationsResponse> {
         return conversationClient.getConversations(getConversationsRequest)
     }
 
+    // Exposed function to get conversations count
+    fun getConversationsCount(getConversationsCountRequest: GetConversationsCountRequest): LMResponse<GetConversationsCountResponse> {
+        return conversationClient.getConversationsCount(getConversationsCountRequest)
+    }
+
+    // Exposed function to delete a conversation permanently
+    fun deleteConversationPermanently(deleteConversationPermanentlyRequest: DeleteConversationPermanentlyRequest) {
+        return conversationClient.deleteConversationPermanently(deleteConversationPermanentlyRequest)
+    }
+
     // Exposed function to save temporary conversation
     fun saveTemporaryConversation(saveConversationRequest: SaveConversationRequest) {
         conversationClient.saveTemporaryConversation(saveConversationRequest)
+    }
+
+    // Exposed function to update conversation upload worker uuid
+    fun updateConversationUploadWorkerUUID(updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest) {
+        conversationClient.updateConversationUploadWorkerUUID(
+            updateConversationUploadWorkerUUIDRequest
+        )
+    }
+
+    // Exposed function to update conversation upload worker uuid
+    fun updateTemporaryConversation(updateTemporaryConversationRequest: UpdateTemporaryConversationRequest) {
+        conversationClient.updateTemporaryConversation(updateTemporaryConversationRequest)
     }
 
     // Exposed function to get a single conversation

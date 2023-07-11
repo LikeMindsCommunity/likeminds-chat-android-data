@@ -51,6 +51,34 @@ class ConversationDbImpl @Inject constructor(
         )
     }
 
+    override fun getConversationsAboveCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return conversationReceiver.getConversationsAboveCount(
+            realm,
+            chatroomId,
+            keyId,
+            keyTimestamp
+        )
+    }
+
+    override fun getConversationsBelowCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return conversationReceiver.getConversationsBelowCount(
+            realm,
+            chatroomId,
+            keyId,
+            keyTimestamp
+        )
+    }
+
     override fun getTopConversations(
         realm: Realm,
         chatroomId: String,
@@ -82,6 +110,10 @@ class ConversationDbImpl @Inject constructor(
         return conversationReceiver.observeConversations(realm, chatroomId)
     }
 
+    override fun deleteConversationPermanently(conversationId: String, chatroomId: String) {
+        return conversationReceiver.deleteConversationPermanently(conversationId, chatroomId)
+    }
+
     override fun saveTemporaryConversation(conversation: _Conversation_) {
         conversationReceiver.saveTemporaryConversation(conversation)
     }
@@ -93,12 +125,20 @@ class ConversationDbImpl @Inject constructor(
         conversationReceiver.savePostedConversation(conversation, isFromNotification)
     }
 
+    override fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long) {
+        conversationReceiver.updateTemporaryConversation(conversationId, localSavedEpoch)
+    }
+
     override fun updateEditedConversation(
         conversationId: String,
         conversationText: String,
         linkOgTags: _LinkOGTags_?
     ) {
         conversationReceiver.updateEditedConversation(conversationId, conversationText, linkOgTags)
+    }
+
+    override fun updateConversationUploadWorkerUUID(conversationId: String, uuid: String) {
+        conversationReceiver.updateConversationUploadWorkerUUID(conversationId, uuid)
     }
 
     override fun updateConversationSubmitPoll(conversationId: String, allPollItems: List<_Poll_>) {

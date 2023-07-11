@@ -13,6 +13,11 @@ dependencies {
     //workmanager
     api deps.workmanager.main
 
+    //firebase
+    api platform(deps.firebase.bom)
+    api deps.firebase.database
+    api deps.firebase.messaging
+
     //retrofit gson
     implementation deps.retrofit.gson
 
