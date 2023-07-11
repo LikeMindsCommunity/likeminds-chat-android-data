@@ -1314,7 +1314,10 @@ object ModelConverter {
             .deletedBy(chatroomRO.deletedBy)
             .updatedAt(chatroomRO.updatedAt)
             .lastConversationId(chatroomRO.lastConversationId)
-            .lastConversation(convertConversationRO(chatroomRO.lastConversation))
+            .lastConversation(
+                convertConversationRO(chatroomRO.lastConversation)
+                    ?: convertLastConversationRO(chatroomRO.lastConversationRO)
+            )
             .lastSeenConversationId(chatroomRO.lastSeenConversationId)
             .lastSeenConversation(convertConversationRO(chatroomRO.lastSeenConversation))
             .dateEpoch(chatroomRO.dateEpoch)
@@ -1335,6 +1338,28 @@ object ModelConverter {
             .isConversationStored(chatroomRO.isConversationStored)
             .isDraft(chatroomRO.isDraft)
             .totalAllResponseCount(chatroomRO.totalAllResponseCount)
+            .build()
+    }
+
+    // converts LastConversationRO model to client model
+    private fun convertLastConversationRO(lastConversationRO: LastConversationRO?): Conversation? {
+        if (lastConversationRO == null) return null
+        return Conversation.Builder()
+            .id(lastConversationRO.id)
+            .member(convertMemberRO(lastConversationRO.member))
+            .createdAt(lastConversationRO.createdAt)
+            .answer(lastConversationRO.answer)
+            .state(lastConversationRO.state)
+            .attachments(convertAttachmentsRO(lastConversationRO.attachments))
+            .date(lastConversationRO.date)
+            .deletedBy(lastConversationRO.deletedBy)
+            .attachmentCount(lastConversationRO.attachmentCount)
+            .attachmentUploaded(lastConversationRO.attachmentsUploaded)
+            .uploadWorkerUUID(lastConversationRO.uploadWorkerUUID)
+            .createdEpoch(lastConversationRO.createdEpoch)
+            .chatroomId(lastConversationRO.chatroomId)
+            .communityId(lastConversationRO.communityId)
+            .ogTags(convertLinkRO(lastConversationRO.link))
             .build()
     }
 
