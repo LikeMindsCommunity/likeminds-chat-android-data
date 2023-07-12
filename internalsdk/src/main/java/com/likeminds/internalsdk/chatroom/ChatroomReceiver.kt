@@ -188,4 +188,22 @@ class ChatroomReceiver @Inject constructor(
             }
         })
     }
+
+    fun updateLastSeenAndDraft(chatroomId: String, draft: String?) {
+        ChatDBUtil.writeAsync({ realm ->
+            ChatDBUtil.getChatroom(realm, chatroomId)?.let { chatroomRO ->
+                if (chatroomRO.unseenCount != 0) {
+                    chatroomRO.unseenCount = 0
+                }
+                if ((chatroomRO.draftConversation ?: "") != draft) {
+                    chatroomRO.draftConversation = draft
+                }
+
+                val conversations = chatroomRO.conversations
+                if (conversations.isNotEmpty()) {
+                    chatroomRO.lastSeenConversation = conversations.last()
+                }
+            }
+        })
+    }
 }

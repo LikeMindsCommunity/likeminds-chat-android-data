@@ -407,4 +407,30 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("chatroomId")
         }
     }
+
+    /**
+     * sets last seen to true and saves draft response
+     * @param updateLastSeenAndDraftRequest - client request model to get list of participants in chatroom
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
+    fun updateLastSeenAndDraft(updateLastSeenAndDraftRequest: UpdateLastSeenAndDraftRequest) {
+        // validates the client request
+        RequestUtils.validate()
+        validateUpdateLastSeenAndDraftRequest(updateLastSeenAndDraftRequest)
+
+        val chatroomId = updateLastSeenAndDraftRequest.chatroomId
+        val draft = updateLastSeenAndDraftRequest.draft
+
+        chatroomDB.updateLastSeenAndDraft(chatroomId, draft)
+    }
+
+    /**
+     * validates [updateLastSeenAndDraftRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateUpdateLastSeenAndDraftRequest(updateLastSeenAndDraftRequest: UpdateLastSeenAndDraftRequest) {
+        if (updateLastSeenAndDraftRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+    }
 }

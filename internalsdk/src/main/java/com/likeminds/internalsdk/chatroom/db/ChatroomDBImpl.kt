@@ -40,4 +40,8 @@ class ChatroomDBImpl @Inject constructor(
     override fun removeChatroomReaction(chatroomId: String) {
         chatroomReceiver.removeChatroomReaction(chatroomId)
     }
+
+    override fun updateLastSeenAndDraft(chatroomId: String, draft: String?) {
+        chatroomReceiver.updateLastSeenAndDraft(chatroomId, draft)
+    }
 }

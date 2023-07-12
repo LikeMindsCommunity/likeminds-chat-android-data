@@ -29,4 +29,5 @@ interface ChatroomDB {
     //query to remove chatroom reaction
     fun removeChatroomReaction(chatroomId: String)
 
+    fun updateLastSeenAndDraft(chatroomId: String, draft: String?)
 }
