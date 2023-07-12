@@ -2,6 +2,7 @@ package com.likeminds.likemindschat.search.model
 
 import com.likeminds.likemindschat.chatroom.model.Chatroom
 import com.likeminds.likemindschat.community.model.Community
+import com.likeminds.likemindschat.community.model.Member
 import com.likeminds.likemindschat.conversation.model.Attachment
 
 data class SearchChatroomResponse(
@@ -17,7 +18,7 @@ data class SearchChatroom(
     val id: Int,
     val isGuest: Boolean,
     val isTagged: Boolean,
-    val member: SearchMember,
+    val member: Member,
     val muteStatus: Boolean,
     val secretChatroomLeft: Boolean,
     val state: Int,

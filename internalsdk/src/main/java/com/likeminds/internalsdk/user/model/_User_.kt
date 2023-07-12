@@ -20,9 +20,13 @@ data class _User_(
     @SerializedName("custom_title")
     val customTitle: String?,
     @SerializedName("updated_at")
-    val updatedAt: Long,
+    val updatedAt: Long?,
     @SerializedName("user_unique_id")
-    val userUniqueId: String
+    val userUniqueId: String,
+    @SerializedName("uuid")
+    val uuid: String,
+    @SerializedName("is_owner")
+    val isOwner: Boolean?
 )
 
 data class _SDKClientInfo_(
@@ -31,5 +35,7 @@ data class _SDKClientInfo_(
     @SerializedName("user")
     val user: String,
     @SerializedName("user_unique_id")
-    val userUniqueId: String
+    val userUniqueId: String,
+    @SerializedName("uuid")
+    val uuid: String
 )

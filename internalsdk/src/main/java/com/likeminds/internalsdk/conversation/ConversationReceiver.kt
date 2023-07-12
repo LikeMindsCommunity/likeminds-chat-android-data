@@ -192,7 +192,11 @@ class ConversationReceiver @Inject constructor(
             val userRO = realm.where(UserRO::class.java).findFirst()
 
             val conversationRO =
-                ROConverter.convertConversation(realm, conversation, loggedInMemberId = userRO?.id)
+                ROConverter.convertConversation(
+                    realm,
+                    conversation,
+                    loggedInUUID = userRO?.sdkClientInfoRO?.uuid
+                )
             if (conversationRO != null) {
                 ChatDBUtil.getChatroom(realm, conversationRO.chatroomId)?.let { chatroomRO ->
                     //add the conversation to db
@@ -245,7 +249,11 @@ class ConversationReceiver @Inject constructor(
             val userRO = realm.where(UserRO::class.java).findFirst()
 
             val conversationRO =
-                ROConverter.convertConversation(realm, conversation, loggedInMemberId = userRO?.id)
+                ROConverter.convertConversation(
+                    realm,
+                    conversation,
+                    loggedInUUID = userRO?.sdkClientInfoRO?.uuid
+                )
                     ?: return@writeAsync
 
             ChatDBUtil.getChatroom(realm, conversation.chatroomId)?.let { chatroomRO ->
@@ -381,7 +389,7 @@ class ConversationReceiver @Inject constructor(
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
 
-            conversations.setString(DbKey.DELETED_BY, userRO?.id)
+            conversations.setString(DbKey.DELETED_BY, userRO?.sdkClientInfoRO?.uuid)
         })
     }
 
@@ -396,11 +404,11 @@ class ConversationReceiver @Inject constructor(
                     //Remove member previous reactions if any
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         conversationRO.reactions.removeIf { reaction ->
-                            reaction.member?.id == userRO?.id
+                            reaction.member?.sdkClientInfoRO?.uuid == userRO?.sdkClientInfoRO?.uuid
                         }
                     } else {
                         val reactionRO = conversationRO.reactions.find { reaction ->
-                            reaction.member?.id == userRO?.id
+                            reaction.member?.sdkClientInfoRO?.uuid == userRO?.sdkClientInfoRO?.uuid
                         }
                         conversationRO.reactions.remove(reactionRO)
                     }
@@ -429,11 +437,11 @@ class ConversationReceiver @Inject constructor(
                 //Remove member previous reactions if any
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     conversationRO.reactions.removeIf { reaction ->
-                        reaction.member?.id == userRO?.id
+                        reaction.member?.sdkClientInfoRO?.uuid == userRO?.sdkClientInfoRO?.uuid
                     }
                 } else {
                     val reactionRO = conversationRO.reactions.find { reaction ->
-                        reaction.member?.id == userRO?.id
+                        reaction.member?.sdkClientInfoRO?.uuid == userRO?.sdkClientInfoRO?.uuid
                     }
                     conversationRO.reactions.remove(reactionRO)
                 }

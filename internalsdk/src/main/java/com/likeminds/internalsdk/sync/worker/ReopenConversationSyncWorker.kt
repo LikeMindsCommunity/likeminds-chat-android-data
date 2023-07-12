@@ -10,6 +10,7 @@ import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.sync.model._SyncConversationResponse_
 import com.likeminds.internalsdk.sync.util.SyncUtil
+import com.likeminds.internalsdk.user.util.UserPreferences
 import com.likeminds.internalsdk.utils.MAX_RETRY_COUNT
 import com.likeminds.internalsdk.utils.measureExecution
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
@@ -28,6 +29,7 @@ class ReopenConversationSyncWorker(
 
     private val collabmatesSdk = GroupChatSDK.getInstance()
     private val sdkPreferences = SDKPreferences(context as Application)
+    private val userPreferences = UserPreferences(context as Application)
     private val api = collabmatesSdk.getConversationSyncApi()
 
     val chatroomId = workerParameters.inputData.getString(INPUT_DATA_CHATROOM_ID) ?: ""
@@ -99,6 +101,8 @@ class ReopenConversationSyncWorker(
             }
         }
 
+        val communityId = sdkPreferences.getCommunityId() ?: ""
+        val loggedInUUID = userPreferences.getClientUUID()
         return when {
             isStopped -> {
                 // The worker is stopped or killed by the OS.
@@ -119,7 +123,7 @@ class ReopenConversationSyncWorker(
                 * The response contains no more data.
                 * Stores loaded conversations to DB.
                 * */
-                SyncUtil.saveConversationResponses(chatroomId, sdkPreferences, dataList)
+                SyncUtil.saveConversationResponses(chatroomId, communityId, loggedInUUID, dataList)
                 ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
                 Result.success()
             }
@@ -133,7 +137,12 @@ class ReopenConversationSyncWorker(
                     Result.success()
                 } else {
                     dataList.add(data)
-                    SyncUtil.saveConversationResponses(chatroomId, sdkPreferences, dataList)
+                    SyncUtil.saveConversationResponses(
+                        chatroomId,
+                        communityId,
+                        loggedInUUID,
+                        dataList
+                    )
                     Result.success()
                 }
             }
@@ -146,7 +155,12 @@ class ReopenConversationSyncWorker(
                     getConversations(realm)
                 } else {
                     dataList.add(data)
-                    SyncUtil.saveConversationResponses(chatroomId, sdkPreferences, dataList)
+                    SyncUtil.saveConversationResponses(
+                        chatroomId,
+                        communityId,
+                        loggedInUUID,
+                        dataList
+                    )
                     dataList.clear()
                     page++
                     getConversations(realm)

@@ -5,9 +5,16 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
+import com.likeminds.likemindschat.chatroom.model.*
+import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
+import com.likeminds.likemindschat.conversation.model.PostConversationRequest
+import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
 import com.likeminds.likemindschat.chatroom.model.Chatroom
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.poll.model.GetPollUsersRequest
+import com.likeminds.likemindschat.search.model.SearchChatroomRequest
+import com.likeminds.likemindschat.search.model.SearchConversationRequest
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
@@ -20,7 +27,13 @@ class MainActivity : AppCompatActivity() {
     private val listener = object : HomeFeedChangeListener {
         override fun initialChatrooms(chatrooms: List<Chatroom>) {
             super.initialChatrooms(chatrooms)
-            Log.d(TAG, "MainActivity initial")
+            Log.d(TAG, "MainActivity initial" +
+                    "${
+                        chatrooms.map {
+                            it.member?.sdkClientInfo?.uuid
+                        }
+                    }"
+            )
         }
 
         override fun changedChatrooms(
@@ -29,7 +42,22 @@ class MainActivity : AppCompatActivity() {
             changed: List<Pair<Int, Chatroom>>
         ) {
             super.changedChatrooms(removedIndex, inserted, changed)
-            Log.d(TAG, "MainActivity onChanged")
+            Log.d(
+                TAG, "MainActivity onChanged" +
+                        """
+                        inserted: ${
+                            inserted.map {
+                                it.second.member?.sdkClientInfo?.uuid
+                            }
+                        }
+                        
+                        changed: ${
+                            changed.map {
+                                it.second.member?.sdkClientInfo?.uuid
+                            }
+                        }
+                    """.trimIndent()
+            )
         }
 
         override fun error(throwable: Throwable) {
@@ -45,9 +73,9 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val initiateUserRequest = InitiateUserRequest.Builder()
-                .apiKey("c4570b5a-46a4-4bb1-b82b-c89f4ea386c5")
-                .userId("123456789")
-                .userName("Sid")
+                .apiKey("bc7017d0-8d17-4ce6-8951-5d580755fb68")
+                .userId("785555")
+                .userName("Ishaan")
                 .deviceId("123333")
                 .isGuest(false)
                 .build()

@@ -3,8 +3,7 @@ package com.likeminds.internalsdk.user
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.user.api.UserNetworkApi
-import com.likeminds.internalsdk.user.model._LogoutRequest_
-import com.likeminds.internalsdk.user.model._RegisterDeviceRequest_
+import com.likeminds.internalsdk.user.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.Realm
@@ -28,6 +27,10 @@ class UserReceiver @Inject constructor(private val userNetworkApi: UserNetworkAp
         val newRequest = request.toBuilder().deviceId(null)
             .build()
         return userNetworkApi.registerDevice(deviceId, newRequest)
+    }
+
+    suspend fun getMemberState(): NetworkResponse<APIResponse<_MemberStateResponse_>> {
+        return userNetworkApi.getMemberState()
     }
 
     /*

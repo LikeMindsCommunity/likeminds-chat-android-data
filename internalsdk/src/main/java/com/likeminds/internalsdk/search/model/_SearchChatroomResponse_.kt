@@ -3,6 +3,7 @@ package com.likeminds.internalsdk.search.model
 import com.google.gson.annotations.SerializedName
 import com.likeminds.internalsdk.chatroom.model._Chatroom_
 import com.likeminds.internalsdk.community.model._Community_
+import com.likeminds.internalsdk.community.model._Member_
 import com.likeminds.internalsdk.conversation.model._Attachment_
 
 data class _SearchChatroomResponse_(
@@ -28,7 +29,7 @@ data class _SearchChatroom_(
     @SerializedName("is_tagged")
     val isTagged: Boolean,
     @SerializedName("member")
-    val member: _SearchMember_,
+    val member: _Member_,
     @SerializedName("mute_status")
     val muteStatus: Boolean,
     @SerializedName("secret_chatroom_left")

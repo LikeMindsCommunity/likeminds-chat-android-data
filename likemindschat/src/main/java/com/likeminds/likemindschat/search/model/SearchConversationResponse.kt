@@ -2,6 +2,7 @@ package com.likeminds.likemindschat.search.model
 
 import com.likeminds.likemindschat.chatroom.model.Chatroom
 import com.likeminds.likemindschat.community.model.Community
+import com.likeminds.likemindschat.community.model.Member
 import com.likeminds.likemindschat.conversation.model.Attachment
 
 class SearchConversationResponse(
@@ -20,6 +21,6 @@ data class SearchConversation(
     val isDeleted: Boolean,
     val isEdited: Boolean,
     val lastUpdated: Long,
-    val member: SearchMember,
+    val member: Member,
     val state: Int
 )
