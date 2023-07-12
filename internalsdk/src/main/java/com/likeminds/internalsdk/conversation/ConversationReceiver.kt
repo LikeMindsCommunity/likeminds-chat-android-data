@@ -12,10 +12,7 @@ import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
-import io.realm.OrderedCollectionChangeSet
-import io.realm.Realm
-import io.realm.RealmResults
-import io.realm.Sort
+import io.realm.*
 import io.realm.kotlin.toChangesetFlow
 import io.realm.rx.CollectionChange
 import kotlinx.coroutines.flow.Flow
@@ -211,7 +208,7 @@ class ConversationReceiver @Inject constructor(
 
     fun deleteConversationPermanently(conversationId: String, chatroomId: String) {
         ChatDBUtil.writeAsync({
-            ChatDBUtil.getChatroom(it, chatroomId)?.let {  chatroomRO ->
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatroomRO ->
                 val conversation = ChatDBUtil.getConversation(it, conversationId)
                     ?: return@writeAsync
                 //Delete the conversation
@@ -275,6 +272,21 @@ class ConversationReceiver @Inject constructor(
                 }
             }
         })
+    }
+
+    fun updateConversation(conversation: _Conversation_) {
+        ChatDBUtil.write { realm ->
+
+            //get logged in member
+            val userRO = realm.where(UserRO::class.java).findFirst()
+
+            val conversationRO = ROConverter.convertConversation(
+                realm,
+                conversation,
+                loggedInMember = userRO
+            ) ?: return@write
+            realm.copyToRealmOrUpdate(conversationRO, ImportFlag.CHECK_SAME_VALUES_BEFORE_SET)
+        }
     }
 
     fun savePostedConversation(

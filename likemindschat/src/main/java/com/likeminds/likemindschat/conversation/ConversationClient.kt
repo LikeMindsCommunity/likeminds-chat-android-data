@@ -526,6 +526,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
         )
     }
 
+    /**
+     * validates [deleteConversationPermanentlyRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateDeleteConversationPermanentlyRequest(deleteConversationPermanentlyRequest: DeleteConversationPermanentlyRequest) {
         if (deleteConversationPermanentlyRequest.conversationId.isEmpty()) {
             RequestUtils.throwException("conversationId")
@@ -551,10 +555,29 @@ class ConversationClient @Inject constructor() : BaseClient() {
         conversationDB.saveTemporaryConversation(conversation)
     }
 
+    /**
+     * validates [saveConversationRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateSaveConversationRequest(saveConversationRequest: SaveConversationRequest) {
         if (saveConversationRequest.conversation.id.isNullOrEmpty()) {
             RequestUtils.throwException("conversation")
         }
+    }
+
+    /**
+     * updates a conversation in local db
+     * @param updateConversationRequest - client request model to update the conversation in local db
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * */
+    fun updateConversation(updateConversationRequest: UpdateConversationRequest) {
+        // validates the client request
+        RequestUtils.validate()
+
+        val conversation =
+            ModelConverter.createConversation(updateConversationRequest.conversation)
+
+        conversationDB.updateConversation(conversation)
     }
 
     /**
@@ -573,6 +596,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
         )
     }
 
+    /**
+     * validates [updateTemporaryConversationRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateUpdateTemporaryConversationRequest(updateTemporaryConversationRequest: UpdateTemporaryConversationRequest) {
         if (updateTemporaryConversationRequest.conversationId.isEmpty()) {
             RequestUtils.throwException("conversationId")
@@ -598,6 +625,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
         )
     }
 
+    /**
+     * validates [updateConversationUploadWorkerUUIDRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateUpdateConversationUploadWorkerUUIDRequest(
         updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest
     ) {

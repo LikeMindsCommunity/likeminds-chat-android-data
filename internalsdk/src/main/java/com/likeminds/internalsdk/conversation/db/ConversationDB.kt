@@ -71,6 +71,9 @@ interface ConversationDB {
     //query to get save temporary conversation
     fun saveTemporaryConversation(conversation: _Conversation_)
 
+    //query to update a conversation in local db
+    fun updateConversation(conversation: _Conversation_)
+
     //query to get save posted conversation
     fun savePostedConversation(
         conversation: _Conversation_,
