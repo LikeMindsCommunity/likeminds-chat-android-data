@@ -6,21 +6,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.chatroom.model.*
-import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
-import com.likeminds.likemindschat.conversation.model.PostConversationRequest
-import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
-import com.likeminds.likemindschat.chatroom.model.Chatroom
-import com.likeminds.likemindschat.chatroom.model.GetChatroomRequest
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
-import com.likeminds.likemindschat.poll.model.GetPollUsersRequest
-import com.likeminds.likemindschat.search.model.SearchChatroomRequest
-import com.likeminds.likemindschat.search.model.SearchConversationRequest
 import com.likeminds.samplechatapp.databinding.ActivityMainBinding
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
-import java.util.Date
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 

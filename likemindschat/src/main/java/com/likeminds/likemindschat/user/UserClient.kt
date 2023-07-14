@@ -6,7 +6,6 @@ import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.user.model.GetUserResponse
-import com.likeminds.likemindschat.util.RequestUtils
 import com.likeminds.likemindschat.user.model.MemberStateResponse
 import com.likeminds.likemindschat.util.RequestUtils
 import javax.inject.Inject

@@ -59,7 +59,7 @@ object ROConverter {
         return ChatroomRO.build(chatroomId, communityId, chatroom.title) {
             state = chatroom.state
             member = chatroomCreatorRO
-//            createdAt = chatroom.createdAt
+            createdAt = chatroom.createdAt
             type = chatroom.type
             chatroomImageUrl = chatroom.chatroomImageUrl
             header = chatroom.header
@@ -84,7 +84,7 @@ object ROConverter {
 
             val updatedAt = lastConversationRO?.createdEpoch
                 ?: savedChatroom?.lastConversationRO?.createdEpoch
-//                ?: chatroom.createdAt
+                ?: chatroom.createdAt
 
             this.updatedAt = updatedAt
 

@@ -7,7 +7,6 @@ import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.helper.model._DecodeUrlResponse_
 import com.likeminds.internalsdk.helper.model._GetTaggingListResponse_
 import com.likeminds.internalsdk.helper.model._GroupTag_
-import com.likeminds.internalsdk.helper.model._UserTag_
 import com.likeminds.internalsdk.homefeed.model._ConfigResponse_
 import com.likeminds.internalsdk.homefeed.model._GetExploreTabCountResponse_
 import com.likeminds.internalsdk.homefeed.model._UserDetail_
@@ -19,8 +18,14 @@ import com.likeminds.internalsdk.poll.model._GetPollUsersResponse_
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.poll.model._PostPollConversationResponse_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
-import com.likeminds.internalsdk.search.model.*
-import com.likeminds.internalsdk.user.model.*
+import com.likeminds.internalsdk.search.model._SearchChatroomResponse_
+import com.likeminds.internalsdk.search.model._SearchChatroom_
+import com.likeminds.internalsdk.search.model._SearchConversationResponse_
+import com.likeminds.internalsdk.search.model._SearchConversation_
+import com.likeminds.internalsdk.user.model._ManagementRightPermissionData_
+import com.likeminds.internalsdk.user.model._MemberStateResponse_
+import com.likeminds.internalsdk.user.model._SDKClientInfo_
+import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
@@ -29,7 +34,6 @@ import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
 import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
 import com.likeminds.likemindschat.helper.model.GroupTag
-import com.likeminds.likemindschat.helper.model.UserTag
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.homefeed.model.UserDetail
@@ -41,10 +45,11 @@ import com.likeminds.likemindschat.poll.model.AddPollOptionResponse
 import com.likeminds.likemindschat.poll.model.GetPollUsersResponse
 import com.likeminds.likemindschat.poll.model.Poll
 import com.likeminds.likemindschat.poll.model.PostPollConversationResponse
-import com.likeminds.likemindschat.search.model.*
-import com.likeminds.likemindschat.user.model.GetUserResponse
-import com.likeminds.likemindschat.user.model.SDKClientInfo
-import com.likeminds.likemindschat.user.model.User
+import com.likeminds.likemindschat.search.model.SearchChatroom
+import com.likeminds.likemindschat.search.model.SearchChatroomResponse
+import com.likeminds.likemindschat.search.model.SearchConversation
+import com.likeminds.likemindschat.search.model.SearchConversationResponse
+import com.likeminds.likemindschat.user.model.*
 
 object ModelConverter {
 
