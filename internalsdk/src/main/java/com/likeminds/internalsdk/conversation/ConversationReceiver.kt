@@ -78,13 +78,6 @@ class ConversationReceiver @Inject constructor(
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             .greaterThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp ?: 0L)
             .notEqualTo(DbKey.ID, keyId ?: "")
-            //filter empty conversation with failed attachments
-            .not()
-            .beginGroup()
-            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
-            .and()
-            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
-            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .limit(limit.toLong())
             .findAll()
@@ -101,13 +94,6 @@ class ConversationReceiver @Inject constructor(
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             .lessThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp ?: 0L)
             .notEqualTo(DbKey.ID, keyId ?: "")
-            //filter empty conversation with failed attachments
-            .not()
-            .beginGroup()
-            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
-            .and()
-            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
-            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING, DbKey.ID, Sort.DESCENDING)
             .limit(limit.toLong())
             .findAll()
@@ -151,13 +137,6 @@ class ConversationReceiver @Inject constructor(
     ): RealmResults<ConversationRO> {
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
-            //filter empty conversation with failed attachments
-            .not()
-            .beginGroup()
-            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
-            .and()
-            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
-            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .limit(limit.toLong())
             .findAll()
@@ -170,13 +149,6 @@ class ConversationReceiver @Inject constructor(
     ): RealmResults<ConversationRO> {
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
-            //filter empty conversation with failed attachments
-            .not()
-            .beginGroup()
-            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
-            .and()
-            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
-            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING, DbKey.ID, Sort.DESCENDING)
             .limit(limit.toLong())
             .findAll()
@@ -191,13 +163,6 @@ class ConversationReceiver @Inject constructor(
     ): Flow<CollectionChange<RealmResults<ConversationRO>>> {
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
-            //filter empty conversation with failed attachments
-            .not()
-            .beginGroup()
-            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
-            .and()
-            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
-            .endGroup()
             .findAllAsync()
             .toChangesetFlow()
             .filter {
