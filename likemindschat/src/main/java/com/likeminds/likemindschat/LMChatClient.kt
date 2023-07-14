@@ -13,25 +13,33 @@ import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.conversation.util.LoadConversationType
 import com.likeminds.likemindschat.helper.HelperClient
-import com.likeminds.likemindschat.helper.model.*
+import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
+import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
+import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
+import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.*
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
+import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
+import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
 import com.likeminds.likemindschat.moderation.ModerationClient
 import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.PostReportRequest
 import com.likeminds.likemindschat.notification.NotificationClient
 import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
-import com.likeminds.likemindschat.moderation.model.*
 import com.likeminds.likemindschat.poll.PollClient
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.search.SearchClient
-import com.likeminds.likemindschat.search.model.*
+import com.likeminds.likemindschat.search.model.SearchChatroomRequest
+import com.likeminds.likemindschat.search.model.SearchChatroomResponse
+import com.likeminds.likemindschat.search.model.SearchConversationRequest
+import com.likeminds.likemindschat.search.model.SearchConversationResponse
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.GetUserResponse
 import com.likeminds.likemindschat.user.model.MemberStateResponse
@@ -248,7 +256,7 @@ class LMChatClient private constructor() {
         context: Context,
         type: LoadConversationType,
         chatroomId: String
-    ): MediatorLiveData<WorkInfo.State>? {
+    ): MediatorLiveData<WorkInfo.State> {
         return conversationClient.loadConversations(context, type, chatroomId)
     }
 
