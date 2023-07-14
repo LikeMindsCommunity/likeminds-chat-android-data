@@ -146,9 +146,10 @@ class LMChatClient private constructor() {
 
     // Exposed function to get member from Db
     fun getMember(getMemberRequest: GetMemberRequest): LMResponse<GetMemberResponse> {
-        return communityClient.getMember(getMemberRequest)
+        return userClient.getMember(getMemberRequest)
     }
 
+    // Exposed function to get chatroom from Db
     fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
         return chatroomClient.getChatroom(getChatroomRequest)
     }
@@ -234,8 +235,8 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get whether DB is empty or not
-    fun getIsDBEmpty(): LMResponse<GetIsDBEmptyResponse> {
-        return helperClient.getIsDBEmpty()
+    fun getDBEmpty(): LMResponse<GetDBEmptyResponse> {
+        return helperClient.getDBEmpty()
     }
 
 
@@ -251,9 +252,10 @@ class LMChatClient private constructor() {
 
     // Exposed function to observe new conversations
     suspend fun observeConversations(
+        context: Context,
         observeConversationsRequest: ObserveConversationsRequest
     ) {
-        conversationClient.observeConversations(observeConversationsRequest)
+        conversationClient.observeConversations(context, observeConversationsRequest)
     }
 
     //Exposed function to load conversation to db
@@ -263,14 +265,6 @@ class LMChatClient private constructor() {
         chatroomId: String
     ): MediatorLiveData<WorkInfo.State> {
         return conversationClient.loadConversations(context, type, chatroomId)
-    }
-
-    //Exposed function to observe live conversations
-    suspend fun observeLiveConversations(
-        context: Context,
-        chatroomId: String
-    ) {
-        return conversationClient.observeLiveConversations(context, chatroomId)
     }
 
     // Exposed function to get conversations

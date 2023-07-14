@@ -46,6 +46,7 @@ interface ConversationDB {
         limit: Int
     ): RealmResults<ConversationRO>
 
+    // query to get count of conversations above
     fun getConversationsAboveCount(
         realm: Realm,
         chatroomId: String,
@@ -53,6 +54,7 @@ interface ConversationDB {
         keyTimestamp: Long
     ): Int
 
+    // query to get count of conversations below
     fun getConversationsBelowCount(
         realm: Realm,
         chatroomId: String,
@@ -66,6 +68,7 @@ interface ConversationDB {
         chatroomId: String
     ): Flow<CollectionChange<RealmResults<ConversationRO>>>
 
+    // query to delete a conversation permanently
     fun deleteConversationPermanently(conversationId: String, chatroomId: String)
 
     //query to get save temporary conversation

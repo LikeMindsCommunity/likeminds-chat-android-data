@@ -273,7 +273,8 @@ object SyncUtil {
         loggedInUUID: String,
         dataList: ArrayList<_SyncConversationResponse_>
     ) {
-        ChatDBUtil.write { realmWrite ->
+        val realm = Realm.getDefaultInstance()
+        ChatDBUtil.write(realm) { realmWrite ->
             dataList.forEach { data ->
                 //fetch community
                 val community = data.communityMeta[communityId] ?: return@write
@@ -386,5 +387,6 @@ object SyncUtil {
                 }
             }
         }
+        realm.close()
     }
 }

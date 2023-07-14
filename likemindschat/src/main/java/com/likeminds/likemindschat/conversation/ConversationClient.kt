@@ -107,7 +107,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
      *
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
      */
-    suspend fun observeConversations(observeConversationsRequest: ObserveConversationsRequest) {
+    suspend fun observeConversations(
+        context: Context,
+        observeConversationsRequest: ObserveConversationsRequest
+    ) {
         //validates the client request
         RequestUtils.validate()
         validateObserveConversationRequest(observeConversationsRequest)
@@ -115,6 +118,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
         val realm = Realm.getDefaultInstance()
         val chatroomId = observeConversationsRequest.chatroomId
         val listener = observeConversationsRequest.listener
+
+        observeLiveConversations(context, observeConversationsRequest.chatroomId)
 
         val flowOfConversations = conversationDB.observeConversations(realm, chatroomId)
 
@@ -207,11 +212,11 @@ class ConversationClient @Inject constructor() : BaseClient() {
     /**
      * Observe live conversations
      */
-    suspend fun observeLiveConversations(
+    private suspend fun observeLiveConversations(
         context: Context,
         chatroomId: String
     ) {
-        val app = FirebaseApp.getInstance("secondary")
+        val app = FirebaseApp.getInstance("lm-secondary")
         val dataBaseReference = FirebaseDatabase.getInstance(app).reference
             .child("collabcards")
             .child(chatroomId)

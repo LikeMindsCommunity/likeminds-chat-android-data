@@ -1,5 +1,5 @@
 package com.likeminds.likemindschat.helper.model
 
-data class GetIsDBEmptyResponse(
+data class GetDBEmptyResponse(
     val isDBEmpty: Boolean
 )

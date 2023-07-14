@@ -5,7 +5,7 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
-import com.likeminds.likemindschat.chatroom.ChatroomEntity
+import com.likeminds.likemindschat.chatroom.ChatroomFirebaseEntity
 import com.likeminds.likemindschat.conversation.model.LiveConversationResponse
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -22,7 +22,7 @@ object FirebaseUtil {
                     trySendBlocking(
                         LiveConversationResponse.ChildAdded(
                             snapshot.getValue(
-                                ChatroomEntity::class.java
+                                ChatroomFirebaseEntity::class.java
                             )
                         )
                     )
@@ -33,7 +33,7 @@ object FirebaseUtil {
                     trySendBlocking(
                         LiveConversationResponse.ChildChanged(
                             snapshot.getValue(
-                                ChatroomEntity::class.java
+                                ChatroomFirebaseEntity::class.java
                             )
                         )
                     )
@@ -44,7 +44,7 @@ object FirebaseUtil {
                     trySendBlocking(
                         LiveConversationResponse.ChildRemoved(
                             snapshot.getValue(
-                                ChatroomEntity::class.java
+                                ChatroomFirebaseEntity::class.java
                             )
                         )
                     )
@@ -55,7 +55,7 @@ object FirebaseUtil {
                     trySendBlocking(
                         LiveConversationResponse.ChildMoved(
                             snapshot.getValue(
-                                ChatroomEntity::class.java
+                                ChatroomFirebaseEntity::class.java
                             )
                         )
                     )

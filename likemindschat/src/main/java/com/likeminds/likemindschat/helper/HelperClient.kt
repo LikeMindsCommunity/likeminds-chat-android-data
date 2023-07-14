@@ -107,16 +107,16 @@ class HelperClient @Inject constructor() : BaseClient() {
     /**
      * Makes a DB call to check whether DB is empty or not
      * @throws IllegalArgumentException - when LMFeedClient is not instantiated
-     * @return LMResponse<GetIsDBEmptyResponse> - GetIsDBEmptyResponse that returns whether DB is empty or not
+     * @return LMResponse<GetDBEmptyResponse> - GetDBEmptyResponse that returns whether DB is empty or not
      */
-    fun getIsDBEmpty(): LMResponse<GetIsDBEmptyResponse> {
+    fun getDBEmpty(): LMResponse<GetDBEmptyResponse> {
         // validates the client request
         RequestUtils.validate()
 
         return LMResponse(
             success = true,
             null,
-            GetIsDBEmptyResponse(ChatDBUtil.isEmpty())
+            GetDBEmptyResponse(ChatDBUtil.isEmpty())
         )
     }
 }

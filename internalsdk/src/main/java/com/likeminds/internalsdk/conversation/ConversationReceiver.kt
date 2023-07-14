@@ -240,18 +240,20 @@ class ConversationReceiver @Inject constructor(
     }
 
     fun updateConversation(conversation: _Conversation_) {
-        ChatDBUtil.write { realm ->
+        val realm = Realm.getDefaultInstance()
+        ChatDBUtil.write(realm) { localRealm ->
 
             //get logged in member
-            val userRO = realm.where(UserRO::class.java).findFirst()
+            val userRO = localRealm.where(UserRO::class.java).findFirst()
 
             val conversationRO = ROConverter.convertConversation(
-                realm,
+                localRealm,
                 conversation,
                 loggedInMember = userRO
             ) ?: return@write
-            realm.copyToRealmOrUpdate(conversationRO, ImportFlag.CHECK_SAME_VALUES_BEFORE_SET)
+            localRealm.copyToRealmOrUpdate(conversationRO, ImportFlag.CHECK_SAME_VALUES_BEFORE_SET)
         }
+        realm.close()
     }
 
     fun savePostedConversation(

@@ -80,7 +80,7 @@ internal class LikeMindsChatApplication private constructor() {
             .setApiKey(String(Base64.decode(ApiKeys.getApiKey(), Base64.DEFAULT)))
             .build()
 
-        FirebaseApp.initializeApp(application, option, "secondary")
+        FirebaseApp.initializeApp(application, option, "lm-secondary")
     }
 
     fun initiateUserComponent(): InitiateUserSubComponent? {
