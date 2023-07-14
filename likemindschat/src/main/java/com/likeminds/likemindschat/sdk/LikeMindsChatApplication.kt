@@ -1,6 +1,9 @@
 package com.likeminds.likemindschat.sdk
 
 import android.app.Application
+import android.util.Base64
+import com.google.firebase.FirebaseApp
+import com.google.firebase.FirebaseOptions
 import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.di.SDKSharedResources
 import com.likeminds.likemindschat.di.DaggerLikeMindsChatComponent
@@ -15,6 +18,7 @@ import com.likeminds.likemindschat.di.moderation.ModerationSubComponent
 import com.likeminds.likemindschat.di.poll.PollSubComponent
 import com.likeminds.likemindschat.di.search.SearchSubComponent
 import com.likeminds.likemindschat.di.user.UserSubComponent
+import com.likeminds.likemindschat.sdk.util.ApiKeys
 import javax.inject.Inject
 
 internal class LikeMindsChatApplication private constructor() {
@@ -54,6 +58,7 @@ internal class LikeMindsChatApplication private constructor() {
         likeMindsChatApplicationInstance = this
 
         initLikeMindsChatComponent(application)
+        initializeFirebase(application)
         groupChatSDK.initialize(sdkSharedResources)
     }
 
@@ -64,6 +69,18 @@ internal class LikeMindsChatApplication private constructor() {
                 .build()
         }
         likeMindsChatComponent?.inject(this)
+    }
+
+    private fun initializeFirebase(application: Application) {
+        //For real time messaging initialize Collabmates project.
+        val option = FirebaseOptions.Builder()
+            .setProjectId(String(Base64.decode(ApiKeys.getProjectId(), Base64.DEFAULT)))
+            .setApplicationId(String(Base64.decode(ApiKeys.getAppId(), Base64.DEFAULT)))
+            .setDatabaseUrl(String(Base64.decode(ApiKeys.getDataBaseUrl(), Base64.DEFAULT)))
+            .setApiKey(String(Base64.decode(ApiKeys.getApiKey(), Base64.DEFAULT)))
+            .build()
+
+        FirebaseApp.initializeApp(application, option, "lm-secondary")
     }
 
     fun initiateUserComponent(): InitiateUserSubComponent? {

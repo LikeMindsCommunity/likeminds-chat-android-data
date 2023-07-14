@@ -10,7 +10,7 @@ class UserDbImpl @Inject constructor(private val userReceiver: UserReceiver) : U
         return userReceiver.saveUser(userRO)
     }
 
-    override suspend fun getUser(): UserRO? {
+    override fun getUser(): UserRO? {
         return userReceiver.getUser()
     }
 }

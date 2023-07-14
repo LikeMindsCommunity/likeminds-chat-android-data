@@ -59,7 +59,7 @@ object ROConverter {
         return ChatroomRO.build(chatroomId, communityId, chatroom.title) {
             state = chatroom.state
             member = chatroomCreatorRO
-//            createdAt = chatroom.createdAt
+            createdAt = chatroom.createdAt
             type = chatroom.type
             chatroomImageUrl = chatroom.chatroomImageUrl
             header = chatroom.header
@@ -84,7 +84,7 @@ object ROConverter {
 
             val updatedAt = lastConversationRO?.createdEpoch
                 ?: savedChatroom?.lastConversationRO?.createdEpoch
-//                ?: chatroom.createdAt
+                ?: chatroom.createdAt
 
             this.updatedAt = updatedAt
 
@@ -112,13 +112,13 @@ object ROConverter {
      * @param realm: instance of realm
      * @param conversation: Conversation object to converted
      * @param member: [MemberRO] object of conversation's creator
-     * @param loggedInUUID: uuid of logged in member
+     * @param loggedInMember: Object of logged in member
      * */
     fun convertConversation(
         realm: Realm,
         conversation: _Conversation_?,
         member: MemberRO? = null,
-        loggedInUUID: String? = null
+        loggedInMember: UserRO?
     ): ConversationRO? {
         /**
          * Conversation is invalid without chatroomId, conversationId, Member object
@@ -129,7 +129,7 @@ object ROConverter {
         val memberRO = member ?: ChatDBUtil.getConversationMember(
             realm,
             conversation
-        ) ?: return null
+        ) ?: convertUserToMember(loggedInMember, communityId) ?: return null
 
         val savedAnswer = if (conversation.hasReactions == true ||
             _ConversationState_.isPoll(conversation.state) ||
@@ -195,9 +195,7 @@ object ROConverter {
             attachmentsUploaded = conversation.attachmentUploaded
             uploadWorkerUUID = savedAnswer?.uploadWorkerUUID ?: conversation.uploadWorkerUUID
             localSavedEpoch = conversation.localCreatedEpoch ?: 0L
-
-            val creatorUUID = memberRO.sdkClientInfoRO?.uuid
-            temporaryId = if (creatorUUID == loggedInUUID) {
+            temporaryId = if (memberRO.id == loggedInMember?.id) {
                 conversation.temporaryId
             } else {
                 null
@@ -262,6 +260,7 @@ object ROConverter {
             } else {
                 null
             }
+
         //get attachments as per saved and new conversation
         val updatedAttachments = convertUpdatedAttachments(
             chatroomId,
@@ -289,9 +288,9 @@ object ROConverter {
         val linkRO = convertLink(chatroomId, communityId, conversation.ogTags)
 
         //Clear embedded object list if already present else calling insertToRealmOrUpdate will duplicate it
-        savedAnswer?.attachments?.clear()
-        savedAnswer?.reactions?.clear()
-        savedAnswer?.polls?.clear()
+        savedAnswer?.attachments?.deleteAllFromRealm()
+        savedAnswer?.reactions?.deleteAllFromRealm()
+        savedAnswer?.polls?.deleteAllFromRealm()
 
         return ConversationRO.build(
             conversation.id.toString(),
@@ -362,6 +361,31 @@ object ROConverter {
             isDeleted = user.isDeleted
             customTitle = user.customTitle
         }
+    }
+
+    /**
+     * convert [UserRO] to [MemberRO] and save it [MemberRO] table
+     * @param userRO: object of [UserRO]
+     * @param communityId: id of community
+     *
+     * @return [MemberRO]: object created
+     */
+    private fun convertUserToMember(userRO: UserRO?, communityId: String?): MemberRO? {
+        if (userRO == null) return null
+        val userId = userRO.id
+        val uid = "$userId#$communityId"
+        val memberRO = MemberRO.build(uid, userId) {
+            name = userRO.name
+            imageUrl = userRO.imageUrl
+            customTitle = userRO.customTitle
+            userUniqueId = userRO.userUniqueId
+            isGuest = userRO.isGuest
+        }
+        ChatDBUtil.writeAsync({
+            it.insertOrUpdate(memberRO)
+        })
+
+        return memberRO
     }
 
     /**
@@ -491,7 +515,7 @@ object ROConverter {
         )
 
         //Clear embedded object list if already present else calling insertToRealmOrUpdate will duplicate it
-        savedAnswer?.attachments?.clear()
+        savedAnswer?.attachments?.deleteAllFromRealm()
 
         return LastConversationRO.build(
             conversation.id.toString(),
@@ -524,7 +548,9 @@ object ROConverter {
         oldAttachments: RealmList<AttachmentRO>?
     ): RealmList<AttachmentRO> {
         return when {
-            oldAttachments.isNullOrEmpty() && attachments.isNullOrEmpty() -> RealmList()
+            oldAttachments.isNullOrEmpty() && attachments.isNullOrEmpty() -> {
+                RealmList()
+            }
 
             oldAttachments.isNullOrEmpty() && !attachments.isNullOrEmpty() -> {
                 attachments.map { attachment ->
@@ -540,33 +566,13 @@ object ROConverter {
 
             oldAttachments!!.size > attachments!!.size -> {
                 oldAttachments.map { oldAttachment ->
-                    val attachment = attachments.find { attachment ->
-                        attachment.index == oldAttachment.index
-                    }
-                    return@map if (attachment != null) {
-                        oldAttachment.apply {
-                            url = attachment.url
-                            awsFolderPath = ""
-                            thumbnailUrl = attachment.thumbnailUrl
-                            thumbnailAWSFolderPath = ""
-                        }
-                    } else {
-                        convertAttachment(chatroomId, communityId, oldAttachment)
-                    }
+                    convertAttachment(chatroomId, communityId, oldAttachment)
                 }.toRealmList()
             }
 
             else -> {
                 attachments.map { attachment ->
-                    val oldAttachment = oldAttachments.find { oldAttachment ->
-                        oldAttachment.index == attachment.index
-                    }
-                    return@map oldAttachment?.apply {
-                        url = attachment.url
-                        awsFolderPath = ""
-                        thumbnailUrl = attachment.thumbnailUrl
-                        thumbnailAWSFolderPath = ""
-                    } ?: convertAttachment(chatroomId, communityId, attachment)
+                    convertAttachment(chatroomId, communityId, attachment)
                 }.toRealmList()
             }
         }

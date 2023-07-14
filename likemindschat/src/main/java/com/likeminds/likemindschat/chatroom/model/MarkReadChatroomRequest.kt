@@ -1,12 +1,12 @@
 package com.likeminds.likemindschat.chatroom.model
 
 class MarkReadChatroomRequest private constructor(
-    val chatroomId: Int
+    val chatroomId: String
 ) {
     class Builder {
-        private var chatroomId: Int = -1
+        private var chatroomId: String = ""
 
-        fun chatroomId(chatroomId: Int) = apply { this.chatroomId = chatroomId }
+        fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
 
         fun build() = MarkReadChatroomRequest(chatroomId)
     }

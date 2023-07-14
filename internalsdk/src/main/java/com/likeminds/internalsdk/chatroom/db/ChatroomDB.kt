@@ -1,11 +1,12 @@
 package com.likeminds.internalsdk.chatroom.db
 
 import com.likeminds.internalsdk.db.models.ChatroomRO
+import io.realm.Realm
 
 interface ChatroomDB {
 
     //query to get chatroom
-    suspend fun getChatroom(chatroomId: String): ChatroomRO?
+    fun getChatroom(realm: Realm, chatroomId: String): ChatroomRO?
 
     //query to update follow status
     fun updateChatroomFollowStatus(chatroomId: String, value: Boolean)
@@ -28,4 +29,6 @@ interface ChatroomDB {
     //query to remove chatroom reaction
     fun removeChatroomReaction(chatroomId: String)
 
+    //query to update last seen and draft message of the chatroom
+    fun updateLastSeenAndDraft(chatroomId: String, draft: String?)
 }

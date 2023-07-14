@@ -8,5 +8,5 @@ interface UserDB {
     fun saveUser(userRO: UserRO)
 
     //get user object
-    suspend fun getUser(): UserRO?
+    fun getUser(): UserRO?
 }

@@ -284,7 +284,7 @@ object SyncUtil {
                 realmWrite.insertOrUpdate(communityRO)
 
                 //fetch chatroom
-                val chatroom = data.chatroomMeta[chatroomId.toString()] ?: return@write
+                val chatroom = data.chatroomMeta[chatroomId] ?: return@write
 
                 //chatroom creator
                 val chatroomCreatorId = chatroom.userId
@@ -296,7 +296,7 @@ object SyncUtil {
 
                 //reactions
                 val chatroomReactions = if (chatroom.hasReactions == true) {
-                    val list = data.chatroomReactionsMeta[chatroomId.toString()] ?: emptyList()
+                    val list = data.chatroomReactionsMeta[chatroomId] ?: emptyList()
                     list.map { reaction ->
                         val userId = reaction.userId.toString()
                         val user = data.userMeta[userId]
@@ -380,11 +380,13 @@ object SyncUtil {
                             loggedInUUID = loggedInUUID,
                             deletedByMemberRO = deletedByMemberRO
                         ) ?: return@conversation
+
                     realmWrite.insertOrUpdate(
                         conversationRO
                     )
                 }
             }
         }
+        realm.close()
     }
 }
