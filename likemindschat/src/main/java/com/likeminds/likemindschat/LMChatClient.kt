@@ -29,6 +29,8 @@ import com.likeminds.likemindschat.moderation.ModerationClient
 import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.PostReportRequest
+import com.likeminds.likemindschat.notification.NotificationClient
+import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
 import com.likeminds.likemindschat.poll.PollClient
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -75,6 +77,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var conversationClient: ConversationClient
+
+    @Inject
+    lateinit var notificationClient: NotificationClient
 
     class Builder(val application: Application) {
 
@@ -333,6 +338,11 @@ class LMChatClient private constructor() {
     // Exposed function to delete a reaction on a conversation
     suspend fun deleteReaction(deleteReactionRequest: DeleteReactionRequest): LMResponse<Nothing> {
         return conversationClient.deleteReaction(deleteReactionRequest)
+    }
+
+    // Exposed function to fetch unread conversation for notification
+    suspend fun getUnreadConversationNotification(): LMResponse<GetConversationNotificationUnreadResponse> {
+        return notificationClient.getUnreadConversationNotification()
     }
 
     // Exposed function to upload a conversation media

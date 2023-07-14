@@ -24,6 +24,8 @@ import com.likeminds.internalsdk.homefeed.db.HomeFeedDB
 import com.likeminds.internalsdk.homefeed.db.HomeFeedDBImpl
 import com.likeminds.internalsdk.moderation.ModerationApi
 import com.likeminds.internalsdk.moderation.ModerationApiImpl
+import com.likeminds.internalsdk.notification.NotificationApi
+import com.likeminds.internalsdk.notification.NotificationApiImpl
 import com.likeminds.internalsdk.poll.PollApi
 import com.likeminds.internalsdk.poll.PollApiImpl
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenApi
@@ -108,6 +110,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var conversationDBImpl: ConversationDbImpl
+
+    @Inject
+    lateinit var notificationApiImpl: NotificationApiImpl
 
     @Inject
     lateinit var sdkPreferences: SDKPreferences
@@ -254,5 +259,9 @@ class GroupChatSDK {
 
     fun getConversationDB(): ConversationDB {
         return conversationDBImpl
+    }
+
+    fun getNotificationApi(): NotificationApi {
+        return notificationApiImpl
     }
 }

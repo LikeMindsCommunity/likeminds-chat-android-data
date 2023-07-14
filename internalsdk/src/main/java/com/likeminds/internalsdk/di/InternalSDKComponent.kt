@@ -21,7 +21,8 @@ import javax.inject.Singleton
         PollModule::class,
         HelperModule::class,
         SearchModule::class,
-        ConversationModule::class
+        ConversationModule::class,
+        NotificationModule::class
     ]
 )
 interface InternalSDKComponent {

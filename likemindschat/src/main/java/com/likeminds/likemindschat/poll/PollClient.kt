@@ -8,6 +8,7 @@ import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
+import io.realm.Realm
 import javax.inject.Inject
 
 class PollClient @Inject constructor() : BaseClient() {
@@ -37,6 +38,18 @@ class PollClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request = _PostPollConversationRequest_.Builder()
+            .chatroomId(postPollConversationRequest.chatroomId)
+            .text(postPollConversationRequest.text)
+            .state(10)
+            .repliedConversationId(postPollConversationRequest.repliedConversationId)
+            .polls(ModelConverter.createPolls(postPollConversationRequest.polls) ?: emptyList())
+            .pollType(postPollConversationRequest.pollType)
+            .multipleSelectState(postPollConversationRequest.multipleSelectState)
+            .multipleSelectNo(postPollConversationRequest.multipleSelectNo)
+            .isAnonymous(postPollConversationRequest.isAnonymous)
+            .allowAddOption(postPollConversationRequest.allowAddOption)
+            .expiryTime(postPollConversationRequest.expiryTime)
+            .temporaryId(postPollConversationRequest.temporaryId)
             .build()
 
         // calls api and processes the response accordingly
@@ -50,6 +63,15 @@ class PollClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+                val conversation = body.data?.conversation ?: return LMResponse(
+                    success = false,
+                    response.body.errorMessage
+                )
+
+                // save the conversation in DB
+                val realm = Realm.getDefaultInstance()
+                conversationDB.saveNewConversation(realm, conversation)
+
                 ModelConverter.convertPostPollConversationAPIResponse(body)
             }
         }

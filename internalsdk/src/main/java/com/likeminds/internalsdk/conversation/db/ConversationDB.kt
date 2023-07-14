@@ -83,6 +83,12 @@ interface ConversationDB {
         isFromNotification: Boolean
     )
 
+    //query to get save new conversation
+    fun saveNewConversation(
+        realm: Realm,
+        conversation: _Conversation_
+    )
+
     //query to update temporary conversation
     fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long)
 
