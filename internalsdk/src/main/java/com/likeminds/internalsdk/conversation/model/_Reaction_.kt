@@ -5,16 +5,16 @@ import com.likeminds.internalsdk.community.model._Member_
 
 class _Reaction_ private constructor(
     @SerializedName("member")
-    val member: _Member_,
+    val member: _Member_?,
     @SerializedName("reaction")
     val reaction: String
 ) {
     class Builder {
 
-        private var member: _Member_ = _Member_.Builder().build()
+        private var member: _Member_? = null
         private var reaction: String = ""
 
-        fun member(member: _Member_) = apply { this.member = member }
+        fun member(member: _Member_?) = apply { this.member = member }
         fun reaction(reaction: String) = apply { this.reaction = reaction }
 
         fun build() = _Reaction_(member, reaction)

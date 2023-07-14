@@ -6,6 +6,7 @@ import com.likeminds.internalsdk.db.ROConverter
 import com.likeminds.internalsdk.db.models.AppConfigRO
 import com.likeminds.internalsdk.db.util.toRealmList
 import com.likeminds.internalsdk.sync.model._SyncChatroomResponse_
+import com.likeminds.internalsdk.sync.model._SyncConversationResponse_
 import io.realm.Realm
 
 object SyncUtil {
@@ -46,7 +47,7 @@ object SyncUtil {
     // Stores chatroom data to DB
     fun saveChatroomResponse(
         communityId: String,
-        loggedInMemberId: String,
+        loggedInUUID: String,
         data: _SyncChatroomResponse_
     ) {
         val chatrooms = data.chatrooms
@@ -72,6 +73,16 @@ object SyncUtil {
                 val lastConversationId = chatroom.lastConversationId
                 val lastConversation =
                     data.conversationMeta[lastConversationId.toString()] ?: return@forEach
+
+                //isConversation Deleted
+                val lastConversationDeletedByMemberRO = if (lastConversation.deletedBy != null) {
+                    val lastConversationDeletedById = lastConversation.deletedBy
+                    val lastConversationDeletedBy =
+                        data.userMeta[lastConversationDeletedById.toString()]
+                    ROConverter.convertMember(lastConversationDeletedBy, communityId)
+                } else {
+                    null
+                }
 
                 //poll check
                 val lastConversationPolls =
@@ -110,7 +121,8 @@ object SyncUtil {
                     realm,
                     lastConversation,
                     lastConversationCreatorRO,
-                    lastConversationAttachment
+                    lastConversationAttachment,
+                    lastConversationDeletedByMemberRO
                 ) ?: return@forEach
 
                 realmWrite.insertOrUpdate(lastConversationRO)
@@ -123,6 +135,16 @@ object SyncUtil {
                     val topicCreator = data.userMeta[topic?.memberId.toString()]
                     val topicCreatorRO =
                         ROConverter.convertMember(topicCreator, communityId)
+
+                    //isConversation Deleted
+                    val topicConversationDeletedByMemberRO = if (topic?.deletedBy != null) {
+                        val topicConversationDeletedById = topic.deletedBy
+                        val topicConversationDeletedBy =
+                            data.userMeta[topicConversationDeletedById.toString()]
+                        ROConverter.convertMember(topicConversationDeletedBy, communityId)
+                    } else {
+                        null
+                    }
 
                     //topic poll check
                     val topicConversationPolls =
@@ -153,7 +175,8 @@ object SyncUtil {
                             topicCreatorRO,
                             topicConversationPolls,
                             topicConversationAttachments,
-                            loggedInMemberId = loggedInMemberId
+                            loggedInUUID = loggedInUUID,
+                            deletedByMemberRO = topicConversationDeletedByMemberRO
                         )
                     if (topicCreatorRO != null) {
                         realmWrite.insertOrUpdate(topicCreatorRO)
@@ -175,6 +198,16 @@ object SyncUtil {
                             lastSeenConversationCreator,
                             communityId
                         )
+
+                    val lastSeenConversationDeletedByMemberRO =
+                        if (lastSeenConversation?.deletedBy != null) {
+                            val lastSeenConversationDeletedById = lastSeenConversation.deletedBy
+                            val lastSeenConversationDeletedBy =
+                                data.userMeta[lastSeenConversationDeletedById.toString()]
+                            ROConverter.convertMember(lastSeenConversationDeletedBy, communityId)
+                        } else {
+                            null
+                        }
 
                     //last seen poll check
                     val lastSeenConversationPolls =
@@ -206,7 +239,9 @@ object SyncUtil {
                         lastSeenConversation,
                         lastSeenConversationCreatorRO,
                         lastSeenConversationPolls,
-                        lastSeenConversationAttachments
+                        lastSeenConversationAttachments,
+                        loggedInUUID = loggedInUUID,
+                        deletedByMemberRO = lastSeenConversationDeletedByMemberRO
                     )
                     if (lastSeenConversationRO != null) {
                         realmWrite.insertOrUpdate(lastSeenConversationRO)
@@ -229,5 +264,127 @@ object SyncUtil {
             }
         }
         realm.close()
+    }
+
+    // Stores conversation data to DB
+    fun saveConversationResponses(
+        chatroomId: String,
+        communityId: String,
+        loggedInUUID: String,
+        dataList: ArrayList<_SyncConversationResponse_>
+    ) {
+        val realm = Realm.getDefaultInstance()
+        ChatDBUtil.write(realm) { realmWrite ->
+            dataList.forEach { data ->
+                //fetch community
+                val community = data.communityMeta[communityId] ?: return@write
+                val communityRO =
+                    ROConverter.convertCommunity(community) ?: return@write
+                communityRO.relationshipNeeded = true
+                realmWrite.insertOrUpdate(communityRO)
+
+                //fetch chatroom
+                val chatroom = data.chatroomMeta[chatroomId.toString()] ?: return@write
+
+                //chatroom creator
+                val chatroomCreatorId = chatroom.userId
+                val chatroomCreator =
+                    data.userMeta[chatroomCreatorId.toString()] ?: return@write
+                val chatroomCreatorRO =
+                    ROConverter.convertMember(chatroomCreator, communityId) ?: return@write
+                realmWrite.insertOrUpdate(chatroomCreatorRO)
+
+                //reactions
+                val chatroomReactions = if (chatroom.hasReactions == true) {
+                    val list = data.chatroomReactionsMeta[chatroomId.toString()] ?: emptyList()
+                    list.map { reaction ->
+                        val userId = reaction.userId.toString()
+                        val user = data.userMeta[userId]
+                        reaction.toBuilder().member(user).build()
+                    }
+                } else {
+                    emptyList()
+                }
+
+                val chatroomRO = ROConverter.convertChatroom(
+                    realmWrite,
+                    chatroom,
+                    chatroomCreatorRO,
+                    reactions = chatroomReactions
+                ) ?: return@write
+                chatroomRO.relationshipNeeded = true
+                realmWrite.insertOrUpdate(chatroomRO)
+
+                data.conversations.forEach conversation@{ conversation ->
+                    val id = conversation.id
+                    //conversation creator
+                    val creatorId = conversation.memberId
+                    val creator = data.userMeta[creatorId.toString()] ?: return@conversation
+                    val creatorRO =
+                        ROConverter.convertMember(creator, communityId) ?: return@conversation
+                    realmWrite.insertOrUpdate(creatorRO)
+
+                    val deletedByMemberRO = if (conversation.deletedBy != null) {
+                        val deletedById = conversation.deletedBy
+                        val deletedByMember =
+                            data.userMeta[deletedById.toString()]
+                        ROConverter.convertMember(deletedByMember, communityId)
+                    } else {
+                        null
+                    }
+
+                    //reactions
+                    val reactions = if (conversation.hasReactions == true) {
+                        val list = data.conversationReactionMeta[id.toString()] ?: emptyList()
+                        list.map { reaction ->
+                            val userId = reaction.userId.toString()
+                            val user = data.userMeta[userId]
+                            reaction.toBuilder().member(user).build()
+                        }
+                    } else {
+                        emptyList()
+                    }
+
+                    //polls
+                    val conversationPolls =
+                        if (_ConversationState_.isPoll(conversation.state)) {
+                            val list = data.conversationPollMeta[id.toString()] ?: emptyList()
+                            list.sortedBy { it.id }
+                                .map { poll ->
+                                    val userId = poll.userId
+                                    val user = data.userMeta[userId]
+                                    poll.toBuilder().member(user).build()
+                                }
+                        } else {
+                            emptyList()
+                        }
+
+                    //attachment
+                    val conversationAttachment =
+                        if (conversation.attachmentUploaded == true &&
+                            (conversation.attachmentCount ?: 0) > 0
+                        ) {
+                            data.conversationAttachmentsMeta[id.toString()] ?: emptyList()
+                        } else {
+                            emptyList()
+                        }
+
+                    val conversationRO =
+                        ROConverter.convertConversation(
+                            realmWrite,
+                            conversation,
+                            creatorRO,
+                            conversationPolls,
+                            conversationAttachment,
+                            reactions,
+                            loggedInUUID = loggedInUUID,
+                            deletedByMemberRO = deletedByMemberRO
+                        ) ?: return@conversation
+                    realmWrite.insertOrUpdate(
+                        conversationRO
+                    )
+                }
+            }
+        }
     }
 }

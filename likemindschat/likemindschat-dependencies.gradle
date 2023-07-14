@@ -10,6 +10,9 @@ dependencies {
     implementation deps.dagger.main
     kapt deps.dagger.compiler
 
+    //workmanager
+    implementation deps.workmanager.main
+
     //retrofit gson
     implementation deps.retrofit.gson
 

@@ -1,9 +1,11 @@
 package com.likeminds.likemindschat.helper.model
 
+import com.likeminds.likemindschat.community.model.Member
+
 data class GetTaggingListResponse(
     val groupTags: List<GroupTag>,
-    val chatroomParticipants: List<UserTag>,
-    val communityMembers: List<UserTag>
+    val chatroomParticipants: List<Member>,
+    val communityMembers: List<Member>
 )
 
 data class GroupTag(
@@ -12,12 +14,4 @@ data class GroupTag(
     val route: String,
     val tag: String,
     val imageUrl: String
-)
-
-data class UserTag(
-    val id: Int,
-    val imageUrl: String,
-    val isGuest: Boolean,
-    val name: String,
-    val userUniqueId: String
 )

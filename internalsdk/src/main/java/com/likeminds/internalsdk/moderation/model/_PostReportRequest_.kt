@@ -7,32 +7,34 @@ class _PostReportRequest_ private constructor(
     var tagId: Int,
     @SerializedName("reason")
     var reason: String?,
-    @SerializedName("reported_member_id")
-    var reportedMemberId: Int?,
+    @SerializedName("uuid")
+    val uuid: String?,
     @SerializedName("conversation_id")
-    var reportedConversationId: Int?,
+    var reportedConversationId: String?,
     @SerializedName("collabcard_id")
-    var reportedChatroomId: Int?,
+    var reportedChatroomId: String?,
     @SerializedName("link")
     var reportedLink: String?
 ) {
+
     class Builder {
+
         private var tagId: Int = -1
         private var reason: String? = null
-        private var reportedMemberId: Int? = null
-        private var reportedConversationId: Int? = null
-        private var reportedChatroomId: Int? = null
+        private var uuid: String? = null
+        private var reportedConversationId: String? = null
+        private var reportedChatroomId: String? = null
         private var reportedLink: String? = null
 
         fun tagId(tagId: Int) = apply { this.tagId = tagId }
         fun reason(reason: String?) = apply { this.reason = reason }
-        fun reportedMemberId(reportedMemberId: Int?) =
-            apply { this.reportedMemberId = reportedMemberId }
+        fun uuid(uuid: String?) =
+            apply { this.uuid = uuid }
 
-        fun reportedConversationId(reportedConversationId: Int?) =
+        fun reportedConversationId(reportedConversationId: String?) =
             apply { this.reportedConversationId = reportedConversationId }
 
-        fun reportedChatroomId(reportedChatroomId: Int?) =
+        fun reportedChatroomId(reportedChatroomId: String?) =
             apply { this.reportedChatroomId = reportedChatroomId }
 
         fun reportedLink(reportedLink: String?) = apply { this.reportedLink = reportedLink }
@@ -40,7 +42,7 @@ class _PostReportRequest_ private constructor(
         fun build() = _PostReportRequest_(
             tagId,
             reason,
-            reportedMemberId,
+            uuid,
             reportedConversationId,
             reportedChatroomId,
             reportedLink
@@ -50,7 +52,7 @@ class _PostReportRequest_ private constructor(
     fun toBuilder(): Builder {
         return Builder().tagId(tagId)
             .reason(reason)
-            .reportedMemberId(reportedMemberId)
+            .uuid(uuid)
             .reportedConversationId(reportedConversationId)
             .reportedChatroomId(reportedChatroomId)
             .reportedLink(reportedLink)

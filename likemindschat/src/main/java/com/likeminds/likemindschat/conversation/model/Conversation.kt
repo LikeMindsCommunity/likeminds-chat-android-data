@@ -43,6 +43,7 @@ class Conversation private constructor(
     val hasFiles: Boolean?,
     val hasReactions: Boolean?,
     val lastUpdated: Long?,
+    val deletedByMember: Member?
 ) {
 
     class Builder {
@@ -86,6 +87,7 @@ class Conversation private constructor(
         private var hasFiles: Boolean? = false
         private var hasReactions: Boolean? = false
         private var lastUpdated: Long? = null
+        private var deletedByMember: Member? = null
 
         fun id(id: String?) = apply { this.id = id }
         fun chatroomId(chatroomId: String?) = apply { this.chatroomId = chatroomId }
@@ -146,6 +148,9 @@ class Conversation private constructor(
         fun hasFiles(hasFiles: Boolean?) = apply { this.hasFiles = hasFiles }
         fun hasReactions(hasReactions: Boolean?) = apply { this.hasReactions = hasReactions }
         fun lastUpdated(lastUpdated: Long?) = apply { this.lastUpdated = lastUpdated }
+        fun deletedByMember(deletedByMember: Member?) =
+            apply { this.deletedByMember = deletedByMember }
+
         fun build() = Conversation(
             id,
             chatroomId,
@@ -185,7 +190,8 @@ class Conversation private constructor(
             deviceId,
             hasFiles,
             hasReactions,
-            lastUpdated
+            lastUpdated,
+            deletedByMember
         )
     }
 
@@ -229,5 +235,6 @@ class Conversation private constructor(
             .hasFiles(hasFiles)
             .hasReactions(hasReactions)
             .lastUpdated(lastUpdated)
+            .deletedByMember(deletedByMember)
     }
 }

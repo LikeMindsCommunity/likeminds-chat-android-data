@@ -1,7 +1,6 @@
 package com.likeminds.likemindschat.homefeed.model
 
-import com.google.gson.annotations.SerializedName
-import com.likeminds.likemindschat.user.model.User
+import com.likeminds.likemindschat.community.model.Member
 
 data class ConfigResponse(
     val access: Boolean,
@@ -13,8 +12,6 @@ data class ConfigResponse(
 )
 
 data class UserDetail(
-    @SerializedName("user")
-    val user: User,
-    @SerializedName("user_metrics")
+    val member: Member,
     val userMetrics: UserMetrics
 )

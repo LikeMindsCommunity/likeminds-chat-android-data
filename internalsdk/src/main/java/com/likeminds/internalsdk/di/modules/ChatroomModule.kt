@@ -1,7 +1,7 @@
 package com.likeminds.internalsdk.di.modules
 
 import com.google.gson.Gson
-import com.likeminds.internalsdk.chatroom.ChatroomNetworkApi
+import com.likeminds.internalsdk.chatroom.api.ChatroomNetworkApi
 import com.likeminds.internalsdk.sync.api.chatroom.ChatroomSyncNetworkApi
 import com.likeminds.internalsdk.utils.retrofit.NetworkResponseAdapterFactory
 import com.likeminds.internalsdk.utils.retrofit.model.BaseUrl

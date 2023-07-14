@@ -201,11 +201,14 @@ object ChatDBUtil {
 
     /**
      * Make sure to pass this inside a write transaction and all the parameters have to be managed object
+     *  @param chatroomRO: chatroom object
+     *  @param conversations: list of conversations
+     *  @param loggedInUUID: uuid of loggedInMember
      */
     fun updateRelationshipsOfChatroom(
         chatroomRO: ChatroomRO,
         conversations: RealmResults<ConversationRO>,
-        loggedInMemberId: String
+        loggedInUUID: String
     ) {
         //Add inverse relationships for conversations
         chatroomRO.conversations = conversations.toRealmList()
@@ -257,7 +260,7 @@ object ChatDBUtil {
                     .beginGroup()
                     .equalTo(DbKey.STATE, STATE_FOLLOWED)
                     .and()
-                    .equalTo(DbKey.MEMBER_OBJECT_ID, loggedInMemberId)
+                    .equalTo(DbKey.MEMBER_OBJECT_ID, loggedInUUID)
                     .endGroup()
                     .endGroup()
                     .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING)
@@ -306,6 +309,25 @@ object ChatDBUtil {
     }
 
     /**
+     * to get conversation creator
+     *
+     * @param realm: Instance of realm
+     * @param conversation: object of conversation
+     *
+     * @return [MemberRO]: creator of conversation
+     */
+    fun getConversationMember(
+        realm: Realm,
+        conversation: _Conversation_
+    ): MemberRO? {
+        return getMember(
+            realm,
+            conversation.communityId,
+            conversation.memberId ?: conversation.member?.id
+        )
+    }
+
+    /**
      * To get a specific [MemberRO] of a community
      *
      * @param realm: Instance of realm
@@ -331,5 +353,21 @@ object ChatDBUtil {
         return realm.where(MemberRO::class.java)
             .equalTo(DbKey.UID, uid)
             .findFirst()
+    }
+
+    /**
+     * to update chatroom's [isConversationStored]
+     *
+     * @param chatroomId: id of chatroom to be updated
+     * @param isConversationStored: value of [isConversationStored] -> true or false
+     */
+    fun updateIsConversationStoreForChatroom(
+        chatroomId: String,
+        isConversationStored: Boolean
+    ) {
+        write { realm ->
+            val chatroomRO = getChatroom(realm, chatroomId)
+            chatroomRO?.isConversationStored = isConversationStored
+        }
     }
 }

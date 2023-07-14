@@ -1,14 +1,21 @@
 package com.likeminds.internalsdk.chatroom
 
+import android.os.Build
+import com.likeminds.internalsdk.chatroom.api.ChatroomNetworkApi
 import com.likeminds.internalsdk.chatroom.model.*
+import com.likeminds.internalsdk.db.ChatDBUtil
+import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import io.realm.Realm
 import javax.inject.Inject
 
 class ChatroomReceiver @Inject constructor(
     private val chatroomNetworkApi: ChatroomNetworkApi
 ) {
+
     companion object {
+
         private const val IS_SECRET_KEY = "is_secret"
         private const val CHATROOM_ID_KEY = "chatroom_id"
         private const val PARTICIPANT_NAME_KEY = "participant_name"
@@ -16,10 +23,14 @@ class ChatroomReceiver @Inject constructor(
         private const val PAGE_SIZE_KEY = "page_size"
     }
 
-    suspend fun getChatroom(
-        request: _GetChatroomRequest_
-    ): NetworkResponse<APIResponse<_GetChatroomResponse_>> {
-        return chatroomNetworkApi.getChatroom(request.chatroomId)
+    /**
+     * API Functions
+     */
+
+    suspend fun getChatroomActions(
+        request: _GetChatroomActionsRequest_
+    ): NetworkResponse<APIResponse<_GetChatroomActionsResponse_>> {
+        return chatroomNetworkApi.getChatroomActions(request.chatroomId)
     }
 
     suspend fun followChatroom(
@@ -46,14 +57,6 @@ class ChatroomReceiver @Inject constructor(
         return chatroomNetworkApi.markReadChatroom(request)
     }
 
-    suspend fun shareChatroomUrl(
-        request: _ShareChatroomUrlRequest_
-    ): NetworkResponse<APIResponse<_ShareChatroomUrlResponse_>> {
-        val chatroomId = request.chatroomId
-        val domain = request.domain
-        return chatroomNetworkApi.shareChatroomUrl(chatroomId, domain)
-    }
-
     suspend fun setChatroomTopic(
         request: _SetChatroomTopicRequest_
     ): NetworkResponse<APIResponse<Nothing>> {
@@ -74,5 +77,116 @@ class ChatroomReceiver @Inject constructor(
         queries[PAGE_SIZE_KEY] = request.pageSize
 
         return chatroomNetworkApi.getParticipants(queries)
+    }
+
+    /**
+     * DB Functions
+     */
+
+    fun getChatroom(chatroomId: String): ChatroomRO? {
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = ChatDBUtil.getChatroom(realm, chatroomId)
+        realm.close()
+        return chatroomRO
+    }
+
+    fun updateChatroomFollowStatus(chatroomId: String, value: Boolean) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatroomRO ->
+                chatroomRO.followStatus = value
+                if (value) {
+                    val currentMillis = System.currentTimeMillis()
+                    chatroomRO.updatedAt = currentMillis
+                }
+            }
+        })
+    }
+
+    fun updateChatroomMuteStatus(chatroomId: String, value: Boolean) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatroomRO ->
+                chatroomRO.muteStatus = value
+            }
+        })
+    }
+
+    fun updateSecretChatroomLeaveStatus(chatroomId: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatroomRO ->
+                chatroomRO.followStatus = false
+                chatroomRO.secretChatRoomLeft = true
+            }
+        })
+    }
+
+    fun updateChatroomTitle(chatroomId: String, updatedTitle: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatRoom ->
+                chatRoom.title = updatedTitle
+                chatRoom.isEdited = true
+            }
+        })
+    }
+
+    fun updateChatroomTopic(chatroomId: String, topicId: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatroomRO ->
+                chatroomRO.topicId = topicId
+                val topic = ChatDBUtil.getConversation(it, topicId)
+                if (topic != null) {
+                    chatroomRO.topic = topic
+                }
+            }
+        })
+    }
+
+    fun updateChatroomReaction(
+        reaction: String,
+        chatroomId: String,
+        memberId: String
+    ) {
+        ChatDBUtil.writeAsync({ realm ->
+            ChatDBUtil.getChatroom(realm, chatroomId)?.let { chatroomRO ->
+
+                //get logged in member
+                val userRO = realm.where(UserRO::class.java).findFirst()
+
+                val index = chatroomRO.reactions.indexOfFirst {
+                    it.member?.id == userRO?.id
+                }
+                val memberObj =
+                    ChatDBUtil.getMember(realm, chatroomRO.communityId, memberId) ?: return@let
+                val messageReaction = ReactionRO.build() {
+                    this.reaction = reaction
+                    member = memberObj
+                }
+                if (index >= 0) {
+                    chatroomRO.reactions[index] = messageReaction
+                } else {
+                    chatroomRO.reactions.add(0, messageReaction)
+                }
+            }
+        })
+    }
+
+    fun removeChatroomReaction(chatroomId: String) {
+        ChatDBUtil.writeAsync({ realm ->
+            ChatDBUtil.getChatroom(realm, chatroomId)?.let { chatroom ->
+                //get logged in member
+                val userRO = realm.where(UserRO::class.java).findFirst()
+
+                //Remove member previous reactions if any
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    chatroom.reactions.removeIf { reaction ->
+                        reaction.member?.id == userRO?.id
+                    }
+                } else {
+                    val reactionRO = chatroom.reactions.find { reaction ->
+                        reaction.member?.id == userRO?.id
+                    }
+                    chatroom.reactions.remove(reactionRO)
+                }
+            }
+        })
     }
 }

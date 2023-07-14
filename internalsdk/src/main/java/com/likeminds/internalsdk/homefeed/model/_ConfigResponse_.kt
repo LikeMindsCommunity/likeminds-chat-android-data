@@ -1,7 +1,7 @@
 package com.likeminds.internalsdk.homefeed.model
 
 import com.google.gson.annotations.SerializedName
-import com.likeminds.internalsdk.user.model._User_
+import com.likeminds.internalsdk.community.model._Member_
 
 data class _ConfigResponse_(
     @SerializedName("access")
@@ -20,7 +20,7 @@ data class _ConfigResponse_(
 
 data class _UserDetail_(
     @SerializedName("user")
-    val user: _User_,
+    val member: _Member_,
     @SerializedName("user_metrics")
     val userMetrics: _UserMetrics_
 )
