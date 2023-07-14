@@ -13,12 +13,7 @@ import com.likeminds.internalsdk.homefeed.model._UserDetail_
 import com.likeminds.internalsdk.homefeed.model._UserMetrics_
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
 import com.likeminds.internalsdk.moderation.model._ReportTag_
-import com.likeminds.internalsdk.notification.model._ChatroomNotificationData_
-import com.likeminds.internalsdk.notification.model._GetConversationNotificationUnreadResponse_
-import com.likeminds.internalsdk.poll.model._AddPollOptionResponse_
-import com.likeminds.internalsdk.poll.model._GetPollUsersResponse_
-import com.likeminds.internalsdk.poll.model._Poll_
-import com.likeminds.internalsdk.poll.model._PostPollConversationResponse_
+import com.likeminds.internalsdk.poll.model.*
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.search.model._SearchChatroomResponse_
 import com.likeminds.internalsdk.search.model._SearchChatroom_
@@ -43,16 +38,8 @@ import com.likeminds.likemindschat.homefeed.model.UserMetrics
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
-import com.likeminds.likemindschat.notification.model.ChatroomNotificationData
-import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
-import com.likeminds.likemindschat.poll.model.AddPollOptionResponse
-import com.likeminds.likemindschat.poll.model.GetPollUsersResponse
-import com.likeminds.likemindschat.poll.model.Poll
-import com.likeminds.likemindschat.poll.model.PostPollConversationResponse
-import com.likeminds.likemindschat.search.model.SearchChatroom
-import com.likeminds.likemindschat.search.model.SearchChatroomResponse
-import com.likeminds.likemindschat.search.model.SearchConversation
-import com.likeminds.likemindschat.search.model.SearchConversationResponse
+import com.likeminds.likemindschat.poll.model.*
+import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
 
 object ModelConverter {
@@ -1354,9 +1341,15 @@ object ModelConverter {
     /**--------------------------------
      * Db Model -> Client Response Model
     --------------------------------*/
+
     //convert [UserRO] to [GetUserResponse]
     fun convertGetUserResponse(userRO: UserRO?): GetUserResponse {
         return GetUserResponse(convertUserRO(userRO))
+    }
+
+    //convert [MemberRO] to [GetMemberResponse]
+    fun convertGetMemberResponse(memberRO: MemberRO?): GetMemberResponse {
+        return GetMemberResponse(convertMemberRO(memberRO))
     }
 
     // convert [chatroomRO] to [GetChatroomResponse]
@@ -1375,6 +1368,11 @@ object ModelConverter {
             convertConversationsRO(conversationsRO.toList()),
             conversationsRO.count()
         )
+    }
+
+    //convert list of [ConversationRO] to [GetConversationsResponse]
+    fun convertGetConversationsCountResponse(count: Int): GetConversationsCountResponse {
+        return GetConversationsCountResponse(count)
     }
 
     /**--------------------------------
@@ -1418,6 +1416,7 @@ object ModelConverter {
             .id(chatroomRO.id)
             .member(convertMemberRO(chatroomRO.member))
             .communityId(chatroomRO.communityId)
+            .communityName(chatroomRO.communities?.firstOrNull()?.name)
             .title(chatroomRO.title)
             .state(chatroomRO.state)
             .createdAt(chatroomRO.createdAt)
@@ -1435,7 +1434,10 @@ object ModelConverter {
             .deletedBy(chatroomRO.deletedBy)
             .updatedAt(chatroomRO.updatedAt)
             .lastConversationId(chatroomRO.lastConversationId)
-            .lastConversation(convertConversationRO(chatroomRO.lastConversation))
+            .lastConversation(
+                convertConversationRO(chatroomRO.lastConversation)
+                    ?: convertLastConversationRO(chatroomRO.lastConversationRO)
+            )
             .lastSeenConversationId(chatroomRO.lastSeenConversationId)
             .lastSeenConversation(convertConversationRO(chatroomRO.lastSeenConversation))
             .dateEpoch(chatroomRO.dateEpoch)
@@ -1455,6 +1457,29 @@ object ModelConverter {
             .externalSeen(chatroomRO.externalSeen)
             .isConversationStored(chatroomRO.isConversationStored)
             .isDraft(chatroomRO.isDraft)
+            .totalAllResponseCount(chatroomRO.totalAllResponseCount)
+            .build()
+    }
+
+    // converts LastConversationRO model to client model
+    private fun convertLastConversationRO(lastConversationRO: LastConversationRO?): Conversation? {
+        if (lastConversationRO == null) return null
+        return Conversation.Builder()
+            .id(lastConversationRO.id)
+            .member(convertMemberRO(lastConversationRO.member))
+            .createdAt(lastConversationRO.createdAt)
+            .answer(lastConversationRO.answer)
+            .state(lastConversationRO.state)
+            .attachments(convertAttachmentsRO(lastConversationRO.attachments))
+            .date(lastConversationRO.date)
+            .deletedBy(lastConversationRO.deletedBy)
+            .attachmentCount(lastConversationRO.attachmentCount)
+            .attachmentUploaded(lastConversationRO.attachmentsUploaded)
+            .uploadWorkerUUID(lastConversationRO.uploadWorkerUUID)
+            .createdEpoch(lastConversationRO.createdEpoch)
+            .chatroomId(lastConversationRO.chatroomId)
+            .communityId(lastConversationRO.communityId)
+            .ogTags(convertLinkRO(lastConversationRO.link))
             .build()
     }
 

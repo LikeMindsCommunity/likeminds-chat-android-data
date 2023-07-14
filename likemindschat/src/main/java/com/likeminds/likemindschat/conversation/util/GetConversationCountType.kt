@@ -1,9 +1,7 @@
 package com.likeminds.likemindschat.conversation.util
 
-enum class GetConversationType {
+enum class GetConversationCountType {
     NONE,
     BELOW,
-    ABOVE,
-    TOP,
-    BOTTOM
+    ABOVE
 }

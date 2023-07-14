@@ -4,12 +4,12 @@ import com.google.gson.annotations.SerializedName
 
 class _MarkReadChatroomRequest_ private constructor(
     @SerializedName("chatroom_id")
-    val chatroomId: Int
+    val chatroomId: String
 ) {
     class Builder {
-        private var chatroomId: Int = -1
+        private var chatroomId: String = ""
 
-        fun chatroomId(chatroomId: Int) = apply { this.chatroomId = chatroomId }
+        fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
 
         fun build() = _MarkReadChatroomRequest_(chatroomId)
     }

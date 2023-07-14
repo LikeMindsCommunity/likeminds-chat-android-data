@@ -8,6 +8,7 @@ import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
+import io.realm.Realm
 import javax.inject.Inject
 
 class ChatroomClient @Inject constructor() : BaseClient() {
@@ -30,13 +31,17 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
      * @return GetChatroomResponse - GetChatroomResponse model for getChatroomRequest
      */
-    suspend fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
+    fun getChatroom(getChatroomRequest: GetChatroomRequest): LMResponse<GetChatroomResponse> {
         // validates the client request
         RequestUtils.validate()
         validateGetChatroomRequest(getChatroomRequest)
 
-        val chatroomRO = chatroomDB.getChatroom(getChatroomRequest.chatroomId)
-        return if (chatroomRO == null) {
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = chatroomDB.getChatroom(realm, getChatroomRequest.chatroomId)
+        val getChatroomResponse = ModelConverter.convertGetChatroomResponse(chatroomRO)
+        val chatroom = getChatroomResponse.chatroom
+        realm.close()
+        return if (chatroom == null) {
             LMResponse(
                 success = false,
                 errorMessage = "Chatroom with respect to chatroomId not found."
@@ -45,7 +50,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             LMResponse(
                 success = true,
                 errorMessage = null,
-                ModelConverter.convertGetChatroomResponse(chatroomRO)
+                getChatroomResponse
             )
         }
     }
@@ -296,7 +301,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateMarkReadChatroomRequest(markReadChatroomRequest: MarkReadChatroomRequest) {
-        if (markReadChatroomRequest.chatroomId == -1) {
+        if (markReadChatroomRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
     }
@@ -399,6 +404,32 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      */
     private fun validateGetParticipantsRequest(getParticipantsRequest: GetParticipantsRequest) {
         if (getParticipantsRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+    }
+
+    /**
+     * sets last seen to true and saves draft response
+     * @param updateLastSeenAndDraftRequest - client request model to get list of participants in chatroom
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
+    fun updateLastSeenAndDraft(updateLastSeenAndDraftRequest: UpdateLastSeenAndDraftRequest) {
+        // validates the client request
+        RequestUtils.validate()
+        validateUpdateLastSeenAndDraftRequest(updateLastSeenAndDraftRequest)
+
+        val chatroomId = updateLastSeenAndDraftRequest.chatroomId
+        val draft = updateLastSeenAndDraftRequest.draft
+
+        chatroomDB.updateLastSeenAndDraft(chatroomId, draft)
+    }
+
+    /**
+     * validates [updateLastSeenAndDraftRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateUpdateLastSeenAndDraftRequest(updateLastSeenAndDraftRequest: UpdateLastSeenAndDraftRequest) {
+        if (updateLastSeenAndDraftRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
     }

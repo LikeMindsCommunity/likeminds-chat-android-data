@@ -68,103 +68,93 @@ class ConversationReceiver @Inject constructor(
      */
 
     fun getConversationsBelow(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
         keyTimestamp: Long?
     ): RealmResults<ConversationRO> {
-        val realm = Realm.getDefaultInstance()
-
-        val conversations = realm.where(ConversationRO::class.java)
+        return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             .greaterThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp ?: 0L)
             .notEqualTo(DbKey.ID, keyId ?: "")
-            //filter empty conversation with failed attachments
-            .not()
-            .beginGroup()
-            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
-            .and()
-            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
-            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .limit(limit.toLong())
             .findAll()
-
-        realm.close()
-        return conversations
     }
 
     fun getConversationsAbove(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
         keyTimestamp: Long?
     ): RealmResults<ConversationRO> {
-        val realm = Realm.getDefaultInstance()
-        val conversations = realm.where(ConversationRO::class.java)
+        return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             .lessThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp ?: 0L)
             .notEqualTo(DbKey.ID, keyId ?: "")
-            //filter empty conversation with failed attachments
-            .not()
-            .beginGroup()
-            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
-            .and()
-            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
-            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING, DbKey.ID, Sort.DESCENDING)
             .limit(limit.toLong())
             .findAll()
             .where()
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .findAll()
-        realm.close()
-        return conversations
+    }
+
+    fun getConversationsAboveCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            .lessThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp)
+            .notEqualTo(DbKey.ID, keyId)
+            .count()
+            .toInt()
+    }
+
+    fun getConversationsBelowCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            .greaterThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp)
+            .notEqualTo(DbKey.ID, keyId)
+            .count()
+            .toInt()
     }
 
     fun getTopConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO> {
-        val realm = Realm.getDefaultInstance()
-        val conversations = realm.where(ConversationRO::class.java)
+        return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
-            //filter empty conversation with failed attachments
-            .not()
-            .beginGroup()
-            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
-            .and()
-            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
-            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .limit(limit.toLong())
             .findAll()
-        realm.close()
-        return conversations
     }
 
     fun getBottomConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO> {
-        val realm = Realm.getDefaultInstance()
-        val conversations = realm.where(ConversationRO::class.java)
+        return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
-            //filter empty conversation with failed attachments
-            .not()
-            .beginGroup()
-            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
-            .and()
-            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
-            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING, DbKey.ID, Sort.DESCENDING)
             .limit(limit.toLong())
             .findAll()
             .where()
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .findAll()
-        realm.close()
-        return conversations
     }
 
     fun observeConversations(
@@ -173,13 +163,6 @@ class ConversationReceiver @Inject constructor(
     ): Flow<CollectionChange<RealmResults<ConversationRO>>> {
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
-            //filter empty conversation with failed attachments
-            .not()
-            .beginGroup()
-            .equalTo(DbKey.ATTACHMENTS_UPLOADED, false)
-            .and()
-            .greaterThan(DbKey.ATTACHMENTS_COUNT, 0)
-            .endGroup()
             .findAllAsync()
             .toChangesetFlow()
             .filter {
@@ -188,25 +171,40 @@ class ConversationReceiver @Inject constructor(
             }
     }
 
+    fun deleteConversationPermanently(conversationId: String, chatroomId: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getChatroom(it, chatroomId)?.let { chatroomRO ->
+                val conversation = ChatDBUtil.getConversation(it, conversationId)
+                    ?: return@writeAsync
+                //Delete the conversation
+                conversation.deleteFromRealm()
+
+                //Update the total response count of this chatroom
+                chatroomRO.totalResponseCount = chatroomRO.totalResponseCount - 1
+                chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount - 1
+
+                val lastConversation = chatroomRO.conversations.where()
+                    .equalTo(DbKey.STATE, STATE_NORMAL)
+                    .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING)
+                    .findFirst() ?: return@writeAsync
+                chatroomRO.lastConversation = lastConversation
+                chatroomRO.lastSeenConversation = lastConversation
+                chatroomRO.lastSeenConversationId = lastConversation.id
+            }
+        })
+    }
+
     fun saveTemporaryConversation(conversation: _Conversation_) {
         ChatDBUtil.writeAsync({ realm ->
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
 
             val conversationRO =
-                ROConverter.convertConversation(
-                    realm,
-                    conversation,
-                    loggedInUUID = userRO?.sdkClientInfoRO?.uuid
-                )
+                ROConverter.convertConversation(realm, conversation, loggedInMember = userRO)
             if (conversationRO != null) {
                 ChatDBUtil.getChatroom(realm, conversationRO.chatroomId)?.let { chatroomRO ->
                     //add the conversation to db
-                    if (chatroomRO.conversations.isEmpty()) {
-                        chatroomRO.conversations = RealmList(conversationRO)
-                    } else {
-                        chatroomRO.conversations.add(conversationRO)
-                    }
+                    chatroomRO.conversations.add(conversationRO)
                     //Make the chatroom followed, if it is not already followed
                     if (chatroomRO.followStatus != true) {
                         chatroomRO.followStatus = true
@@ -241,6 +239,23 @@ class ConversationReceiver @Inject constructor(
         })
     }
 
+    fun updateConversation(conversation: _Conversation_) {
+        val realm = Realm.getDefaultInstance()
+        ChatDBUtil.write(realm) { localRealm ->
+
+            //get logged in member
+            val userRO = localRealm.where(UserRO::class.java).findFirst()
+
+            val conversationRO = ROConverter.convertConversation(
+                localRealm,
+                conversation,
+                loggedInMember = userRO
+            ) ?: return@write
+            localRealm.copyToRealmOrUpdate(conversationRO, ImportFlag.CHECK_SAME_VALUES_BEFORE_SET)
+        }
+        realm.close()
+    }
+
     fun savePostedConversation(
         conversation: _Conversation_,
         isFromNotification: Boolean
@@ -251,17 +266,13 @@ class ConversationReceiver @Inject constructor(
             val userRO = realm.where(UserRO::class.java).findFirst()
 
             val conversationRO =
-                ROConverter.convertConversation(
-                    realm,
-                    conversation,
-                    loggedInUUID = userRO?.sdkClientInfoRO?.uuid
-                )
+                ROConverter.convertConversation(realm, conversation, loggedInMember = userRO)
                     ?: return@writeAsync
 
             ChatDBUtil.getChatroom(realm, conversation.chatroomId)?.let { chatroomRO ->
                 //add the conversation to db
                 if (chatroomRO.conversations.isEmpty()) {
-                    chatroomRO.conversations = RealmList(conversationRO)
+                    chatroomRO.conversations.add(conversationRO)
                 } else {
                     //delete the temporary conversation if present
                     if (!isFromNotification) {
@@ -276,7 +287,7 @@ class ConversationReceiver @Inject constructor(
                 if (conversationRO.createdEpoch > (chatroomRO.lastConversationRO?.createdEpoch
                         ?: 0)
                 ) {
-                    val lastConversation = chatroomRO.conversations?.last(null)
+                    val lastConversation = chatroomRO.conversations.last(null)
                     val lastConversationRO =
                         ROConverter.convertConversationToLastConversation(lastConversation)
                             ?: return@writeAsync
@@ -363,11 +374,16 @@ class ConversationReceiver @Inject constructor(
         }
     }
 
-    fun getConversation(conversationId: String): ConversationRO? {
-        val realm = Realm.getDefaultInstance()
-        val conversationRO = ChatDBUtil.getConversation(realm, conversationId)
-        realm.close()
-        return conversationRO
+    fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getConversation(it, conversationId)?.let { conversation ->
+                conversation.localSavedEpoch = localSavedEpoch
+            }
+        })
+    }
+
+    fun getConversation(realm: Realm, conversationId: String): ConversationRO? {
+        return ChatDBUtil.getConversation(realm, conversationId)
     }
 
     fun updateEditedConversation(
@@ -384,6 +400,14 @@ class ConversationReceiver @Inject constructor(
                     conversation.communityId,
                     linkOgTags
                 )
+            }
+        })
+    }
+
+    fun updateConversationUploadWorkerUUID(conversationId: String, uuid: String) {
+        ChatDBUtil.writeAsync({
+            ChatDBUtil.getConversation(it, conversationId)?.let { conversation ->
+                conversation.uploadWorkerUUID = uuid
             }
         })
     }

@@ -2,6 +2,9 @@ package com.likeminds.likemindschat.homefeed
 
 import android.content.Context
 import android.util.Log
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.*
+import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.models.ChatroomRO
 import com.likeminds.internalsdk.sync.SyncSDK
@@ -16,7 +19,9 @@ import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
-import io.realm.*
+import io.realm.OrderedCollectionChangeSet
+import io.realm.Realm
+import io.realm.RealmResults
 import javax.inject.Inject
 
 class HomeFeedClient @Inject constructor() : BaseClient() {
@@ -34,6 +39,9 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
     }
 
     private var collection: RealmResults<ChatroomRO>? = null
+
+    private lateinit var valueChangeListener: ValueEventListener
+    private var databaseReference: DatabaseReference? = null
 
     /**
      * @throws IllegalArgumentException - when LMChatClient is not instantiated
@@ -89,7 +97,10 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
      *
      * @throws IllegalArgumentException - when LMChatClient is not instantiated
      */
-    suspend fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
+    suspend fun getChatrooms(
+        context: Context,
+        listener: HomeFeedChangeListener
+    ) {
         //validates the client request
         RequestUtils.validate()
 
@@ -107,6 +118,8 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
         } else {
             SyncSDK.startReopenSyncForHomeFeed(context)
         }
+
+        observeLiveHomeFeed(context)
 
         //[Flow] of the [CollectionChange] of the Chatrooms
         val flowOfChatrooms = homeFeedDB.getChatrooms(realm)
@@ -163,5 +176,38 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
                 null
             }
         }
+    }
+
+    private fun observeLiveHomeFeed(context: Context) {
+        val communityId = groupChatSDK.sdkPreferences.getCommunityId() ?: ""
+        val firebaseApp = FirebaseApp.getInstance("lm-secondary")
+        databaseReference = FirebaseDatabase.getInstance(firebaseApp).reference
+            .child("community")
+            .child(communityId)
+
+        valueChangeListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                //validates the client request
+                RequestUtils.validate()
+
+                //check whether db is empty or not
+                val isFirstTime = ChatDBUtil.isEmpty()
+
+                /**
+                 * if empty start first time chatroom worker else reopen
+                 */
+                if (isFirstTime) {
+                    SyncSDK.startFirstHomeFeedSync(context)
+                } else {
+                    SyncSDK.startReopenSyncForHomeFeed(context)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d(GroupChatSDK.LOG_TAG, "cancelled: ${error.message}")
+            }
+        }
+
+        databaseReference?.addValueEventListener(valueChangeListener)
     }
 }

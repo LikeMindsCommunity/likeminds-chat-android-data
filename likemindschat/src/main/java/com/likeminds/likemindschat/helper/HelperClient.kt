@@ -1,5 +1,6 @@
 package com.likeminds.likemindschat.helper
 
+import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.helper.model._DecodeUrlRequest_
 import com.likeminds.internalsdk.helper.model._GetTaggingListRequest_
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
@@ -101,5 +102,21 @@ class HelperClient @Inject constructor() : BaseClient() {
         if (getTaggingListRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
+    }
+
+    /**
+     * Makes a DB call to check whether DB is empty or not
+     * @throws IllegalArgumentException - when LMFeedClient is not instantiated
+     * @return LMResponse<GetDBEmptyResponse> - GetDBEmptyResponse that returns whether DB is empty or not
+     */
+    fun getDBEmpty(): LMResponse<GetDBEmptyResponse> {
+        // validates the client request
+        RequestUtils.validate()
+
+        return LMResponse(
+            success = true,
+            null,
+            GetDBEmptyResponse(ChatDBUtil.isEmpty())
+        )
     }
 }

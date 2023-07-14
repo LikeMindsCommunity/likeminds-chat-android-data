@@ -3,6 +3,7 @@ package com.likeminds.likemindschat.conversation.model
 class PostConversationRequest private constructor(
     val chatroomId: String,
     val text: String,
+    val isFromNotification: Boolean,
     val shareLink: String?,
     val ogTags: LinkOGTags?,
     val repliedConversationId: String?,
@@ -15,6 +16,7 @@ class PostConversationRequest private constructor(
 
         private var chatroomId: String = ""
         private var text: String = ""
+        private var isFromNotification: Boolean = false
         private var shareLink: String? = null
         private var ogTags: LinkOGTags? = null
         private var repliedConversationId: String? = null
@@ -24,6 +26,9 @@ class PostConversationRequest private constructor(
 
         fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
         fun text(text: String) = apply { this.text = text }
+        fun isFromNotification(isFromNotification: Boolean) =
+            apply { this.isFromNotification = isFromNotification }
+
         fun shareLink(shareLink: String?) = apply { this.shareLink = shareLink }
         fun ogTags(ogTags: LinkOGTags?) = apply { this.ogTags = ogTags }
         fun repliedConversationId(repliedConversationId: String?) =
@@ -39,6 +44,7 @@ class PostConversationRequest private constructor(
         fun build() = PostConversationRequest(
             chatroomId,
             text,
+            isFromNotification,
             shareLink,
             ogTags,
             repliedConversationId,
@@ -51,6 +57,7 @@ class PostConversationRequest private constructor(
     fun toBuilder(): Builder {
         return Builder().chatroomId(chatroomId)
             .text(text)
+            .isFromNotification(isFromNotification)
             .shareLink(shareLink)
             .ogTags(ogTags)
             .repliedConversationId(repliedConversationId)

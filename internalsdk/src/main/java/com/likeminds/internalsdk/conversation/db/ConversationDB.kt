@@ -12,10 +12,11 @@ import kotlinx.coroutines.flow.Flow
 interface ConversationDB {
 
     //query to get a single conversation
-    fun getConversation(conversationId: String): ConversationRO?
+    fun getConversation(realm: Realm, conversationId: String): ConversationRO?
 
     //query to get conversations below a particular conversation
     fun getConversationsBelow(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
@@ -24,6 +25,7 @@ interface ConversationDB {
 
     //query to get conversations above a particular conversation
     fun getConversationsAbove(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
@@ -32,15 +34,33 @@ interface ConversationDB {
 
     //query to get top most conversations
     fun getTopConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO>
 
     //query to get bottom most conversations
     fun getBottomConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO>
+
+    // query to get count of conversations above
+    fun getConversationsAboveCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int
+
+    // query to get count of conversations below
+    fun getConversationsBelowCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int
 
     //query to get observe conversations
     fun observeConversations(
@@ -48,8 +68,14 @@ interface ConversationDB {
         chatroomId: String
     ): Flow<CollectionChange<RealmResults<ConversationRO>>>
 
+    // query to delete a conversation permanently
+    fun deleteConversationPermanently(conversationId: String, chatroomId: String)
+
     //query to get save temporary conversation
     fun saveTemporaryConversation(conversation: _Conversation_)
+
+    //query to update a conversation in local db
+    fun updateConversation(conversation: _Conversation_)
 
     //query to get save posted conversation
     fun savePostedConversation(
@@ -63,12 +89,19 @@ interface ConversationDB {
         conversation: _Conversation_
     )
 
+    //query to update temporary conversation
+    fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long)
+
     //query to update edited conversation
     fun updateEditedConversation(
         conversationId: String,
         conversationText: String,
         linkOgTags: _LinkOGTags_?
     )
+
+    //query to update conversation upload worker uuid
+    fun updateConversationUploadWorkerUUID(conversationId: String, uuid: String)
+
 
     //query to update conversation after submitting poll
     fun updateConversationSubmitPoll(conversationId: String, allPollItems: List<_Poll_>)

@@ -1,8 +1,12 @@
 package com.likeminds.likemindschat.conversation
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.FirebaseDatabase
+import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.ConversationRO
 import com.likeminds.internalsdk.sync.SyncSDK
@@ -10,6 +14,8 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.conversation.model.*
+import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
+import com.likeminds.likemindschat.conversation.util.GetConversationCountType
 import com.likeminds.likemindschat.conversation.util.GetConversationType
 import com.likeminds.likemindschat.conversation.util.LoadConversationType
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -69,8 +75,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 val conversation = body.data?.conversation
 
                 conversation?.let {
-                    //todo change true as per request
-                    conversationDB.savePostedConversation(it, true)
+                    conversationDB.savePostedConversation(
+                        it,
+                        postConversationRequest.isFromNotification
+                    )
                 }
 
                 ModelConverter.convertPostConversationAPIResponse(body)
@@ -99,7 +107,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
      *
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
      */
-    suspend fun observeConversations(observeConversationsRequest: ObserveConversationsRequest) {
+    suspend fun observeConversations(
+        context: Context,
+        observeConversationsRequest: ObserveConversationsRequest
+    ) {
         //validates the client request
         RequestUtils.validate()
         validateObserveConversationRequest(observeConversationsRequest)
@@ -107,6 +118,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
         val realm = Realm.getDefaultInstance()
         val chatroomId = observeConversationsRequest.chatroomId
         val listener = observeConversationsRequest.listener
+
+        observeLiveConversations(context, observeConversationsRequest.chatroomId)
 
         val flowOfConversations = conversationDB.observeConversations(realm, chatroomId)
 
@@ -187,11 +200,80 @@ class ConversationClient @Inject constructor() : BaseClient() {
             }
 
             LoadConversationType.FIRST_TIME_BACKGROUND -> {
-                SyncSDK.startFirstTimeSyncForChatroom(context, chatroomId)
+                SyncSDK.startFirstTimeBackgroundSync(context, chatroomId)
             }
 
             LoadConversationType.REOPEN -> {
-                SyncSDK.startFirstTimeSyncForChatroom(context, chatroomId)
+                SyncSDK.startReopenSyncForChatroom(context, chatroomId)
+            }
+        }
+    }
+
+    /**
+     * Observe live conversations
+     */
+    private suspend fun observeLiveConversations(
+        context: Context,
+        chatroomId: String
+    ) {
+        val app = FirebaseApp.getInstance("lm-secondary")
+        val dataBaseReference = FirebaseDatabase.getInstance(app).reference
+            .child("collabcards")
+            .child(chatroomId)
+        dataBaseReference.keepSynced(true)
+
+        dataBaseReference.childEventListener().collect { result ->
+            when (result) {
+                is LiveConversationResponse.ChildAdded -> {
+                    val latestConversation = result.response?.answerId
+                    if (!latestConversation.isNullOrEmpty()) {
+                        SyncSDK.startReopenSyncForChatroom(
+                            context,
+                            chatroomId,
+                            latestConversation
+                        )
+                    }
+                }
+
+                is LiveConversationResponse.ChildChanged -> {
+                    val latestConversation = result.response?.answerId
+                    if (!latestConversation.isNullOrEmpty()) {
+                        SyncSDK.startReopenSyncForChatroom(
+                            context,
+                            chatroomId,
+                            latestConversation
+                        )
+                    }
+                }
+
+                is LiveConversationResponse.ChildMoved -> {
+                    val latestConversation = result.response?.answerId
+                    if (!latestConversation.isNullOrEmpty()) {
+                        SyncSDK.startReopenSyncForChatroom(
+                            context,
+                            chatroomId,
+                            latestConversation
+                        )
+                    }
+                }
+
+                is LiveConversationResponse.ChildRemoved -> {
+                    val latestConversation = result.response?.answerId
+                    if (!latestConversation.isNullOrEmpty()) {
+                        SyncSDK.startReopenSyncForChatroom(
+                            context,
+                            chatroomId,
+                            latestConversation
+                        )
+                    }
+                }
+
+                is LiveConversationResponse.OnCancelled -> {
+                    Log.e(
+                        GroupChatSDK.LOG_TAG,
+                        "live conversation failed: ${result.errorMessage}"
+                    )
+                }
             }
         }
     }
@@ -236,10 +318,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
             GetConversationType.BOTTOM -> {
                 getBottomConversations(chatroomId, limit)
             }
-
-            GetConversationType.INTERMEDIATE -> {
-                getIntermediateConversation(chatroomId, limit, conversation)
-            }
         }
     }
 
@@ -263,16 +341,20 @@ class ConversationClient @Inject constructor() : BaseClient() {
         limit: Int,
         belowConversation: Conversation?
     ): LMResponse<GetConversationsResponse> {
-        val conversations = conversationDB.getConversationsBelow(
+        val realm = Realm.getDefaultInstance()
+        val conversationsRO = conversationDB.getConversationsBelow(
+            realm,
             chatroomId,
             limit,
             belowConversation?.id,
             belowConversation?.createdEpoch
         )
+        val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
+        realm.close()
         return LMResponse(
             success = true,
             errorMessage = null,
-            ModelConverter.convertGetConversationsResponse(conversations)
+            conversations
         )
     }
 
@@ -282,16 +364,20 @@ class ConversationClient @Inject constructor() : BaseClient() {
         limit: Int,
         conversation: Conversation?
     ): LMResponse<GetConversationsResponse> {
-        val conversations = conversationDB.getConversationsAbove(
+        val realm = Realm.getDefaultInstance()
+        val conversationsRO = conversationDB.getConversationsAbove(
+            realm,
             chatroomId,
             limit,
             conversation?.id,
             conversation?.createdEpoch
         )
+        val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
+        realm.close()
         return LMResponse(
             success = true,
             errorMessage = null,
-            ModelConverter.convertGetConversationsResponse(conversations)
+            conversations
         )
     }
 
@@ -300,11 +386,18 @@ class ConversationClient @Inject constructor() : BaseClient() {
         chatroomId: String,
         limit: Int
     ): LMResponse<GetConversationsResponse> {
-        val conversations = conversationDB.getTopConversations(chatroomId, limit)
+        val realm = Realm.getDefaultInstance()
+        val conversationsRO = conversationDB.getTopConversations(
+            realm,
+            chatroomId,
+            limit
+        )
+        val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
+        realm.close()
         return LMResponse(
             success = true,
             errorMessage = null,
-            ModelConverter.convertGetConversationsResponse(conversations)
+            conversations
         )
     }
 
@@ -313,47 +406,141 @@ class ConversationClient @Inject constructor() : BaseClient() {
         chatroomId: String,
         limit: Int
     ): LMResponse<GetConversationsResponse> {
-        val conversations = conversationDB.getBottomConversations(chatroomId, limit)
+        val realm = Realm.getDefaultInstance()
+        val conversationsRO = conversationDB.getBottomConversations(realm, chatroomId, limit)
+        val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
+        realm.close()
         return LMResponse(
             success = true,
             errorMessage = null,
-            ModelConverter.convertGetConversationsResponse(conversations)
+            conversations
         )
     }
 
-    private fun getIntermediateConversation(
+    /**
+     * runs the query and returns the conversations above count
+     * @param getConversationsCountRequest - client request model to get conversations count
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<GetConversationsResponse> - Base LM response[GetConversationsResponse]
+     */
+    fun getConversationsCount(getConversationsCountRequest: GetConversationsCountRequest): LMResponse<GetConversationsCountResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validateGetConversationsCountRequest(getConversationsCountRequest)
+
+        val chatroomId = getConversationsCountRequest.chatroomId
+        val conversationId = getConversationsCountRequest.conversation.id ?: ""
+        val createdEpoch = getConversationsCountRequest.conversation.createdEpoch ?: 0
+
+        return when (getConversationsCountRequest.type) {
+            GetConversationCountType.NONE -> {
+                LMResponse(
+                    success = false,
+                    errorMessage = "queryType not specified."
+                )
+            }
+            GetConversationCountType.BELOW -> {
+                getConversationsBelowCount(
+                    chatroomId,
+                    conversationId,
+                    createdEpoch
+                )
+            }
+            GetConversationCountType.ABOVE -> {
+                getConversationsAboveCount(
+                    chatroomId,
+                    conversationId,
+                    createdEpoch,
+                )
+            }
+        }
+    }
+
+    /**
+     * validates [getConversationsCountRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateGetConversationsCountRequest(getConversationsCountRequest: GetConversationsCountRequest) {
+        if (getConversationsCountRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+
+        if (getConversationsCountRequest.type == GetConversationCountType.NONE) {
+            RequestUtils.throwException("queryType")
+        }
+    }
+
+    // gets count of conversations above the provided conversation
+    private fun getConversationsAboveCount(
         chatroomId: String,
-        limit: Int,
-        conversation: Conversation?
-    ): LMResponse<GetConversationsResponse> {
-        val medianConversation = conversationDB.getConversation(conversation?.id ?: "")
+        conversationId: String,
+        createdEpoch: Long
+    ): LMResponse<GetConversationsCountResponse> {
+        val realm = Realm.getDefaultInstance()
+        val count = conversationDB.getConversationsAboveCount(
+            realm,
+            chatroomId,
+            conversationId,
+            createdEpoch
+        )
+        realm.close()
+        val aboveConversationsCount = ModelConverter.convertGetConversationsCountResponse(count)
+        return LMResponse(
+            success = true,
+            errorMessage = null,
+            aboveConversationsCount
+        )
+    }
 
-        return if (medianConversation == null) {
-            LMResponse(
-                success = false,
-                errorMessage = "Conversation w.r.t conversation not found."
-            )
-        } else {
-            val aboveConversations = conversationDB.getConversationsAbove(
-                chatroomId,
-                limit,
-                conversation?.id,
-                conversation?.createdEpoch
-            )
-            val belowConversations = conversationDB.getConversationsBelow(
-                chatroomId,
-                limit,
-                conversation?.id,
-                conversation?.createdEpoch
-            )
+    // gets count of conversations below the provided conversation
+    private fun getConversationsBelowCount(
+        chatroomId: String,
+        conversationId: String,
+        createdEpoch: Long
+    ): LMResponse<GetConversationsCountResponse> {
+        val realm = Realm.getDefaultInstance()
+        val count = conversationDB.getConversationsBelowCount(
+            realm,
+            chatroomId,
+            conversationId,
+            createdEpoch
+        )
+        realm.close()
+        val belowConversationsCount = ModelConverter.convertGetConversationsCountResponse(count)
+        return LMResponse(
+            success = true,
+            errorMessage = null,
+            belowConversationsCount
+        )
+    }
 
-            val conversations = aboveConversations + medianConversation + belowConversations
+    /**
+     * deletes a conversation from local db permanently
+     * @param deleteConversationPermanentlyRequest - client request model to delete a conversation from local db permanently
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * */
+    fun deleteConversationPermanently(deleteConversationPermanentlyRequest: DeleteConversationPermanentlyRequest) {
+        // validates the client request
+        RequestUtils.validate()
+        validateDeleteConversationPermanentlyRequest(deleteConversationPermanentlyRequest)
 
-            LMResponse(
-                success = true,
-                errorMessage = null,
-                ModelConverter.convertGetConversationsResponse(conversations)
-            )
+        conversationDB.deleteConversationPermanently(
+            deleteConversationPermanentlyRequest.conversationId,
+            deleteConversationPermanentlyRequest.chatroomId
+        )
+    }
+
+    /**
+     * validates [deleteConversationPermanentlyRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateDeleteConversationPermanentlyRequest(deleteConversationPermanentlyRequest: DeleteConversationPermanentlyRequest) {
+        if (deleteConversationPermanentlyRequest.conversationId.isEmpty()) {
+            RequestUtils.throwException("conversationId")
+        }
+        if (deleteConversationPermanentlyRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
         }
     }
 
@@ -373,9 +560,88 @@ class ConversationClient @Inject constructor() : BaseClient() {
         conversationDB.saveTemporaryConversation(conversation)
     }
 
+    /**
+     * validates [saveConversationRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateSaveConversationRequest(saveConversationRequest: SaveConversationRequest) {
         if (saveConversationRequest.conversation.id.isNullOrEmpty()) {
             RequestUtils.throwException("conversation")
+        }
+    }
+
+    /**
+     * updates a conversation in local db
+     * @param updateConversationRequest - client request model to update the conversation in local db
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * */
+    fun updateConversation(updateConversationRequest: UpdateConversationRequest) {
+        // validates the client request
+        RequestUtils.validate()
+
+        val conversation =
+            ModelConverter.createConversation(updateConversationRequest.conversation)
+
+        conversationDB.updateConversation(conversation)
+    }
+
+    /**
+     * updates temporary conversation in local db
+     * @param updateTemporaryConversationRequest - client request model to update temporary conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * */
+    fun updateTemporaryConversation(updateTemporaryConversationRequest: UpdateTemporaryConversationRequest) {
+        // validates the client request
+        RequestUtils.validate()
+        validateUpdateTemporaryConversationRequest(updateTemporaryConversationRequest)
+
+        conversationDB.updateTemporaryConversation(
+            updateTemporaryConversationRequest.conversationId,
+            updateTemporaryConversationRequest.localSavedEpoch
+        )
+    }
+
+    /**
+     * validates [updateTemporaryConversationRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateUpdateTemporaryConversationRequest(updateTemporaryConversationRequest: UpdateTemporaryConversationRequest) {
+        if (updateTemporaryConversationRequest.conversationId.isEmpty()) {
+            RequestUtils.throwException("conversationId")
+        }
+        if (updateTemporaryConversationRequest.localSavedEpoch == -1L) {
+            RequestUtils.throwException("localSavedEpoch")
+        }
+    }
+
+    /**
+     * update conversation uuid in local db
+     * @param updateConversationUploadWorkerUUIDRequest - client request model to update conversation upload worker
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * */
+    fun updateConversationUploadWorkerUUID(updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest) {
+        // validates the client request
+        RequestUtils.validate()
+        validateUpdateConversationUploadWorkerUUIDRequest(updateConversationUploadWorkerUUIDRequest)
+
+        conversationDB.updateConversationUploadWorkerUUID(
+            updateConversationUploadWorkerUUIDRequest.conversationId,
+            updateConversationUploadWorkerUUIDRequest.uuid
+        )
+    }
+
+    /**
+     * validates [updateConversationUploadWorkerUUIDRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateUpdateConversationUploadWorkerUUIDRequest(
+        updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest
+    ) {
+        if (updateConversationUploadWorkerUUIDRequest.conversationId.isEmpty()) {
+            RequestUtils.throwException("conversationId")
+        }
+        if (updateConversationUploadWorkerUUIDRequest.uuid.isEmpty()) {
+            RequestUtils.throwException("uuid")
         }
     }
 
@@ -391,7 +657,9 @@ class ConversationClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validateGetConversationRequest(getConversationRequest)
 
-        val conversationRO = conversationDB.getConversation(getConversationRequest.conversationId)
+        val realm = Realm.getDefaultInstance()
+        val conversationRO =
+            conversationDB.getConversation(realm, getConversationRequest.conversationId)
         return if (conversationRO == null) {
             LMResponse(
                 success = false,

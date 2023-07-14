@@ -15,17 +15,19 @@ class ConversationDbImpl @Inject constructor(
     private val conversationReceiver: ConversationReceiver
 ) : ConversationDB {
 
-    override fun getConversation(conversationId: String): ConversationRO? {
-        return conversationReceiver.getConversation(conversationId)
+    override fun getConversation(realm: Realm, conversationId: String): ConversationRO? {
+        return conversationReceiver.getConversation(realm, conversationId)
     }
 
     override fun getConversationsBelow(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
         keyTimestamp: Long?
     ): RealmResults<ConversationRO> {
         return conversationReceiver.getConversationsBelow(
+            realm,
             chatroomId,
             limit,
             keyId,
@@ -34,26 +36,71 @@ class ConversationDbImpl @Inject constructor(
     }
 
     override fun getConversationsAbove(
+        realm: Realm,
         chatroomId: String,
         limit: Int,
         keyId: String?,
         keyTimestamp: Long?
     ): RealmResults<ConversationRO> {
-        return conversationReceiver.getConversationsAbove(chatroomId, limit, keyId, keyTimestamp)
+        return conversationReceiver.getConversationsAbove(
+            realm,
+            chatroomId,
+            limit,
+            keyId,
+            keyTimestamp
+        )
+    }
+
+    override fun getConversationsAboveCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return conversationReceiver.getConversationsAboveCount(
+            realm,
+            chatroomId,
+            keyId,
+            keyTimestamp
+        )
+    }
+
+    override fun getConversationsBelowCount(
+        realm: Realm,
+        chatroomId: String,
+        keyId: String,
+        keyTimestamp: Long
+    ): Int {
+        return conversationReceiver.getConversationsBelowCount(
+            realm,
+            chatroomId,
+            keyId,
+            keyTimestamp
+        )
     }
 
     override fun getTopConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO> {
-        return conversationReceiver.getTopConversations(chatroomId, limit)
+        return conversationReceiver.getTopConversations(
+            realm,
+            chatroomId,
+            limit
+        )
     }
 
     override fun getBottomConversations(
+        realm: Realm,
         chatroomId: String,
         limit: Int
     ): RealmResults<ConversationRO> {
-        return conversationReceiver.getBottomConversations(chatroomId, limit)
+        return conversationReceiver.getBottomConversations(
+            realm,
+            chatroomId,
+            limit
+        )
     }
 
     override fun observeConversations(
@@ -63,8 +110,16 @@ class ConversationDbImpl @Inject constructor(
         return conversationReceiver.observeConversations(realm, chatroomId)
     }
 
+    override fun deleteConversationPermanently(conversationId: String, chatroomId: String) {
+        return conversationReceiver.deleteConversationPermanently(conversationId, chatroomId)
+    }
+
     override fun saveTemporaryConversation(conversation: _Conversation_) {
         conversationReceiver.saveTemporaryConversation(conversation)
+    }
+
+    override fun updateConversation(conversation: _Conversation_) {
+        conversationReceiver.updateConversation(conversation)
     }
 
     override fun savePostedConversation(
@@ -81,12 +136,20 @@ class ConversationDbImpl @Inject constructor(
         conversationReceiver.saveNewConversation(realm, conversation)
     }
 
+    override fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long) {
+        conversationReceiver.updateTemporaryConversation(conversationId, localSavedEpoch)
+    }
+
     override fun updateEditedConversation(
         conversationId: String,
         conversationText: String,
         linkOgTags: _LinkOGTags_?
     ) {
         conversationReceiver.updateEditedConversation(conversationId, conversationText, linkOgTags)
+    }
+
+    override fun updateConversationUploadWorkerUUID(conversationId: String, uuid: String) {
+        conversationReceiver.updateConversationUploadWorkerUUID(conversationId, uuid)
     }
 
     override fun updateConversationSubmitPoll(conversationId: String, allPollItems: List<_Poll_>) {
