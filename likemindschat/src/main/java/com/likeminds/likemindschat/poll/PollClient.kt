@@ -36,6 +36,18 @@ class PollClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request = _PostPollConversationRequest_.Builder()
+            .chatroomId(postPollConversationRequest.chatroomId)
+            .text(postPollConversationRequest.text)
+            .state(10)
+            .repliedConversationId(postPollConversationRequest.repliedConversationId)
+            .polls(ModelConverter.createPolls(postPollConversationRequest.polls))
+            .pollType(postPollConversationRequest.pollType)
+            .multipleSelectState(postPollConversationRequest.multipleSelectState)
+            .multipleSelectNo(postPollConversationRequest.multipleSelectNo)
+            .isAnonymous(postPollConversationRequest.isAnonymous)
+            .allowAddOption(postPollConversationRequest.allowAddOption)
+            .expiryTime(postPollConversationRequest.expiryTime)
+            .temporaryId(postPollConversationRequest.temporaryId)
             .build()
 
         // calls api and processes the response accordingly
