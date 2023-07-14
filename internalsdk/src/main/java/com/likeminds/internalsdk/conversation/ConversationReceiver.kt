@@ -332,7 +332,7 @@ class ConversationReceiver @Inject constructor(
                 ROConverter.convertConversation(
                     realm,
                     conversation,
-                    loggedInUUID = userRO?.sdkClientInfoRO?.uuid
+                    loggedInMember = userRO
                 ) ?: return@write
 
             ChatDBUtil.getChatroom(realm, conversation.chatroomId)?.let { chatroomRO ->

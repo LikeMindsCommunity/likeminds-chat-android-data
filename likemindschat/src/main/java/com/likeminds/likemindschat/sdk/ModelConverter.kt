@@ -13,7 +13,12 @@ import com.likeminds.internalsdk.homefeed.model._UserDetail_
 import com.likeminds.internalsdk.homefeed.model._UserMetrics_
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
 import com.likeminds.internalsdk.moderation.model._ReportTag_
-import com.likeminds.internalsdk.poll.model.*
+import com.likeminds.internalsdk.notification.model._ChatroomNotificationData_
+import com.likeminds.internalsdk.notification.model._GetConversationNotificationUnreadResponse_
+import com.likeminds.internalsdk.poll.model._AddPollOptionResponse_
+import com.likeminds.internalsdk.poll.model._GetPollUsersResponse_
+import com.likeminds.internalsdk.poll.model._Poll_
+import com.likeminds.internalsdk.poll.model._PostPollConversationResponse_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.search.model._SearchChatroomResponse_
 import com.likeminds.internalsdk.search.model._SearchChatroom_
@@ -38,8 +43,16 @@ import com.likeminds.likemindschat.homefeed.model.UserMetrics
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
-import com.likeminds.likemindschat.poll.model.*
-import com.likeminds.likemindschat.search.model.*
+import com.likeminds.likemindschat.notification.model.ChatroomNotificationData
+import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
+import com.likeminds.likemindschat.poll.model.AddPollOptionResponse
+import com.likeminds.likemindschat.poll.model.GetPollUsersResponse
+import com.likeminds.likemindschat.poll.model.Poll
+import com.likeminds.likemindschat.poll.model.PostPollConversationResponse
+import com.likeminds.likemindschat.search.model.SearchChatroom
+import com.likeminds.likemindschat.search.model.SearchChatroomResponse
+import com.likeminds.likemindschat.search.model.SearchConversation
+import com.likeminds.likemindschat.search.model.SearchConversationResponse
 import com.likeminds.likemindschat.user.model.*
 
 object ModelConverter {
