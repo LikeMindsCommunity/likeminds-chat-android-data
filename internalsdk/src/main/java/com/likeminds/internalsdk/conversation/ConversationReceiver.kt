@@ -5,7 +5,9 @@ import com.likeminds.internalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
-import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.db.models.ConversationRO
+import com.likeminds.internalsdk.db.models.ReactionRO
+import com.likeminds.internalsdk.db.models.UserRO
 import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
@@ -305,6 +307,60 @@ class ConversationReceiver @Inject constructor(
                 }
             }
         })
+    }
+
+    fun saveNewConversation(
+        realm: Realm,
+        conversation: _Conversation_
+    ) {
+        ChatDBUtil.write(realm) { realm ->
+            //get logged in member
+            val userRO = realm.where(UserRO::class.java).findFirst()
+
+            val conversationRO =
+                ROConverter.convertConversation(
+                    realm,
+                    conversation,
+                    loggedInUUID = userRO?.sdkClientInfoRO?.uuid
+                ) ?: return@write
+
+            ChatDBUtil.getChatroom(realm, conversation.chatroomId)?.let { chatroomRO ->
+                if (!chatroomRO.conversations.contains(conversationRO)) {
+                    chatroomRO.conversations.add(conversationRO)
+                }
+                //Make the chatroom followed, if it is not already followed
+                if (chatroomRO.followStatus != true) {
+                    chatroomRO.followStatus = true
+                }
+
+                //Save this conversation as the last conversation
+                if (conversationRO.createdEpoch > (chatroomRO.lastConversationRO?.createdEpoch
+                        ?: 0)
+                ) {
+                    val lastConversation = chatroomRO.conversations.last(null)
+                    val lastConversationRO =
+                        ROConverter.convertConversationToLastConversation(lastConversation)
+                            ?: return@write
+                    chatroomRO.lastConversationRO = realm.copyToRealm(lastConversationRO)
+
+                }
+                if (conversationRO.createdEpoch > (chatroomRO.lastSeenConversation?.createdEpoch
+                        ?: 0L)
+                ) {
+                    chatroomRO.lastSeenConversation = chatroomRO.conversations
+                        .last(null)
+                }
+                //Update the chatroom timestamp for sorting of chatrooms
+                if ((conversationRO.state == STATE_NORMAL || conversationRO.state == STATE_FOLLOWED || conversationRO.state == STATE_POLL) && conversationRO.createdEpoch > (chatroomRO.updatedAt
+                        ?: 0)
+                ) {
+                    chatroomRO.updatedAt = conversationRO.createdEpoch
+                }
+                //Update the total response count of this chatroom
+                chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
+                chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+            }
+        }
     }
 
     fun getConversation(conversationId: String): ConversationRO? {

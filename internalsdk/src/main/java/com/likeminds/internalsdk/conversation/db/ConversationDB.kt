@@ -57,6 +57,12 @@ interface ConversationDB {
         isFromNotification: Boolean
     )
 
+    //query to get save new conversation
+    fun saveNewConversation(
+        realm: Realm,
+        conversation: _Conversation_
+    )
+
     //query to update edited conversation
     fun updateEditedConversation(
         conversationId: String,

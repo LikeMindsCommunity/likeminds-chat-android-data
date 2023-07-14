@@ -11,6 +11,7 @@ import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
+import io.realm.Realm
 import javax.inject.Inject
 
 class PollClient @Inject constructor() : BaseClient() {
@@ -65,6 +66,15 @@ class PollClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+                val conversation = body.data?.conversation ?: return LMResponse(
+                    success = false,
+                    response.body.errorMessage
+                )
+
+                // save the conversation in DB
+                val realm = Realm.getDefaultInstance()
+                conversationDB.saveNewConversation(realm, conversation)
+
                 ModelConverter.convertPostPollConversationAPIResponse(body)
             }
         }
