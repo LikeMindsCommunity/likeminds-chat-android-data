@@ -95,7 +95,7 @@ class DatabaseSyncWorker(
                             ChatDBUtil.updateRelationshipsOfChatroom(
                                 chatroomRO,
                                 conversations,
-                                userPreferences.getLMMemberId()
+                                userPreferences.getClientUUID()
                             )
                         }
 

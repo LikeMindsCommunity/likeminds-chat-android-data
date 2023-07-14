@@ -14,9 +14,11 @@ open class MemberRO(
     var customClickText: String? = null,
     var customTitle: String? = null,
     var communityId: Int? = null,
-    var isOwner: Boolean? = null,
-    var isGuest: Boolean? = false,
-    var userUniqueId: String? = null
+    var isOwner: Boolean = false,
+    var isGuest: Boolean = false,
+    var userUniqueId: String = "",
+    var uuid: String = "",
+    var sdkClientInfoRO: SDKClientInfoRO? = null
 ) : RealmObject() {
 
     private constructor(builder: Builder) : this(
@@ -31,7 +33,9 @@ open class MemberRO(
         builder.communityId,
         builder.isOwner,
         builder.isGuest,
-        builder.userUniqueId
+        builder.userUniqueId,
+        builder.uuid,
+        builder.sdkClientInfoRO
     )
 
     companion object {
@@ -52,9 +56,11 @@ open class MemberRO(
         var customClickText: String? = null
         var customTitle: String? = null
         var communityId: Int? = null
-        var isOwner: Boolean? = null
-        var isGuest: Boolean? = false
-        var userUniqueId: String? = null
+        var isOwner: Boolean = false
+        var isGuest: Boolean = false
+        var userUniqueId: String = ""
+        var uuid: String = ""
+        var sdkClientInfoRO: SDKClientInfoRO? = null
 
         fun build() = MemberRO(this)
     }
@@ -70,6 +76,7 @@ open class MemberRO(
             isOwner = this@MemberRO.isOwner
             isGuest = this@MemberRO.isGuest
             userUniqueId = this@MemberRO.userUniqueId
+            sdkClientInfoRO = this@MemberRO.sdkClientInfoRO
         }
     }
 

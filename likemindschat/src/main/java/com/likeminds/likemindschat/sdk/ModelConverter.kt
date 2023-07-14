@@ -20,8 +20,7 @@ import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.poll.model._PostPollConversationResponse_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.search.model.*
-import com.likeminds.internalsdk.user.model._SDKClientInfo_
-import com.likeminds.internalsdk.user.model._User_
+import com.likeminds.internalsdk.user.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
@@ -77,6 +76,12 @@ object ModelConverter {
         )
     }
 
+    private fun convertUsers(_users_: List<_User_>): List<User> {
+        return _users_.map {
+            convertUser(it)
+        }
+    }
+
     // converts internal User model to client model
     private fun convertUser(
         _user_: _User_
@@ -91,7 +96,8 @@ object ModelConverter {
             _user_.isDeleted,
             _user_.customTitle,
             _user_.updatedAt,
-            _user_.userUniqueId
+            _user_.userUniqueId,
+            _user_.uuid
         )
     }
 
@@ -103,7 +109,8 @@ object ModelConverter {
             SDKClientInfo(
                 it.community,
                 it.user,
-                it.userUniqueId
+                it.userUniqueId,
+                it.uuid
             )
         }
     }
@@ -168,7 +175,7 @@ object ModelConverter {
     //converts internal UserDetail model to client model
     private fun convertUserDetails(_userDetails_: _UserDetail_): UserDetail {
         return UserDetail(
-            convertUser(_userDetails_.user),
+            convertMember(_userDetails_.member),
             convertUserMetrics(_userDetails_.userMetrics)
         )
     }
@@ -249,31 +256,8 @@ object ModelConverter {
         if (_getParticipantsResponse_ == null) return null
         return GetParticipantsResponse(
             _getParticipantsResponse_.canEditParticipant,
-            convertParticipantsData(_getParticipantsResponse_.participants),
+            convertMembers(_getParticipantsResponse_.participants),
             _getParticipantsResponse_.totalParticipantsCount
-        )
-    }
-
-    // converts internal ParticipantData model list to client model list
-    private fun convertParticipantsData(
-        _participants_: List<_ParticipantData_>
-    ): List<ParticipantData> {
-        return _participants_.map {
-            convertParticipantData(it)
-        }
-    }
-
-    // converts internal ParticipantData model to client model
-    private fun convertParticipantData(
-        _participant_: _ParticipantData_
-    ): ParticipantData {
-        return ParticipantData(
-            _participant_.id,
-            _participant_.imageUrl,
-            _participant_.isGuest,
-            _participant_.name,
-            _participant_.userUniqueId,
-            _participant_.customTitle,
         )
     }
 
@@ -446,22 +430,12 @@ object ModelConverter {
             _chatroom_.id,
             _chatroom_.isGuest,
             _chatroom_.isTagged,
-            convertSearchMember(_chatroom_.member),
+            convertMember(_chatroom_.member),
             _chatroom_.muteStatus,
             _chatroom_.secretChatroomLeft,
             _chatroom_.state,
             _chatroom_.updatedAt,
             _chatroom_.isDisabled
-        )
-    }
-
-    // converts internal SearchMember model to client model
-    private fun convertSearchMember(
-        _searchMember_: _SearchMember_
-    ): SearchMember {
-        return SearchMember(
-            _searchMember_.id,
-            SearchProfile(_searchMember_.profile.name)
         )
     }
 
@@ -509,7 +483,7 @@ object ModelConverter {
             _conversation_.isDeleted,
             _conversation_.isEdited,
             _conversation_.lastUpdated,
-            convertSearchMember(_conversation_.member),
+            convertMember(_conversation_.member),
             _conversation_.state,
         )
     }
@@ -556,13 +530,9 @@ object ModelConverter {
             .id(_member_.id)
             .userUniqueId(_member_.userUniqueId)
             .name(_member_.name)
-            .email(_member_.email)
-            .headline(_member_.headline)
-            .city(_member_.city)
             .imageUrl(_member_.imageUrl)
             .questionAnswers(convertQuestions(_member_.questionAnswers))
             .state(_member_.state)
-            .removeState(_member_.removeState)
             .isGuest(_member_.isGuest)
             .customIntroText(_member_.customIntroText)
             .customClickText(_member_.customClickText)
@@ -577,6 +547,8 @@ object ModelConverter {
             .attendingStatus(_member_.attendingStatus)
             .hasProfileImage(_member_.hasProfileImage)
             .updatedAt(_member_.updatedAt)
+            .sdkClientInfo(convertSDKClientInfo(_member_.sdkClientInfo))
+            .uuid(_member_.uuid)
             .build()
     }
 
@@ -924,33 +896,20 @@ object ModelConverter {
 
     // converts internal chatroomParticipants list to client model list
     private fun convertChatroomParticipants(
-        _chatroomParticipants_: List<_UserTag_>
-    ): List<UserTag> {
+        _chatroomParticipants_: List<_Member_>
+    ): List<Member> {
         return _chatroomParticipants_.map {
-            convertUserTag(it)
+            convertMember(it)
         }
     }
 
     // converts internal communityMembers list to client model list
     private fun convertCommunityMembers(
-        _communityMembers_: List<_UserTag_>
-    ): List<UserTag> {
+        _communityMembers_: List<_Member_>
+    ): List<Member> {
         return _communityMembers_.map {
-            convertUserTag(it)
+            convertMember(it)
         }
-    }
-
-    // converts internal UserTag model to client model
-    private fun convertUserTag(
-        _userTag_: _UserTag_
-    ): UserTag {
-        return UserTag(
-            _userTag_.id,
-            _userTag_.imageUrl,
-            _userTag_.isGuest,
-            _userTag_.name,
-            _userTag_.userUniqueId,
-        )
     }
 
     //converts API PostConversationResponse model to LM model
@@ -1023,6 +982,71 @@ object ModelConverter {
     //converts internal PutMultimediaResponse model to client model
     private fun convertPutMultimediaResponse(data: _PutMultimediaResponse_?): PutMultimediaResponse {
         return PutMultimediaResponse(data?.conversation?.let { convertConversation(it) })
+    }
+
+    // converts api MemberStateResponse model to LM MemberStateResponse model
+    fun convertMemberStateResponse(
+        apiResponse: APIResponse<_MemberStateResponse_>
+    ): LMResponse<MemberStateResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertMemberStateResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal MemberStateResponse model to client model
+    private fun convertMemberStateResponse(
+        _memberStateResponse_: _MemberStateResponse_?
+    ): MemberStateResponse? {
+        val member = _memberStateResponse_?.member
+        if (_memberStateResponse_ == null || member == null) return null
+        return MemberStateResponse(
+            member.id,
+            _memberStateResponse_.state,
+            member.userUniqueId,
+            member.customTitle,
+            member.imageUrl,
+            member.isGuest,
+            member.isOwner ?: false,
+            member.name,
+            convertManagerRights(_memberStateResponse_.managerRights),
+            convertMemberRights(_memberStateResponse_.memberRights),
+            member.updatedAt ?: 0L
+        )
+    }
+
+    // converts internal ManagementRightPermissionData model list of manager rights to client model list
+    private fun convertManagerRights(
+        _rights_: List<_ManagementRightPermissionData_>?
+    ): List<ManagementRightPermissionData>? {
+        if (_rights_ == null) return null
+        return _rights_.map {
+            convertManagementRightPermission(it)
+        }
+    }
+
+    // converts internal ManagementRightPermissionData model list of member rights client model list
+    private fun convertMemberRights(
+        _rights_: List<_ManagementRightPermissionData_>
+    ): List<ManagementRightPermissionData> {
+        return _rights_.map {
+            convertManagementRightPermission(it)
+        }
+    }
+
+    // converts internal ManagementRightPermissionData model to client model
+    private fun convertManagementRightPermission(
+        _right_: _ManagementRightPermissionData_
+    ): ManagementRightPermissionData {
+        return ManagementRightPermissionData(
+            _right_.id,
+            _right_.isLocked,
+            _right_.isSelected,
+            _right_.state,
+            _right_.title,
+            _right_.subtitle
+        )
     }
 
     /**--------------------------------
@@ -1124,13 +1148,9 @@ object ModelConverter {
             .id(member.id)
             .userUniqueId(member.userUniqueId)
             .name(member.name)
-            .email(member.email)
-            .headline(member.headline)
-            .city(member.city)
             .imageUrl(member.imageUrl)
             .questionAnswers(createQuestions(member.questionAnswers))
             .state(member.state)
-            .removeState(member.removeState)
             .isGuest(member.isGuest)
             .customIntroText(member.customIntroText)
             .customClickText(member.customClickText)
@@ -1145,6 +1165,8 @@ object ModelConverter {
             .attendingStatus(member.attendingStatus)
             .hasProfileImage(member.hasProfileImage)
             .updatedAt(member.updatedAt)
+            .sdkClientInfo(createSDKClientInfo(member.sdkClientInfo))
+            .uuid(member.uuid)
             .build()
     }
 
@@ -1252,6 +1274,16 @@ object ModelConverter {
             .build()
     }
 
+    fun createSDKClientInfo(sdkClientInfo: SDKClientInfo?): _SDKClientInfo_? {
+        if (sdkClientInfo == null) return null
+        return _SDKClientInfo_(
+            sdkClientInfo.community,
+            sdkClientInfo.user,
+            sdkClientInfo.userUniqueId,
+            sdkClientInfo.uuid
+        )
+    }
+
     /**--------------------------------
      * Db Model -> Client Response Model
     --------------------------------*/
@@ -1306,7 +1338,8 @@ object ModelConverter {
             userRO.isDeleted,
             userRO.customTitle,
             userRO.updatedAt,
-            userRO.userUniqueId
+            userRO.userUniqueId,
+            userRO.uuid
         )
     }
 
@@ -1316,7 +1349,8 @@ object ModelConverter {
             SDKClientInfo(
                 it.community,
                 it.user,
-                it.userUniqueId
+                it.userUniqueId,
+                it.uuid
             )
         }
     }
@@ -1440,6 +1474,7 @@ object ModelConverter {
             .toShowResults(conversationRO.toShowResults)
             .replyChatroomId(conversationRO.replyChatRoomId)
             .lastUpdated(conversationRO.lastUpdatedAt)
+            .deletedByMember(convertMemberRO(conversationRO.deletedByMember))
             .build()
     }
 
@@ -1458,6 +1493,8 @@ object ModelConverter {
             .communityId(memberRO.communityId)
             .isOwner(memberRO.isOwner)
             .isGuest(memberRO.isGuest)
+            .sdkClientInfo(convertSDKClientInfoRO(memberRO.sdkClientInfoRO))
+            .uuid(memberRO.uuid)
             .build()
     }
 

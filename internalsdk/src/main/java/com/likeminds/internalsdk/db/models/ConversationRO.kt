@@ -41,6 +41,7 @@ open class ConversationRO(
     var toShowResults: Boolean? = null,
     var replyChatRoomId: String? = null,
     var lastUpdatedAt: Long = 0L,
+    var deletedByMember: MemberRO? = null,
 
     @LinkingObjects("conversations")
     val community: RealmResults<CommunityRO>? = null,
@@ -63,7 +64,7 @@ open class ConversationRO(
         !it.thumbnailAWSFolderPath.isNullOrEmpty()
     }
 
-    private constructor(builder: Builder) : this(
+    private constructor (builder: Builder) : this(
         builder.id,
         builder.chatroomId,
         builder.communityId,
@@ -98,7 +99,8 @@ open class ConversationRO(
         builder.pollAnswerText,
         builder.toShowResults,
         builder.replyChatRoomId,
-        builder.lastUpdatedAt
+        builder.lastUpdatedAt,
+        builder.deletedByMember
     )
 
     companion object {
@@ -150,6 +152,7 @@ open class ConversationRO(
         var toShowResults: Boolean? = null
         var replyChatRoomId: String? = null
         var lastUpdatedAt: Long = 0L
+        var deletedByMember: MemberRO? = null
 
         fun build() = ConversationRO(this)
     }

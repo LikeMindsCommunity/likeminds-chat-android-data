@@ -7,13 +7,15 @@ import io.realm.annotations.RealmClass
 open class SDKClientInfoRO(
     var community: Int = 0,
     var user: String = "",
-    var userUniqueId: String = ""
+    var userUniqueId: String = "",
+    var uuid: String = ""
 ) : RealmObject() {
 
     private constructor(builder: Builder) : this(
         builder.community,
         builder.user,
-        builder.userUniqueId
+        builder.userUniqueId,
+        builder.uuid
     )
 
     companion object {
@@ -26,6 +28,7 @@ open class SDKClientInfoRO(
         var community: Int = 0
         var user: String = ""
         var userUniqueId: String = ""
+        var uuid: String = ""
 
         fun build() = SDKClientInfoRO(this)
     }

@@ -123,7 +123,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         val request =
             _FollowChatroomRequest_.Builder()
                 .chatroomId(followChatroomRequest.chatroomId)
-                .memberId(followChatroomRequest.memberId)
+                .uuid(followChatroomRequest.uuid)
                 .value(followChatroomRequest.value)
                 .build()
 
@@ -159,8 +159,8 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         if (followChatroomRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
-        if (followChatroomRequest.memberId.isEmpty()) {
-            RequestUtils.throwException("memberId")
+        if (followChatroomRequest.uuid.isEmpty()) {
+            RequestUtils.throwException("uuid")
         }
     }
 

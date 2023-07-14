@@ -200,6 +200,7 @@ object ROConverter {
             } else {
                 null
             }
+
             reactions = reactionsList
             isAnonymous = conversation.isAnonymous
             allowAddOption = conversation.allowAddOption
@@ -234,7 +235,8 @@ object ROConverter {
         polls: List<_Poll_>?,
         attachments: List<_Attachment_>?,
         reactions: List<_ReactionMeta_>? = null,
-        loggedInMemberId: String? = null
+        loggedInUUID: String? = null,
+        deletedByMemberRO: MemberRO? = null
     ): ConversationRO? {
         if (conversation == null || creator == null) return null
         val chatroomId = conversation.chatroomId ?: return null
@@ -310,6 +312,7 @@ object ROConverter {
             this.replyConversation = replyConversation
 
             deletedBy = conversation.deletedBy
+            this.deletedByMember = deletedByMemberRO
             attachmentCount = conversation.attachmentCount
             attachmentsUploaded = conversation.attachmentUploaded
             uploadWorkerUUID = savedAnswer?.uploadWorkerUUID
@@ -317,7 +320,9 @@ object ROConverter {
             this.link = linkRO
 
             localSavedEpoch = conversation.localCreatedEpoch ?: 0L
-            temporaryId = if (creator.id == loggedInMemberId) {
+
+            val creatorUUID = creator.sdkClientInfoRO?.uuid
+            temporaryId = if (creatorUUID == loggedInUUID) {
                 conversation.temporaryId
             } else {
                 null
@@ -351,7 +356,7 @@ object ROConverter {
             name = user.name
             isGuest = user.isGuest
             organizationName = user.organisationName
-            updatedAt = user.updatedAt
+            updatedAt = user.updatedAt ?: 0L
             sdkClientInfoRO = convertSDKClientInfo(user.sdkClientInfo)
             isDeleted = user.isDeleted
             customTitle = user.customTitle
@@ -410,6 +415,7 @@ object ROConverter {
             isOwner = member.isOwner
             isGuest = member.isGuest
             userUniqueId = member.userUniqueId
+            sdkClientInfoRO = convertSDKClientInfo(member.sdkClientInfo)
         }
     }
 
@@ -423,6 +429,7 @@ object ROConverter {
             community = sdkClientInfo.community
             user = sdkClientInfo.user
             userUniqueId = sdkClientInfo.userUniqueId
+            uuid = sdkClientInfo.uuid
         }
     }
 
@@ -475,7 +482,8 @@ object ROConverter {
         realm: Realm,
         conversation: _Conversation_?,
         creator: MemberRO?,
-        attachments: List<_Attachment_>?
+        attachments: List<_Attachment_>?,
+        deletedByMember: MemberRO? = null
     ): LastConversationRO? {
         if (conversation == null || creator == null) return null
         val chatroomId = conversation.chatroomId ?: return null
@@ -521,6 +529,7 @@ object ROConverter {
             attachmentCount = conversation.attachmentCount
             date = conversation.date
             deletedBy = conversation.deletedBy
+            this.deletedByMember = deletedByMember
             attachmentsUploaded = conversation.attachmentUploaded
             uploadWorkerUUID = savedAnswer?.uploadWorkerUUID
             this.createdEpoch = createdEpoch

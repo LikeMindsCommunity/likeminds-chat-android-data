@@ -5,11 +5,18 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
+import com.likeminds.likemindschat.chatroom.model.*
+import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
+import com.likeminds.likemindschat.conversation.model.PostConversationRequest
+import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
 import com.likeminds.likemindschat.chatroom.model.Chatroom
 import com.likeminds.likemindschat.chatroom.model.GetChatroomRequest
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.poll.model.GetPollUsersRequest
+import com.likeminds.likemindschat.search.model.SearchChatroomRequest
+import com.likeminds.likemindschat.search.model.SearchConversationRequest
 import com.likeminds.samplechatapp.databinding.ActivityMainBinding
 import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
@@ -39,7 +46,13 @@ class MainActivity : AppCompatActivity() {
     private val listener = object : HomeFeedChangeListener {
         override fun initialChatrooms(chatrooms: List<Chatroom>) {
             super.initialChatrooms(chatrooms)
-            Log.d(TAG, "MainActivity initial")
+            Log.d(TAG, "MainActivity initial" +
+                    "${
+                        chatrooms.map {
+                            it.member?.sdkClientInfo?.uuid
+                        }
+                    }"
+            )
         }
 
         override fun changedChatrooms(
@@ -69,9 +82,9 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             val initiateUserRequest = InitiateUserRequest.Builder()
-                .apiKey("62723803-8577-4314-b3bd-c65dce56c1df")
-                .userId("ishaan-90")
-                .userName("Sid")
+                .apiKey("bc7017d0-8d17-4ce6-8951-5d580755fb68")
+                .userId("785555")
+                .userName("Ishaan")
                 .deviceId("123333")
                 .isGuest(false)
                 .build()

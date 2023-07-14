@@ -9,12 +9,14 @@ data class User(
     val sdkClientInfo: SDKClientInfo?,
     val isDeleted: Boolean?,
     val customTitle: String?,
-    val updatedAt: Long,
-    val userUniqueId: String
+    val updatedAt: Long?,
+    val userUniqueId: String,
+    val uuid: String
 )
 
 data class SDKClientInfo(
     val community: Int,
     val user: String,
-    val userUniqueId: String
+    val userUniqueId: String,
+    val uuid: String
 )

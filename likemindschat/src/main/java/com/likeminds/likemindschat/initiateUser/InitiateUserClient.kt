@@ -99,9 +99,9 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
                         )
                     )
                 } else {
-                    val lmUUID = user?.userUniqueId ?: ""
+                    val lmUUID = user?.uuid ?: ""
                     val lmMemberId = user?.id ?: ""
-                    val clientUUID = user?.sdkClientInfo?.userUniqueId ?: ""
+                    val clientUUID = user?.sdkClientInfo?.uuid ?: ""
                     val userRO = ROConverter.convertUser(user)
 
 

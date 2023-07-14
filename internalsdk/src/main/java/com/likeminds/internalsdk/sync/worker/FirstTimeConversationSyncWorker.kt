@@ -11,6 +11,7 @@ import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.sync.model._SyncConversationResponse_
 import com.likeminds.internalsdk.sync.util.SyncPreferences
 import com.likeminds.internalsdk.sync.util.SyncUtil
+import com.likeminds.internalsdk.user.util.UserPreferences
 import com.likeminds.internalsdk.utils.MAX_RETRY_COUNT
 import com.likeminds.internalsdk.utils.measureExecution
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
@@ -30,6 +31,7 @@ class FirstTimeConversationSyncWorker(
     private val groupChatSDK = GroupChatSDK.getInstance()
     private val sdkPreferences = SDKPreferences(context as Application)
     private val syncPreferences = SyncPreferences(context as Application)
+    private val userPreferences = UserPreferences(context as Application)
     private val api = groupChatSDK.getConversationSyncApi()
 
     private var dataList = ArrayList<_SyncConversationResponse_>()
@@ -107,6 +109,9 @@ class FirstTimeConversationSyncWorker(
             }
         }
 
+        val communityId = sdkPreferences.getCommunityId() ?: ""
+        val loggedInUUID = userPreferences.getClientUUID()
+
         return when {
             isStopped -> {
                 // The worker is stopped or killed by the OS.
@@ -127,7 +132,7 @@ class FirstTimeConversationSyncWorker(
                 * The response contains no more data.
                 * Stores loaded conversations to DB.
                 * */
-                SyncUtil.saveConversationResponses(chatroomId, sdkPreferences, dataList)
+                SyncUtil.saveConversationResponses(chatroomId, communityId, loggedInUUID, dataList)
                 ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
                 Result.success()
             }
@@ -136,7 +141,12 @@ class FirstTimeConversationSyncWorker(
                 if (!isBackgroundWorker) {
                     // First page conversations are stored in DB directly.
                     dataList.add(data)
-                    SyncUtil.saveConversationResponses(chatroomId, sdkPreferences, dataList)
+                    SyncUtil.saveConversationResponses(
+                        chatroomId,
+                        communityId,
+                        loggedInUUID,
+                        dataList
+                    )
                     ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
                     Result.success()
                 } else {
@@ -151,7 +161,12 @@ class FirstTimeConversationSyncWorker(
                         getConversations()
                     } else {
                         dataList.add(data)
-                        SyncUtil.saveConversationResponses(chatroomId, sdkPreferences, dataList)
+                        SyncUtil.saveConversationResponses(
+                            chatroomId,
+                            communityId,
+                            loggedInUUID,
+                            dataList
+                        )
                         dataList.clear()
                         page++
                         getConversations()
