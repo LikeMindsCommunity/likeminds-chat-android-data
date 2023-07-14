@@ -1,9 +1,6 @@
 package com.likeminds.likemindschat.poll
 
-import com.likeminds.internalsdk.poll.model._AddPollOptionRequest_
-import com.likeminds.internalsdk.poll.model._GetPollUsersRequest_
-import com.likeminds.internalsdk.poll.model._PostPollConversationRequest_
-import com.likeminds.internalsdk.poll.model._SubmitPollRequest_
+import com.likeminds.internalsdk.poll.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
