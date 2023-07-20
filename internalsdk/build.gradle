@@ -23,12 +23,14 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "Integer", "APP_VERSION_CODE", "$versions.sdk_version_code"
             buildConfigField "java.util.Map<String,String>", "URLS_MAP", getBuildConfigMapEntry(urls)
         }
         debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "Integer", "APP_VERSION_CODE", "$versions.sdk_version_code"
             buildConfigField "java.util.Map<String,String>", "URLS_MAP", getBuildConfigMapEntry(beta_urls)
         }
