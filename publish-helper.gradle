@@ -44,6 +44,47 @@ afterEvaluate {
                     }
                 }
             }
+
+            debug(MavenPublication) {
+
+                from components.debug
+
+                groupId PUBLISH_GROUP_ID
+                version PUBLISH_VERSION
+                pom {
+                    name = PUBLISH_ARTIFACT_ID
+                    description = 'LikeMinds Chat official Android SDK'
+                    url = 'https://github.com/NateshR/LikeMinds-Android-Chat-SDK'
+                    licenses {
+                        license {
+                            name = 'LikeMinds License'
+                            url = 'https://likeminds.community/privacy-policy/'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:github.com/NateshR/LikeMinds-Android-Chat-SDK.git'
+                        developerConnection = 'scm:git:ssh://github.com/NateshR/LikeMinds-Android-Chat-SDK.git'
+                        url = 'https://github.com/NateshR/LikeMinds-Android-Chat-SDK/tree/master'
+                    }
+                    developers {
+                        developer {
+                            id = 'NateshR'
+                            name = 'Natesh Relhan'
+                            email = 'nateshrelhan@gmail.com'
+                        }
+                        developer {
+                            id = 'ishaan1607'
+                            name = 'Ishaan Jain'
+                            email = 'ishaan.jain@likeminds.community'
+                        }
+                        developer {
+                            id = 'sidcr7-likeminds'
+                            name = 'Siddharth Dubey'
+                            email = 'siddharth.dubey@likeminds.community'
+                        }
+                    }
+                }
+            }
         }
 
         repositories {
