@@ -1,0 +1,13 @@
+# Kepping all models
+-keep class com.likeminds.likemindschat.chatroom.model.** { *; }
+-keep class com.likeminds.likemindschat.community.model.** { *; }
+-keep class com.likeminds.likemindschat.conversation.model.** { *; }
+-keep class com.likeminds.likemindschat.helper.model.** { *; }
+-keep class com.likeminds.likemindschat.homefeed.model.** { *; }
+-keep class com.likeminds.likemindschat.initiateUser.model.** { *; }
+-keep class com.likeminds.likemindschat.moderation.model.** { *; }
+-keep class com.likeminds.likemindschat.notification.model.** { *; }
+-keep class com.likeminds.likemindschat.poll.model.** { *; }
+-keep class com.likeminds.likemindschat.search.model.** { *; }
+-keep class com.likeminds.likemindschat.user.model.** { *; }
+-keep class com.likeminds.likemindschat.LMResponse

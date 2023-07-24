@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "io.realm:realm-gradle-plugin:10.11.1"
+        classpath deps.realm.main
     }
 }
 plugins {
@@ -16,7 +16,14 @@ plugins {
     id "org.jetbrains.kotlin.kapt" version '1.7.20' apply false
 }
 
-apply from: "publish.gradle"
+File secretPropsFile = project.rootProject.file('local.properties')
+if (secretPropsFile.exists()) {
+    Properties p = new Properties()
+    p.load(new FileInputStream(secretPropsFile))
+    p.each { name, value ->
+        ext[name] = value
+    }
+}
 
 task clean(type: Delete) {
     delete rootProject.buildDir

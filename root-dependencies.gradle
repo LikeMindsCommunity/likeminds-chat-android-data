@@ -8,6 +8,7 @@ versions.sdk_version_minor = '0'
 versions.sdk_version_patch = '0'
 versions.sdk_version_code = 300
 versions.core = "1.8.0"
+versions.realm = '10.11.0'
 versions.appcompat = "1.4.2"
 versions.junit = "4.13.2"
 versions.android_junit = "1.1.5"
@@ -36,6 +37,10 @@ def android_core = [:]
 android_core.core = "androidx.core:core-ktx:$versions.core"
 android_core.appcompat = "androidx.appcompat:appcompat:$versions.appcompat"
 deps.android_core = android_core
+
+def realm = [:]
+realm.main = "io.realm:realm-gradle-plugin:$versions.realm"
+deps.realm = realm
 
 def kotlin = [:]
 kotlin.reflect = "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin"
