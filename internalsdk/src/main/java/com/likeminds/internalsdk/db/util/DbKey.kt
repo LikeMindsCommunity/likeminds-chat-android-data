@@ -25,6 +25,7 @@ object DbKey {
     const val CHATROOM_OBJECT_ID = "chatroom.id"
     const val COMMUNITY_OBJECT_ID = "community.id"
     const val MEMBER_OBJECT_ID = "member.id"
+    const val MEMBER_OBJECT_UUID = "member.uuid"
     const val MEMBER_OBJECT_UID = "member.uid"
     const val STATE = "state"
 

@@ -42,10 +42,7 @@ class UserReceiver @Inject constructor(private val userNetworkApi: UserNetworkAp
         })
     }
 
-    fun getUser(): UserRO? {
-        val realm = Realm.getDefaultInstance()
-        val userRO = realm.where(UserRO::class.java).findFirst()
-        realm.close()
-        return userRO
+    fun getUser(realm: Realm): UserRO? {
+        return realm.where(UserRO::class.java).findFirst()
     }
 }

@@ -14,10 +14,8 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.conversation.model.*
+import com.likeminds.likemindschat.conversation.util.*
 import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
-import com.likeminds.likemindschat.conversation.util.GetConversationCountType
-import com.likeminds.likemindschat.conversation.util.GetConversationType
-import com.likeminds.likemindschat.conversation.util.LoadConversationType
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -33,6 +31,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
     private val conversationApi by lazy {
         groupChatSDK.getConversationApi()
+    }
+
+    private val chatroomDB by lazy {
+        groupChatSDK.getChatroomDb()
     }
 
     private val conversationDB by lazy {
@@ -119,8 +121,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
         val chatroomId = observeConversationsRequest.chatroomId
         val listener = observeConversationsRequest.listener
 
-        observeLiveConversations(context, observeConversationsRequest.chatroomId)
-
         val flowOfConversations = conversationDB.observeConversations(realm, chatroomId)
 
         flowOfConversations.collect { collectionChange ->
@@ -154,6 +154,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             listener.getNewConversations(newConversations)
             listener.getChangedConversations(changedConversations)
         }
+
+        observeLiveConversations(context, observeConversationsRequest.chatroomId)
 
         realm.close()
     }
@@ -814,6 +816,13 @@ class ConversationClient @Inject constructor() : BaseClient() {
                     conversationDB.updateConversationReaction(
                         putReactionRequest.reaction,
                         conversationId
+                    )
+                }
+
+                putReactionRequest.chatroomId?.let { chatroomId ->
+                    chatroomDB.updateChatroomReaction(
+                        putReactionRequest.reaction,
+                        chatroomId
                     )
                 }
 

@@ -5,9 +5,7 @@ import com.likeminds.internalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
-import com.likeminds.internalsdk.db.models.ConversationRO
-import com.likeminds.internalsdk.db.models.ReactionRO
-import com.likeminds.internalsdk.db.models.UserRO
+import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
@@ -452,7 +450,7 @@ class ConversationReceiver @Inject constructor(
                     realm,
                     conversationRO.communityId,
                     newPollItem,
-                    newPollItem.userId
+                    newPollItem.member?.sdkClientInfo?.uuid
                 )?.let { pollRO ->
                     conversationRO.polls.add(pollRO)
                 }
@@ -495,7 +493,11 @@ class ConversationReceiver @Inject constructor(
 
                     //Add new member reaction
                     val memberObj =
-                        ChatDBUtil.getMember(realm, conversationRO.communityId, userRO?.id)
+                        ChatDBUtil.getMember(
+                            realm,
+                            conversationRO.communityId,
+                            userRO?.sdkClientInfoRO?.uuid
+                        )
                             ?: return@let
                     val messageReaction = ReactionRO.build {
                         this.reaction = reaction

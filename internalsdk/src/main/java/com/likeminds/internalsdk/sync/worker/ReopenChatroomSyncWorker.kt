@@ -107,7 +107,7 @@ class ReopenChatroomSyncWorker(
                 // Dumps the chatroom data to db and calls for further chatroom data
                 SyncUtil.saveChatroomResponse(
                     sdkPreferences.getCommunityId() ?: "",
-                    userPreferences.getLMMemberId(),
+                    userPreferences.getClientUUID(),
                     data
                 )
                 page++

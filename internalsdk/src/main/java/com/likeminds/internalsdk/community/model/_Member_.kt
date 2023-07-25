@@ -11,7 +11,7 @@ class _Member_ private constructor(
     @SerializedName("name")
     val name: String,
     @SerializedName("image_url")
-    val imageUrl: String,
+    val imageUrl: String?,
     @SerializedName("question_answers")
     val questionAnswers: List<_Question_>?,
     @SerializedName("state")
@@ -55,7 +55,7 @@ class _Member_ private constructor(
         private var id: String = ""
         private var userUniqueId: String = ""
         private var name: String = ""
-        private var imageUrl: String = ""
+        private var imageUrl: String? = null
         private var questionAnswers: List<_Question_>? = null
         private var state: Int? = null
         private var isGuest: Boolean = false
@@ -78,7 +78,7 @@ class _Member_ private constructor(
         fun id(id: String) = apply { this.id = id }
         fun userUniqueId(userUniqueId: String) = apply { this.userUniqueId = userUniqueId }
         fun name(name: String) = apply { this.name = name }
-        fun imageUrl(imageUrl: String) = apply { this.imageUrl = imageUrl }
+        fun imageUrl(imageUrl: String?) = apply { this.imageUrl = imageUrl }
         fun questionAnswers(questionAnswers: List<_Question_>?) =
             apply { this.questionAnswers = questionAnswers }
 

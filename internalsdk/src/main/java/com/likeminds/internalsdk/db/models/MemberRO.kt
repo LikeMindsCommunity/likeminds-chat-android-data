@@ -42,14 +42,15 @@ open class MemberRO(
 
         inline fun build(
             uid: String,
-            id: String,
+            uuid: String,
             block: Builder.() -> Unit
-        ) = Builder(uid, id).apply(block).build()
+        ) = Builder(uid, uuid).apply(block).build()
     }
 
-    class Builder(var uid: String, var id: String) {
+    class Builder(var uid: String, var uuid: String) {
 
         var name: String = ""
+        var id: String = ""
         var imageUrl: String = ""
         var state: Int = 0
         var customIntroText: String? = null
@@ -59,14 +60,13 @@ open class MemberRO(
         var isOwner: Boolean = false
         var isGuest: Boolean = false
         var userUniqueId: String = ""
-        var uuid: String = ""
         var sdkClientInfoRO: SDKClientInfoRO? = null
 
         fun build() = MemberRO(this)
     }
 
     fun toBuilder(): Builder {
-        return Builder(uid, id).apply {
+        return Builder(uid, uuid).apply {
             name = this@MemberRO.name
             imageUrl = this@MemberRO.imageUrl
             state = this@MemberRO.state
@@ -79,5 +79,4 @@ open class MemberRO(
             sdkClientInfoRO = this@MemberRO.sdkClientInfoRO
         }
     }
-
 }

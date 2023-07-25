@@ -572,7 +572,7 @@ object ModelConverter {
             .id(_member_.id)
             .userUniqueId(_member_.userUniqueId)
             .name(_member_.name)
-            .imageUrl(_member_.imageUrl)
+            .imageUrl(_member_.imageUrl ?: "")
             .questionAnswers(convertQuestions(_member_.questionAnswers))
             .state(_member_.state)
             .isGuest(_member_.isGuest)
@@ -1048,13 +1048,14 @@ object ModelConverter {
             _memberStateResponse_.state,
             member.userUniqueId,
             member.customTitle,
-            member.imageUrl,
+            member.imageUrl ?: "",
             member.isGuest,
             member.isOwner,
             member.name,
             convertManagerRights(_memberStateResponse_.managerRights),
             convertMemberRights(_memberStateResponse_.memberRights),
-            member.updatedAt ?: 0L
+            member.updatedAt ?: 0L,
+            convertSDKClientInfo(member.sdkClientInfo)
         )
     }
 

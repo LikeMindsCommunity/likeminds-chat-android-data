@@ -11,5 +11,6 @@ data class MemberStateResponse(
     val name: String,
     val managerRights: List<ManagementRightPermissionData>?,
     val memberRights: List<ManagementRightPermissionData>,
-    val updatedAt: Long
+    val updatedAt: Long,
+    val sdkClientInfo: SDKClientInfo?
 )

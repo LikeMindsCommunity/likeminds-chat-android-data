@@ -372,9 +372,9 @@ object ROConverter {
      */
     private fun convertUserToMember(userRO: UserRO?, communityId: String?): MemberRO? {
         if (userRO == null) return null
-        val userId = userRO.id
-        val uid = "$userId#$communityId"
-        val memberRO = MemberRO.build(uid, userId) {
+        val uuid = userRO.sdkClientInfoRO?.uuid ?: ""
+        val uid = "$uuid#$communityId"
+        val memberRO = MemberRO.build(uid, uuid) {
             name = userRO.name
             imageUrl = userRO.imageUrl
             customTitle = userRO.customTitle
@@ -395,11 +395,13 @@ object ROConverter {
      * */
     fun convertMember(member: _Member_?, communityId: String): MemberRO? {
         if (member == null) return null
-        val uid = "${member.id}#${communityId}"
+        val uuid = member.sdkClientInfo?.uuid ?: ""
+        val uid = "${uuid}#${communityId}"
 
-        return MemberRO.build(uid, member.id) {
+        return MemberRO.build(uid, uuid) {
             this.communityId = communityId.toInt()
-            name = member.name ?: ""
+            name = member.name
+            id = member.id
             imageUrl = member.imageUrl ?: ""
             state = member.state ?: 0
             customIntroText = member.customIntroText
@@ -672,7 +674,7 @@ object ROConverter {
         communityId: String?
     ): RealmList<PollRO> {
         return polls.orEmpty().mapNotNull { poll ->
-            convertPoll(realm, communityId, poll, poll.member?.id)
+            convertPoll(realm, communityId, poll, poll.member?.sdkClientInfo?.uuid)
         }.toRealmList()
     }
 
@@ -689,7 +691,7 @@ object ROConverter {
         realm: Realm,
         communityId: String?,
         poll: _Poll_?,
-        memberId: String?
+        uuid: String?
     ): PollRO? {
         if (poll == null || communityId == null) return null
         return PollRO.build(poll.id.toString(), poll.text) {
@@ -697,7 +699,7 @@ object ROConverter {
             isSelected = poll.isSelected
             percentage = poll.percentage
             noVotes = poll.noVotes
-            member = ChatDBUtil.getMember(realm, communityId, memberId)
+            member = ChatDBUtil.getMember(realm, communityId, uuid)
         }
     }
 
@@ -736,7 +738,7 @@ object ROConverter {
             convertMember(reaction.member, communityId.toString()) ?: ChatDBUtil.getMember(
                 realm,
                 communityId,
-                reaction.userId.toString()
+                reaction.member?.sdkClientInfo?.uuid
             ) ?: return null
         return ReactionRO.build {
             member = memberRO
@@ -762,7 +764,7 @@ object ROConverter {
         val memberRO = ChatDBUtil.getMember(
             realm,
             communityId,
-            reaction.member?.id
+            reaction.member?.sdkClientInfo?.uuid
         ) ?: return null
         return ReactionRO.build {
             this.reaction = reaction.reaction
