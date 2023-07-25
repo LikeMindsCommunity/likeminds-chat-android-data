@@ -433,4 +433,60 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("chatroomId")
         }
     }
+
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param editChatroomTitleRequest - client request model to edit a chatroom title
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<Nothing> - Base LM response
+     */
+    suspend fun editChatroomTitle(editChatroomTitleRequest: EditChatroomTitleRequest): LMResponse<Nothing> {
+        // validates the client request
+        RequestUtils.validate()
+        validateEditChatroomTitleRequest(editChatroomTitleRequest)
+
+        // builds internal request model
+        val request =
+            _EditChatroomTitleRequest_.Builder()
+                .chatroomId(editChatroomTitleRequest.chatroomId)
+                .text(editChatroomTitleRequest.text)
+                .build()
+
+        // calls api and processes the response accordingly
+        return when (val response = chatroomApi.editChatroomTitle(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+
+                //if success -> make the db call
+                chatroomDB.updateChatroomTitle(
+                    editChatroomTitleRequest.chatroomId,
+                    editChatroomTitleRequest.text
+                )
+
+                LMResponse(
+                    success = response.body.success
+                )
+            }
+        }
+    }
+
+    /**
+     * validates [editChatroomTitleRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateEditChatroomTitleRequest(editChatroomTitleRequest: EditChatroomTitleRequest) {
+        if (editChatroomTitleRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+
+        if (editChatroomTitleRequest.text.isEmpty()) {
+            RequestUtils.throwException("text")
+        }
+    }
 }

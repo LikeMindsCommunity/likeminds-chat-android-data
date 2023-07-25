@@ -79,6 +79,12 @@ class ChatroomReceiver @Inject constructor(
         return chatroomNetworkApi.getParticipants(queries)
     }
 
+    suspend fun editChatroomTitle(
+        request: _EditChatroomTitleRequest_
+    ): NetworkResponse<APIResponse<Nothing>> {
+        return chatroomNetworkApi.editChatroomTitle(request)
+    }
+
     /**
      * DB Functions
      */

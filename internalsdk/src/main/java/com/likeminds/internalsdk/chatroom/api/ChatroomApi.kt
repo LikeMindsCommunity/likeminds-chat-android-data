@@ -40,4 +40,9 @@ interface ChatroomApi {
     suspend fun getParticipants(
         request: _GetParticipantsRequest_
     ): NetworkResponse<APIResponse<_GetParticipantsResponse_>>
+
+    // api to edit the chatroom title
+    suspend fun editChatroomTitle(
+        request: _EditChatroomTitleRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
 }
