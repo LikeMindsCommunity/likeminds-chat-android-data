@@ -1,6 +1,7 @@
 package com.likeminds.internalsdk.conversation
 
 import android.os.Build
+import android.util.Log
 import com.likeminds.internalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
@@ -194,6 +195,14 @@ class ConversationReceiver @Inject constructor(
 
     fun saveTemporaryConversation(conversation: _Conversation_) {
         ChatDBUtil.writeAsync({ realm ->
+            Log.d(
+                "attachments-data",
+                """
+                    id: ${conversation.id}
+                    size: ${conversation.attachments?.size}
+                    timestamp: ${System.currentTimeMillis()}
+                """.trimIndent()
+            )
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
 
@@ -232,6 +241,14 @@ class ConversationReceiver @Inject constructor(
                     //Update the total response count of this chatroom
                     chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
                     chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                    Log.d(
+                        "attachments-data",
+                        """
+                            ENDDD
+                        size: ${conversation.attachments?.size}
+                        timestamp: ${System.currentTimeMillis()}
+                    """.trimIndent()
+                    )
                 }
             }
         })
@@ -254,14 +271,14 @@ class ConversationReceiver @Inject constructor(
         realm.close()
     }
 
-    fun savePostedConversation(
-        conversation: _Conversation_,
-        isFromNotification: Boolean
-    ) {
+    fun savePostedConversation(savePostedConversationRequest: _SavePostedConversationRequest_) {
         ChatDBUtil.writeAsync({ realm ->
 
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
+
+            val conversation = savePostedConversationRequest.conversation
+            val isFromNotification = savePostedConversationRequest.isFromNotification
 
             val conversationRO =
                 ROConverter.convertConversation(realm, conversation, loggedInMember = userRO)

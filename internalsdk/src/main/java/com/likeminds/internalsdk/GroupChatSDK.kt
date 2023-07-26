@@ -173,6 +173,7 @@ class GroupChatSDK {
             .schemaVersion(DB_SCHEMA_VERSION)
             .migration(RealmDBMigration())
             .compactOnLaunch(DbCompactOnLaunchCallback())
+            .allowWritesOnUiThread(true)
             .build()
     }
 

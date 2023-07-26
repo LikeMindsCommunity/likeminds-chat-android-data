@@ -246,10 +246,17 @@ class LMChatClient private constructor() {
 
     // Exposed function to observe new conversations
     suspend fun observeConversations(
-        context: Context,
         observeConversationsRequest: ObserveConversationsRequest
     ) {
-        conversationClient.observeConversations(context, observeConversationsRequest)
+        conversationClient.observeConversations(observeConversationsRequest)
+    }
+
+    //Exposed function to observe live conversations
+    suspend fun observeLiveConversations(
+        context: Context,
+        chatroomId: String
+    ) {
+        return conversationClient.observeLiveConversations(context, chatroomId)
     }
 
     //Exposed function to load conversation to db
@@ -347,5 +354,10 @@ class LMChatClient private constructor() {
     // Exposed function to edit a chatroom title
     suspend fun editChatroomTitle(editChatroomTitleRequest: EditChatroomTitleRequest): LMResponse<Nothing> {
         return chatroomClient.editChatroomTitle(editChatroomTitleRequest)
+    }
+
+    // Exposed function to save a posted conversation
+    fun savePostedConversation(savePostedConversationRequest: SavePostedConversationRequest) {
+        conversationClient.savePostedConversation(savePostedConversationRequest)
     }
 }

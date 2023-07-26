@@ -1,8 +1,7 @@
 package com.likeminds.internalsdk.conversation.db
 
 import com.likeminds.internalsdk.conversation.ConversationReceiver
-import com.likeminds.internalsdk.conversation.model._Conversation_
-import com.likeminds.internalsdk.conversation.model._LinkOGTags_
+import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.ConversationRO
 import com.likeminds.internalsdk.poll.model._Poll_
 import io.realm.Realm
@@ -122,11 +121,8 @@ class ConversationDbImpl @Inject constructor(
         conversationReceiver.updateConversation(conversation)
     }
 
-    override fun savePostedConversation(
-        conversation: _Conversation_,
-        isFromNotification: Boolean
-    ) {
-        conversationReceiver.savePostedConversation(conversation, isFromNotification)
+    override fun savePostedConversation(savePostedConversationRequest: _SavePostedConversationRequest_) {
+        conversationReceiver.savePostedConversation(savePostedConversationRequest)
     }
 
     override fun saveNewConversation(
