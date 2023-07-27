@@ -4,16 +4,15 @@ import android.util.Log
 import com.likeminds.internalsdk.ChatTokenManager
 import com.likeminds.internalsdk.GroupChatSDK.Companion.LOG_TAG
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenNetworkApi
+import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import kotlinx.coroutines.runBlocking
-import okhttp3.Authenticator
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.Route
+import okhttp3.*
 import javax.inject.Inject
 
 class TokenAuthenticator @Inject constructor(
-    private val refreshNetworkApi: RefreshTokenNetworkApi
+    private val refreshNetworkApi: RefreshTokenNetworkApi,
+    private val sdkPreferences: SDKPreferences
 ) : Authenticator {
 
     companion object {
@@ -30,7 +29,8 @@ class TokenAuthenticator @Inject constructor(
         val body = response.body?.string()
         val chatTokenManager = ChatTokenManager.getInstance()
         return when {
-            chatTokenManager.refreshToken.isNullOrEmpty() -> {
+            chatTokenManager.refreshToken.isNullOrEmpty() &&
+                    sdkPreferences.getRefreshToken().isEmpty() -> {
                 Log.e(LOG_TAG, "refresh token is empty")
                 null
             }
@@ -38,7 +38,13 @@ class TokenAuthenticator @Inject constructor(
             (body?.contains(INVALID_LTM, true) == true) -> {
                 Log.d(LOG_TAG, "refreshing access token")
                 runBlocking {
-                    val refreshToken = chatTokenManager.refreshToken
+
+                    val refreshToken = if (!chatTokenManager.refreshToken.isNullOrEmpty()) {
+                        chatTokenManager.refreshToken
+                    } else {
+                        sdkPreferences.getRefreshToken()
+                    }
+
                     when (val refreshResponse =
                         refreshNetworkApi.refreshAccessToken("Bearer $refreshToken")) {
                         is NetworkResponse.Error -> {

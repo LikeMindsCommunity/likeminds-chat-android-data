@@ -2,16 +2,27 @@ package com.likeminds.internalsdk.utils.retrofit
 
 import com.likeminds.internalsdk.BuildConfig
 import com.likeminds.internalsdk.ChatTokenManager
+import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
-class CommonHeaderInterceptor @Inject constructor() : Interceptor {
+class CommonHeaderInterceptor @Inject constructor(
+    private val sdkPreferences: SDKPreferences
+) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val requestBuilder = chain.request().newBuilder()
         val chatTokenManager = ChatTokenManager.getInstance()
-        if (!chatTokenManager.accessToken.isNullOrEmpty()) {
-            requestBuilder.addHeader(AUTH, "Bearer ${chatTokenManager.accessToken}")
+
+        val accessToken = if (!chatTokenManager.accessToken.isNullOrEmpty()) {
+            chatTokenManager.accessToken.toString()
+        } else if (sdkPreferences.getAccessToken().isNotEmpty()) {
+            sdkPreferences.getAccessToken()
+        } else {
+            ""
+        }
+        if (accessToken.isNotEmpty()) {
+            requestBuilder.addHeader(AUTH, "Bearer $accessToken")
         }
         requestBuilder.addHeader(X_PLATFORM_CODE, "an")
         requestBuilder.addHeader(X_SDK_SOURCE, "chat")
