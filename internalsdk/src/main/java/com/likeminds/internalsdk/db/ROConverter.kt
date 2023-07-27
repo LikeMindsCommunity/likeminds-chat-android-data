@@ -103,6 +103,7 @@ object ROConverter {
             secretChatRoomLeft = chatroom.secretChatroomLeft
             topicId = chatroom.topicId ?: savedChatroom?.topicId
             topic = savedChatroom?.topic
+            isConversationStored = savedChatroom?.isConversationStored ?: false
         }
     }
 
