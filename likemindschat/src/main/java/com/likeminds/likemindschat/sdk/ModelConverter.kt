@@ -1469,6 +1469,7 @@ object ModelConverter {
             .chatroomId(lastConversationRO.chatroomId)
             .communityId(lastConversationRO.communityId)
             .ogTags(convertLinkRO(lastConversationRO.link))
+            .deletedByMember(convertMemberRO(lastConversationRO.deletedByMember))
             .build()
     }
 

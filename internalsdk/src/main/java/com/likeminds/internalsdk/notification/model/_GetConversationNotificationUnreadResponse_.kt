@@ -20,7 +20,7 @@ data class _ChatroomNotificationData_(
     @SerializedName("chatroom_user_image")
     val chatroomUserImage: String,
     @SerializedName("chatroom_id")
-    val chatroomId: Int,
+    val chatroomId: String,
     @SerializedName("community_image")
     val communityImage: String,
     @SerializedName("community_id")
