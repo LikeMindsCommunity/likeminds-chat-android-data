@@ -90,6 +90,7 @@ object ROConverter {
 
             lastSeenConversationId = chatroom.lastSeenConversationId
             lastSeenConversation = savedChatroom?.lastSeenConversation
+
             lastConversationId = chatroom.lastConversationId
             lastConversation = savedChatroom?.lastConversation
             this.lastConversationRO = lastConversationRO ?: savedChatroom?.lastConversationRO
