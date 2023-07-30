@@ -1,7 +1,6 @@
 package com.likeminds.internalsdk.conversation
 
 import android.os.Build
-import android.util.Log
 import com.likeminds.internalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
@@ -9,6 +8,7 @@ import com.likeminds.internalsdk.db.ROConverter
 import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.poll.model._Poll_
+import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.*
@@ -19,7 +19,8 @@ import kotlinx.coroutines.flow.filter
 import javax.inject.Inject
 
 class ConversationReceiver @Inject constructor(
-    private val conversationNetworkApi: ConversationNetworkApi
+    private val conversationNetworkApi: ConversationNetworkApi,
+    private val sdkPreferences: SDKPreferences
 ) {
 
     /**
@@ -195,14 +196,6 @@ class ConversationReceiver @Inject constructor(
 
     fun saveTemporaryConversation(conversation: _Conversation_) {
         ChatDBUtil.writeAsync({ realm ->
-            Log.d(
-                "attachments-data",
-                """
-                    id: ${conversation.id}
-                    size: ${conversation.attachments?.size}
-                    timestamp: ${System.currentTimeMillis()}
-                """.trimIndent()
-            )
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
 
@@ -241,14 +234,6 @@ class ConversationReceiver @Inject constructor(
                     //Update the total response count of this chatroom
                     chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
                     chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
-                    Log.d(
-                        "attachments-data",
-                        """
-                            ENDDD
-                        size: ${conversation.attachments?.size}
-                        timestamp: ${System.currentTimeMillis()}
-                    """.trimIndent()
-                    )
                 }
             }
         })
@@ -475,7 +460,10 @@ class ConversationReceiver @Inject constructor(
         })
     }
 
-    fun updateDeletedConversations(conversationsId: List<String>) {
+    fun updateDeletedConversations(
+        communityId: String?,
+        conversationsId: List<String>
+    ) {
         ChatDBUtil.writeAsync({ realm ->
             val conversations = realm.where(ConversationRO::class.java)
                 .`in`(DbKey.ID, conversationsId.toTypedArray())
@@ -484,7 +472,25 @@ class ConversationReceiver @Inject constructor(
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
 
+            val memberRO = ChatDBUtil.getMember(
+                realm,
+                communityId,
+                userRO?.sdkClientInfoRO?.uuid
+            )
+
             conversations.setString(DbKey.DELETED_BY, userRO?.sdkClientInfoRO?.uuid)
+            conversations.forEach {
+                it?.deletedByMember = memberRO
+            }
+
+            val lastConversations = realm.where(LastConversationRO::class.java)
+                .`in`(DbKey.ID, conversationsId.toTypedArray())
+                .findAll()
+
+            lastConversations.forEach {
+                it?.deletedByMember = memberRO
+                it?.deletedBy = userRO?.sdkClientInfoRO?.uuid
+            }
         })
     }
 

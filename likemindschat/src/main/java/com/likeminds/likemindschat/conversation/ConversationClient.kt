@@ -37,6 +37,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
         groupChatSDK.getChatroomDb()
     }
 
+    private val sdkPreferences by lazy {
+        groupChatSDK.getSDKPreferences()
+    }
+
     private val conversationDB by lazy {
         groupChatSDK.getConversationDB()
     }
@@ -770,7 +774,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 val body = response.body
 
                 //if success -> make db query
-                conversationDB.updateDeletedConversations(deleteConversationsRequest.conversationIds)
+                conversationDB.updateDeletedConversations(
+                    sdkPreferences.getCommunityId(),
+                    deleteConversationsRequest.conversationIds
+                )
 
                 ModelConverter.convertDeleteConversationsAPIResponse(body)
             }

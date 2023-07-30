@@ -12,6 +12,7 @@ object DbKey {
     const val LAST_SEEN = "lastSeen"
     const val REMOVE_STATE = "removeState"
     const val DELETED_BY = "deletedBy"
+    const val DELETED_BY_MEMBER = "deletedByMember"
     const val IS_DRAFT = "isDraft"
     const val IS_OWNER = "isOwner"
     const val IS_GUEST = "isGuest"

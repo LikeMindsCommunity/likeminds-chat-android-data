@@ -106,7 +106,7 @@ interface ConversationDB {
     fun updatePollConversationAddItem(conversationId: String, newPollItem: _Poll_)
 
     //query to update once user deletes conversation
-    fun updateDeletedConversations(conversationsId: List<String>)
+    fun updateDeletedConversations(communityId: String?, conversationsId: List<String>)
 
     //query to update conversation once user add a reaction
     fun updateConversationReaction(reaction: String, conversationId: String)

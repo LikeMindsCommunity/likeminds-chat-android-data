@@ -367,20 +367,8 @@ object ChatDBUtil {
     ) {
         write { realm ->
             val chatroomRO = getChatroom(realm, chatroomId)
-            Log.d(
-                "PUI-2", """
-                already: ${chatroomRO?.isConversationStored}
-                in param: $isConversationStored
-            """.trimIndent()
-            )
 
             chatroomRO?.isConversationStored = isConversationStored
-
-            Log.d(
-                "PUI-2", """
-                after saving: ${chatroomRO?.isConversationStored}
-            """.trimIndent()
-            )
         }
     }
 }

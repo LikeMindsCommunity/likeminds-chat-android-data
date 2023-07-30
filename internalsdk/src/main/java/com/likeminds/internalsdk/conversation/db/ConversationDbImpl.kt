@@ -156,8 +156,11 @@ class ConversationDbImpl @Inject constructor(
         conversationReceiver.updatePollConversationAddItem(conversationId, newPollItem)
     }
 
-    override fun updateDeletedConversations(conversationsId: List<String>) {
-        conversationReceiver.updateDeletedConversations(conversationsId)
+    override fun updateDeletedConversations(
+        communityId: String?,
+        conversationsId: List<String>
+    ) {
+        conversationReceiver.updateDeletedConversations(communityId, conversationsId)
     }
 
     override fun updateConversationReaction(
