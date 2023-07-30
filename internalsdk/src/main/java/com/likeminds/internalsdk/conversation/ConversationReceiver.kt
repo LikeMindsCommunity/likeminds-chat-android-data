@@ -400,6 +400,12 @@ class ConversationReceiver @Inject constructor(
                     conversation.communityId,
                     linkOgTags
                 )
+
+                val lastConversation = it.where(LastConversationRO::class.java)
+                    .equalTo(DbKey.ID, conversationId)
+                    .findFirst()
+
+                lastConversation?.answer = conversationText
             }
         })
     }
@@ -483,6 +489,7 @@ class ConversationReceiver @Inject constructor(
                 it?.deletedByMember = memberRO
             }
 
+            // finds and deletes the conversations from [LastConversationRO]
             val lastConversations = realm.where(LastConversationRO::class.java)
                 .`in`(DbKey.ID, conversationsId.toTypedArray())
                 .findAll()
