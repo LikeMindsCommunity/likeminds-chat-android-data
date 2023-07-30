@@ -215,8 +215,11 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to process request to submit polls selected
-    suspend fun submitPoll(submitPollRequest: SubmitPollRequest): LMResponse<Nothing> {
-        return pollClient.submitPoll(submitPollRequest)
+    suspend fun submitPoll(
+        context: Context,
+        submitPollRequest: SubmitPollRequest
+    ): LMResponse<Nothing> {
+        return pollClient.submitPoll(context, submitPollRequest)
     }
 
     // Exposed function to process request to get users who have voted on that particular poll option

@@ -197,11 +197,12 @@ object ROConverter {
             attachmentsUploaded = conversation.attachmentUploaded
             uploadWorkerUUID = savedAnswer?.uploadWorkerUUID ?: conversation.uploadWorkerUUID
             localSavedEpoch = conversation.localCreatedEpoch ?: 0L
-            temporaryId = if (memberRO.sdkClientInfoRO?.uuid == loggedInMember?.sdkClientInfoRO?.uuid) {
-                conversation.temporaryId
-            } else {
-                null
-            }
+            temporaryId =
+                if (memberRO.sdkClientInfoRO?.uuid == loggedInMember?.sdkClientInfoRO?.uuid) {
+                    conversation.temporaryId
+                } else {
+                    null
+                }
 
             reactions = reactionsList
             isAnonymous = conversation.isAnonymous
@@ -782,7 +783,7 @@ object ROConverter {
      * @param communityId: id of the community
      * @param link: [_LinkOGTags_] to be converted
      *
-     * @return list of [ReactionRO]
+     * @return [LinkRO]
      * */
     fun convertLink(
         chatroomId: String,

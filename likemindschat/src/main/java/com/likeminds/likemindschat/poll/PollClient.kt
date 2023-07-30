@@ -1,6 +1,8 @@
 package com.likeminds.likemindschat.poll
 
+import android.content.Context
 import com.likeminds.internalsdk.poll.model.*
+import com.likeminds.internalsdk.sync.SyncSDK
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
@@ -167,11 +169,12 @@ class PollClient @Inject constructor() : BaseClient() {
 
     /**
      * Converts client request model to internal model and calls the api
+     * @param context - context required to start reopen sync
      * @param submitPollRequest - client request model to submit polls selected
      * @throws IllegalArgumentException - when LMFeedClient is not instantiated
      * @return LMResponse<Nothing> - Base LM response
      */
-    suspend fun submitPoll(submitPollRequest: SubmitPollRequest): LMResponse<Nothing> {
+    suspend fun submitPoll(context: Context, submitPollRequest: SubmitPollRequest): LMResponse<Nothing> {
         // validates the client request
         RequestUtils.validate()
         validateSubmitPollRequest(submitPollRequest)
@@ -204,6 +207,14 @@ class PollClient @Inject constructor() : BaseClient() {
                     )
                 }
 
+                val chatroomId = submitPollRequest.chatroomId
+
+                SyncSDK.startReopenSyncForChatroom(
+                    context,
+                    chatroomId,
+                    conversationId
+                )
+
                 LMResponse(
                     success = response.body.success,
                 )
@@ -218,6 +229,10 @@ class PollClient @Inject constructor() : BaseClient() {
     private fun validateSubmitPollRequest(submitPollRequest: SubmitPollRequest) {
         if (submitPollRequest.conversationId.isEmpty()) {
             RequestUtils.throwException("conversationId")
+        }
+
+        if (submitPollRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
         }
 
         if (submitPollRequest.polls.isEmpty()) {

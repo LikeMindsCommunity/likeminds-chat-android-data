@@ -1589,6 +1589,7 @@ object ModelConverter {
             .title(linkRO.title)
             .url(linkRO.url)
             .description(linkRO.description)
+            .image(linkRO.image)
             .build()
     }
 
