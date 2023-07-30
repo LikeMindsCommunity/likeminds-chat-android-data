@@ -6,12 +6,12 @@ class GetMemberRequest private constructor(
     class Builder {
         private var uuid: String = ""
 
-        fun memberId(uuid: String) = apply { this.uuid = uuid }
+        fun uuid(uuid: String) = apply { this.uuid = uuid }
 
         fun build() = GetMemberRequest(uuid)
     }
 
     fun toBuilder(): Builder {
-        return Builder().memberId(uuid)
+        return Builder().uuid(uuid)
     }
 }

@@ -2,6 +2,7 @@ package com.likeminds.likemindschat
 
 import android.app.Application
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
 import com.likeminds.likemindschat.chatroom.ChatroomClient
@@ -16,7 +17,7 @@ import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
-import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
+import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
 import com.likeminds.likemindschat.initiateUser.model.*
 import com.likeminds.likemindschat.moderation.ModerationClient
@@ -31,6 +32,7 @@ import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.GetUserResponse
 import com.likeminds.likemindschat.user.model.MemberStateResponse
+import io.reactivex.Observable
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -122,10 +124,19 @@ class LMChatClient private constructor() {
         return homeFeedClient.getExploreTabCount()
     }
 
-    // Exposed function to get config details
-    //function to get chatrooms for home feed
-    suspend fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
-        homeFeedClient.getChatrooms(context, listener)
+    // Exposed function to start chatroom sync
+    fun syncChatrooms(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+        return homeFeedClient.syncChatrooms(context)
+    }
+
+    // Exposed function to get chatrooms for home feed
+    fun getChatrooms(listener: HomeChatroomListener): Observable<Unit>? {
+        return homeFeedClient.getChatrooms(listener)
+    }
+
+    // Exposed function to get chatrooms for home feed
+    fun observeLiveHomeFeed(context: Context) {
+        homeFeedClient.observeLiveHomeFeed(context)
     }
 
     //function to get config details

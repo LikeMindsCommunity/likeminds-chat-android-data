@@ -115,7 +115,7 @@ class UserClient @Inject constructor() : BaseClient() {
      */
     private fun validateGetMemberRequest(getMemberRequest: GetMemberRequest) {
         if (getMemberRequest.uuid.isEmpty()) {
-            RequestUtils.throwException("memberId")
+            RequestUtils.throwException("uuid")
         }
     }
 }

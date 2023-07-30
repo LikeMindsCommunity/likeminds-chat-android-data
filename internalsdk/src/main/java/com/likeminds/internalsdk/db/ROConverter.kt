@@ -197,7 +197,7 @@ object ROConverter {
             attachmentsUploaded = conversation.attachmentUploaded
             uploadWorkerUUID = savedAnswer?.uploadWorkerUUID ?: conversation.uploadWorkerUUID
             localSavedEpoch = conversation.localCreatedEpoch ?: 0L
-            temporaryId = if (memberRO.id == loggedInMember?.id) {
+            temporaryId = if (memberRO.sdkClientInfoRO?.uuid == loggedInMember?.sdkClientInfoRO?.uuid) {
                 conversation.temporaryId
             } else {
                 null
@@ -378,10 +378,12 @@ object ROConverter {
         val uid = "$uuid#$communityId"
         val memberRO = MemberRO.build(uid, uuid) {
             name = userRO.name
+            id = userRO.id
             imageUrl = userRO.imageUrl
             customTitle = userRO.customTitle
             userUniqueId = userRO.userUniqueId
             isGuest = userRO.isGuest
+            sdkClientInfoRO = userRO.sdkClientInfoRO
         }
         ChatDBUtil.writeAsync({
             it.insertOrUpdate(memberRO)
