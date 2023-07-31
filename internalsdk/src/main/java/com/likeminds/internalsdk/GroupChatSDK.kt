@@ -7,8 +7,8 @@ import com.likeminds.internalsdk.chatroom.api.ChatroomApi
 import com.likeminds.internalsdk.chatroom.api.ChatroomApiImpl
 import com.likeminds.internalsdk.chatroom.db.ChatroomDB
 import com.likeminds.internalsdk.chatroom.db.ChatroomDBImpl
-import com.likeminds.internalsdk.community.CommunityApi
-import com.likeminds.internalsdk.community.CommunityApiImpl
+import com.likeminds.internalsdk.community.api.CommunityApi
+import com.likeminds.internalsdk.community.api.CommunityApiImpl
 import com.likeminds.internalsdk.conversation.api.ConversationApi
 import com.likeminds.internalsdk.conversation.api.ConversationApiImpl
 import com.likeminds.internalsdk.conversation.db.ConversationDB

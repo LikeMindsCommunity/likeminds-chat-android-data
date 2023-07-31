@@ -4,8 +4,7 @@ import com.likeminds.internalsdk.community.model._GetExploreFeedRequest_
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
-import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
+import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -61,6 +60,30 @@ class CommunityClient @Inject constructor() : BaseClient() {
     private fun validateGetExploreFeedRequest(getExploreFeedRequest: GetExploreFeedRequest) {
         if (getExploreFeedRequest.orderType == -1) {
             RequestUtils.throwException("orderType")
+        }
+    }
+
+    /**
+     * Calls the api to get content download settings
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     * @return GetContentDownloadSettingsResponse - GetContentDownloadSettingsResponse model for getContentDownloadSettings
+     */
+    suspend fun getContentDownloadSettings(): LMResponse<GetContentDownloadSettingsResponse> {
+        // validates the client request
+        RequestUtils.validate()
+
+        // calls api and processes the response accordingly
+        return when (val response = communityApi.getContentDownloadSettings()) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+            is NetworkResponse.Success -> {
+                val body = response.body
+                ModelConverter.convertGetContentDownloadSettingsAPIResponse(body)
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.likeminds.internalsdk.community
 
-import com.likeminds.internalsdk.community.model._GetExploreFeedRequest_
-import com.likeminds.internalsdk.community.model._GetExploreFeedResponse_
+import com.likeminds.internalsdk.community.api.CommunityNetworkApi
+import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import javax.inject.Inject
@@ -13,6 +13,10 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
         private const val IS_PINNED_KEY = "pinned"
         private const val PAGE_KEY = "page"
     }
+
+    /**
+     * API Functions
+     */
 
     suspend fun getExploreFeed(
         request: _GetExploreFeedRequest_
@@ -26,5 +30,9 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
         queries[PAGE_KEY] = request.page
 
         return communityNetworkApi.getExploreFeed(queries)
+    }
+
+    suspend fun getContentDownloadSettings(): NetworkResponse<APIResponse<_GetContentDownloadSettingsResponse_>> {
+        return communityNetworkApi.getContentDownloadSettings()
     }
 }

@@ -495,6 +495,46 @@ object ModelConverter {
         )
     }
 
+    // converts api GetContentDownloadSettingsResponse model to LM GetContentDownloadSettingsResponse model
+    fun convertGetContentDownloadSettingsAPIResponse(
+        apiResponse: APIResponse<_GetContentDownloadSettingsResponse_>
+    ): LMResponse<GetContentDownloadSettingsResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetContentDownloadSettingsResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal GetContentDownloadSettingsResponse model to client model
+    private fun convertGetContentDownloadSettingsResponse(
+        _getContentDownloadSettingsResponse_: _GetContentDownloadSettingsResponse_?
+    ): GetContentDownloadSettingsResponse? {
+        if (_getContentDownloadSettingsResponse_ == null) return null
+        return GetContentDownloadSettingsResponse(
+            convertContentDownloadSettings(_getContentDownloadSettingsResponse_.settings)
+        )
+    }
+
+    private fun convertContentDownloadSettings(
+        contentDownloadSettings: List<_ContentDownloadSetting_>
+    ): List<ContentDownloadSetting> {
+        return contentDownloadSettings.map {
+            convertContentDownloadSetting(it)
+        }
+    }
+
+    private fun convertContentDownloadSetting(
+        _contentDownloadSetting_: _ContentDownloadSetting_
+    ): ContentDownloadSetting {
+        return ContentDownloadSetting(
+            _contentDownloadSetting_.communityId,
+            _contentDownloadSetting_.downloadSettingType,
+            _contentDownloadSetting_.downloadSettingTitle,
+            _contentDownloadSetting_.enabled,
+        )
+    }
+
     // converts api GetConversationNotificationUnreadResponse model to LM GetConversationNotificationUnreadResponse model
     fun convertGetConversationNotificationUnreadResponse(
         apiResponse: APIResponse<_GetConversationNotificationUnreadResponse_>

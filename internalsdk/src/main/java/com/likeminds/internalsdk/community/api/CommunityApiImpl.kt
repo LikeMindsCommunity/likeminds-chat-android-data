@@ -1,7 +1,7 @@
-package com.likeminds.internalsdk.community
+package com.likeminds.internalsdk.community.api
 
-import com.likeminds.internalsdk.community.model._GetExploreFeedRequest_
-import com.likeminds.internalsdk.community.model._GetExploreFeedResponse_
+import com.likeminds.internalsdk.community.CommunityReceiver
+import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import javax.inject.Inject
@@ -12,5 +12,9 @@ class CommunityApiImpl @Inject constructor(
 
     override suspend fun getExploreFeed(request: _GetExploreFeedRequest_): NetworkResponse<APIResponse<_GetExploreFeedResponse_>> {
         return communityReceiver.getExploreFeed(request)
+    }
+
+    override suspend fun getContentDownloadSettings(): NetworkResponse<APIResponse<_GetContentDownloadSettingsResponse_>> {
+        return communityReceiver.getContentDownloadSettings()
     }
 }

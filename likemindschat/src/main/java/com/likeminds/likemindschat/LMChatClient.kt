@@ -374,4 +374,9 @@ class LMChatClient private constructor() {
     fun savePostedConversation(savePostedConversationRequest: SavePostedConversationRequest) {
         conversationClient.savePostedConversation(savePostedConversationRequest)
     }
+
+    // Exposed function to get content download settings
+    suspend fun getContentDownloadSettings(): LMResponse<GetContentDownloadSettingsResponse> {
+        return communityClient.getContentDownloadSettings()
+    }
 }
