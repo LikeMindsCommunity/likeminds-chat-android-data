@@ -8,7 +8,6 @@ import com.likeminds.internalsdk.db.ROConverter
 import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.poll.model._Poll_
-import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.*
@@ -19,8 +18,7 @@ import kotlinx.coroutines.flow.filter
 import javax.inject.Inject
 
 class ConversationReceiver @Inject constructor(
-    private val conversationNetworkApi: ConversationNetworkApi,
-    private val sdkPreferences: SDKPreferences
+    private val conversationNetworkApi: ConversationNetworkApi
 ) {
 
     /**
@@ -484,7 +482,7 @@ class ConversationReceiver @Inject constructor(
                 userRO?.sdkClientInfoRO?.uuid
             )
 
-            conversations.setString(DbKey.DELETED_BY, userRO?.sdkClientInfoRO?.uuid)
+            conversations.setString(DbKey.DELETED_BY, userRO?.id)
             conversations.forEach {
                 it?.deletedByMember = memberRO
             }
@@ -496,7 +494,7 @@ class ConversationReceiver @Inject constructor(
 
             lastConversations.forEach {
                 it?.deletedByMember = memberRO
-                it?.deletedBy = userRO?.sdkClientInfoRO?.uuid
+                it?.deletedBy = userRO?.id
             }
         })
     }
