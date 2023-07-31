@@ -45,7 +45,7 @@ class ApiKeys {
     class DebugKeys {
         companion object {
             const val PROJECT_ID = "Y29sbGFibWF0ZXMtYmV0YQ=="
-            const val APP_ID = "MTozMTc0MTk5ODE0Mjc6YW5kcm9pZDo0MWQ2MjhiNzExNDIzZTkzZDJmODA2"
+            const val APP_ID = "MTo5ODM2OTAzMDIzNzg6YW5kcm9pZDo5ZWVhN2Q2ZjYzZjYwZmY3MWI5MWQz"
             const val API_KEY = "QUl6YVN5QldqRFFFaVlLZFFiUU52b2lWdnZPbl9jYnVmUXp2V3Vv"
             const val DATABASE_URL = "aHR0cHM6Ly9jb2xsYWJtYXRlcy1iZXRhLmZpcmViYXNlaW8uY29t"
         }

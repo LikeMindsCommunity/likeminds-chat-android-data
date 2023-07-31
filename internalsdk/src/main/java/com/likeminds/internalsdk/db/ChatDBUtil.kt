@@ -260,7 +260,7 @@ object ChatDBUtil {
                     .beginGroup()
                     .equalTo(DbKey.STATE, STATE_FOLLOWED)
                     .and()
-                    .equalTo(DbKey.MEMBER_OBJECT_ID, loggedInUUID)
+                    .equalTo(DbKey.MEMBER_OBJECT_UUID, loggedInUUID)
                     .endGroup()
                     .endGroup()
                     .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING)
@@ -323,7 +323,7 @@ object ChatDBUtil {
         return getMember(
             realm,
             conversation.communityId,
-            conversation.memberId ?: conversation.member?.id
+            conversation.member?.sdkClientInfo?.uuid ?: conversation.memberId
         )
     }
 
@@ -332,16 +332,16 @@ object ChatDBUtil {
      *
      * @param realm: Instance of realm
      * @param communityId: Id of the community
-     * @param memberId: Id of the member
+     * @param uuid: uuid of the member
      *
      * @return [MemberRO]
      */
     fun getMember(
         realm: Realm,
         communityId: String?,
-        memberId: String?
+        uuid: String?
     ): MemberRO? {
-        val uid = "$memberId#${communityId}"
+        val uid = "$uuid#${communityId}"
         val member = getMemberByUid(realm, uid)
         if (member == null) {
             Log.e(GroupChatSDK.LOG_TAG, "Member not found: $uid")
@@ -367,6 +367,7 @@ object ChatDBUtil {
     ) {
         write { realm ->
             val chatroomRO = getChatroom(realm, chatroomId)
+
             chatroomRO?.isConversationStored = isConversationStored
         }
     }

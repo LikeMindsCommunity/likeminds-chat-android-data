@@ -14,10 +14,8 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.conversation.model.*
+import com.likeminds.likemindschat.conversation.util.*
 import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
-import com.likeminds.likemindschat.conversation.util.GetConversationCountType
-import com.likeminds.likemindschat.conversation.util.GetConversationType
-import com.likeminds.likemindschat.conversation.util.LoadConversationType
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -33,6 +31,14 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
     private val conversationApi by lazy {
         groupChatSDK.getConversationApi()
+    }
+
+    private val chatroomDB by lazy {
+        groupChatSDK.getChatroomDb()
+    }
+
+    private val sdkPreferences by lazy {
+        groupChatSDK.getSDKPreferences()
     }
 
     private val conversationDB by lazy {
@@ -72,15 +78,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
             is NetworkResponse.Success -> {
                 val body = response.body
 
-                val conversation = body.data?.conversation
-
-                conversation?.let {
-                    conversationDB.savePostedConversation(
-                        it,
-                        postConversationRequest.isFromNotification
-                    )
-                }
-
                 ModelConverter.convertPostConversationAPIResponse(body)
             }
         }
@@ -102,13 +99,30 @@ class ConversationClient @Inject constructor() : BaseClient() {
     }
 
     /**
+     * Converts client request model to internal model and stores the posted conversation in DB
+     * @param savePostedConversationRequest - client request model to store a posted conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
+    fun savePostedConversation(savePostedConversationRequest: SavePostedConversationRequest) {
+        // validates the client request
+        RequestUtils.validate()
+
+        val conversation =
+            ModelConverter.createConversation(savePostedConversationRequest.conversation)
+        val request = _SavePostedConversationRequest_.Builder()
+            .conversation(conversation)
+            .isFromNotification(savePostedConversationRequest.isFromNotification)
+            .build()
+        conversationDB.savePostedConversation(request)
+    }
+
+    /**
      * runs the query for observing new conversations and returns the data in listener
      * @param observeConversationsRequest: [ObserveConversationsRequest] request for observing new conversation
      *
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
      */
     suspend fun observeConversations(
-        context: Context,
         observeConversationsRequest: ObserveConversationsRequest
     ) {
         //validates the client request
@@ -118,8 +132,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
         val realm = Realm.getDefaultInstance()
         val chatroomId = observeConversationsRequest.chatroomId
         val listener = observeConversationsRequest.listener
-
-        observeLiveConversations(context, observeConversationsRequest.chatroomId)
 
         val flowOfConversations = conversationDB.observeConversations(realm, chatroomId)
 
@@ -154,7 +166,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
             listener.getNewConversations(newConversations)
             listener.getChangedConversations(changedConversations)
         }
-
         realm.close()
     }
 
@@ -212,7 +223,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
     /**
      * Observe live conversations
      */
-    private suspend fun observeLiveConversations(
+    suspend fun observeLiveConversations(
         context: Context,
         chatroomId: String
     ) {
@@ -763,7 +774,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 val body = response.body
 
                 //if success -> make db query
-                conversationDB.updateDeletedConversations(deleteConversationsRequest.conversationIds)
+                conversationDB.updateDeletedConversations(
+                    sdkPreferences.getCommunityId(),
+                    deleteConversationsRequest.conversationIds
+                )
 
                 ModelConverter.convertDeleteConversationsAPIResponse(body)
             }
@@ -814,6 +828,13 @@ class ConversationClient @Inject constructor() : BaseClient() {
                     conversationDB.updateConversationReaction(
                         putReactionRequest.reaction,
                         conversationId
+                    )
+                }
+
+                putReactionRequest.chatroomId?.let { chatroomId ->
+                    chatroomDB.updateChatroomReaction(
+                        putReactionRequest.reaction,
+                        chatroomId
                     )
                 }
 

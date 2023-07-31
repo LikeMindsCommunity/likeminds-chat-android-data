@@ -80,6 +80,10 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
                 val communityId = body.data?.community?.id ?: ""
                 val user = body.data?.user
 
+                // todo: remove these tokens
+                sdkPreferences.setAccessToken(accessToken)
+                sdkPreferences.setRefreshToken(refreshToken)
+
                 val chatTokenManager = ChatTokenManager.getInstance()
                 chatTokenManager.updateTokens(accessToken, refreshToken)
 

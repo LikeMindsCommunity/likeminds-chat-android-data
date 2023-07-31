@@ -2,26 +2,24 @@ package com.likeminds.likemindschat.homefeed
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.*
 import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.db.ChatDBUtil
-import com.likeminds.internalsdk.db.models.ChatroomRO
 import com.likeminds.internalsdk.sync.SyncSDK
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
-import com.likeminds.likemindschat.LMChatClient
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.chatroom.model.Chatroom
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
-import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
+import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
-import io.realm.OrderedCollectionChangeSet
-import io.realm.Realm
-import io.realm.RealmResults
+import io.reactivex.Observable
+import io.realm.*
 import javax.inject.Inject
 
 class HomeFeedClient @Inject constructor() : BaseClient() {
@@ -37,8 +35,6 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
     private val homeFeedDB by lazy {
         groupChatSDK.getHomeFeedDb()
     }
-
-    private var collection: RealmResults<ChatroomRO>? = null
 
     private lateinit var valueChangeListener: ValueEventListener
     private var databaseReference: DatabaseReference? = null
@@ -90,22 +86,13 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
     }
 
     /**
-     * Start the Sync workers and get db query for chatrooms for home feed
-     *
-     * @param context: Context of the Activity/Fragment
-     * @param listener: [HomeFeedChangeListener] to get object of the chatrooms as per requirements
-     *
      * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     * @return Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? -
+     * Worker result
      */
-    suspend fun getChatrooms(
-        context: Context,
-        listener: HomeFeedChangeListener
-    ) {
+    fun syncChatrooms(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
         //validates the client request
         RequestUtils.validate()
-
-        //create realm object
-        val realm = Realm.getDefaultInstance()
 
         //check whether db is empty or not
         val isFirstTime = ChatDBUtil.isEmpty()
@@ -113,72 +100,48 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
         /**
          * if empty start first time chatroom worker else reopen
          */
-        if (isFirstTime) {
+        return if (isFirstTime) {
             SyncSDK.startFirstHomeFeedSync(context)
         } else {
             SyncSDK.startReopenSyncForHomeFeed(context)
         }
+    }
 
-        observeLiveHomeFeed(context)
+    /**
+     * Start the Sync workers and get db query for chatrooms for home feed
+     *
+     * @param context: Context of the Activity/Fragment
+     * @param listener: [HomeFeedChangeListener] to get object of the chatrooms as per requirements
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     */
+    fun getChatrooms(listener: HomeChatroomListener): Observable<Unit>? {
+        //validates the client request
+        RequestUtils.validate()
+
+        //create realm object
+        val realm = Realm.getDefaultInstance()
 
         //[Flow] of the [CollectionChange] of the Chatrooms
-        val flowOfChatrooms = homeFeedDB.getChatrooms(realm)
-
-        //collect the flow
-        flowOfChatrooms.collect { collectionChange ->
-            val changeSet = collectionChange.changeset
-            val result = collectionChange.collection
-            when (collectionChange.changeset?.state) {
-                //Initial chatrooms
-                OrderedCollectionChangeSet.State.INITIAL -> {
-                    result?.let {
-                        collection = it
-                        val chatrooms = it.mapNotNull { chatroomRO ->
-                            ModelConverter.convertChatroomRO(chatroomRO)
-                        }
-                        listener.initialChatrooms(chatrooms)
-                    }
-                }
-
-                //Updated chatrooms i.e. inserted or changed
-                OrderedCollectionChangeSet.State.UPDATE -> {
-                    changeSet?.let {
-                        collection = result
-                        val insertions = getIndexedChatrooms(it.insertions)
-                        val changes = getIndexedChatrooms(it.changes)
-                        listener.changedChatrooms(it.deletions.reversed(), insertions, changes)
-                    }
-                }
-
-                //if any error
-                OrderedCollectionChangeSet.State.ERROR -> {
-                    listener.error(changeSet?.error ?: Throwable("Something went wrong"))
-                }
-
-                null -> {
-                    Log.d(LMChatClient.TAG, "first emit")
-                }
-            }
+        return homeFeedDB.getChatrooms(realm)?.map {
+            listener.onChange(it.collection, it.changeset!!)
+        }?.doOnDispose {
+            listener.clear()
+        }?.doOnTerminate {
+            listener.clear()
         }
     }
 
     /**
-     * returns list of [Pair] of [Int] and [Chatroom] as per indexes received in
-     * @param indexArray
+     * Observes the live home feed and gives real-time updates
+     *
+     * @param context: Context of the Activity/Fragment
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated
      */
-    private fun getIndexedChatrooms(indexArray: IntArray): List<Pair<Int, Chatroom>> {
-        return indexArray.toList().mapNotNull { index ->
-            val chatroomRO = collection?.get(index)
-            val chatroom = ModelConverter.convertChatroomRO(chatroomRO)
-            return@mapNotNull if (chatroom != null) {
-                Pair(index, chatroom)
-            } else {
-                null
-            }
-        }
-    }
+    fun observeLiveHomeFeed(context: Context) {
+        RequestUtils.validate()
 
-    private fun observeLiveHomeFeed(context: Context) {
         val communityId = groupChatSDK.sdkPreferences.getCommunityId() ?: ""
         val firebaseApp = FirebaseApp.getInstance("lm-secondary")
         databaseReference = FirebaseDatabase.getInstance(firebaseApp).reference
@@ -187,9 +150,6 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
 
         valueChangeListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                //validates the client request
-                RequestUtils.validate()
-
                 //check whether db is empty or not
                 val isFirstTime = ChatDBUtil.isEmpty()
 

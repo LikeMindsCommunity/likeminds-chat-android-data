@@ -1,7 +1,6 @@
 package com.likeminds.internalsdk.conversation.db
 
-import com.likeminds.internalsdk.conversation.model._Conversation_
-import com.likeminds.internalsdk.conversation.model._LinkOGTags_
+import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.ConversationRO
 import com.likeminds.internalsdk.poll.model._Poll_
 import io.realm.Realm
@@ -78,10 +77,7 @@ interface ConversationDB {
     fun updateConversation(conversation: _Conversation_)
 
     //query to get save posted conversation
-    fun savePostedConversation(
-        conversation: _Conversation_,
-        isFromNotification: Boolean
-    )
+    fun savePostedConversation(savePostedConversationRequest: _SavePostedConversationRequest_)
 
     //query to get save new conversation
     fun saveNewConversation(
@@ -110,7 +106,7 @@ interface ConversationDB {
     fun updatePollConversationAddItem(conversationId: String, newPollItem: _Poll_)
 
     //query to update once user deletes conversation
-    fun updateDeletedConversations(conversationsId: List<String>)
+    fun updateDeletedConversations(communityId: String?, conversationsId: List<String>)
 
     //query to update conversation once user add a reaction
     fun updateConversationReaction(reaction: String, conversationId: String)

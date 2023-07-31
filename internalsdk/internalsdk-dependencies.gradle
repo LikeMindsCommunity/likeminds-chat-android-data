@@ -41,6 +41,10 @@ dependencies {
     implementation deps.sentry.main
     implementation deps.sentry.okhttp
 
+    //rx
+    implementation deps.rxJava.main
+    implementation deps.rxJava.android
+
     //workmanager
     implementation deps.workmanager.main
 

@@ -2,15 +2,13 @@ package com.likeminds.likemindschat
 
 import android.app.Application
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
 import com.likeminds.likemindschat.chatroom.ChatroomClient
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.CommunityClient
-import com.likeminds.likemindschat.community.model.GetExploreFeedRequest
-import com.likeminds.likemindschat.community.model.GetExploreFeedResponse
-import com.likeminds.likemindschat.community.model.GetMemberRequest
-import com.likeminds.likemindschat.community.model.GetMemberResponse
+import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.conversation.util.LoadConversationType
@@ -19,29 +17,22 @@ import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
-import com.likeminds.likemindschat.homefeed.util.HomeFeedChangeListener
+import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
-import com.likeminds.likemindschat.initiateUser.model.LogoutRequest
-import com.likeminds.likemindschat.initiateUser.model.RegisterDeviceRequest
+import com.likeminds.likemindschat.initiateUser.model.*
 import com.likeminds.likemindschat.moderation.ModerationClient
-import com.likeminds.likemindschat.moderation.model.GetReportTagsRequest
-import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
-import com.likeminds.likemindschat.moderation.model.PostReportRequest
+import com.likeminds.likemindschat.moderation.model.*
 import com.likeminds.likemindschat.notification.NotificationClient
 import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
 import com.likeminds.likemindschat.poll.PollClient
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.search.SearchClient
-import com.likeminds.likemindschat.search.model.SearchChatroomRequest
-import com.likeminds.likemindschat.search.model.SearchChatroomResponse
-import com.likeminds.likemindschat.search.model.SearchConversationRequest
-import com.likeminds.likemindschat.search.model.SearchConversationResponse
+import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.GetUserResponse
 import com.likeminds.likemindschat.user.model.MemberStateResponse
+import io.reactivex.Observable
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -133,10 +124,19 @@ class LMChatClient private constructor() {
         return homeFeedClient.getExploreTabCount()
     }
 
-    // Exposed function to get config details
-    //function to get chatrooms for home feed
-    suspend fun getChatrooms(context: Context, listener: HomeFeedChangeListener) {
-        homeFeedClient.getChatrooms(context, listener)
+    // Exposed function to start chatroom sync
+    fun syncChatrooms(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+        return homeFeedClient.syncChatrooms(context)
+    }
+
+    // Exposed function to get chatrooms for home feed
+    fun getChatrooms(listener: HomeChatroomListener): Observable<Unit>? {
+        return homeFeedClient.getChatrooms(listener)
+    }
+
+    // Exposed function to get chatrooms for home feed
+    fun observeLiveHomeFeed(context: Context) {
+        homeFeedClient.observeLiveHomeFeed(context)
     }
 
     //function to get config details
@@ -215,8 +215,11 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to process request to submit polls selected
-    suspend fun submitPoll(submitPollRequest: SubmitPollRequest): LMResponse<Nothing> {
-        return pollClient.submitPoll(submitPollRequest)
+    suspend fun submitPoll(
+        context: Context,
+        submitPollRequest: SubmitPollRequest
+    ): LMResponse<Nothing> {
+        return pollClient.submitPoll(context, submitPollRequest)
     }
 
     // Exposed function to process request to get users who have voted on that particular poll option
@@ -257,10 +260,17 @@ class LMChatClient private constructor() {
 
     // Exposed function to observe new conversations
     suspend fun observeConversations(
-        context: Context,
         observeConversationsRequest: ObserveConversationsRequest
     ) {
-        conversationClient.observeConversations(context, observeConversationsRequest)
+        conversationClient.observeConversations(observeConversationsRequest)
+    }
+
+    //Exposed function to observe live conversations
+    suspend fun observeLiveConversations(
+        context: Context,
+        chatroomId: String
+    ) {
+        return conversationClient.observeLiveConversations(context, chatroomId)
     }
 
     //Exposed function to load conversation to db
@@ -353,5 +363,25 @@ class LMChatClient private constructor() {
     // Exposed function to set last seen to true and saves draft response
     fun updateLastSeenAndDraft(updateLastSeenAndDraftRequest: UpdateLastSeenAndDraftRequest) {
         chatroomClient.updateLastSeenAndDraft(updateLastSeenAndDraftRequest)
+    }
+
+    // Exposed function to edit a chatroom title
+    suspend fun editChatroomTitle(editChatroomTitleRequest: EditChatroomTitleRequest): LMResponse<Nothing> {
+        return chatroomClient.editChatroomTitle(editChatroomTitleRequest)
+    }
+
+    // Exposed function to save a posted conversation
+    fun savePostedConversation(savePostedConversationRequest: SavePostedConversationRequest) {
+        conversationClient.savePostedConversation(savePostedConversationRequest)
+    }
+
+    // Exposed function to get content download settings
+    suspend fun getContentDownloadSettings(): LMResponse<GetContentDownloadSettingsResponse> {
+        return communityClient.getContentDownloadSettings()
+    }
+
+    // Exposed function to observe a community
+    fun observeCommunity(): Observable<Community> {
+        return communityClient.observeCommunity()
     }
 }

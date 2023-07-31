@@ -7,8 +7,10 @@ import com.likeminds.internalsdk.chatroom.api.ChatroomApi
 import com.likeminds.internalsdk.chatroom.api.ChatroomApiImpl
 import com.likeminds.internalsdk.chatroom.db.ChatroomDB
 import com.likeminds.internalsdk.chatroom.db.ChatroomDBImpl
-import com.likeminds.internalsdk.community.CommunityApi
-import com.likeminds.internalsdk.community.CommunityApiImpl
+import com.likeminds.internalsdk.community.api.CommunityApi
+import com.likeminds.internalsdk.community.api.CommunityApiImpl
+import com.likeminds.internalsdk.community.db.CommunityDB
+import com.likeminds.internalsdk.community.db.CommunityDBImpl
 import com.likeminds.internalsdk.conversation.api.ConversationApi
 import com.likeminds.internalsdk.conversation.api.ConversationApiImpl
 import com.likeminds.internalsdk.conversation.db.ConversationDB
@@ -74,6 +76,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var communityApiImpl: CommunityApiImpl
+
+    @Inject
+    lateinit var communityDBImpl: CommunityDBImpl
 
     @Inject
     lateinit var homeFeedApi: HomeFeedApiImpl
@@ -173,6 +178,7 @@ class GroupChatSDK {
             .schemaVersion(DB_SCHEMA_VERSION)
             .migration(RealmDBMigration())
             .compactOnLaunch(DbCompactOnLaunchCallback())
+            .allowWritesOnUiThread(true)
             .build()
     }
 
@@ -211,6 +217,10 @@ class GroupChatSDK {
 
     fun getCommunityApi(): CommunityApi {
         return communityApiImpl
+    }
+
+    fun getCommunityDB(): CommunityDB {
+        return communityDBImpl
     }
 
     fun getHomeFeedApi(): HomeFeedApi {

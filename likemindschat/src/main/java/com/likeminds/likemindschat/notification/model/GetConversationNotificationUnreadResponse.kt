@@ -12,7 +12,7 @@ data class ChatroomNotificationData(
     val chatroomTitle: String,
     val chatroomUserName: String,
     val chatroomUserImage: String,
-    val chatroomId: Int,
+    val chatroomId: String,
     val communityImage: String,
     val communityId: Int,
     val route: String,

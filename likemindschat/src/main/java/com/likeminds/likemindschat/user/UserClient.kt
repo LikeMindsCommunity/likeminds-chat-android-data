@@ -62,8 +62,9 @@ class UserClient @Inject constructor() : BaseClient() {
         // validates the client request
         RequestUtils.validate()
 
-        val userRO = userDb.getUser()
-        return if (userRO == null) {
+        val realm = Realm.getDefaultInstance()
+        val userRO = userDb.getUser(realm)
+        val response = if (userRO == null) {
             LMResponse(success = false, errorMessage = "User doesn't exist")
         } else {
             LMResponse(
@@ -72,6 +73,8 @@ class UserClient @Inject constructor() : BaseClient() {
                 ModelConverter.convertGetUserResponse(userRO)
             )
         }
+        realm.close()
+        return response
     }
 
     /**
@@ -90,7 +93,7 @@ class UserClient @Inject constructor() : BaseClient() {
         val memberRO = ChatDBUtil.getMember(
             realm,
             communityId,
-            getMemberRequest.memberId
+            getMemberRequest.uuid
         )
         val getMemberResponse = ModelConverter.convertGetMemberResponse(memberRO)
         val member = getMemberResponse.member
@@ -111,8 +114,8 @@ class UserClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateGetMemberRequest(getMemberRequest: GetMemberRequest) {
-        if (getMemberRequest.memberId.isEmpty()) {
-            RequestUtils.throwException("memberId")
+        if (getMemberRequest.uuid.isEmpty()) {
+            RequestUtils.throwException("uuid")
         }
     }
 }

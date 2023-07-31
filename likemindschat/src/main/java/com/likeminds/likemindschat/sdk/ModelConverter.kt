@@ -109,7 +109,7 @@ object ModelConverter {
             _community_.name,
             _community_.imageUrl,
             _community_.membersCount,
-            _community_.updatedAt,
+            _community_.updatedAt
         )
     }
 
@@ -495,6 +495,46 @@ object ModelConverter {
         )
     }
 
+    // converts api GetContentDownloadSettingsResponse model to LM GetContentDownloadSettingsResponse model
+    fun convertGetContentDownloadSettingsAPIResponse(
+        apiResponse: APIResponse<_GetContentDownloadSettingsResponse_>
+    ): LMResponse<GetContentDownloadSettingsResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetContentDownloadSettingsResponse(apiResponse.data)
+        )
+    }
+
+    // converts internal GetContentDownloadSettingsResponse model to client model
+    private fun convertGetContentDownloadSettingsResponse(
+        _getContentDownloadSettingsResponse_: _GetContentDownloadSettingsResponse_?
+    ): GetContentDownloadSettingsResponse? {
+        if (_getContentDownloadSettingsResponse_ == null) return null
+        return GetContentDownloadSettingsResponse(
+            convertContentDownloadSettings(_getContentDownloadSettingsResponse_.settings)
+        )
+    }
+
+    private fun convertContentDownloadSettings(
+        contentDownloadSettings: List<_ContentDownloadSetting_>
+    ): List<ContentDownloadSetting> {
+        return contentDownloadSettings.map {
+            convertContentDownloadSetting(it)
+        }
+    }
+
+    private fun convertContentDownloadSetting(
+        _contentDownloadSetting_: _ContentDownloadSetting_
+    ): ContentDownloadSetting {
+        return ContentDownloadSetting(
+            _contentDownloadSetting_.communityId,
+            _contentDownloadSetting_.downloadSettingType,
+            _contentDownloadSetting_.downloadSettingTitle,
+            _contentDownloadSetting_.enabled,
+        )
+    }
+
     // converts api GetConversationNotificationUnreadResponse model to LM GetConversationNotificationUnreadResponse model
     fun convertGetConversationNotificationUnreadResponse(
         apiResponse: APIResponse<_GetConversationNotificationUnreadResponse_>
@@ -572,7 +612,7 @@ object ModelConverter {
             .id(_member_.id)
             .userUniqueId(_member_.userUniqueId)
             .name(_member_.name)
-            .imageUrl(_member_.imageUrl)
+            .imageUrl(_member_.imageUrl ?: "")
             .questionAnswers(convertQuestions(_member_.questionAnswers))
             .state(_member_.state)
             .isGuest(_member_.isGuest)
@@ -1048,13 +1088,14 @@ object ModelConverter {
             _memberStateResponse_.state,
             member.userUniqueId,
             member.customTitle,
-            member.imageUrl,
+            member.imageUrl ?: "",
             member.isGuest,
             member.isOwner,
             member.name,
             convertManagerRights(_memberStateResponse_.managerRights),
             convertMemberRights(_memberStateResponse_.memberRights),
-            member.updatedAt ?: 0L
+            member.updatedAt ?: 0L,
+            convertSDKClientInfo(member.sdkClientInfo)
         )
     }
 
@@ -1397,6 +1438,17 @@ object ModelConverter {
         }
     }
 
+    fun convertCommunityRO(communityRO: CommunityRO): Community {
+        return Community(
+            communityRO.id,
+            communityRO.name,
+            communityRO.imageUrl,
+            communityRO.membersCount,
+            communityRO.updatedAt,
+            communityRO.downloadableContentTypes?.toList(),
+        )
+    }
+
     // converts ChatroomRO model to client model
     fun convertChatroomRO(chatroomRO: ChatroomRO?): Chatroom? {
         if (chatroomRO == null) return null
@@ -1468,6 +1520,7 @@ object ModelConverter {
             .chatroomId(lastConversationRO.chatroomId)
             .communityId(lastConversationRO.communityId)
             .ogTags(convertLinkRO(lastConversationRO.link))
+            .deletedByMember(convertMemberRO(lastConversationRO.deletedByMember))
             .build()
     }
 
@@ -1587,6 +1640,7 @@ object ModelConverter {
             .title(linkRO.title)
             .url(linkRO.url)
             .description(linkRO.description)
+            .image(linkRO.image)
             .build()
     }
 

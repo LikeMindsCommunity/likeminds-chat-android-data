@@ -1,17 +1,17 @@
 package com.likeminds.likemindschat.community.model
 
 class GetMemberRequest private constructor(
-    val memberId: String
+    val uuid: String
 ) {
     class Builder {
-        private var memberId: String = ""
+        private var uuid: String = ""
 
-        fun memberId(memberId: String) = apply { this.memberId = memberId }
+        fun uuid(uuid: String) = apply { this.uuid = uuid }
 
-        fun build() = GetMemberRequest(memberId)
+        fun build() = GetMemberRequest(uuid)
     }
 
     fun toBuilder(): Builder {
-        return Builder().memberId(memberId)
+        return Builder().uuid(uuid)
     }
 }

@@ -5,9 +5,7 @@ import com.likeminds.internalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
-import com.likeminds.internalsdk.db.models.ConversationRO
-import com.likeminds.internalsdk.db.models.ReactionRO
-import com.likeminds.internalsdk.db.models.UserRO
+import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.poll.model._Poll_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
@@ -256,14 +254,14 @@ class ConversationReceiver @Inject constructor(
         realm.close()
     }
 
-    fun savePostedConversation(
-        conversation: _Conversation_,
-        isFromNotification: Boolean
-    ) {
+    fun savePostedConversation(savePostedConversationRequest: _SavePostedConversationRequest_) {
         ChatDBUtil.writeAsync({ realm ->
 
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
+
+            val conversation = savePostedConversationRequest.conversation
+            val isFromNotification = savePostedConversationRequest.isFromNotification
 
             val conversationRO =
                 ROConverter.convertConversation(realm, conversation, loggedInMember = userRO)
@@ -400,6 +398,12 @@ class ConversationReceiver @Inject constructor(
                     conversation.communityId,
                     linkOgTags
                 )
+
+                val lastConversation = it.where(LastConversationRO::class.java)
+                    .equalTo(DbKey.ID, conversationId)
+                    .findFirst()
+
+                lastConversation?.answer = conversationText
             }
         })
     }
@@ -452,7 +456,7 @@ class ConversationReceiver @Inject constructor(
                     realm,
                     conversationRO.communityId,
                     newPollItem,
-                    newPollItem.userId
+                    newPollItem.member?.sdkClientInfo?.uuid
                 )?.let { pollRO ->
                     conversationRO.polls.add(pollRO)
                 }
@@ -460,7 +464,10 @@ class ConversationReceiver @Inject constructor(
         })
     }
 
-    fun updateDeletedConversations(conversationsId: List<String>) {
+    fun updateDeletedConversations(
+        communityId: String?,
+        conversationsId: List<String>
+    ) {
         ChatDBUtil.writeAsync({ realm ->
             val conversations = realm.where(ConversationRO::class.java)
                 .`in`(DbKey.ID, conversationsId.toTypedArray())
@@ -469,7 +476,26 @@ class ConversationReceiver @Inject constructor(
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
 
-            conversations.setString(DbKey.DELETED_BY, userRO?.sdkClientInfoRO?.uuid)
+            val memberRO = ChatDBUtil.getMember(
+                realm,
+                communityId,
+                userRO?.sdkClientInfoRO?.uuid
+            )
+
+            conversations.setString(DbKey.DELETED_BY, userRO?.id)
+            conversations.forEach {
+                it?.deletedByMember = memberRO
+            }
+
+            // finds and deletes the conversations from [LastConversationRO]
+            val lastConversations = realm.where(LastConversationRO::class.java)
+                .`in`(DbKey.ID, conversationsId.toTypedArray())
+                .findAll()
+
+            lastConversations.forEach {
+                it?.deletedByMember = memberRO
+                it?.deletedBy = userRO?.id
+            }
         })
     }
 
@@ -495,7 +521,11 @@ class ConversationReceiver @Inject constructor(
 
                     //Add new member reaction
                     val memberObj =
-                        ChatDBUtil.getMember(realm, conversationRO.communityId, userRO?.id)
+                        ChatDBUtil.getMember(
+                            realm,
+                            conversationRO.communityId,
+                            userRO?.sdkClientInfoRO?.uuid
+                        )
                             ?: return@let
                     val messageReaction = ReactionRO.build {
                         this.reaction = reaction

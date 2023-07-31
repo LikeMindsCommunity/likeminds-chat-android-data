@@ -108,7 +108,7 @@ class DatabaseSyncWorker(
 
                     }
 
-                    syncType == SYNC_CHATROOM && chatroomId.isEmpty() -> {
+                    syncType == SYNC_CHATROOM && chatroomId.isNotEmpty() -> {
 
                         val chatroomRO = ChatDBUtil.getChatroom(realm, chatroomId)
                         if (chatroomRO != null) {
@@ -138,7 +138,7 @@ class DatabaseSyncWorker(
                             ChatDBUtil.updateRelationshipsOfChatroom(
                                 chatroomRO,
                                 conversations,
-                                userPreferences.getLMMemberId()
+                                userPreferences.getClientUUID()
                             )
                         }
 

@@ -62,7 +62,7 @@ object SyncSDK {
      *
      * Return: live data of worker
      */
-    fun startReopenSyncForHomeFeed(context: Context): LiveData<MutableList<WorkInfo>>? {
+    fun startReopenSyncForHomeFeed(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
         if (ongoingSyncTypes.contains(SYNC_REOPEN_HOME_FEED)) {
             return null
         }
@@ -76,7 +76,7 @@ object SyncSDK {
 
         worker.enqueue()
 
-        return worker.workInfosLiveData
+        return Pair(worker.workInfosLiveData, null)
     }
 
     //return first chatroom sync worker

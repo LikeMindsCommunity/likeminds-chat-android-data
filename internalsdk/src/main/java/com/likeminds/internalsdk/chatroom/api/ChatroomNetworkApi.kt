@@ -42,4 +42,9 @@ interface ChatroomNetworkApi {
     suspend fun getParticipants(
         @QueryMap queries: HashMap<String, Any?>
     ): NetworkResponse<APIResponse<_GetParticipantsResponse_>>
+
+    @PUT("chatroom")
+    suspend fun editChatroomTitle(
+        @Body request: _EditChatroomTitleRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
 }

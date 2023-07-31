@@ -12,6 +12,7 @@ open class CommunityRO(
     var membersCount: Int? = null,
     var updatedAt: Long? = null,
     var relationshipNeeded: Boolean = true,
+    var downloadableContentTypes: RealmList<String>? = null,
 
     var conversations: RealmList<ConversationRO> = RealmList(),
     var chatrooms: RealmList<ChatroomRO> = RealmList()
@@ -24,6 +25,7 @@ open class CommunityRO(
         builder.membersCount,
         builder.updatedAt,
         builder.relationshipNeeded,
+        builder.downloadableContentTypes,
         builder.conversations,
         builder.chatrooms
     )
@@ -41,6 +43,7 @@ open class CommunityRO(
         var updatedAt: Long? = null
         var relationshipNeeded: Boolean = true
         var conversations: RealmList<ConversationRO> = RealmList()
+        var downloadableContentTypes: RealmList<String>? = null
         var chatrooms: RealmList<ChatroomRO> = RealmList()
 
         fun build() = CommunityRO(this)
@@ -54,6 +57,7 @@ open class CommunityRO(
             updatedAt = this@CommunityRO.updatedAt
             relationshipNeeded = this@CommunityRO.relationshipNeeded
             conversations = this@CommunityRO.conversations
+            downloadableContentTypes = this@CommunityRO.downloadableContentTypes
             chatrooms = this@CommunityRO.chatrooms
         }
     }

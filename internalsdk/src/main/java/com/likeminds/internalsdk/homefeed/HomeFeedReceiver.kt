@@ -9,10 +9,9 @@ import com.likeminds.internalsdk.homefeed.model._GetExploreTabCountResponse_
 import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import io.reactivex.Observable
 import io.realm.*
-import io.realm.kotlin.toChangesetFlow
 import io.realm.rx.CollectionChange
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class HomeFeedReceiver @Inject constructor(
@@ -36,7 +35,9 @@ class HomeFeedReceiver @Inject constructor(
         Db Functions
      */
 
-    fun getChatrooms(realm: Realm): Flow<CollectionChange<RealmResults<ChatroomRO>>> {
+    fun getChatrooms(
+        realm: Realm,
+    ): Observable<CollectionChange<RealmResults<ChatroomRO>>>? {
         val communityId = sdkPreferences.getCommunityId()
         return realm.where(ChatroomRO::class.java)
             .isNull(DbKey.DELETED_BY)
@@ -51,6 +52,9 @@ class HomeFeedReceiver @Inject constructor(
             .endGroup()
             .sort(DbKey.UPDATED_AT, Sort.DESCENDING)
             .findAllAsync()
-            .toChangesetFlow()
+            .asChangesetObservable()
+            .filter {
+                it.collection.isLoaded && it.changeset != null
+            }
     }
 }
