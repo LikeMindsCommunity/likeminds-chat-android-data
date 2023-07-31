@@ -9,5 +9,6 @@ data class _ContentDownloadSetting_(
     val downloadSettingType: String,
     @SerializedName("download_setting_title")
     val downloadSettingTitle: String,
+    @SerializedName("enabled")
     val enabled: Boolean
 )

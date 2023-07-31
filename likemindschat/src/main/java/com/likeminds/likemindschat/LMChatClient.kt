@@ -379,4 +379,9 @@ class LMChatClient private constructor() {
     suspend fun getContentDownloadSettings(): LMResponse<GetContentDownloadSettingsResponse> {
         return communityClient.getContentDownloadSettings()
     }
+
+    // Exposed function to observe a community
+    fun observeCommunity(): Observable<Community> {
+        return communityClient.observeCommunity()
+    }
 }

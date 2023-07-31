@@ -109,7 +109,7 @@ object ModelConverter {
             _community_.name,
             _community_.imageUrl,
             _community_.membersCount,
-            _community_.updatedAt,
+            _community_.updatedAt
         )
     }
 
@@ -1436,6 +1436,17 @@ object ModelConverter {
                 it.uuid
             )
         }
+    }
+
+    fun convertCommunityRO(communityRO: CommunityRO): Community {
+        return Community(
+            communityRO.id,
+            communityRO.name,
+            communityRO.imageUrl,
+            communityRO.membersCount,
+            communityRO.updatedAt,
+            communityRO.downloadableContentTypes?.toList(),
+        )
     }
 
     // converts ChatroomRO model to client model

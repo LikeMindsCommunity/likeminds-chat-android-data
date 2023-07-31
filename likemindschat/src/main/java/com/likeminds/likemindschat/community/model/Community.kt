@@ -5,5 +5,6 @@ data class Community(
     val name: String,
     val imageUrl: String?,
     val membersCount: Int?,
-    val updatedAt: Long?
+    val updatedAt: Long?,
+    val downloadableContentTypes: List<String>? = null
 )

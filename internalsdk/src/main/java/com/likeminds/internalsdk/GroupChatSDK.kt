@@ -9,6 +9,8 @@ import com.likeminds.internalsdk.chatroom.db.ChatroomDB
 import com.likeminds.internalsdk.chatroom.db.ChatroomDBImpl
 import com.likeminds.internalsdk.community.api.CommunityApi
 import com.likeminds.internalsdk.community.api.CommunityApiImpl
+import com.likeminds.internalsdk.community.db.CommunityDB
+import com.likeminds.internalsdk.community.db.CommunityDBImpl
 import com.likeminds.internalsdk.conversation.api.ConversationApi
 import com.likeminds.internalsdk.conversation.api.ConversationApiImpl
 import com.likeminds.internalsdk.conversation.db.ConversationDB
@@ -74,6 +76,9 @@ class GroupChatSDK {
 
     @Inject
     lateinit var communityApiImpl: CommunityApiImpl
+
+    @Inject
+    lateinit var communityDBImpl: CommunityDBImpl
 
     @Inject
     lateinit var homeFeedApi: HomeFeedApiImpl
@@ -212,6 +217,10 @@ class GroupChatSDK {
 
     fun getCommunityApi(): CommunityApi {
         return communityApiImpl
+    }
+
+    fun getCommunityDB(): CommunityDB {
+        return communityDBImpl
     }
 
     fun getHomeFeedApi(): HomeFeedApi {
