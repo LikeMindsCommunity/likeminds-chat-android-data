@@ -13,7 +13,7 @@ afterEvaluate {
                 pom {
                     name = PUBLISH_ARTIFACT_ID
                     description = 'LikeMinds Chat official Android SDK'
-                    url = 'https://github.com/NateshR/LikeMinds-Android-Chat-SDK'
+                    url = 'https://github.com/LikeMindsCommunity/LikeMinds-Android-Chat-SDK'
                     licenses {
                         license {
                             name = 'LikeMinds License'
@@ -21,9 +21,9 @@ afterEvaluate {
                         }
                     }
                     scm {
-                        connection = 'scm:git:github.com/NateshR/LikeMinds-Android-Chat-SDK.git'
-                        developerConnection = 'scm:git:ssh://github.com/NateshR/LikeMinds-Android-Chat-SDK.git'
-                        url = 'https://github.com/NateshR/LikeMinds-Android-Chat-SDK/tree/master'
+                        connection = 'scm:git:github.com/LikeMindsCommunity/LikeMinds-Android-Chat-SDK.git'
+                        developerConnection = 'scm:git:ssh://LikeMindsCommunity/LikeMinds-Android-Chat-SDK.git'
+                        url = 'https://github.com/LikeMindsCommunity/LikeMinds-Android-Chat-SDK/tree/master'
                     }
                     developers {
                         developer {
@@ -62,9 +62,9 @@ afterEvaluate {
                         }
                     }
                     scm {
-                        connection = 'scm:git:github.com/NateshR/LikeMinds-Android-Chat-SDK.git'
-                        developerConnection = 'scm:git:ssh://github.com/NateshR/LikeMinds-Android-Chat-SDK.git'
-                        url = 'https://github.com/NateshR/LikeMinds-Android-Chat-SDK/tree/master'
+                        connection = 'scm:git:github.com/LikeMindsCommunity/LikeMinds-Android-Chat-SDK.git'
+                        developerConnection = 'scm:git:ssh://LikeMindsCommunity/LikeMinds-Android-Chat-SDK.git'
+                        url = 'https://github.com/LikeMindsCommunity/LikeMinds-Android-Chat-SDK/tree/master'
                     }
                     developers {
                         developer {
