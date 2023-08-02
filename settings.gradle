@@ -1,8 +1,8 @@
 pluginManagement {
     repositories {
+        gradlePluginPortal()
         google()
         mavenCentral()
-        gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
@@ -14,3 +14,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "LikeMinds-Android-Chat-SDK"
 include ':app'
+include ':likemindschat'
+include ':internalsdk'

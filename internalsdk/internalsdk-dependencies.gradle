@@ -1,0 +1,55 @@
+ext.keys = [:]
+
+def keys = [:]
+keys.BASE_URL = "KETTLE_BASE_URL"
+keys.SENTRY_DSN = "SENTRY_DSN"
+ext.keys = keys
+
+ext.urls = [:]
+def urls = [:]
+urls."$keys.BASE_URL" = "\"https://auth.likeminds.community/\""
+urls."$keys.SENTRY_DSN" = "\"https://5802d81a53354c2593a6683813e26f78@o613148.ingest.sentry.io/5748758\""
+ext.urls = urls
+
+ext.beta_urls = [:]
+def beta_urls = [:]
+beta_urls."$keys.BASE_URL" = "\"https://betaauth.likeminds.community/\""
+beta_urls."$keys.SENTRY_DSN" = "\"https://5802d81a53354c2593a6683813e26f78@o613148.ingest.sentry.io/5748758\""
+ext.beta_urls = beta_urls
+
+dependencies {
+    //android core
+    implementation deps.android_core.core
+    implementation deps.android_core.appcompat
+
+    //dagger
+    implementation deps.dagger.main
+    kapt deps.dagger.compiler
+
+    //network
+    implementation deps.retrofit.main
+    implementation deps.retrofit.gson
+    implementation deps.okhttp.main
+    implementation deps.okhttp.http_interceptor
+    debugImplementation deps.chucker.main
+    releaseImplementation deps.chucker.no_op
+
+    //coroutines
+    implementation deps.kotlin.coroutines_core
+
+    //sentry
+    implementation deps.sentry.main
+    implementation deps.sentry.okhttp
+
+    //rx
+    implementation deps.rxJava.main
+    implementation deps.rxJava.android
+
+    //workmanager
+    implementation deps.workmanager.main
+
+    //testing
+    testImplementation deps.testing.junit
+    androidTestImplementation deps.testing.android_junit
+    androidTestImplementation deps.testing.espresso
+}
