@@ -7,9 +7,9 @@ plugins {
 }
 
 ext {
-    PUBLISH_GROUP_ID = 'io.github.NateshR'
-    PUBLISH_VERSION = '2.0.0'
-    PUBLISH_ARTIFACT_ID = 'likeminds-chat'
+    PUBLISH_GROUP_ID = 'community.likeminds'
+    PUBLISH_VERSION = "$versions.sdk_version_major.$versions.sdk_version_minor.$versions.sdk_version_patch"
+    PUBLISH_ARTIFACT_ID = 'likemindschat'
 }
 
 apply from: '../publish-helper.gradle'
@@ -49,4 +49,4 @@ android {
     }
 }
 
-apply from:"likemindschat-dependencies.gradle"
+apply from: "likemindschat-dependencies.gradle"
