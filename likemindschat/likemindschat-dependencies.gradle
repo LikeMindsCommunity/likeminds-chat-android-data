@@ -1,0 +1,32 @@
+dependencies {
+    //android core
+    implementation deps.android_core.core
+    implementation deps.android_core.appcompat
+
+    //internal sdk
+    implementation deps.internal.sdk
+
+    //dagger
+    implementation deps.dagger.main
+    kapt deps.dagger.compiler
+
+    //workmanager
+    implementation deps.workmanager.main
+
+    //rx
+    implementation deps.rxJava.main
+    implementation deps.rxJava.android
+
+    //firebase
+    implementation platform(deps.firebase.bom)
+    implementation deps.firebase.database
+    implementation deps.firebase.messaging
+
+    //retrofit gson
+    implementation deps.retrofit.gson
+
+    //testing
+    testImplementation deps.testing.junit
+    androidTestImplementation deps.testing.android_junit
+    androidTestImplementation deps.testing.espresso
+}
