@@ -10,6 +10,7 @@ afterEvaluate {
 
                 groupId PUBLISH_GROUP_ID
                 version PUBLISH_VERSION
+                artifactId PUBLISH_ARTIFACT_ID
                 pom {
                     name = PUBLISH_ARTIFACT_ID
                     description = 'LikeMinds Chat official Android SDK'
@@ -51,6 +52,7 @@ afterEvaluate {
 
                 groupId PUBLISH_GROUP_ID
                 version PUBLISH_VERSION
+                artifactId PUBLISH_ARTIFACT_ID
                 pom {
                     name = PUBLISH_ARTIFACT_ID
                     description = 'LikeMinds Chat official Android SDK'
