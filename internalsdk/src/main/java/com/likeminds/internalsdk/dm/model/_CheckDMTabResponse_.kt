@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class CheckDMTabResponse(
+data class _CheckDMTabResponse_(
     @SerializedName("hide_dm_tab")
     val hideDMTab: Boolean,
     @SerializedName("is_cm")

@@ -4,6 +4,7 @@ import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.dm.model.*
 import com.likeminds.internalsdk.helper.model.*
 import com.likeminds.internalsdk.homefeed.model.*
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
@@ -19,6 +20,7 @@ import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.model.*
+import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.model.*
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
@@ -1132,6 +1134,162 @@ object ModelConverter {
         )
     }
 
+    //converts API CheckDMTabResponse model to LM model
+    fun convertCheckDMTabResponse(
+        apiResponse: APIResponse<_CheckDMTabResponse_>
+    ): LMResponse<CheckDMTabResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertCheckDMTabResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal CheckDMTabResponse model to client model
+    private fun convertCheckDMTabResponse(
+        _checkDMTabResponse_: _CheckDMTabResponse_?
+    ): CheckDMTabResponse? {
+        if (_checkDMTabResponse_ == null) {
+            return null
+        }
+        return CheckDMTabResponse(
+            _checkDMTabResponse_.hideDMTab,
+            _checkDMTabResponse_.isCM,
+            _checkDMTabResponse_.unreadDMCount,
+            _checkDMTabResponse_.hideDMText
+        )
+    }
+
+    //converts API SendDMResponse model to LM model
+    fun convertSendDMRequestResponse(
+        apiResponse: APIResponse<_SendDMResponse_>
+    ): LMResponse<SendDMResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertSendDMRequestResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal SendDMResponse model to client model
+    private fun convertSendDMRequestResponse(
+        _sendDMResponse_: _SendDMResponse_?
+    ): SendDMResponse? {
+        if (_sendDMResponse_ == null) {
+            return null
+        }
+        return SendDMResponse(
+            convertConversation(_sendDMResponse_.conversation)
+        )
+    }
+
+    //converts API CheckDMStatusResponse model to LM model
+    fun convertCheckDMStatusResponse(
+        apiResponse: APIResponse<_CheckDMStatusResponse_>
+    ): LMResponse<CheckDMStatusResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertCheckDMStatusResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal CheckDMStatusResponse model to client model
+    private fun convertCheckDMStatusResponse(
+        _checkDMStatusResponse_: _CheckDMStatusResponse_?
+    ): CheckDMStatusResponse? {
+        if (_checkDMStatusResponse_ == null) {
+            return null
+        }
+        return CheckDMStatusResponse(
+            _checkDMStatusResponse_.cta,
+            _checkDMStatusResponse_.showDM
+        )
+    }
+
+    //converts API BlockMemberResponse model to LM model
+    fun convertBlockMemberResponse(
+        apiResponse: APIResponse<_BlockMemberResponse_>
+    ): LMResponse<BlockMemberResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertBlockMemberResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal BlockMemberResponse model to client model
+    private fun convertBlockMemberResponse(
+        _blockMemberResponse_: _BlockMemberResponse_?
+    ): BlockMemberResponse? {
+        if (_blockMemberResponse_ == null) {
+            return null
+        }
+        return BlockMemberResponse(
+            convertConversation(_blockMemberResponse_.conversation)
+        )
+    }
+
+    //converts API CheckDMLimitResponse model to LM model
+    fun convertCheckDMLimitResponse(
+        apiResponse: APIResponse<_CheckDMLimitResponse_>
+    ): LMResponse<CheckDMLimitResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertCheckDMLimitResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal CheckDMLimitResponse model to client model
+    private fun convertCheckDMLimitResponse(
+        _checkDMLimitResponse_: _CheckDMLimitResponse_?
+    ): CheckDMLimitResponse? {
+        if (_checkDMLimitResponse_ == null) {
+            return null
+        }
+        return CheckDMLimitResponse(
+            _checkDMLimitResponse_.isRequestDMLimitExceeded,
+            _checkDMLimitResponse_.newRequestDMTimestamp,
+            convertUserDMLimit(_checkDMLimitResponse_.userDMLimit),
+            _checkDMLimitResponse_.chatroomId,
+        )
+    }
+
+    //converts internal UserDMLimit model to client model
+    private fun convertUserDMLimit(
+        _userDMLimit_: _UserDMLimit_?
+    ): UserDMLimit? {
+        if (_userDMLimit_ == null) {
+            return null
+        }
+        return UserDMLimit.Builder()
+            .numberInDuration(_userDMLimit_.numberInDuration)
+            .duration(_userDMLimit_.duration)
+            .build()
+    }
+
+    //converts API CreateDMChatroomResponse model to LM model
+    fun convertCreateDMChatroomResponse(
+        apiResponse: APIResponse<_CreateDMChatroomResponse_>
+    ): LMResponse<CreateDMChatroomResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertCreateDMChatroomResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal CreateDMChatroomResponse model to client model
+    private fun convertCreateDMChatroomResponse(
+        _createDMChatroomResponse_: _CreateDMChatroomResponse_?
+    ): CreateDMChatroomResponse? {
+        if (_createDMChatroomResponse_ == null) {
+            return null
+        }
+        return CreateDMChatroomResponse(convertChatroom(_createDMChatroomResponse_.chatroomLocal))
+    }
+
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
@@ -1357,7 +1515,7 @@ object ModelConverter {
             .build()
     }
 
-    fun createSDKClientInfo(sdkClientInfo: SDKClientInfo?): _SDKClientInfo_? {
+    private fun createSDKClientInfo(sdkClientInfo: SDKClientInfo?): _SDKClientInfo_? {
         if (sdkClientInfo == null) return null
         return _SDKClientInfo_(
             sdkClientInfo.community,
@@ -1366,6 +1524,7 @@ object ModelConverter {
             sdkClientInfo.uuid
         )
     }
+
 
     /**--------------------------------
      * Db Model -> Client Response Model

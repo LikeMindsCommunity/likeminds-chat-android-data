@@ -2,32 +2,27 @@ package com.likeminds.internalsdk.dm.model
 
 import com.google.gson.annotations.SerializedName
 
-class CheckDMStatusRequest private constructor(
+class _CheckDMStatusRequest_ private constructor(
     @SerializedName("req_from")
     val requestFrom: String,
     @SerializedName("chatroom_id")
     val chatroomId: String?,
     @SerializedName("uuid")
-    val uuid: String?,
-    @SerializedName("member_id")
-    val memberId: String?
+    val uuid: String
 ) {
     class Builder {
         private var requestFrom: String = ""
         private var chatroomId: String? = null
-        private var uuid: String? = null
-        private var memberId: String? = null
+        private var uuid: String = ""
 
         fun requestFrom(requestFrom: String) = apply { this.requestFrom = requestFrom }
         fun chatroomId(chatroomId: String?) = apply { this.chatroomId = chatroomId }
-        fun uuid(uuid: String?) = apply { this.uuid = uuid }
-        fun memberId(memberId: String?) = apply { this.memberId = memberId }
+        fun uuid(uuid: String) = apply { this.uuid = uuid }
 
-        fun build() = CheckDMStatusRequest(
+        fun build() = _CheckDMStatusRequest_(
             requestFrom,
             chatroomId,
-            uuid,
-            memberId
+            uuid
         )
     }
 
@@ -35,6 +30,5 @@ class CheckDMStatusRequest private constructor(
         return Builder().requestFrom(requestFrom)
             .chatroomId(chatroomId)
             .uuid(uuid)
-            .memberId(memberId)
     }
 }

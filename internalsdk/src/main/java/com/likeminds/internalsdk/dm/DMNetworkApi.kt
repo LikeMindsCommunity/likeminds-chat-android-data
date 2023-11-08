@@ -8,30 +8,30 @@ import retrofit2.http.*
 interface DMNetworkApi {
 
     @GET("home/dm/meta")
-    suspend fun checkDMTab(): NetworkResponse<APIResponse<CheckDMTabResponse>>
+    suspend fun checkDMTab(): NetworkResponse<APIResponse<_CheckDMTabResponse_>>
 
     @POST("chatroom/dm/request")
     suspend fun sendDMRequest(
-        @Body sendDMRequest: SendDMRequest
-    ): NetworkResponse<APIResponse<SendDMResponse>>
+        @Body sendDMRequest: _SendDMRequest_
+    ): NetworkResponse<APIResponse<_SendDMResponse_>>
 
     @GET("community/dm/status")
     suspend fun checkDMStatus(
         @QueryMap queries: HashMap<String, String>
-    ): NetworkResponse<APIResponse<CheckDMStatusResponse>>
+    ): NetworkResponse<APIResponse<_CheckDMStatusResponse_>>
 
     @POST("chatroom/dm/block")
     suspend fun blockMember(
-        @Body blockMemberRequest: BlockMemberRequest
-    ): NetworkResponse<APIResponse<BlockMemberResponse>>
+        @Body blockMemberRequest: _BlockMemberRequest_
+    ): NetworkResponse<APIResponse<_BlockMemberResponse_>>
 
     @GET("chatroom/dm/limit")
     suspend fun checkDMLimit(
         @QueryMap queries: HashMap<String, String>
-    ): NetworkResponse<APIResponse<CheckDMLimitResponse>>
+    ): NetworkResponse<APIResponse<_CheckDMLimitResponse_>>
 
     @POST("chatroom/dm/create")
     suspend fun createDMChatroom(
-        @Body createDMChatroomRequest: CreateDMChatroomRequest
-    ): NetworkResponse<APIResponse<CreateDMChatroomResponse>>
+        @Body createDMChatroomRequest: _CreateDMChatroomRequest_
+    ): NetworkResponse<APIResponse<_CreateDMChatroomResponse_>>
 }

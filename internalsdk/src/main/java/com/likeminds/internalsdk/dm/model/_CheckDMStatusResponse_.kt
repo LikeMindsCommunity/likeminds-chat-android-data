@@ -2,7 +2,7 @@ package com.likeminds.internalsdk.dm.model
 
 import com.google.gson.annotations.SerializedName
 
-data class CheckDMStatusResponse(
+data class _CheckDMStatusResponse_(
     @SerializedName("cta")
     val cta: String,
     @SerializedName("show_dm")

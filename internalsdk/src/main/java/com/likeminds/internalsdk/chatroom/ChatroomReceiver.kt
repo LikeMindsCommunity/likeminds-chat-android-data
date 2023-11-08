@@ -15,7 +15,6 @@ class ChatroomReceiver @Inject constructor(
 ) {
 
     companion object {
-
         private const val IS_SECRET_KEY = "is_secret"
         private const val CHATROOM_ID_KEY = "chatroom_id"
         private const val PARTICIPANT_NAME_KEY = "participant_name"

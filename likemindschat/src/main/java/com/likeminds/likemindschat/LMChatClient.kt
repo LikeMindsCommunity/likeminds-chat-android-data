@@ -12,6 +12,8 @@ import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.conversation.util.LoadConversationType
+import com.likeminds.likemindschat.dm.DMClient
+import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.HelperClient
 import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
@@ -71,6 +73,9 @@ class LMChatClient private constructor() {
 
     @Inject
     lateinit var notificationClient: NotificationClient
+
+    @Inject
+    lateinit var dmClient: DMClient
 
     class Builder(val application: Application) {
 
@@ -383,5 +388,30 @@ class LMChatClient private constructor() {
     // Exposed function to observe a community
     fun observeCommunity(): Observable<Community> {
         return communityClient.observeCommunity()
+    }
+
+    // Exposed function to check whether dm is enabled or not
+    suspend fun checkDMTab(): LMResponse<CheckDMTabResponse> {
+        return dmClient.checkDMTab()
+    }
+
+    suspend fun sendDMRequest(sendDMRequest: SendDMRequest): LMResponse<SendDMResponse> {
+        return dmClient.sendDMRequest(sendDMRequest)
+    }
+
+    suspend fun checkDMStatus(checkDMStatusRequest: CheckDMStatusRequest): LMResponse<CheckDMStatusResponse> {
+        return dmClient.checkDMStatus(checkDMStatusRequest)
+    }
+
+    suspend fun blockMember(blockMemberRequest: BlockMemberRequest): LMResponse<BlockMemberResponse> {
+        return dmClient.blockMember(blockMemberRequest)
+    }
+
+    suspend fun checkDMLimit(checkDMLimitRequest: CheckDMLimitRequest): LMResponse<CheckDMLimitResponse> {
+        return dmClient.checkDMLimit(checkDMLimitRequest)
+    }
+
+    suspend fun createDMChatroom(createDMChatroomRequest: CreateDMChatroomRequest): LMResponse<CreateDMChatroomResponse> {
+        return dmClient.createDMChatroom(createDMChatroomRequest)
     }
 }
