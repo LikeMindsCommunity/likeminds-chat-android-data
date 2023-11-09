@@ -424,4 +424,9 @@ class LMChatClient private constructor() {
     suspend fun getAllMember(getAllMemberRequest: GetAllMemberRequest): LMResponse<GetAllMemberResponse> {
         return communityClient.getAllMember(getAllMemberRequest)
     }
+
+    // Exposed function to search members in community
+    suspend fun searchMember(searchMembersRequest: SearchMembersRequest): LMResponse<SearchMembersResponse> {
+        return communityClient.searchMember(searchMembersRequest)
+    }
 }

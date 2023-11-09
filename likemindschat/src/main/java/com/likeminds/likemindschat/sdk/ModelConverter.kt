@@ -1302,7 +1302,7 @@ object ModelConverter {
     }
 
     //converts internal GetAllMemberResponse model to client model
-    fun convertGetAllMemberResponse(
+    private fun convertGetAllMemberResponse(
         _getAllMemberResponse_: _GetAllMemberResponse_?
     ): GetAllMemberResponse? {
         if (_getAllMemberResponse_ == null) {
@@ -1314,6 +1314,29 @@ object ModelConverter {
             _getAllMemberResponse_.totalPendingMembers,
             _getAllMemberResponse_.totalFilteredMembers,
             _getAllMemberResponse_.totalOnlyMembers,
+        )
+    }
+
+    //converts API SearchMembersResponse model to LM model
+    fun convertSearchMembersResponse(
+        apiResponse: APIResponse<_SearchMembersResponse_>
+    ): LMResponse<SearchMembersResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertSearchMembersResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal SearchMembersResponse model to client model
+    private fun convertSearchMembersResponse(
+        _searchMembersResponse_: _SearchMembersResponse_?
+    ): SearchMembersResponse? {
+        if (_searchMembersResponse_ == null) {
+            return null
+        }
+        return SearchMembersResponse(
+            convertMembers(_searchMembersResponse_.members)
         )
     }
 

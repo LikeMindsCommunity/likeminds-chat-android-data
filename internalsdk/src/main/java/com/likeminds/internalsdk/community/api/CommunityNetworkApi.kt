@@ -18,4 +18,9 @@ interface CommunityNetworkApi {
 
     @GET("community/member")
     suspend fun getAllMembers(@QueryMap queries: HashMap<String, Any>): NetworkResponse<APIResponse<_GetAllMemberResponse_>>
+
+    @GET("community/member/search")
+    suspend fun searchMembers(
+        @QueryMap queries: HashMap<String, Any>
+    ): NetworkResponse<APIResponse<_SearchMembersResponse_>>
 }
