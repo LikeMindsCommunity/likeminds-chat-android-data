@@ -13,4 +13,7 @@ interface CommunityApi {
 
     // api to get content download settings
     suspend fun getContentDownloadSettings(): NetworkResponse<APIResponse<_GetContentDownloadSettingsResponse_>>
+
+    // api to get all the members in the community
+    suspend fun getAllMember(request: _GetAllMemberRequest_): NetworkResponse<APIResponse<_GetAllMemberResponse_>>
 }

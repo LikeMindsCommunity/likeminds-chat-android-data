@@ -18,6 +18,9 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
         private const val ORDER_TYPE_KEY = "order_type"
         private const val IS_PINNED_KEY = "pinned"
         private const val PAGE_KEY = "page"
+        private const val PAGE = "page"
+        private const val FILTER_MEMBER_ROLES = "filter_member_roles"
+        private const val QUESTION_ANSWERS_VERSION = "question_answers_version"
     }
 
     /**
@@ -40,6 +43,16 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
 
     suspend fun getContentDownloadSettings(): NetworkResponse<APIResponse<_GetContentDownloadSettingsResponse_>> {
         return communityNetworkApi.getContentDownloadSettings()
+    }
+
+    suspend fun getAllMember(request: _GetAllMemberRequest_): NetworkResponse<APIResponse<_GetAllMemberResponse_>> {
+        val queries = HashMap<String, Any>()
+
+        queries[PAGE] = request.page
+        queries[FILTER_MEMBER_ROLES] = request.filterMemberRoles
+        queries[QUESTION_ANSWERS_VERSION] = "v2"
+
+        return communityNetworkApi.getAllMembers(queries)
     }
 
     /**

@@ -1290,6 +1290,33 @@ object ModelConverter {
         return CreateDMChatroomResponse(convertChatroom(_createDMChatroomResponse_.chatroomLocal))
     }
 
+    //converts API GetAllMemberResponse model to LM model
+    fun convertGetAllMemberResponse(
+        apiResponse: APIResponse<_GetAllMemberResponse_>
+    ): LMResponse<GetAllMemberResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetAllMemberResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal GetAllMemberResponse model to client model
+    fun convertGetAllMemberResponse(
+        _getAllMemberResponse_: _GetAllMemberResponse_?
+    ): GetAllMemberResponse? {
+        if (_getAllMemberResponse_ == null) {
+            return null
+        }
+        return GetAllMemberResponse(
+            convertMembers(_getAllMemberResponse_.members),
+            _getAllMemberResponse_.totalMembers,
+            _getAllMemberResponse_.totalPendingMembers,
+            _getAllMemberResponse_.totalFilteredMembers,
+            _getAllMemberResponse_.totalOnlyMembers,
+        )
+    }
+
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
