@@ -4,6 +4,7 @@ import android.os.Build
 import com.likeminds.internalsdk.chatroom.api.ChatroomNetworkApi
 import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
+import com.likeminds.internalsdk.db.ROConverter
 import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
@@ -87,6 +88,21 @@ class ChatroomReceiver @Inject constructor(
     /**
      * DB Functions
      */
+
+    fun saveChatroom(_chatroom_: _Chatroom_) {
+        ChatDBUtil.writeAsync({ realm ->
+            val communityId = _chatroom_.communityId ?: ""
+            val chatroomCreator =
+                ROConverter.convertMember(_chatroom_.member, communityId) ?: return@writeAsync
+            ROConverter.convertChatroom(
+                realm,
+                _chatroom_,
+                chatroomCreator
+            )?.let { chatroomRO ->
+                realm.insertOrUpdate(chatroomRO)
+            }
+        })
+    }
 
     fun getChatroom(realm: Realm, chatroomId: String): ChatroomRO? {
         return ChatDBUtil.getChatroom(realm, chatroomId)
@@ -209,6 +225,20 @@ class ChatroomReceiver @Inject constructor(
                 if (conversations.isNotEmpty()) {
                     chatroomRO.lastSeenConversation = conversations.last()
                 }
+            }
+        })
+    }
+
+    // updates the chat request state of the DM chatroom
+    fun updateChatRequestState(
+        chatroomId: String,
+        chatRequestState: Int?,
+        chatRequestedById: String?
+    ) {
+        ChatDBUtil.writeAsync({ realm ->
+            ChatDBUtil.getChatroom(realm, chatroomId)?.let { chatroomRO ->
+                chatroomRO.chatRequestState = chatRequestState
+                chatroomRO.chatRequestedById = chatRequestedById
             }
         })
     }

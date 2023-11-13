@@ -1,6 +1,7 @@
 package com.likeminds.internalsdk.chatroom.db
 
 import com.likeminds.internalsdk.chatroom.ChatroomReceiver
+import com.likeminds.internalsdk.chatroom.model._Chatroom_
 import com.likeminds.internalsdk.db.models.ChatroomRO
 import io.realm.Realm
 import javax.inject.Inject
@@ -8,6 +9,10 @@ import javax.inject.Inject
 class ChatroomDBImpl @Inject constructor(
     private val chatroomReceiver: ChatroomReceiver
 ) : ChatroomDB {
+
+    override fun saveChatroom(_chatroom_: _Chatroom_) {
+        return chatroomReceiver.saveChatroom(_chatroom_)
+    }
 
     override fun getChatroom(realm: Realm, chatroomId: String): ChatroomRO? {
         return chatroomReceiver.getChatroom(realm, chatroomId)
@@ -43,5 +48,13 @@ class ChatroomDBImpl @Inject constructor(
 
     override fun updateLastSeenAndDraft(chatroomId: String, draft: String?) {
         chatroomReceiver.updateLastSeenAndDraft(chatroomId, draft)
+    }
+
+    override fun updateChatRequestState(
+        chatroomId: String,
+        chatRequestState: Int?,
+        chatRequestedById: String?
+    ) {
+        return chatroomReceiver.updateChatRequestState(chatroomId, chatRequestState, chatRequestedById)
     }
 }

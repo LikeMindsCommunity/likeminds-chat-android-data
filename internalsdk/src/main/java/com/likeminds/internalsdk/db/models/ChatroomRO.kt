@@ -50,6 +50,13 @@ open class ChatroomRO(
     var isConversationStored: Boolean = false, //to check whether chatroom's conversation is saved or not
     var isDraft: Boolean? = null,
     var lastConversationId: String? = null,
+    var chatRequestState: Int? = null,
+    var isPrivateMember: Boolean? = null,
+    var chatRequestedById: String? = null,
+    var chatRequestedBy: MemberRO? = null,
+    var chatRequestCreatedAt: Long? = null,
+    var chatroomWithUser: MemberRO? = null,
+    var chatroomWithUserId: String? = null,
     @LinkingObjects("chatrooms")
     val communities: RealmResults<CommunityRO>? = null
 ) : RealmObject() {
@@ -100,7 +107,14 @@ open class ChatroomRO(
         builder.externalSeen,
         builder.isConversationStored,
         builder.isDraft,
-        builder.lastConversationId
+        builder.lastConversationId,
+        builder.chatRequestState,
+        builder.isPrivateMember,
+        builder.chatRequestedById,
+        builder.chatRequestedBy,
+        builder.chatRequestCreatedAt,
+        builder.chatroomWithUser,
+        builder.chatroomWithUserId
     )
 
     companion object {
@@ -160,6 +174,13 @@ open class ChatroomRO(
         var isConversationStored: Boolean = false
         var isDraft: Boolean? = null
         var lastConversationId: String? = null
+        var chatRequestState: Int? = null
+        var isPrivateMember: Boolean? = null
+        var chatRequestedById: String? = null
+        var chatRequestedBy: MemberRO? = null
+        var chatRequestCreatedAt: Long? = null
+        var chatroomWithUser: MemberRO? = null
+        var chatroomWithUserId: String? = null
 
         fun build() = ChatroomRO(this)
     }
@@ -206,6 +227,13 @@ open class ChatroomRO(
             isConversationStored = this@ChatroomRO.isConversationStored
             isDraft = this@ChatroomRO.isDraft
             lastConversationId = this@ChatroomRO.lastConversationId
+            chatRequestState = this@ChatroomRO.chatRequestState
+            isPrivateMember = this@ChatroomRO.isPrivateMember
+            chatRequestedById = this@ChatroomRO.chatRequestedById
+            chatRequestedBy = this@ChatroomRO.chatRequestedBy
+            chatRequestCreatedAt = this@ChatroomRO.chatRequestCreatedAt
+            chatroomWithUser = this@ChatroomRO.chatroomWithUser
+            chatroomWithUserId = this@ChatroomRO.chatroomWithUserId
         }
     }
 }

@@ -754,6 +754,12 @@ object ModelConverter {
             .unreadConversationCount(_chatroom_.unreadConversationCount)
             .chatroomImageUrl(_chatroom_.chatroomImageUrl)
             .accessWithoutSubscription(_chatroom_.accessWithoutSubscription)
+            .chatRequestState(_chatroom_.chatRequestState)
+            .chatRequestedById(_chatroom_.chatRequestedById)
+            .chatRequestCreatedAt(_chatroom_.chatRequestCreatedAt)
+            .isPrivateMember(_chatroom_.isPrivateMember)
+            .chatroomWithUser(convertMember(_chatroom_.chatroomWithUser))
+            .chatroomWithUserId(_chatroom_.chatroomWithUserId)
             .build()
     }
 
@@ -1707,6 +1713,11 @@ object ModelConverter {
             .isConversationStored(chatroomRO.isConversationStored)
             .isDraft(chatroomRO.isDraft)
             .totalAllResponseCount(chatroomRO.totalAllResponseCount)
+            .chatRequestedById(chatroomRO.chatRequestedById)
+            .chatRequestedBy(convertMemberRO(chatroomRO.chatRequestedBy))
+            .chatRequestCreatedAt(chatroomRO.chatRequestCreatedAt)
+            .chatRequestState(chatroomRO.chatRequestState)
+            .isPrivateMember(chatroomRO.isPrivateMember)
             .build()
     }
 

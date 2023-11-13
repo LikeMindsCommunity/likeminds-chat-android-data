@@ -8,6 +8,7 @@ import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
+import io.realm.Realm
 import javax.inject.Inject
 
 class DMClient @Inject constructor() : BaseClient() {
@@ -18,6 +19,14 @@ class DMClient @Inject constructor() : BaseClient() {
 
     private val dmApi by lazy {
         groupChatSDK.getDMApi()
+    }
+
+    private val chatroomDB by lazy {
+        groupChatSDK.getChatroomDb()
+    }
+
+    private val userDB by lazy {
+        groupChatSDK.getUserDb()
     }
 
     /**
@@ -73,6 +82,25 @@ class DMClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+
+                val chatRequestState = sendDMRequest.chatRequestState
+
+                val realm = Realm.getDefaultInstance()
+                val userRO = userDB.getUser(realm)
+
+                val chatRequestedById = if (chatRequestState == 0) {
+                    userRO?.id
+                } else {
+                    null
+                }
+
+                // updates chat request state in local DB
+                chatroomDB.updateChatRequestState(
+                    sendDMRequest.chatroomId,
+                    chatRequestState,
+                    chatRequestedById
+                )
+
                 ModelConverter.convertSendDMRequestResponse(body)
             }
         }
@@ -244,6 +272,12 @@ class DMClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+
+                // saves the chatroom local object to db
+                body.data?.chatroomLocal?.let { _chatroom_ ->
+                    chatroomDB.saveChatroom(_chatroom_)
+                }
+
                 ModelConverter.convertCreateDMChatroomResponse(body)
             }
         }
