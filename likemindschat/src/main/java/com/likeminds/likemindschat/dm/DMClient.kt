@@ -5,9 +5,11 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.dm.model.*
+import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
+import io.reactivex.Observable
 import io.realm.Realm
 import javax.inject.Inject
 
@@ -290,6 +292,20 @@ class DMClient @Inject constructor() : BaseClient() {
     private fun validateCreateDMChatroomRequest(createDMChatroomRequest: CreateDMChatroomRequest) {
         if (createDMChatroomRequest.uuid.isEmpty()) {
             RequestUtils.throwException("uuid")
+        }
+    }
+
+    fun observeDMChatrooms(
+        listener: HomeChatroomListener
+    ): Observable<Unit>? {
+        //create realm object
+        val realm = Realm.getDefaultInstance()
+        return chatroomDB.observeDMChatrooms(realm)?.map {
+            listener.onChange(it.collection, it.changeset!!)
+        }?.doOnDispose {
+            listener.clear()
+        }?.doOnTerminate {
+            listener.clear()
         }
     }
 }

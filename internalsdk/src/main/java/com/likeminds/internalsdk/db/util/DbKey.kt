@@ -60,4 +60,5 @@ object DbKey {
     const val ANSWER_TEXT = "answerText"
     const val POLLS_COUNT = "pollsCount"
     const val DOWNLOADABLE_CONTENT_TYPES = "downloadableContentTypes"
+    const val TOTAL_RESPONSE_COUNT = "totalResponseCount"
 }
