@@ -23,7 +23,15 @@ if (secretPropsFile.exists()) {
     p.each { name, value ->
         ext[name] = value
     }
+} else {
+    ext['signing.keyId'] = System.getenv('KEY_ID') 
+    ext['signing.password'] = System.getenv('PASSWORD') 
+    ext['signing.key'] = System.getenv('KEY') 
+    ext['ossrhUsername'] = System.getenv('OSSRH_USERNAME') 
+    ext['ossrhPassword'] = System.getenv('OSSRH_PASSWORD') 
+    ext["sonatypeStagingProfileId"] = System.getenv('SONATYPE_STAGING_PROFILE_ID')
 }
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir
