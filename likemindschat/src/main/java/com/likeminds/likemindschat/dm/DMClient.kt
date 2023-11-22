@@ -31,6 +31,10 @@ class DMClient @Inject constructor() : BaseClient() {
         groupChatSDK.getUserDb()
     }
 
+    private val conversationDB by lazy {
+        groupChatSDK.getConversationDB()
+    }
+
     /**
      * Converts client request model to internal model and calls the api
      * @throws IllegalArgumentException - when LMChatClient is not instantiated
@@ -102,6 +106,14 @@ class DMClient @Inject constructor() : BaseClient() {
                     chatRequestState,
                     chatRequestedById
                 )
+
+                // save the conversation in DB
+                val conversation = body.data?.conversation
+                conversation?.let { finalConversation ->
+                    conversationDB.saveNewConversation(realm, finalConversation)
+                }
+
+                realm.close()
 
                 ModelConverter.convertSendDMRequestResponse(body)
             }
@@ -193,6 +205,15 @@ class DMClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+
+                // save the conversation in DB
+                val realm = Realm.getDefaultInstance()
+
+                val conversation = body.data?.conversation
+                conversation?.let { finalConversation ->
+                    conversationDB.saveNewConversation(realm, finalConversation)
+                }
+                realm.close()
                 ModelConverter.convertBlockMemberResponse(body)
             }
         }
