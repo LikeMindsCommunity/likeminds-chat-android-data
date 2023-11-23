@@ -18,6 +18,12 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
         private const val ORDER_TYPE_KEY = "order_type"
         private const val IS_PINNED_KEY = "pinned"
         private const val PAGE_KEY = "page"
+        private const val PAGE = "page"
+        private const val FILTER_MEMBER_ROLES = "filter_member_roles"
+        private const val QUESTION_ANSWERS_VERSION = "question_answers_version"
+        private const val SEARCH = "search"
+        private const val SEARCH_TYPE = "search_type"
+        private const val PAGE_SIZE = "page_size"
     }
 
     /**
@@ -40,6 +46,26 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
 
     suspend fun getContentDownloadSettings(): NetworkResponse<APIResponse<_GetContentDownloadSettingsResponse_>> {
         return communityNetworkApi.getContentDownloadSettings()
+    }
+
+    suspend fun getAllMember(request: _GetAllMemberRequest_): NetworkResponse<APIResponse<_GetAllMemberResponse_>> {
+        val queries = HashMap<String, Any>()
+
+        queries[PAGE] = request.page
+        queries[FILTER_MEMBER_ROLES] = request.filterMemberRoles
+        queries[QUESTION_ANSWERS_VERSION] = "v2"
+
+        return communityNetworkApi.getAllMembers(queries)
+    }
+
+    suspend fun searchMembers(request: _SearchMembersRequest_): NetworkResponse<APIResponse<_SearchMembersResponse_>> {
+        val queries = HashMap<String, Any>()
+        queries[SEARCH] = request.search
+        queries[SEARCH_TYPE] = request.searchType
+        queries[PAGE] = request.page
+        queries[PAGE_SIZE] = request.pageSize
+        queries[QUESTION_ANSWERS_VERSION] = "v2"
+        return communityNetworkApi.searchMembers(queries)
     }
 
     /**

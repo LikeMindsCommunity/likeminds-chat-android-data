@@ -1,6 +1,6 @@
 package com.likeminds.likemindschat.community
 
-import com.likeminds.internalsdk.community.model._GetExploreFeedRequest_
+import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
@@ -125,6 +125,68 @@ class CommunityClient @Inject constructor() : BaseClient() {
         )
         return observable.map {
             ModelConverter.convertCommunityRO(it)
+        }
+    }
+
+    /**
+     * Calls the api to get all members in community
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     * @return GetAllMemberResponse - GetAllMemberResponse model for getAllMemberRequest
+     */
+    suspend fun getAllMember(getAllMemberRequest: GetAllMemberRequest): LMResponse<GetAllMemberResponse> {
+        // validates the client request
+        RequestUtils.validate()
+
+        // builds internal request model
+        val request = _GetAllMemberRequest_.Builder()
+            .page(getAllMemberRequest.page)
+            .filterMemberRoles(getAllMemberRequest.filterMemberRoles)
+            .build()
+
+        return when (val response = communityApi.getAllMember(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                val body = response.body
+                ModelConverter.convertGetAllMemberResponse(body)
+            }
+        }
+    }
+
+    /**
+     * Calls the api to search members in community
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     * @return SearchMembersResponse - SearchMembersResponse model for searchMembersRequest
+     */
+    suspend fun searchMember(searchMembersRequest: SearchMembersRequest): LMResponse<SearchMembersResponse> {
+        // validates the client request
+        RequestUtils.validate()
+
+        // builds internal request model
+        val request = _SearchMembersRequest_.Builder()
+            .search(searchMembersRequest.search)
+            .searchType(searchMembersRequest.searchType)
+            .page(searchMembersRequest.page)
+            .pageSize(searchMembersRequest.pageSize)
+            .build()
+
+        return when (val response = communityApi.searchMembers(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                val body = response.body
+                ModelConverter.convertSearchMembersResponse(body)
+            }
         }
     }
 }
