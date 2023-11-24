@@ -754,13 +754,39 @@ object ModelConverter {
             .unreadConversationCount(_chatroom_.unreadConversationCount)
             .chatroomImageUrl(_chatroom_.chatroomImageUrl)
             .accessWithoutSubscription(_chatroom_.accessWithoutSubscription)
-            .chatRequestState(_chatroom_.chatRequestState)
+            .chatRequestState(convertChatRequestState(_chatroom_.chatRequestState))
             .chatRequestedById(_chatroom_.chatRequestedById)
             .chatRequestCreatedAt(_chatroom_.chatRequestCreatedAt)
             .isPrivateMember(_chatroom_.isPrivateMember)
             .chatroomWithUser(convertMember(_chatroom_.chatroomWithUser))
             .chatroomWithUserId(_chatroom_.chatroomWithUserId)
             .build()
+    }
+
+    private fun convertChatRequestState(
+        chatRequestState: Int?
+    ): ChatRequestState {
+        return when (chatRequestState) {
+            ChatRequestState.NOTHING.value -> {
+                ChatRequestState.NOTHING
+            }
+
+            ChatRequestState.INITIATED.value -> {
+                ChatRequestState.INITIATED
+            }
+
+            ChatRequestState.ACCEPTED.value -> {
+                ChatRequestState.ACCEPTED
+            }
+
+            ChatRequestState.REJECTED.value -> {
+                ChatRequestState.REJECTED
+            }
+
+            else -> {
+                ChatRequestState.NOTHING
+            }
+        }
     }
 
     // converts internal Cohort model list to client model list
@@ -1716,7 +1742,7 @@ object ModelConverter {
             .chatRequestedById(chatroomRO.chatRequestedById)
             .chatRequestedBy(convertMemberRO(chatroomRO.chatRequestedBy))
             .chatRequestCreatedAt(chatroomRO.chatRequestCreatedAt)
-            .chatRequestState(chatroomRO.chatRequestState)
+            .chatRequestState(convertChatRequestState(chatroomRO.chatRequestState))
             .isPrivateMember(chatroomRO.isPrivateMember)
             .build()
     }

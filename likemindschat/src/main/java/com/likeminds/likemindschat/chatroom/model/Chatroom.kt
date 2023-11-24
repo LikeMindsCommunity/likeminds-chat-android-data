@@ -60,7 +60,7 @@ class Chatroom private constructor(
     val isConversationStored: Boolean,
     val isDraft: Boolean?,
     val totalAllResponseCount: Int?,
-    val chatRequestState: Int?,
+    val chatRequestState: ChatRequestState,
     val isPrivateMember: Boolean?,
     val chatRequestedById: String?,
     val chatRequestCreatedAt: Long?,
@@ -126,7 +126,7 @@ class Chatroom private constructor(
         private var isConversationStored: Boolean = false
         private var isDraft: Boolean? = null
         private var totalAllResponseCount: Int? = null
-        private var chatRequestState: Int? = null
+        private var chatRequestState: ChatRequestState = ChatRequestState.NOTHING
         private var isPrivateMember: Boolean? = null
         private var chatRequestedById: String? = null
         private var chatRequestCreatedAt: Long? = null
@@ -229,7 +229,7 @@ class Chatroom private constructor(
         fun totalAllResponseCount(totalAllResponseCount: Int?) =
             apply { this.totalAllResponseCount = totalAllResponseCount }
 
-        fun chatRequestState(chatRequestState: Int?) =
+        fun chatRequestState(chatRequestState: ChatRequestState) =
             apply { this.chatRequestState = chatRequestState }
 
         fun isPrivateMember(isPrivateMember: Boolean?) =
