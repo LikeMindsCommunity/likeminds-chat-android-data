@@ -429,4 +429,9 @@ class LMChatClient private constructor() {
     suspend fun searchMember(searchMembersRequest: SearchMembersRequest): LMResponse<SearchMembersResponse> {
         return communityClient.searchMember(searchMembersRequest)
     }
+
+    // Exposed function to observe DM chatrooms
+    fun observeDMChatrooms(listener: HomeChatroomListener): Observable<Unit>? {
+        return dmClient.observeDMChatrooms(listener)
+    }
 }

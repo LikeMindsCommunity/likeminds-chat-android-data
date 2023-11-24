@@ -287,7 +287,10 @@ object ChatDBUtil {
 
         //total response count
         chatroomRO.totalResponseCount = if (chatroomRO.type == TYPE_DIRECT_MESSAGE) {
-            conversations.count()
+            conversations.where()
+                .equalTo(DbKey.STATE, STATE_NORMAL)
+                .count()
+                .toInt()
         } else {
             conversations.where()
                 .equalTo(DbKey.STATE, STATE_NORMAL).or()

@@ -110,8 +110,7 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
     /**
      * Start the Sync workers and get db query for chatrooms for home feed
      *
-     * @param context: Context of the Activity/Fragment
-     * @param listener: [HomeFeedChangeListener] to get object of the chatrooms as per requirements
+     * @param listener: [HomeChatroomListener] to get object of the chatrooms as per requirements
      *
      * @throws IllegalArgumentException - when LMChatClient is not instantiated
      */

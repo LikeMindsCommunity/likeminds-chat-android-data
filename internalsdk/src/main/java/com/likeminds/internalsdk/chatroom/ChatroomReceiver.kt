@@ -4,14 +4,22 @@ import android.os.Build
 import com.likeminds.internalsdk.chatroom.api.ChatroomNetworkApi
 import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
+import com.likeminds.internalsdk.db.ROConverter
 import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.db.util.DbKey
+import com.likeminds.internalsdk.sdk.util.SDKPreferences
+import com.likeminds.internalsdk.user.util.UserPreferences
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
-import io.realm.Realm
+import io.reactivex.Observable
+import io.realm.*
+import io.realm.rx.CollectionChange
 import javax.inject.Inject
 
 class ChatroomReceiver @Inject constructor(
-    private val chatroomNetworkApi: ChatroomNetworkApi
+    private val chatroomNetworkApi: ChatroomNetworkApi,
+    private val sdkPreferences: SDKPreferences,
+    private val userPreferences: UserPreferences
 ) {
 
     companion object {
@@ -87,6 +95,21 @@ class ChatroomReceiver @Inject constructor(
     /**
      * DB Functions
      */
+
+    fun saveChatroom(_chatroom_: _Chatroom_) {
+        ChatDBUtil.writeAsync({ realm ->
+            val communityId = _chatroom_.communityId ?: ""
+            val chatroomCreator =
+                ROConverter.convertMember(_chatroom_.member, communityId) ?: return@writeAsync
+            ROConverter.convertChatroom(
+                realm,
+                _chatroom_,
+                chatroomCreator
+            )?.let { chatroomRO ->
+                realm.insertOrUpdate(chatroomRO)
+            }
+        })
+    }
 
     fun getChatroom(realm: Realm, chatroomId: String): ChatroomRO? {
         return ChatDBUtil.getChatroom(realm, chatroomId)
@@ -211,5 +234,41 @@ class ChatroomReceiver @Inject constructor(
                 }
             }
         })
+    }
+
+    // updates the chat request state of the DM chatroom
+    fun updateChatRequestState(
+        chatroomId: String,
+        chatRequestState: Int?,
+        chatRequestedById: String?
+    ) {
+        ChatDBUtil.writeAsync({ realm ->
+            ChatDBUtil.getChatroom(realm, chatroomId)?.let { chatroomRO ->
+                chatroomRO.chatRequestState = chatRequestState
+                chatroomRO.chatRequestedById = chatRequestedById
+            }
+        })
+    }
+
+    fun observeDMChatrooms(realm: Realm): Observable<CollectionChange<RealmResults<ChatroomRO>>>? {
+        val communityId = sdkPreferences.getCommunityId()
+        var query = realm.where(ChatroomRO::class.java)
+        if (communityId != null) {
+            query = query.equalTo(DbKey.COMMUNITY_ID, communityId)
+        }
+        return query.isNull(DbKey.DELETED_BY)
+            .equalTo(DbKey.TYPE, TYPE_DIRECT_MESSAGE)
+            .greaterThan(DbKey.TOTAL_RESPONSE_COUNT, 0)
+            .beginGroup()
+            .equalTo(DbKey.MEMBER_OBJECT_UUID, userPreferences.getClientUUID())
+            .or()
+            .equalTo(DbKey.CHATROOM_WITH_USER_ID, userPreferences.getLMMemberId())
+            .endGroup()
+            .sort(DbKey.UPDATED_AT, Sort.DESCENDING)
+            .findAllAsync()
+            .asChangesetObservable()
+            .filter {
+                it.collection.isLoaded && it.changeset != null
+            }
     }
 }

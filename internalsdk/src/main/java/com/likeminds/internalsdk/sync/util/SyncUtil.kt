@@ -251,12 +251,24 @@ object SyncUtil {
                     }
                 }
 
+                // gets the member object for chatRequestedBy
+                val chatRequestedById = chatroom.chatRequestedById
+                val chatRequestedBy = data.userMeta[chatRequestedById.toString()]
+                val chatRequestedByRO = ROConverter.convertMember(chatRequestedBy, communityId)
+
+                // gets the member object for chatroomWithUser
+                val chatroomWithUserId = chatroom.chatroomWithUserId
+                val chatroomWithUser = data.userMeta[chatroomWithUserId.toString()]
+                val chatroomWithUserRO = ROConverter.convertMember(chatroomWithUser, communityId)
+
                 //convert chatroom
                 val chatroomRO = ROConverter.convertChatroom(
                     realm,
                     chatroom,
                     chatroomCreatorRO,
-                    lastConversationRO
+                    lastConversationRO,
+                    chatRequestByRO = chatRequestedByRO,
+                    chatroomWithUserRO = chatroomWithUserRO
                 ) ?: return@forEach
                 chatroomRO.relationshipNeeded = true
 

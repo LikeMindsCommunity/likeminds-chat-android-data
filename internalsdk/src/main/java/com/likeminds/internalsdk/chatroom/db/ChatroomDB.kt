@@ -1,9 +1,16 @@
 package com.likeminds.internalsdk.chatroom.db
 
+import com.likeminds.internalsdk.chatroom.model._Chatroom_
 import com.likeminds.internalsdk.db.models.ChatroomRO
+import io.reactivex.Observable
 import io.realm.Realm
+import io.realm.RealmResults
+import io.realm.rx.CollectionChange
 
 interface ChatroomDB {
+
+    // query to save chatroom in DB
+    fun saveChatroom(_chatroom_: _Chatroom_)
 
     //query to get chatroom
     fun getChatroom(realm: Realm, chatroomId: String): ChatroomRO?
@@ -31,4 +38,10 @@ interface ChatroomDB {
 
     //query to update last seen and draft message of the chatroom
     fun updateLastSeenAndDraft(chatroomId: String, draft: String?)
+
+    //query to update chat request state of chatroom
+    fun updateChatRequestState(chatroomId: String, chatRequestState: Int?, chatRequestedById: String?)
+
+    // query to observe DM chatrooms
+    fun observeDMChatrooms(realm: Realm): Observable<CollectionChange<RealmResults<ChatroomRO>>>?
 }

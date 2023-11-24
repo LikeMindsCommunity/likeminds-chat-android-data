@@ -46,7 +46,9 @@ object ROConverter {
         chatroom: _Chatroom_?,
         chatroomCreatorRO: MemberRO,
         lastConversationRO: LastConversationRO? = null,
-        reactions: List<_ReactionMeta_> = emptyList()
+        reactions: List<_ReactionMeta_> = emptyList(),
+        chatRequestByRO: MemberRO? = null,
+        chatroomWithUserRO: MemberRO? = null,
     ): ChatroomRO? {
         if (chatroom == null) return null
 
@@ -104,6 +106,13 @@ object ROConverter {
             topicId = chatroom.topicId ?: savedChatroom?.topicId
             topic = savedChatroom?.topic
             isConversationStored = savedChatroom?.isConversationStored ?: false
+            chatRequestState = chatroom.chatRequestState
+            isPrivateMember = chatroom.isPrivateMember
+            chatRequestedById = chatroom.chatRequestedById
+            chatRequestedBy = chatRequestByRO
+            chatRequestCreatedAt = chatroom.chatRequestCreatedAt
+            chatroomWithUserId = chatroom.chatroomWithUserId
+            chatroomWithUser = chatroomWithUserRO
         }
     }
 

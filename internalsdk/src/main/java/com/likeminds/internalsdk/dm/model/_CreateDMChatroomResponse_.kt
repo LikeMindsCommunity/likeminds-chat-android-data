@@ -5,5 +5,5 @@ import com.likeminds.internalsdk.chatroom.model._Chatroom_
 
 data class _CreateDMChatroomResponse_(
     @SerializedName("chatroom_local")
-    val chatroomLocal: _Chatroom_
+    val chatroom: _Chatroom_
 )

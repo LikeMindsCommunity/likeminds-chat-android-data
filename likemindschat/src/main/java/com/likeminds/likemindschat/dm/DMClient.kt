@@ -4,10 +4,15 @@ import com.likeminds.internalsdk.dm.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
+import com.likeminds.likemindschat.chatroom.model.ChatRequestState
+import com.likeminds.likemindschat.conversation.model.ObserveConversationsRequest
 import com.likeminds.likemindschat.dm.model.*
+import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
+import io.reactivex.Observable
+import io.realm.Realm
 import javax.inject.Inject
 
 class DMClient @Inject constructor() : BaseClient() {
@@ -18,6 +23,18 @@ class DMClient @Inject constructor() : BaseClient() {
 
     private val dmApi by lazy {
         groupChatSDK.getDMApi()
+    }
+
+    private val chatroomDB by lazy {
+        groupChatSDK.getChatroomDb()
+    }
+
+    private val userDB by lazy {
+        groupChatSDK.getUserDb()
+    }
+
+    private val conversationDB by lazy {
+        groupChatSDK.getConversationDB()
     }
 
     /**
@@ -58,7 +75,7 @@ class DMClient @Inject constructor() : BaseClient() {
         // builds internal request model
         val request = _SendDMRequest_.Builder()
             .chatroomId(sendDMRequest.chatroomId)
-            .chatRequestState(sendDMRequest.chatRequestState)
+            .chatRequestState(sendDMRequest.chatRequestState.value ?: 0)
             .text(sendDMRequest.text)
             .build()
 
@@ -73,6 +90,34 @@ class DMClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+
+                val chatRequestState = sendDMRequest.chatRequestState
+
+                val realm = Realm.getDefaultInstance()
+                val userRO = userDB.getUser(realm)
+
+                val chatRequestedById =
+                    if (chatRequestState.value == ChatRequestState.INITIATED.value) {
+                        userRO?.id
+                    } else {
+                        null
+                    }
+
+                // updates chat request state in local DB
+                chatroomDB.updateChatRequestState(
+                    sendDMRequest.chatroomId,
+                    chatRequestState.value,
+                    chatRequestedById
+                )
+
+                // save the conversation in DB
+                val conversation = body.data?.conversation
+                conversation?.let { finalConversation ->
+                    conversationDB.saveNewConversation(realm, finalConversation)
+                }
+
+                realm.close()
+
                 ModelConverter.convertSendDMRequestResponse(body)
             }
         }
@@ -85,6 +130,10 @@ class DMClient @Inject constructor() : BaseClient() {
     private fun validateSendDMRequest(sendDMRequest: SendDMRequest) {
         if (sendDMRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
+        }
+
+        if (sendDMRequest.chatRequestState.value == ChatRequestState.NOTHING.value) {
+            RequestUtils.throwException("chatRequestState")
         }
     }
 
@@ -101,7 +150,7 @@ class DMClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request = _CheckDMStatusRequest_.Builder()
-            .requestFrom(checkDMStatusRequest.requestFrom)
+            .requestFrom(checkDMStatusRequest.requestFrom.value)
             .chatroomId(checkDMStatusRequest.chatroomId)
             .uuid(checkDMStatusRequest.uuid)
             .build()
@@ -130,10 +179,6 @@ class DMClient @Inject constructor() : BaseClient() {
         if (checkDMStatusRequest.uuid.isEmpty()) {
             RequestUtils.throwException("uuid")
         }
-
-        if (checkDMStatusRequest.requestFrom.isEmpty()) {
-            RequestUtils.throwException("requestFrom")
-        }
     }
 
     /**
@@ -150,7 +195,7 @@ class DMClient @Inject constructor() : BaseClient() {
         // builds internal request model
         val request = _BlockMemberRequest_.Builder()
             .chatroomId(blockMemberRequest.chatroomId)
-            .status(blockMemberRequest.status)
+            .status(blockMemberRequest.status.value)
             .build()
 
         return when (val response = dmApi.blockMember(request)) {
@@ -163,6 +208,15 @@ class DMClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+
+                // save the conversation in DB
+                val realm = Realm.getDefaultInstance()
+
+                val conversation = body.data?.conversation
+                conversation?.let { finalConversation ->
+                    conversationDB.saveNewConversation(realm, finalConversation)
+                }
+                realm.close()
                 ModelConverter.convertBlockMemberResponse(body)
             }
         }
@@ -244,6 +298,12 @@ class DMClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+
+                // saves the chatroom local object to db
+                body.data?.chatroom?.let { _chatroom_ ->
+                    chatroomDB.saveChatroom(_chatroom_)
+                }
+
                 ModelConverter.convertCreateDMChatroomResponse(body)
             }
         }
@@ -256,6 +316,26 @@ class DMClient @Inject constructor() : BaseClient() {
     private fun validateCreateDMChatroomRequest(createDMChatroomRequest: CreateDMChatroomRequest) {
         if (createDMChatroomRequest.uuid.isEmpty()) {
             RequestUtils.throwException("uuid")
+        }
+    }
+
+    /**
+     * runs the query for observing dm chatrooms and returns the data in listener
+     * @param listener: [HomeChatroomListener] to get object of the dm chatrooms as per requirements
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
+    fun observeDMChatrooms(
+        listener: HomeChatroomListener
+    ): Observable<Unit>? {
+        //create realm object
+        val realm = Realm.getDefaultInstance()
+        return chatroomDB.observeDMChatrooms(realm)?.map {
+            listener.onChange(it.collection, it.changeset!!)
+        }?.doOnDispose {
+            listener.clear()
+        }?.doOnTerminate {
+            listener.clear()
         }
     }
 }
