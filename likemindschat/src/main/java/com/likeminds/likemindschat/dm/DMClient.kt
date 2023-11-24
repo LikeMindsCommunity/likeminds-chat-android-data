@@ -5,6 +5,7 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.chatroom.model.ChatRequestState
+import com.likeminds.likemindschat.conversation.model.ObserveConversationsRequest
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -318,6 +319,12 @@ class DMClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * runs the query for observing dm chatrooms and returns the data in listener
+     * @param listener: [HomeChatroomListener] to get object of the dm chatrooms as per requirements
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
     fun observeDMChatrooms(
         listener: HomeChatroomListener
     ): Observable<Unit>? {
