@@ -11,7 +11,7 @@ class _GetAllMemberRequest_ private constructor(
 
     class Builder {
 
-        private var page: Int = -1
+        private var page: Int = 1
         private var filterMemberRoles: List<String> = emptyList()
 
         fun page(page: Int) = apply { this.page = page }

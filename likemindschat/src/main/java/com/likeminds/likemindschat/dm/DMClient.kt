@@ -4,6 +4,7 @@ import com.likeminds.internalsdk.dm.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
+import com.likeminds.likemindschat.chatroom.model.ChatRequestState
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -73,7 +74,7 @@ class DMClient @Inject constructor() : BaseClient() {
         // builds internal request model
         val request = _SendDMRequest_.Builder()
             .chatroomId(sendDMRequest.chatroomId)
-            .chatRequestState(sendDMRequest.chatRequestState)
+            .chatRequestState(sendDMRequest.chatRequestState.value ?: 0)
             .text(sendDMRequest.text)
             .build()
 
@@ -94,16 +95,17 @@ class DMClient @Inject constructor() : BaseClient() {
                 val realm = Realm.getDefaultInstance()
                 val userRO = userDB.getUser(realm)
 
-                val chatRequestedById = if (chatRequestState == 0) {
-                    userRO?.id
-                } else {
-                    null
-                }
+                val chatRequestedById =
+                    if (chatRequestState.value == ChatRequestState.INITIATED.value) {
+                        userRO?.id
+                    } else {
+                        null
+                    }
 
                 // updates chat request state in local DB
                 chatroomDB.updateChatRequestState(
                     sendDMRequest.chatroomId,
-                    chatRequestState,
+                    chatRequestState.value,
                     chatRequestedById
                 )
 
@@ -128,6 +130,10 @@ class DMClient @Inject constructor() : BaseClient() {
         if (sendDMRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
+
+        if (sendDMRequest.chatRequestState.value == ChatRequestState.NOTHING.value) {
+            RequestUtils.throwException("chatRequestState")
+        }
     }
 
     /**
@@ -143,7 +149,7 @@ class DMClient @Inject constructor() : BaseClient() {
 
         // builds internal request model
         val request = _CheckDMStatusRequest_.Builder()
-            .requestFrom(checkDMStatusRequest.requestFrom)
+            .requestFrom(checkDMStatusRequest.requestFrom.value)
             .chatroomId(checkDMStatusRequest.chatroomId)
             .uuid(checkDMStatusRequest.uuid)
             .build()
@@ -172,10 +178,6 @@ class DMClient @Inject constructor() : BaseClient() {
         if (checkDMStatusRequest.uuid.isEmpty()) {
             RequestUtils.throwException("uuid")
         }
-
-        if (checkDMStatusRequest.requestFrom.isEmpty()) {
-            RequestUtils.throwException("requestFrom")
-        }
     }
 
     /**
@@ -192,7 +194,7 @@ class DMClient @Inject constructor() : BaseClient() {
         // builds internal request model
         val request = _BlockMemberRequest_.Builder()
             .chatroomId(blockMemberRequest.chatroomId)
-            .status(blockMemberRequest.status)
+            .status(blockMemberRequest.status.value)
             .build()
 
         return when (val response = dmApi.blockMember(request)) {
@@ -297,7 +299,7 @@ class DMClient @Inject constructor() : BaseClient() {
                 val body = response.body
 
                 // saves the chatroom local object to db
-                body.data?.chatroomLocal?.let { _chatroom_ ->
+                body.data?.chatroom?.let { _chatroom_ ->
                     chatroomDB.saveChatroom(_chatroom_)
                 }
 

@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 class SearchMembersRequest private constructor(
     val search: String,
-    val searchType: String,
+    val searchType: MemberSearchType,
     val page: Int,
     val pageSize: Int,
     val memberStates: List<Int>?
@@ -15,13 +15,13 @@ class SearchMembersRequest private constructor(
     class Builder {
 
         private var search: String = ""
-        private var searchType: String = ""
+        private var searchType: MemberSearchType = MemberSearchType.EMPTY
         private var page: Int = 1
         private var pageSize: Int = 10
         private var memberStates: List<Int>? = null
 
         fun search(search: String) = apply { this.search = search }
-        fun searchType(searchType: String) = apply { this.searchType = searchType }
+        fun searchType(searchType: MemberSearchType) = apply { this.searchType = searchType }
         fun page(page: Int) = apply { this.page = page }
         fun pageSize(pageSize: Int) = apply { this.pageSize = pageSize }
         fun memberStates(memberStates: List<Int>?) = apply { this.memberStates = memberStates }

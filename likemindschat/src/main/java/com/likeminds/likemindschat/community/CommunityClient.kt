@@ -56,6 +56,7 @@ class CommunityClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
                 val body = response.body
                 ModelConverter.convertGetExploreFeedAPIResponse(body)
@@ -90,6 +91,7 @@ class CommunityClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
                 val body = response.body
 
@@ -137,10 +139,14 @@ class CommunityClient @Inject constructor() : BaseClient() {
         // validates the client request
         RequestUtils.validate()
 
+        val filterMemberRoles = getAllMemberRequest.filterMemberRoles.map { role ->
+            role.value
+        }
+
         // builds internal request model
         val request = _GetAllMemberRequest_.Builder()
             .page(getAllMemberRequest.page)
-            .filterMemberRoles(getAllMemberRequest.filterMemberRoles)
+            .filterMemberRoles(filterMemberRoles)
             .build()
 
         return when (val response = communityApi.getAllMember(request)) {
@@ -166,11 +172,12 @@ class CommunityClient @Inject constructor() : BaseClient() {
     suspend fun searchMember(searchMembersRequest: SearchMembersRequest): LMResponse<SearchMembersResponse> {
         // validates the client request
         RequestUtils.validate()
+        validateSearchMemberRequest(searchMembersRequest)
 
         // builds internal request model
         val request = _SearchMembersRequest_.Builder()
             .search(searchMembersRequest.search)
-            .searchType(searchMembersRequest.searchType)
+            .searchType(searchMembersRequest.searchType.value)
             .page(searchMembersRequest.page)
             .pageSize(searchMembersRequest.pageSize)
             .build()
@@ -187,6 +194,20 @@ class CommunityClient @Inject constructor() : BaseClient() {
                 val body = response.body
                 ModelConverter.convertSearchMembersResponse(body)
             }
+        }
+    }
+
+    /**
+     * validates [searchMembersRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateSearchMemberRequest(searchMembersRequest: SearchMembersRequest) {
+        if (searchMembersRequest.search.isEmpty()) {
+            RequestUtils.throwException("search")
+        }
+
+        if (searchMembersRequest.searchType == MemberSearchType.EMPTY) {
+            RequestUtils.throwException("searchType")
         }
     }
 }

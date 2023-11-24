@@ -1293,7 +1293,7 @@ object ModelConverter {
         if (_createDMChatroomResponse_ == null) {
             return null
         }
-        return CreateDMChatroomResponse(convertChatroom(_createDMChatroomResponse_.chatroomLocal))
+        return CreateDMChatroomResponse(convertChatroom(_createDMChatroomResponse_.chatroom))
     }
 
     //converts API GetAllMemberResponse model to LM model
