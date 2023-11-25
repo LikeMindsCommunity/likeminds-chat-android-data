@@ -85,7 +85,7 @@ object SyncSDK {
             .setInputData(workDataOf(FirstTimeChatroomSyncWorker.IS_BACKGROUND_WORKER to isBackgroundWorker))
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .setConstraints(networkConstraint)
@@ -98,7 +98,7 @@ object SyncSDK {
         return OneTimeWorkRequestBuilder<ReopenChatroomSyncWorker>()
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .setConstraints(networkConstraint)
@@ -127,7 +127,7 @@ object SyncSDK {
             .setConstraints(networkConstraint)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .addTag(DatabaseSyncWorker.NAME)
@@ -239,7 +239,7 @@ object SyncSDK {
             .setConstraints(networkConstraint)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .addTag(FirstTimeConversationSyncWorker.NAME)
@@ -261,7 +261,7 @@ object SyncSDK {
             .setConstraints(networkConstraint)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .addTag(ReopenConversationSyncWorker.NAME)

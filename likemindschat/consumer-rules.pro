@@ -11,3 +11,4 @@
 -keep class com.likeminds.likemindschat.search.model.** { *; }
 -keep class com.likeminds.likemindschat.user.model.** { *; }
 -keep class com.likeminds.likemindschat.LMResponse
+-dontwarn com.google.firebase.messaging.**

@@ -46,15 +46,15 @@ class DatabaseSyncWorker(
     override fun doWork(): Result {
         measureExecution("$NAME, First time - $isFirstTime, Sync type - $syncType, Community Id - $communityId, Chatroom Id - $chatroomId") {
             val realm = Realm.getDefaultInstance()
-            ChatDBUtil.write(realm) { realm ->
+            ChatDBUtil.write(realm) { realmInstance ->
                 //Add relationship for the conversation reply objects
-                realm.where(ConversationRO::class.java)
+                realmInstance.where(ConversationRO::class.java)
                     .isNotNull(DbKey.REPLY_CONVERSATION_ID)
                     .isNull(DbKey.REPLY_CONVERSATION)
                     .findAll()
                     .forEach { conversation ->
                         conversation.replyConversation = ChatDBUtil.getConversation(
-                            realm,
+                            realmInstance,
                             conversation.replyConversationId
                         )
                     }
@@ -62,24 +62,24 @@ class DatabaseSyncWorker(
                 when {
                     syncType == SYNC_FIRST_TIME_HOME_FEED || syncType == SYNC_REOPEN_HOME_FEED -> {
                         //Add inverse relationships to communities
-                        val communities = realm.where(CommunityRO::class.java)
+                        val communities = realmInstance.where(CommunityRO::class.java)
                             .equalTo(DbKey.RELATIONSHIP_NEEDED, true)
                             .findAll()
                         communities.forEach { communityRO ->
                             //Add inverse relationships for chatrooms
                             communityRO.chatrooms = ChatDBUtil.getChatrooms(
-                                realm,
+                                realmInstance,
                                 communityRO.id
                             ).toRealmList()
 
                             //Add inverse relationships for conversations
                             communityRO.conversations = ChatDBUtil.getCommunityConversations(
-                                realm,
+                                realmInstance,
                                 communityRO.id
                             ).toRealmList()
                         }
 
-                        val chatrooms = realm.where(ChatroomRO::class.java)
+                        val chatrooms = realmInstance.where(ChatroomRO::class.java)
                             .equalTo(DbKey.RELATIONSHIP_NEEDED, true)
                             .beginGroup()
                             .notEqualTo(DbKey.IS_DRAFT, true)
@@ -89,7 +89,7 @@ class DatabaseSyncWorker(
                             .findAll()
                         chatrooms.forEach { chatroomRO ->
                             val conversations = ChatDBUtil.getChatroomConversations(
-                                realm,
+                                realmInstance,
                                 chatroomRO.id
                             )
                             ChatDBUtil.updateRelationshipsOfChatroom(
@@ -100,7 +100,7 @@ class DatabaseSyncWorker(
                         }
 
                         if (isFirstTime) {
-                            val appConfigRO = ChatDBUtil.getAppConfig(realm)
+                            val appConfigRO = ChatDBUtil.getAppConfig(realmInstance)
                             appConfigRO?.isChatroomsSynced = true
                             appConfigRO?.isCommunitiesSynced = true
                             appConfigRO?.isConversationsSynced = true
@@ -110,29 +110,29 @@ class DatabaseSyncWorker(
 
                     syncType == SYNC_CHATROOM && chatroomId.isNotEmpty() -> {
 
-                        val chatroomRO = ChatDBUtil.getChatroom(realm, chatroomId)
+                        val chatroomRO = ChatDBUtil.getChatroom(realmInstance, chatroomId)
                         if (chatroomRO != null) {
                             val communityRO = ChatDBUtil.getCommunity(
-                                realm,
+                                realmInstance,
                                 chatroomRO.communityId
                             )
                             if (communityRO != null) {
                                 //Add inverse relationships for the chatroom if it is not already added
                                 if (chatroomRO.getCommunity() == null) {
                                     communityRO.chatrooms = ChatDBUtil.getChatrooms(
-                                        realm,
+                                        realmInstance,
                                         chatroomRO.communityId
                                     ).toRealmList()
                                 }
                                 //Add inverse relationships for conversations of this community
                                 communityRO.conversations = ChatDBUtil.getCommunityConversations(
-                                    realm,
+                                    realmInstance,
                                     chatroomRO.communityId
                                 ).toRealmList()
                             }
 
                             val conversations = ChatDBUtil.getChatroomConversations(
-                                realm,
+                                realmInstance,
                                 chatroomId
                             )
                             ChatDBUtil.updateRelationshipsOfChatroom(
