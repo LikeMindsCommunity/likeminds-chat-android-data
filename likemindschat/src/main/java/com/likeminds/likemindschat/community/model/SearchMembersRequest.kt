@@ -1,16 +1,12 @@
 package com.likeminds.likemindschat.community.model
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
 class SearchMembersRequest private constructor(
     val search: String,
     val searchType: MemberSearchType,
     val page: Int,
     val pageSize: Int,
     val memberStates: List<Int>?
-) : Parcelable {
+) {
 
     class Builder {
 

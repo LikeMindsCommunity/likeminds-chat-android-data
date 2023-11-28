@@ -4,7 +4,6 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
 class _SearchMembersRequest_ private constructor(
     @SerializedName("search")
     val search: String,
@@ -16,7 +15,7 @@ class _SearchMembersRequest_ private constructor(
     val pageSize: Int,
     @SerializedName("member_states")
     val memberStates: List<Int>?
-) : Parcelable {
+) {
 
     class Builder {
         private var search: String = ""
