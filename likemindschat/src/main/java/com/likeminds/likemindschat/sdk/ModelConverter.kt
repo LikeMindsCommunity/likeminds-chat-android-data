@@ -1743,6 +1743,8 @@ object ModelConverter {
             .chatRequestedBy(convertMemberRO(chatroomRO.chatRequestedBy))
             .chatRequestCreatedAt(chatroomRO.chatRequestCreatedAt)
             .chatRequestState(convertChatRequestState(chatroomRO.chatRequestState))
+            .chatroomWithUserId(chatroomRO.chatroomWithUserId)
+            .chatroomWithUser(convertMemberRO(chatroomRO.chatroomWithUser))
             .isPrivateMember(chatroomRO.isPrivateMember)
             .build()
     }

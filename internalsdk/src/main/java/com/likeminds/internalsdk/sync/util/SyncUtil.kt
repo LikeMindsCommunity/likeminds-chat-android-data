@@ -1,5 +1,6 @@
 package com.likeminds.internalsdk.sync.util
 
+import android.util.Log
 import com.likeminds.internalsdk.conversation.model._ConversationState_
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
@@ -14,7 +15,7 @@ object SyncUtil {
     //Query Value
     const val CHATROOM_PAGE_SIZE = 50
     const val CONVERSATION_PAGE_SIZE = 500
-    val CHATROOM_TYPE_LIST = listOf(0, 7)
+    val CHATROOM_TYPE_LIST = listOf(0, 7, 10)
 
     //Query Key
     const val PAGE_KEY = "page"
@@ -259,8 +260,11 @@ object SyncUtil {
                 // gets the member object for chatroomWithUser
                 val chatroomWithUserId = chatroom.chatroomWithUserId
                 val chatroomWithUser = data.userMeta[chatroomWithUserId.toString()]
+                Log.d("PUI", "saveChatroomResponse-1: ${chatroomWithUser?.sdkClientInfo?.uuid}")
                 val chatroomWithUserRO = ROConverter.convertMember(chatroomWithUser, communityId)
+                Log.d("PUI", "saveChatroomResponse-2: ${chatroomWithUserRO?.sdkClientInfoRO?.uuid}")
 
+                Log.d("PUI", "saveChatroomResponse-3: $chatroomWithUserRO")
                 //convert chatroom
                 val chatroomRO = ROConverter.convertChatroom(
                     realm,

@@ -105,7 +105,6 @@ class DatabaseSyncWorker(
                             appConfigRO?.isCommunitiesSynced = true
                             appConfigRO?.isConversationsSynced = true
                         }
-
                     }
 
                     syncType == SYNC_CHATROOM && chatroomId.isNotEmpty() -> {

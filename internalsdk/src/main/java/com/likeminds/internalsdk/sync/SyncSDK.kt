@@ -33,7 +33,9 @@ object SyncSDK {
      *
      * Return: Pair -> first: live data of blockerWork, second: live data of app config worker
      */
-    fun startFirstHomeFeedSync(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+    fun startFirstHomeFeedSync(
+        context: Context
+    ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
         if (ongoingSyncTypes.contains(SYNC_FIRST_TIME_HOME_FEED)) {
             return null
         }

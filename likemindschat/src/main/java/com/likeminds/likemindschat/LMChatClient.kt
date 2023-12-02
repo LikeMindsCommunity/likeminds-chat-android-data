@@ -130,7 +130,9 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to start chatroom sync
-    fun syncChatrooms(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+    fun syncChatrooms(
+        context: Context
+    ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
         return homeFeedClient.syncChatrooms(context)
     }
 

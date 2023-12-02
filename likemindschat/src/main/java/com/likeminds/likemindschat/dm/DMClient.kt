@@ -176,8 +176,8 @@ class DMClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateCheckDMStatusRequest(checkDMStatusRequest: CheckDMStatusRequest) {
-        if (checkDMStatusRequest.uuid.isEmpty()) {
-            RequestUtils.throwException("uuid")
+        if (checkDMStatusRequest.requestFrom.value.isEmpty()) {
+            RequestUtils.throwException("requestFrom")
         }
     }
 
