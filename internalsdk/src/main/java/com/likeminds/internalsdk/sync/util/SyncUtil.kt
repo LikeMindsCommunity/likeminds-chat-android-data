@@ -1,6 +1,5 @@
 package com.likeminds.internalsdk.sync.util
 
-import android.util.Log
 import com.likeminds.internalsdk.conversation.model._ConversationState_
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.db.ROConverter
@@ -256,15 +255,17 @@ object SyncUtil {
                 val chatRequestedById = chatroom.chatRequestedById
                 val chatRequestedBy = data.userMeta[chatRequestedById.toString()]
                 val chatRequestedByRO = ROConverter.convertMember(chatRequestedBy, communityId)
+                if (chatRequestedByRO != null) {
+                    realmWrite.insertOrUpdate(chatRequestedByRO)
+                }
 
                 // gets the member object for chatroomWithUser
                 val chatroomWithUserId = chatroom.chatroomWithUserId
                 val chatroomWithUser = data.userMeta[chatroomWithUserId.toString()]
-                Log.d("PUI", "saveChatroomResponse-1: ${chatroomWithUser?.sdkClientInfo?.uuid}")
                 val chatroomWithUserRO = ROConverter.convertMember(chatroomWithUser, communityId)
-                Log.d("PUI", "saveChatroomResponse-2: ${chatroomWithUserRO?.sdkClientInfoRO?.uuid}")
-
-                Log.d("PUI", "saveChatroomResponse-3: $chatroomWithUserRO")
+                if (chatroomWithUserRO != null) {
+                    realmWrite.insertOrUpdate(chatroomWithUserRO)
+                }
                 //convert chatroom
                 val chatroomRO = ROConverter.convertChatroom(
                     realm,
@@ -322,11 +323,29 @@ object SyncUtil {
                     emptyList()
                 }
 
+                // gets the member object for chatRequestedBy
+                val chatRequestedById = chatroom.chatRequestedById
+                val chatRequestedBy = data.userMeta[chatRequestedById.toString()]
+                val chatRequestedByRO = ROConverter.convertMember(chatRequestedBy, communityId)
+                if (chatRequestedByRO != null) {
+                    realmWrite.insertOrUpdate(chatRequestedByRO)
+                }
+
+                // gets the member object for chatroomWithUser
+                val chatroomWithUserId = chatroom.chatroomWithUserId
+                val chatroomWithUser = data.userMeta[chatroomWithUserId.toString()]
+                val chatroomWithUserRO = ROConverter.convertMember(chatroomWithUser, communityId)
+                if (chatroomWithUserRO != null) {
+                    realmWrite.insertOrUpdate(chatroomWithUserRO)
+                }
+
                 val chatroomRO = ROConverter.convertChatroom(
                     realmWrite,
                     chatroom,
                     chatroomCreatorRO,
-                    reactions = chatroomReactions
+                    reactions = chatroomReactions,
+                    chatRequestByRO = chatRequestedByRO,
+                    chatroomWithUserRO = chatroomWithUserRO
                 ) ?: return@write
                 chatroomRO.relationshipNeeded = true
                 realmWrite.insertOrUpdate(chatroomRO)

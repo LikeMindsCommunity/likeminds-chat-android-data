@@ -100,16 +100,13 @@ class ChatroomReceiver @Inject constructor(
     fun saveChatroom(_chatroom_: _Chatroom_) {
         ChatDBUtil.writeAsync({ realm ->
             val communityId = _chatroom_.communityId ?: ""
-            Log.d("PUI", "saveChatroom: 1")
             val chatroomCreator =
                 ROConverter.convertMember(_chatroom_.member, communityId) ?: return@writeAsync
-            Log.d("PUI", "saveChatroom: 2")
             ROConverter.convertChatroom(
                 realm,
                 _chatroom_,
                 chatroomCreator,
             )?.let { chatroomRO ->
-                Log.d("PUI", "saveChatroom: ${chatroomRO.chatroomWithUser?.sdkClientInfoRO?.uuid}")
                 realm.insertOrUpdate(chatroomRO)
             }
         })

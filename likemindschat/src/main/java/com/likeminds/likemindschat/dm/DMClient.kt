@@ -5,7 +5,6 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.chatroom.model.ChatRequestState
-import com.likeminds.likemindschat.conversation.model.ObserveConversationsRequest
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -298,11 +297,6 @@ class DMClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
-
-                // saves the chatroom local object to db
-                body.data?.chatroom?.let { _chatroom_ ->
-                    chatroomDB.saveChatroom(_chatroom_)
-                }
 
                 ModelConverter.convertCreateDMChatroomResponse(body)
             }
