@@ -5,7 +5,7 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
-import com.likeminds.likemindschat.chatroom.ChatroomFirebaseEntity
+import com.likeminds.likemindschat.chatroom.model.ChatroomFirebaseEntity
 import com.likeminds.likemindschat.conversation.model.LiveConversationResponse
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
