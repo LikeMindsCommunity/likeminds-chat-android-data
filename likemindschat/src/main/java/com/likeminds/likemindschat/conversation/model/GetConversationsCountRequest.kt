@@ -1,7 +1,5 @@
 package com.likeminds.likemindschat.conversation.model
 
-import com.likeminds.likemindschat.conversation.util.GetConversationCountType
-
 class GetConversationsCountRequest private constructor(
     val chatroomId: String,
     val type: GetConversationCountType,

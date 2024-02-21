@@ -1,4 +1,4 @@
-package com.likeminds.likemindschat.chatroom
+package com.likeminds.likemindschat.chatroom.model
 
 import com.google.firebase.database.PropertyName
 
