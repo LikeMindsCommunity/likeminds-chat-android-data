@@ -1,7 +1,5 @@
 package com.likeminds.likemindschat.conversation.model
 
-import com.likeminds.likemindschat.conversation.util.GetConversationType
-
 class GetConversationsRequest private constructor(
     val chatroomId: String,
     val type: GetConversationType,

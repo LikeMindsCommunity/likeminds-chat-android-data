@@ -1,6 +1,6 @@
 package com.likeminds.likemindschat.conversation.model
 
-import com.likeminds.likemindschat.chatroom.ChatroomFirebaseEntity
+import com.likeminds.likemindschat.chatroom.model.ChatroomFirebaseEntity
 
 sealed class LiveConversationResponse {
     data class ChildAdded(val response: ChatroomFirebaseEntity?) : LiveConversationResponse()

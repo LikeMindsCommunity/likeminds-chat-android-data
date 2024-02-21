@@ -14,7 +14,6 @@
 -keep class com.likeminds.internalsdk.sync.model.** { *; }
 -keep class com.likeminds.internalsdk.user.model.** { *; }
 -keep class com.likeminds.internalsdk.utils.retrofit.model.** { *; }
--keep class com.likeminds.internalsdk.utils.retrofit.model.** { *; }
 
 # Retrofit
 -keep class retrofit2.Response { *; }

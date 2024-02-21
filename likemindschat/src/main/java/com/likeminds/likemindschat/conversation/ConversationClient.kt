@@ -14,7 +14,6 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.conversation.model.*
-import com.likeminds.likemindschat.conversation.util.*
 import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
