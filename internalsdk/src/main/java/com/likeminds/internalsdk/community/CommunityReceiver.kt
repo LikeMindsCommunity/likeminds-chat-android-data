@@ -25,6 +25,7 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
         private const val SEARCH = "search"
         private const val SEARCH_TYPE = "search_type"
         private const val PAGE_SIZE = "page_size"
+        private const val QUERY_EXCLUDE_SELF_USER = "exclude_self_user"
     }
 
     /**
@@ -56,6 +57,10 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
         queries[FILTER_MEMBER_ROLES] = request.filterMemberRoles
         queries[QUESTION_ANSWERS_VERSION] = "v2"
 
+        if (request.excludeSelfUser != null) {
+            queries[QUERY_EXCLUDE_SELF_USER] = request.excludeSelfUser
+        }
+
         return communityNetworkApi.getAllMembers(queries)
     }
 
@@ -66,9 +71,15 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
         queries[PAGE] = request.page
         queries[PAGE_SIZE] = request.pageSize
         queries[QUESTION_ANSWERS_VERSION] = "v2"
+
         if (request.memberStates != null) {
             queries[MEMBER_STATES] = request.memberStates
         }
+
+        if (request.excludeSelfUser != null) {
+            queries[QUERY_EXCLUDE_SELF_USER] = request.excludeSelfUser
+        }
+
         return communityNetworkApi.searchMembers(queries)
     }
 

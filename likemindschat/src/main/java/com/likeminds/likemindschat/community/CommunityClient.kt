@@ -147,6 +147,7 @@ class CommunityClient @Inject constructor() : BaseClient() {
         val request = _GetAllMemberRequest_.Builder()
             .page(getAllMemberRequest.page)
             .filterMemberRoles(filterMemberRoles)
+            .excludeSelfUser(getAllMemberRequest.excludeSelfUser)
             .build()
 
         return when (val response = communityApi.getAllMember(request)) {
@@ -180,6 +181,7 @@ class CommunityClient @Inject constructor() : BaseClient() {
             .searchType(searchMembersRequest.searchType.value)
             .page(searchMembersRequest.page)
             .pageSize(searchMembersRequest.pageSize)
+            .excludeSelfUser(searchMembersRequest.excludeSelfUser)
             .build()
 
         return when (val response = communityApi.searchMembers(request)) {
