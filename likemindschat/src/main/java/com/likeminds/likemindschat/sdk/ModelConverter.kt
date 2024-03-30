@@ -1,5 +1,6 @@
 package com.likeminds.likemindschat.sdk
 
+import com.google.gson.JsonParser
 import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.conversation.model.*
@@ -1439,6 +1440,8 @@ object ModelConverter {
             .hasFiles(conversation.hasFiles)
             .hasReactions(conversation.hasReactions)
             .lastUpdated(conversation.lastUpdated)
+            .widgetId(conversation.widgetId)
+            .widget(createWidget(conversation.widget))
             .build()
     }
 
@@ -1629,6 +1632,19 @@ object ModelConverter {
         )
     }
 
+    fun createWidget(widget: Widget?): _Widget_? {
+        if (widget == null) return null
+        val metadataString = widget.metadata.toString()
+        return _Widget_.Builder()
+            .id(widget.id)
+            .parentEntityId(widget.parentEntityId)
+            .parentEntityType(widget.parentEntityType)
+            .metadata(JsonParser.parseString(metadataString).asJsonObject)
+            .createdAt(widget.createdAt)
+            .updatedAt(widget.updatedAt)
+            .build()
+    }
+
 
     /**--------------------------------
      * Db Model -> Client Response Model
@@ -1789,6 +1805,8 @@ object ModelConverter {
             .communityId(lastConversationRO.communityId)
             .ogTags(convertLinkRO(lastConversationRO.link))
             .deletedByMember(convertMemberRO(lastConversationRO.deletedByMember))
+            .widget(convertWidgetRO(lastConversationRO.widget))
+            .widgetId(lastConversationRO.widgetId)
             .build()
     }
 
@@ -1838,6 +1856,8 @@ object ModelConverter {
             .replyChatroomId(conversationRO.replyChatRoomId)
             .lastUpdated(conversationRO.lastUpdatedAt)
             .deletedByMember(convertMemberRO(conversationRO.deletedByMember))
+            .widgetId(conversationRO.widgetId)
+            .widget(convertWidgetRO(conversationRO.widgetRO))
             .build()
     }
 
@@ -1945,6 +1965,18 @@ object ModelConverter {
             .subText(pollRO.subText)
             .noVotes(pollRO.noVotes)
             .member(convertMemberRO(pollRO.member))
+            .build()
+    }
+
+    fun convertWidgetRO(widgetRO: WidgetRO?): Widget? {
+        if (widgetRO == null) return null
+        return Widget.Builder()
+            .id(widgetRO.id)
+            .parentEntityType(widgetRO.parentEntityType)
+            .parentEntityId(widgetRO.parentEntityId)
+            .metadata(JSONObject(widgetRO.metadata.toString()))
+            .createdAt(widgetRO.createdAt)
+            .updatedAt(widgetRO.updatedAt)
             .build()
     }
 }

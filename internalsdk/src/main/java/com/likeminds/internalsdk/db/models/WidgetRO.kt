@@ -22,6 +22,13 @@ open class WidgetRO(
         builder.updatedAt
     )
 
+    companion object {
+        inline fun build(
+            id: String,
+            block: Builder.() -> Unit
+        ) = Builder(id).apply(block).build()
+    }
+
     class Builder(var id: String) {
         var parentEntityId: String = ""
         var parentEntityType: String = ""
