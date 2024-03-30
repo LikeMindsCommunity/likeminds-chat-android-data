@@ -42,6 +42,8 @@ open class ConversationRO(
     var replyChatRoomId: String? = null,
     var lastUpdatedAt: Long = 0L,
     var deletedByMember: MemberRO? = null,
+    var widgetId: String? = null,
+    var widgetRO: WidgetRO? = null,
 
     @LinkingObjects("conversations")
     val community: RealmResults<CommunityRO>? = null,
@@ -100,7 +102,9 @@ open class ConversationRO(
         builder.toShowResults,
         builder.replyChatRoomId,
         builder.lastUpdatedAt,
-        builder.deletedByMember
+        builder.deletedByMember,
+        builder.widgetId,
+        builder.widgetRO
     )
 
     companion object {
@@ -153,6 +157,8 @@ open class ConversationRO(
         var replyChatRoomId: String? = null
         var lastUpdatedAt: Long = 0L
         var deletedByMember: MemberRO? = null
+        var widgetId: String? = null
+        var widgetRO: WidgetRO? = null
 
         fun build() = ConversationRO(this)
     }
@@ -190,6 +196,8 @@ open class ConversationRO(
             toShowResults = this@ConversationRO.toShowResults
             replyChatRoomId = this@ConversationRO.replyChatRoomId
             lastUpdatedAt = this@ConversationRO.lastUpdatedAt
+            widgetId = this@ConversationRO.widgetId
+            widgetRO = this@ConversationRO.widgetRO
         }
     }
 }
