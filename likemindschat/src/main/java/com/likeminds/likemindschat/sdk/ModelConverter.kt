@@ -16,6 +16,7 @@ import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.search.model.*
 import com.likeminds.internalsdk.user.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
+import com.likeminds.internalsdk.widget.model._Widget_
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.*
@@ -31,6 +32,8 @@ import com.likeminds.likemindschat.notification.model.GetConversationNotificatio
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
+import com.likeminds.likemindschat.widget.model.Widget
+import org.json.JSONObject
 
 object ModelConverter {
 
@@ -862,6 +865,7 @@ object ModelConverter {
             .hasFiles(_conversation_.hasFiles)
             .hasReactions(_conversation_.hasReactions)
             .lastUpdated(_conversation_.lastUpdated)
+            .widgetId(_conversation_.widgetId)
             .build()
     }
 
@@ -1046,7 +1050,8 @@ object ModelConverter {
         if (_postConversationResponse_ == null) return null
         return PostConversationResponse(
             convertConversation(_postConversationResponse_.conversation),
-            _postConversationResponse_.id
+            _postConversationResponse_.id,
+            convertWidgetMap(_postConversationResponse_.widgets)
         )
     }
 
@@ -1370,6 +1375,23 @@ object ModelConverter {
         return SearchMembersResponse(
             convertMembers(_searchMembersResponse_.members)
         )
+    }
+
+    fun convertWidgetMap(_widgetsMap_: Map<String, _Widget_>): Map<String, Widget> {
+        return _widgetsMap_.mapValues {
+            convertWidget(it.value)
+        }
+    }
+
+    fun convertWidget(_widget_: _Widget_): Widget {
+        return Widget.Builder()
+            .id(_widget_.id)
+            .parentEntityId(_widget_.parentEntityId)
+            .parentEntityType(_widget_.parentEntityType)
+            .metadata(JSONObject(_widget_.metadata.toString()))
+            .createdAt(_widget_.createdAt)
+            .updatedAt(_widget_.updatedAt)
+            .build()
     }
 
     /**--------------------------------

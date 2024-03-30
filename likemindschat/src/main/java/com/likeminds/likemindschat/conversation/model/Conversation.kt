@@ -2,6 +2,7 @@ package com.likeminds.likemindschat.conversation.model
 
 import com.likeminds.likemindschat.community.model.Member
 import com.likeminds.likemindschat.poll.model.Poll
+import com.likeminds.likemindschat.widget.model.Widget
 
 class Conversation private constructor(
     val id: String?,
@@ -43,7 +44,9 @@ class Conversation private constructor(
     val hasFiles: Boolean?,
     val hasReactions: Boolean?,
     val lastUpdated: Long?,
-    val deletedByMember: Member?
+    val deletedByMember: Member?,
+    val widgetId: String?,
+    val widget: Widget?
 ) {
 
     class Builder {
@@ -88,6 +91,8 @@ class Conversation private constructor(
         private var hasReactions: Boolean? = false
         private var lastUpdated: Long? = null
         private var deletedByMember: Member? = null
+        private var widgetId: String? = null
+        private var widget: Widget? = null
 
         fun id(id: String?) = apply { this.id = id }
         fun chatroomId(chatroomId: String?) = apply { this.chatroomId = chatroomId }
@@ -151,6 +156,9 @@ class Conversation private constructor(
         fun deletedByMember(deletedByMember: Member?) =
             apply { this.deletedByMember = deletedByMember }
 
+        fun widgetId(widgetId: String?) = apply { this.widgetId = widgetId }
+        fun widget(widget: Widget?) = apply { this.widget = widget }
+
         fun build() = Conversation(
             id,
             chatroomId,
@@ -191,7 +199,9 @@ class Conversation private constructor(
             hasFiles,
             hasReactions,
             lastUpdated,
-            deletedByMember
+            deletedByMember,
+            widgetId,
+            widget
         )
     }
 
@@ -236,5 +246,7 @@ class Conversation private constructor(
             .hasReactions(hasReactions)
             .lastUpdated(lastUpdated)
             .deletedByMember(deletedByMember)
+            .widget(widget)
+            .widgetId(widgetId)
     }
 }

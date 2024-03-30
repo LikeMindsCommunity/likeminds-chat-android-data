@@ -82,7 +82,9 @@ class _Conversation_ private constructor(
     @SerializedName("last_updated")
     val lastUpdated: Long?,
     @SerializedName("deleted_by_member")
-    val deletedByMember: _Member_?
+    val deletedByMember: _Member_?,
+    @SerializedName("widget_id")
+    val widgetId: String?
 ) {
 
     class Builder {
@@ -126,6 +128,7 @@ class _Conversation_ private constructor(
         private var hasReactions: Boolean? = false
         private var lastUpdated: Long? = null
         private var deletedByMember: _Member_? = null
+        private var widgetId: String? = null
 
         fun id(id: String?) = apply { this.id = id }
         fun chatroomId(chatroomId: String?) = apply { this.chatroomId = chatroomId }
@@ -186,6 +189,8 @@ class _Conversation_ private constructor(
         fun deletedByMember(deletedByMember: _Member_?) =
             apply { this.deletedByMember = deletedByMember }
 
+        fun widgetId(widgetId: String?) = apply { this.widgetId = widgetId }
+
         fun build() = _Conversation_(
             id,
             chatroomId,
@@ -225,7 +230,8 @@ class _Conversation_ private constructor(
             hasFiles,
             hasReactions,
             lastUpdated,
-            deletedByMember
+            deletedByMember,
+            widgetId
         )
     }
 
@@ -269,5 +275,6 @@ class _Conversation_ private constructor(
             .hasReactions(hasReactions)
             .lastUpdated(lastUpdated)
             .deletedByMember(deletedByMember)
+            .widgetId(widgetId)
     }
 }
