@@ -59,7 +59,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validatePostConversationRequest(postConversationRequest)
 
-        val request = _PostConversationRequest_.Builder()
+        val requestBuilder = _PostConversationRequest_.Builder()
             .chatroomId(postConversationRequest.chatroomId)
             .text(postConversationRequest.text)
             .shareLink(postConversationRequest.shareLink)
@@ -68,8 +68,12 @@ class ConversationClient @Inject constructor() : BaseClient() {
             .attachmentCount(postConversationRequest.attachmentCount)
             .temporaryId(postConversationRequest.temporaryId)
             .repliedChatroomId(postConversationRequest.repliedChatroomId)
-            .metadata(JsonParser.parseString(postConversationRequest.metadata.toString()).asJsonObject)
-            .build()
+
+        if (postConversationRequest.metadata != null) {
+            requestBuilder.metadata(JsonParser.parseString(postConversationRequest.metadata.toString()).asJsonObject)
+        }
+
+        val request = requestBuilder.build()
 
         return when (val response = conversationApi.postConversation(request)) {
             is NetworkResponse.Error -> {
