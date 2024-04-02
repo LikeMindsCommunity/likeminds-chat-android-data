@@ -1352,6 +1352,7 @@ object ModelConverter {
             _getAllMemberResponse_.totalPendingMembers,
             _getAllMemberResponse_.totalFilteredMembers,
             _getAllMemberResponse_.totalOnlyMembers,
+            _getAllMemberResponse_.adminsCount
         )
     }
 
@@ -1374,7 +1375,8 @@ object ModelConverter {
             return null
         }
         return SearchMembersResponse(
-            convertMembers(_searchMembersResponse_.members)
+            convertMembers(_searchMembersResponse_.members),
+            _searchMembersResponse_.recordsCount
         )
     }
 
@@ -1781,6 +1783,8 @@ object ModelConverter {
             .chatRequestedBy(convertMemberRO(chatroomRO.chatRequestedBy))
             .chatRequestCreatedAt(chatroomRO.chatRequestCreatedAt)
             .chatRequestState(convertChatRequestState(chatroomRO.chatRequestState))
+            .chatroomWithUserId(chatroomRO.chatroomWithUserId)
+            .chatroomWithUser(convertMemberRO(chatroomRO.chatroomWithUser))
             .isPrivateMember(chatroomRO.isPrivateMember)
             .build()
     }

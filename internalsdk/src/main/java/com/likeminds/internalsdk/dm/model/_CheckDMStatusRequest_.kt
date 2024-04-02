@@ -8,16 +8,16 @@ class _CheckDMStatusRequest_ private constructor(
     @SerializedName("chatroom_id")
     val chatroomId: String?,
     @SerializedName("uuid")
-    val uuid: String
+    val uuid: String?
 ) {
     class Builder {
         private var requestFrom: String = ""
         private var chatroomId: String? = null
-        private var uuid: String = ""
+        private var uuid: String? = null
 
         fun requestFrom(requestFrom: String) = apply { this.requestFrom = requestFrom }
         fun chatroomId(chatroomId: String?) = apply { this.chatroomId = chatroomId }
-        fun uuid(uuid: String) = apply { this.uuid = uuid }
+        fun uuid(uuid: String?) = apply { this.uuid = uuid }
 
         fun build() = _CheckDMStatusRequest_(
             requestFrom,

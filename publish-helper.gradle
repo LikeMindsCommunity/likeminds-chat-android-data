@@ -56,7 +56,7 @@ afterEvaluate {
                 pom {
                     name = PUBLISH_ARTIFACT_ID
                     description = 'LikeMinds Chat official Android SDK'
-                    url = 'https://github.com/NateshR/LikeMinds-Android-Chat-SDK'
+                    url = 'https://github.com/LikeMindsCommunity/LikeMinds-Android-Chat-SDK'
                     licenses {
                         license {
                             name = 'LikeMinds License'

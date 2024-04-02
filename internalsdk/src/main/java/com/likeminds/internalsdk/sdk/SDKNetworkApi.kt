@@ -4,13 +4,12 @@ import com.likeminds.internalsdk.sdk.model._InitiateUserRequest_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
-import retrofit2.http.Body
-import retrofit2.http.Header
-import retrofit2.http.POST
+import retrofit2.http.*
 
 interface SDKNetworkApi {
 
     @POST("sdk/initiate")
+    @Headers("x-api-version: 1")
     suspend fun initiateUser(
         @Header("x-api-key") apiKey: String,
         @Body request: _InitiateUserRequest_,

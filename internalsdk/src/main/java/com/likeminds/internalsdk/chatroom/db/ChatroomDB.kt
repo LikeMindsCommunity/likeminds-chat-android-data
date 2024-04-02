@@ -9,9 +9,6 @@ import io.realm.rx.CollectionChange
 
 interface ChatroomDB {
 
-    // query to save chatroom in DB
-    fun saveChatroom(_chatroom_: _Chatroom_)
-
     //query to get chatroom
     fun getChatroom(realm: Realm, chatroomId: String): ChatroomRO?
 

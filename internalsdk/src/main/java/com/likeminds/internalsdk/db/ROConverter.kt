@@ -113,7 +113,10 @@ object ROConverter {
             chatRequestedBy = chatRequestByRO
             chatRequestCreatedAt = chatroom.chatRequestCreatedAt
             chatroomWithUserId = chatroom.chatroomWithUserId
-            chatroomWithUser = chatroomWithUserRO
+            chatroomWithUser = chatroomWithUserRO ?: convertMember(
+                chatroom.chatroomWithUser,
+                (chatroom.communityId ?: "")
+            )
         }
     }
 
