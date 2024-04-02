@@ -101,8 +101,9 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
         if (postConversationRequest.text.isEmpty()
             && (postConversationRequest.attachmentCount ?: 0) <= 0
+            && postConversationRequest.metadata == null
         ) {
-            RequestUtils.throwException("text")
+            RequestUtils.throwException("text or attachments or metadata")
         }
     }
 
