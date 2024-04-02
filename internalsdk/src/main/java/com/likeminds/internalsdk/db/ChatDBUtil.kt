@@ -246,9 +246,7 @@ object ChatDBUtil {
         chatroomRO.topic = chatRoomTopic
 
         //chatroom updated at for sorting
-        val lastConversationCreatedEpoch = if (chatroomRO.type == TYPE_DIRECT_MESSAGE) {
-            chatroomRO.lastConversation?.createdEpoch
-        } else {
+        val lastConversationCreatedEpoch =
             //if last conversation is present in chatroom
             if (chatroomRO.lastConversationRO != null) {
                 chatroomRO.lastConversationRO?.createdEpoch
@@ -267,7 +265,6 @@ object ChatDBUtil {
                     .findFirst()
                 conversation?.createdEpoch
             }
-        }
 
         val chatroomUpdatedAt = when {
             lastConversationCreatedEpoch != null -> {
