@@ -34,10 +34,6 @@ class RealmDBMigration : RealmMigration {
                 addRealmObjectField("chatroomWithUser", schema[MEMBER_CLASS]!!)
             }
 
-            olderVersion++
-        }
-
-        if (olderVersion == 2L) {
             //add widget class
             val widgetSchema = schema.create(WIDGET_CLASS)
                 .addField("id", String::class.java, FieldAttribute.REQUIRED)
@@ -67,4 +63,4 @@ class RealmDBMigration : RealmMigration {
 }
 
 const val DB_SCHEMA_NAME = "likeminds-chat-sdk"
-const val DB_SCHEMA_VERSION = 3L
+const val DB_SCHEMA_VERSION = 2L

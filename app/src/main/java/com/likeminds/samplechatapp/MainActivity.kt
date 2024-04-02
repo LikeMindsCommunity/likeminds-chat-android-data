@@ -42,39 +42,5 @@ class MainActivity : AppCompatActivity() {
             """.trimIndent()
             )
         }
-
-        binding.tvClick.setOnClickListener {
-            createConversation()
-        }
-    }
-
-    private fun createConversation() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val metadata = JSONObject().apply {
-                put("key_1", "900")
-                put("key_2", 80)
-                put("key_3", "ishaan")
-            }
-
-            val postConversationResponse = client.postConversation(
-                PostConversationRequest.Builder()
-                    .chatroomId("96567")
-                    .text("Hey")
-                    .metadata(metadata)
-                    .build()
-            )
-
-            val widgetId = postConversationResponse.data?.conversation?.widgetId
-
-            Log.d(
-                TAG, """
-                postConversationResponse
-                errorMessage:${postConversationResponse.errorMessage}
-                id: ${postConversationResponse.data?.id}
-                widgetId: $widgetId
-                widget: ${postConversationResponse.data?.widgets?.get(widgetId).toString()}
-            """.trimIndent()
-            )
-        }
     }
 }

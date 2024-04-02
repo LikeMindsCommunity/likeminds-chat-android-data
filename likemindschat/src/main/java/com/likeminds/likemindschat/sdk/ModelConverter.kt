@@ -1380,12 +1380,14 @@ object ModelConverter {
         )
     }
 
+    // converts internal widget model map to client widget model map
     fun convertWidgetMap(_widgetsMap_: Map<String, _Widget_>): Map<String, Widget> {
         return _widgetsMap_.mapValues {
             convertWidget(it.value)
         }
     }
 
+    // converts internal widget model to client widget model
     fun convertWidget(_widget_: _Widget_): Widget {
         return Widget.Builder()
             .id(_widget_.id)
@@ -1624,6 +1626,7 @@ object ModelConverter {
             .build()
     }
 
+    // convert client sdkclientinfo model to internal sdkclientinfo model
     private fun createSDKClientInfo(sdkClientInfo: SDKClientInfo?): _SDKClientInfo_? {
         if (sdkClientInfo == null) return null
         return _SDKClientInfo_(
@@ -1634,6 +1637,7 @@ object ModelConverter {
         )
     }
 
+    //convert client widget model to internal widget model
     fun createWidget(widget: Widget?): _Widget_? {
         if (widget == null) return null
         val metadataString = widget.metadata.toString()
@@ -1972,6 +1976,7 @@ object ModelConverter {
             .build()
     }
 
+    //convert WidgetRO model to client widget model
     fun convertWidgetRO(widgetRO: WidgetRO?): Widget? {
         if (widgetRO == null) return null
         return Widget.Builder()

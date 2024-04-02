@@ -827,6 +827,12 @@ object ROConverter {
         }
     }
 
+    /**
+     * convert [_Widget_] to [WidgetRO]
+     * @param widget: instance of [_Widget_] to be converted
+     *
+     * @return [WidgetRO]
+     */
     fun convertWidgetRO(widget: _Widget_?): WidgetRO? {
         if (widget == null) return null
         return WidgetRO.build(widget.id) {
