@@ -12,5 +12,7 @@ data class _GetAllMemberResponse_(
     @SerializedName("total_filtered_members")
     val totalFilteredMembers: Int?,
     @SerializedName("total_only_members")
-    val totalOnlyMembers: Int?
+    val totalOnlyMembers: Int?,
+    @SerializedName("admins_count")
+    val adminsCount: Int?
 )

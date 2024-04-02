@@ -1346,6 +1346,7 @@ object ModelConverter {
             _getAllMemberResponse_.totalPendingMembers,
             _getAllMemberResponse_.totalFilteredMembers,
             _getAllMemberResponse_.totalOnlyMembers,
+            _getAllMemberResponse_.adminsCount
         )
     }
 
