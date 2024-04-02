@@ -6,6 +6,8 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.ConversationRO
@@ -21,6 +23,7 @@ import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
 import io.realm.RealmResults
+import org.json.JSONObject
 import javax.inject.Inject
 
 class ConversationClient @Inject constructor() : BaseClient() {
@@ -56,7 +59,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validatePostConversationRequest(postConversationRequest)
 
-        val request = _PostConversationRequest_.Builder()
+        val requestBuilder = _PostConversationRequest_.Builder()
             .chatroomId(postConversationRequest.chatroomId)
             .text(postConversationRequest.text)
             .shareLink(postConversationRequest.shareLink)
@@ -65,7 +68,12 @@ class ConversationClient @Inject constructor() : BaseClient() {
             .attachmentCount(postConversationRequest.attachmentCount)
             .temporaryId(postConversationRequest.temporaryId)
             .repliedChatroomId(postConversationRequest.repliedChatroomId)
-            .build()
+
+        if (postConversationRequest.metadata != null) {
+            requestBuilder.metadata(JsonParser.parseString(postConversationRequest.metadata.toString()).asJsonObject)
+        }
+
+        val request = requestBuilder.build()
 
         return when (val response = conversationApi.postConversation(request)) {
             is NetworkResponse.Error -> {
@@ -93,8 +101,9 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
         if (postConversationRequest.text.isEmpty()
             && (postConversationRequest.attachmentCount ?: 0) <= 0
+            && postConversationRequest.metadata == null
         ) {
-            RequestUtils.throwException("text")
+            RequestUtils.throwException("text or attachments or metadata")
         }
     }
 
@@ -451,6 +460,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                     errorMessage = "queryType not specified."
                 )
             }
+
             GetConversationCountType.BELOW -> {
                 getConversationsBelowCount(
                     chatroomId,
@@ -458,6 +468,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                     createdEpoch
                 )
             }
+
             GetConversationCountType.ABOVE -> {
                 getConversationsAboveCount(
                     chatroomId,

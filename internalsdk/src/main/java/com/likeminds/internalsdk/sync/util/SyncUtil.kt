@@ -117,12 +117,22 @@ object SyncUtil {
                     ROConverter.convertMember(lastConversationCreator, communityId)
                         ?: return@forEach
 
+                //widget data
+                val lastConversationWidgetId = lastConversation.widgetId
+                val lastConversationWidget = if (!lastConversationWidgetId.isNullOrEmpty()) {
+                    data.widgets[lastConversationWidgetId]
+                } else {
+                    null
+                }
+                val lastConversationWidgetRO = ROConverter.convertWidgetRO(lastConversationWidget)
+
                 val lastConversationRO = ROConverter.convertLastConversation(
                     realm,
                     lastConversation,
                     lastConversationCreatorRO,
                     lastConversationAttachment,
-                    lastConversationDeletedByMemberRO
+                    lastConversationDeletedByMemberRO,
+                    lastConversationWidgetRO
                 ) ?: return@forEach
 
                 realmWrite.insertOrUpdate(lastConversationRO)
@@ -168,6 +178,16 @@ object SyncUtil {
                             emptyList()
                         }
 
+                    //widget data
+                    val topicConversationWidgetId = topic?.widgetId
+                    val topicConversationWidget = if (!topicConversationWidgetId.isNullOrEmpty()) {
+                        data.widgets[topicConversationWidgetId]
+                    } else {
+                        null
+                    }
+                    val topicConversationWidgetRO =
+                        ROConverter.convertWidgetRO(topicConversationWidget)
+
                     val topicRO =
                         ROConverter.convertConversation(
                             realm,
@@ -176,7 +196,8 @@ object SyncUtil {
                             topicConversationPolls,
                             topicConversationAttachments,
                             loggedInUUID = loggedInUUID,
-                            deletedByMemberRO = topicConversationDeletedByMemberRO
+                            deletedByMemberRO = topicConversationDeletedByMemberRO,
+                            widget = topicConversationWidgetRO
                         )
                     if (topicCreatorRO != null) {
                         realmWrite.insertOrUpdate(topicCreatorRO)
@@ -234,6 +255,18 @@ object SyncUtil {
                             emptyList()
                         }
 
+                    //widget data
+                    val lastSeenConversationWidgetId = lastSeenConversation?.widgetId
+                    val lastSeenConversationWidget =
+                        if (!lastSeenConversationWidgetId.isNullOrEmpty()) {
+                            data.widgets[lastSeenConversationWidgetId]
+                        } else {
+                            null
+                        }
+                    val lastSeenConversationWidgetRO =
+                        ROConverter.convertWidgetRO(lastSeenConversationWidget)
+
+
                     val lastSeenConversationRO = ROConverter.convertConversation(
                         realm,
                         lastSeenConversation,
@@ -241,7 +274,8 @@ object SyncUtil {
                         lastSeenConversationPolls,
                         lastSeenConversationAttachments,
                         loggedInUUID = loggedInUUID,
-                        deletedByMemberRO = lastSeenConversationDeletedByMemberRO
+                        deletedByMemberRO = lastSeenConversationDeletedByMemberRO,
+                        widget = lastSeenConversationWidgetRO
                     )
                     if (lastSeenConversationRO != null) {
                         realmWrite.insertOrUpdate(lastSeenConversationRO)
@@ -404,6 +438,11 @@ object SyncUtil {
                             emptyList()
                         }
 
+                    //widget data
+                    val widgetId = conversation.widgetId
+                    val widget = data.widgets[widgetId]
+                    val widgetRO = ROConverter.convertWidgetRO(widget)
+
                     val conversationRO =
                         ROConverter.convertConversation(
                             realmWrite,
@@ -413,7 +452,8 @@ object SyncUtil {
                             conversationAttachment,
                             reactions,
                             loggedInUUID = loggedInUUID,
-                            deletedByMemberRO = deletedByMemberRO
+                            deletedByMemberRO = deletedByMemberRO,
+                            widget = widgetRO
                         ) ?: return@conversation
 
                     realmWrite.insertOrUpdate(

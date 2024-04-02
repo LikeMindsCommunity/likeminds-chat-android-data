@@ -11,6 +11,7 @@ import com.likeminds.internalsdk.sync.model._ReactionMeta_
 import com.likeminds.internalsdk.user.model._SDKClientInfo_
 import com.likeminds.internalsdk.user.model._User_
 import com.likeminds.internalsdk.utils.TimeUtil
+import com.likeminds.internalsdk.widget.model._Widget_
 import io.realm.Realm
 import io.realm.RealmList
 
@@ -177,6 +178,8 @@ object ROConverter {
         )
         val pollsList = convertPolls(realm, conversation.polls as? MutableList<_Poll_>, communityId)
 
+        val widgetRO = convertWidgetRO(conversation._widget_)
+
         //Clear embedded object list if already present else calling insertToRealmOrUpdate will duplicate it
         savedAnswer?.reactions?.deleteAllFromRealm()
         savedAnswer?.attachments?.deleteAllFromRealm()
@@ -229,6 +232,8 @@ object ROConverter {
             toShowResults = conversation.toShowResults
             pollAnswerText = conversation.pollAnswerText
             replyChatRoomId = conversation.replyChatroomId
+            this.widgetRO = widgetRO
+            widgetId = conversation.widgetId
         }
     }
 
@@ -242,6 +247,7 @@ object ROConverter {
      * @param polls: [List<Poll>] list of polls
      * @param attachments: [List<CollabcardAttachment>] list of attachments
      * @param reactions: [List<ReactionMeta>] list of reactions
+     * @param widget: [WidgetRO] the widget related to that conversation
      * */
     fun convertConversation(
         realm: Realm,
@@ -251,7 +257,8 @@ object ROConverter {
         attachments: List<_Attachment_>?,
         reactions: List<_ReactionMeta_>? = null,
         loggedInUUID: String? = null,
-        deletedByMemberRO: MemberRO? = null
+        deletedByMemberRO: MemberRO? = null,
+        widget: WidgetRO? = null
     ): ConversationRO? {
         if (conversation == null || creator == null) return null
         val chatroomId = conversation.chatroomId ?: return null
@@ -356,6 +363,8 @@ object ROConverter {
             this.polls = pollsRO
             toShowResults = conversation.toShowResults
             pollAnswerText = conversation.pollAnswerText
+            widgetId = conversation.widgetId
+            this.widgetRO = widget
         }
     }
 
@@ -496,13 +505,15 @@ object ROConverter {
      * @param conversation: Conversation object to converted
      * @param creator: [MemberRO] object of conversation's creator
      * @param attachments: [List<_Attachment_>] list of attachments
+     * @param widget: [WidgetRO] the custom widget for that particular conversation
      * */
     fun convertLastConversation(
         realm: Realm,
         conversation: _Conversation_?,
         creator: MemberRO?,
         attachments: List<_Attachment_>?,
-        deletedByMember: MemberRO? = null
+        deletedByMember: MemberRO? = null,
+        widget: WidgetRO?
     ): LastConversationRO? {
         if (conversation == null || creator == null) return null
         val chatroomId = conversation.chatroomId ?: return null
@@ -554,6 +565,8 @@ object ROConverter {
             this.createdEpoch = createdEpoch
             this.chatroomId = chatroomId
             this.communityId = communityId
+            this.widgetId = conversation.widgetId
+            this.widget = widget
         }
     }
 
@@ -811,6 +824,23 @@ object ROConverter {
             title = link.title
             image = link.image
             description = link.description
+        }
+    }
+
+    /**
+     * convert [_Widget_] to [WidgetRO]
+     * @param widget: instance of [_Widget_] to be converted
+     *
+     * @return [WidgetRO]
+     */
+    fun convertWidgetRO(widget: _Widget_?): WidgetRO? {
+        if (widget == null) return null
+        return WidgetRO.build(widget.id) {
+            parentEntityId = widget.parentEntityId
+            parentEntityType = widget.parentEntityType
+            metadata = widget.metadata.toString()
+            createdAt = widget.createdAt
+            updatedAt = widget.updatedAt
         }
     }
 }

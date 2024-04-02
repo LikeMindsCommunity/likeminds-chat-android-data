@@ -1,5 +1,6 @@
 package com.likeminds.likemindschat.sdk
 
+import com.google.gson.JsonParser
 import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.conversation.model.*
@@ -16,6 +17,7 @@ import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.search.model.*
 import com.likeminds.internalsdk.user.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
+import com.likeminds.internalsdk.widget.model._Widget_
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.*
@@ -31,6 +33,8 @@ import com.likeminds.likemindschat.notification.model.GetConversationNotificatio
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
+import com.likeminds.likemindschat.widget.model.Widget
+import org.json.JSONObject
 
 object ModelConverter {
 
@@ -862,6 +866,7 @@ object ModelConverter {
             .hasFiles(_conversation_.hasFiles)
             .hasReactions(_conversation_.hasReactions)
             .lastUpdated(_conversation_.lastUpdated)
+            .widgetId(_conversation_.widgetId)
             .build()
     }
 
@@ -1046,7 +1051,8 @@ object ModelConverter {
         if (_postConversationResponse_ == null) return null
         return PostConversationResponse(
             convertConversation(_postConversationResponse_.conversation),
-            _postConversationResponse_.id
+            _postConversationResponse_.id,
+            convertWidgetMap(_postConversationResponse_.widgets)
         )
     }
 
@@ -1374,6 +1380,25 @@ object ModelConverter {
         )
     }
 
+    // converts internal widget model map to client widget model map
+    fun convertWidgetMap(_widgetsMap_: Map<String, _Widget_>): Map<String, Widget> {
+        return _widgetsMap_.mapValues {
+            convertWidget(it.value)
+        }
+    }
+
+    // converts internal widget model to client widget model
+    fun convertWidget(_widget_: _Widget_): Widget {
+        return Widget.Builder()
+            .id(_widget_.id)
+            .parentEntityId(_widget_.parentEntityId)
+            .parentEntityType(_widget_.parentEntityType)
+            .metadata(JSONObject(_widget_.metadata.toString()))
+            .createdAt(_widget_.createdAt)
+            .updatedAt(_widget_.updatedAt)
+            .build()
+    }
+
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
@@ -1419,6 +1444,8 @@ object ModelConverter {
             .hasFiles(conversation.hasFiles)
             .hasReactions(conversation.hasReactions)
             .lastUpdated(conversation.lastUpdated)
+            .widgetId(conversation.widgetId)
+            .widget(createWidget(conversation.widget))
             .build()
     }
 
@@ -1599,6 +1626,7 @@ object ModelConverter {
             .build()
     }
 
+    // convert client sdkclientinfo model to internal sdkclientinfo model
     private fun createSDKClientInfo(sdkClientInfo: SDKClientInfo?): _SDKClientInfo_? {
         if (sdkClientInfo == null) return null
         return _SDKClientInfo_(
@@ -1607,6 +1635,20 @@ object ModelConverter {
             sdkClientInfo.userUniqueId,
             sdkClientInfo.uuid
         )
+    }
+
+    //convert client widget model to internal widget model
+    fun createWidget(widget: Widget?): _Widget_? {
+        if (widget == null) return null
+        val metadataString = widget.metadata.toString()
+        return _Widget_.Builder()
+            .id(widget.id)
+            .parentEntityId(widget.parentEntityId)
+            .parentEntityType(widget.parentEntityType)
+            .metadata(JsonParser.parseString(metadataString).asJsonObject)
+            .createdAt(widget.createdAt)
+            .updatedAt(widget.updatedAt)
+            .build()
     }
 
 
@@ -1771,6 +1813,8 @@ object ModelConverter {
             .communityId(lastConversationRO.communityId)
             .ogTags(convertLinkRO(lastConversationRO.link))
             .deletedByMember(convertMemberRO(lastConversationRO.deletedByMember))
+            .widget(convertWidgetRO(lastConversationRO.widget))
+            .widgetId(lastConversationRO.widgetId)
             .build()
     }
 
@@ -1820,6 +1864,8 @@ object ModelConverter {
             .replyChatroomId(conversationRO.replyChatRoomId)
             .lastUpdated(conversationRO.lastUpdatedAt)
             .deletedByMember(convertMemberRO(conversationRO.deletedByMember))
+            .widgetId(conversationRO.widgetId)
+            .widget(convertWidgetRO(conversationRO.widgetRO))
             .build()
     }
 
@@ -1927,6 +1973,19 @@ object ModelConverter {
             .subText(pollRO.subText)
             .noVotes(pollRO.noVotes)
             .member(convertMemberRO(pollRO.member))
+            .build()
+    }
+
+    //convert WidgetRO model to client widget model
+    fun convertWidgetRO(widgetRO: WidgetRO?): Widget? {
+        if (widgetRO == null) return null
+        return Widget.Builder()
+            .id(widgetRO.id)
+            .parentEntityType(widgetRO.parentEntityType)
+            .parentEntityId(widgetRO.parentEntityId)
+            .metadata(JSONObject(widgetRO.metadata.toString()))
+            .createdAt(widgetRO.createdAt)
+            .updatedAt(widgetRO.updatedAt)
             .build()
     }
 }
