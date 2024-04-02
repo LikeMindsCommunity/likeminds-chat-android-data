@@ -2,7 +2,7 @@ package com.likeminds.likemindschat.community.model
 
 class Question private constructor(
     val id: Int?,
-    val questionTitle: String,
+    val questionTitle: String?,
     val state: Int,
     val value: String?,
     val optional: Boolean,
@@ -20,7 +20,7 @@ class Question private constructor(
 ) {
     class Builder {
         private var id: Int? = null
-        private var questionTitle: String = ""
+        private var questionTitle: String? = null
         private var state: Int = -1
         private var value: String? = null
         private var optional: Boolean = false
@@ -37,7 +37,7 @@ class Question private constructor(
         private var isAnswerEditable: Boolean = true
 
         fun id(id: Int?) = apply { this.id = id }
-        fun questionTitle(questionTitle: String) = apply { this.questionTitle = questionTitle }
+        fun questionTitle(questionTitle: String?) = apply { this.questionTitle = questionTitle }
         fun state(state: Int) = apply { this.state = state }
         fun value(value: String?) = apply { this.value = value }
         fun optional(optional: Boolean) = apply { this.optional = optional }

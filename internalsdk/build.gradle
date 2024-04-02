@@ -19,6 +19,7 @@ apply from: '../publish-helper.gradle'
 apply from: "internalsdk-dependencies.gradle"
 
 android {
+    namespace 'com.likeminds.internalsdk'
     compileSdkVersion versions.compile_sdk
 
     defaultConfig {
