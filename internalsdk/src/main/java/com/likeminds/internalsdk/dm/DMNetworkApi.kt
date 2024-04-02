@@ -8,6 +8,7 @@ import retrofit2.http.*
 interface DMNetworkApi {
 
     @GET("home/dm/meta")
+    @Headers("x-api-version: 1")
     suspend fun checkDMTab(): NetworkResponse<APIResponse<_CheckDMTabResponse_>>
 
     @POST("chatroom/dm/request")

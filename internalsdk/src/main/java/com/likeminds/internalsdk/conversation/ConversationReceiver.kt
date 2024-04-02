@@ -322,18 +322,18 @@ class ConversationReceiver @Inject constructor(
         realm: Realm,
         conversation: _Conversation_
     ) {
-        ChatDBUtil.write(realm) { realm ->
+        ChatDBUtil.write(realm) { realmInstance ->
             //get logged in member
-            val userRO = realm.where(UserRO::class.java).findFirst()
+            val userRO = realmInstance.where(UserRO::class.java).findFirst()
 
             val conversationRO =
                 ROConverter.convertConversation(
-                    realm,
+                    realmInstance,
                     conversation,
                     loggedInMember = userRO
                 ) ?: return@write
 
-            ChatDBUtil.getChatroom(realm, conversation.chatroomId)?.let { chatroomRO ->
+            ChatDBUtil.getChatroom(realmInstance, conversation.chatroomId)?.let { chatroomRO ->
                 if (!chatroomRO.conversations.contains(conversationRO)) {
                     chatroomRO.conversations.add(conversationRO)
                 }
@@ -350,7 +350,7 @@ class ConversationReceiver @Inject constructor(
                     val lastConversationRO =
                         ROConverter.convertConversationToLastConversation(lastConversation)
                             ?: return@write
-                    chatroomRO.lastConversationRO = realm.copyToRealm(lastConversationRO)
+                    chatroomRO.lastConversationRO = realmInstance.copyToRealm(lastConversationRO)
 
                 }
                 if (conversationRO.createdEpoch > (chatroomRO.lastSeenConversation?.createdEpoch

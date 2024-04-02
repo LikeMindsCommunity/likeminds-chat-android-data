@@ -5,5 +5,6 @@ data class GetAllMemberResponse(
     val totalMembers: Int?,
     val totalPendingMembers: Int?,
     val totalFilteredMembers: Int?,
-    val totalOnlyMembers: Int?
+    val totalOnlyMembers: Int?,
+    val adminsCount: Int?
 )

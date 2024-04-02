@@ -1,10 +1,7 @@
 package com.likeminds.internalsdk.dm.model
 
-import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class _CheckDMTabResponse_(
     @SerializedName("hide_dm_tab")
     val hideDMTab: Boolean,
@@ -14,4 +11,4 @@ data class _CheckDMTabResponse_(
     val unreadDMCount: Int,
     @SerializedName("hide_dm_text")
     val hideDMText: String?
-) : Parcelable
+)

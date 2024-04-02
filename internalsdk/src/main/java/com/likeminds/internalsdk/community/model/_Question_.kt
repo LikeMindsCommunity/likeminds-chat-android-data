@@ -6,7 +6,7 @@ class _Question_ private constructor(
     @SerializedName(value = "id", alternate = ["question_id"])
     val id: Int?,
     @SerializedName("question_title")
-    val questionTitle: String,
+    val questionTitle: String?,
     @SerializedName("state")
     val state: Int,
     @SerializedName("value")
@@ -38,7 +38,7 @@ class _Question_ private constructor(
 ) {
     class Builder {
         private var id: Int? = null
-        private var questionTitle: String = ""
+        private var questionTitle: String? = null
         private var state: Int = -1
         private var value: String? = null
         private var optional: Boolean = false
@@ -55,7 +55,7 @@ class _Question_ private constructor(
         private var isAnswerEditable: Boolean = true
 
         fun id(id: Int?) = apply { this.id = id }
-        fun questionTitle(questionTitle: String) = apply { this.questionTitle = questionTitle }
+        fun questionTitle(questionTitle: String?) = apply { this.questionTitle = questionTitle }
         fun state(state: Int) = apply { this.state = state }
         fun value(value: String?) = apply { this.value = value }
         fun optional(optional: Boolean) = apply { this.optional = optional }

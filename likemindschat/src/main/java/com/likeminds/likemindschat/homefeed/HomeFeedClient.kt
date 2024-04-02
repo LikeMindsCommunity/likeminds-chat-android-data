@@ -19,7 +19,7 @@ import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import io.reactivex.Observable
-import io.realm.*
+import io.realm.Realm
 import javax.inject.Inject
 
 class HomeFeedClient @Inject constructor() : BaseClient() {
@@ -87,10 +87,13 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
 
     /**
      * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     * @param context - Context required to run workers
      * @return Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? -
      * Worker result
      */
-    fun syncChatrooms(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+    fun syncChatrooms(
+        context: Context
+    ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
         //validates the client request
         RequestUtils.validate()
 

@@ -246,9 +246,7 @@ object ChatDBUtil {
         chatroomRO.topic = chatRoomTopic
 
         //chatroom updated at for sorting
-        val lastConversationCreatedEpoch = if (chatroomRO.type == TYPE_DIRECT_MESSAGE) {
-            chatroomRO.lastConversation?.createdEpoch
-        } else {
+        val lastConversationCreatedEpoch =
             //if last conversation is present in chatroom
             if (chatroomRO.lastConversationRO != null) {
                 chatroomRO.lastConversationRO?.createdEpoch
@@ -267,7 +265,6 @@ object ChatDBUtil {
                     .findFirst()
                 conversation?.createdEpoch
             }
-        }
 
         val chatroomUpdatedAt = when {
             lastConversationCreatedEpoch != null -> {
@@ -286,17 +283,25 @@ object ChatDBUtil {
         }
 
         //total response count
-        chatroomRO.totalResponseCount = if (chatroomRO.type == TYPE_DIRECT_MESSAGE) {
+        val totalResponseCount = if (chatroomRO.type == TYPE_DIRECT_MESSAGE) {
             conversations.where()
                 .equalTo(DbKey.STATE, STATE_NORMAL)
                 .count()
                 .toInt()
         } else {
             conversations.where()
-                .equalTo(DbKey.STATE, STATE_NORMAL).or()
+                .equalTo(DbKey.STATE, STATE_NORMAL)
+                .or()
                 .equalTo(DbKey.STATE, STATE_POLL)
                 .count()
                 .toInt()
+        }
+
+        // add the total response count if lastConversationRO is non null
+        chatroomRO.totalResponseCount = if (chatroomRO.lastConversationRO != null) {
+            totalResponseCount + 1
+        } else {
+            totalResponseCount
         }
 
         //if last conversation is present in chatroom add 1 in count

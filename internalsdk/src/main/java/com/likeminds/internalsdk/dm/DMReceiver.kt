@@ -27,7 +27,9 @@ class DMReceiver @Inject constructor(
         if (!checkDMStatusRequest.chatroomId.isNullOrEmpty()) {
             queries[CHATROOM_ID] = checkDMStatusRequest.chatroomId
         }
-        queries[UUID] = checkDMStatusRequest.uuid
+        if (!checkDMStatusRequest.uuid.isNullOrEmpty()) {
+            queries[UUID] = checkDMStatusRequest.uuid
+        }
         return dmNetworkApi.checkDMStatus(queries)
     }
 

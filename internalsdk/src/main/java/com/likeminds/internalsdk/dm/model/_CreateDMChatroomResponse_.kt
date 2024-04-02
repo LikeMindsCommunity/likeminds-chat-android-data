@@ -4,6 +4,6 @@ import com.google.gson.annotations.SerializedName
 import com.likeminds.internalsdk.chatroom.model._Chatroom_
 
 data class _CreateDMChatroomResponse_(
-    @SerializedName("chatroom_local")
+    @SerializedName("chatroom")
     val chatroom: _Chatroom_
 )

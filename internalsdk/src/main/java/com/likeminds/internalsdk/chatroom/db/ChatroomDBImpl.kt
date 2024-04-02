@@ -13,10 +13,6 @@ class ChatroomDBImpl @Inject constructor(
     private val chatroomReceiver: ChatroomReceiver
 ) : ChatroomDB {
 
-    override fun saveChatroom(_chatroom_: _Chatroom_) {
-        return chatroomReceiver.saveChatroom(_chatroom_)
-    }
-
     override fun getChatroom(realm: Realm, chatroomId: String): ChatroomRO? {
         return chatroomReceiver.getChatroom(realm, chatroomId)
     }

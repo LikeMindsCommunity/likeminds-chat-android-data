@@ -5,11 +5,11 @@ import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.chatroom.model.ChatRequestState
-import com.likeminds.likemindschat.conversation.model.ObserveConversationsRequest
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
+import com.likeminds.likemindschat.user.model.MemberBlockState
 import com.likeminds.likemindschat.util.RequestUtils
 import io.reactivex.Observable
 import io.realm.Realm
@@ -176,8 +176,8 @@ class DMClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateCheckDMStatusRequest(checkDMStatusRequest: CheckDMStatusRequest) {
-        if (checkDMStatusRequest.uuid.isEmpty()) {
-            RequestUtils.throwException("uuid")
+        if (checkDMStatusRequest.requestFrom.value.isEmpty()) {
+            RequestUtils.throwException("requestFrom")
         }
     }
 
@@ -212,10 +212,28 @@ class DMClient @Inject constructor() : BaseClient() {
                 // save the conversation in DB
                 val realm = Realm.getDefaultInstance()
 
+                //get the chat request state as the block/unblock
+                val chatRequestState =
+                    if (blockMemberRequest.status == MemberBlockState.MEMBER_BLOCKED) {
+                        ChatRequestState.REJECTED
+                    } else {
+                        ChatRequestState.ACCEPTED
+                    }
+
+                val userRO = userDB.getUser(realm)
+
+                // updates chat request state in local DB
+                chatroomDB.updateChatRequestState(
+                    blockMemberRequest.chatroomId,
+                    chatRequestState.value,
+                    userRO?.id
+                )
+
                 val conversation = body.data?.conversation
                 conversation?.let { finalConversation ->
                     conversationDB.saveNewConversation(realm, finalConversation)
                 }
+
                 realm.close()
                 ModelConverter.convertBlockMemberResponse(body)
             }
@@ -298,11 +316,6 @@ class DMClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
-
-                // saves the chatroom local object to db
-                body.data?.chatroom?.let { _chatroom_ ->
-                    chatroomDB.saveChatroom(_chatroom_)
-                }
 
                 ModelConverter.convertCreateDMChatroomResponse(body)
             }
