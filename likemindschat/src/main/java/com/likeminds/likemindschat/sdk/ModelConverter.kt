@@ -1368,7 +1368,8 @@ object ModelConverter {
             return null
         }
         return SearchMembersResponse(
-            convertMembers(_searchMembersResponse_.members)
+            convertMembers(_searchMembersResponse_.members),
+            _searchMembersResponse_.recordsCount
         )
     }
 
