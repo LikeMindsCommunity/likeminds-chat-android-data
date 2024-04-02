@@ -24,6 +24,7 @@ dependencies {
 
     //retrofit gson
     implementation deps.retrofit.gson
+    implementation deps.gson.main
 
     //testing
     testImplementation deps.testing.junit
