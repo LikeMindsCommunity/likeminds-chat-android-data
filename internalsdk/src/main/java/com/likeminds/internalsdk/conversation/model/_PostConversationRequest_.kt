@@ -21,7 +21,7 @@ class _PostConversationRequest_ private constructor(
     val temporaryId: String?,
     @SerializedName("replied_chatroom_id")
     val repliedChatroomId: String?,
-    @SerializedName("meta_data")
+    @SerializedName("metadata")
     val metadata: JsonObject?
 ) {
 
