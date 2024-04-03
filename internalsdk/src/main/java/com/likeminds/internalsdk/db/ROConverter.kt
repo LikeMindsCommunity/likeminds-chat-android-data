@@ -566,7 +566,7 @@ object ROConverter {
             this.chatroomId = chatroomId
             this.communityId = communityId
             this.widgetId = conversation.widgetId
-            this.widget = widget
+            this.widgetRO = widget
         }
     }
 

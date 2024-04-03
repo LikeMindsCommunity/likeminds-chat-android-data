@@ -1813,7 +1813,7 @@ object ModelConverter {
             .communityId(lastConversationRO.communityId)
             .ogTags(convertLinkRO(lastConversationRO.link))
             .deletedByMember(convertMemberRO(lastConversationRO.deletedByMember))
-            .widget(convertWidgetRO(lastConversationRO.widget))
+            .widget(convertWidgetRO(lastConversationRO.widgetRO))
             .widgetId(lastConversationRO.widgetId)
             .build()
     }

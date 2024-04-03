@@ -43,11 +43,13 @@ class RealmDBMigration : RealmMigration {
                 .addField("createdAt", Long::class.java, FieldAttribute.REQUIRED)
                 .addField("updatedAt", Long::class.java, FieldAttribute.REQUIRED)
 
-            schema[CONVERSATION_CLASS]!!.addRealmObjectField("widget", widgetSchema)
+            schema[CONVERSATION_CLASS]!!.addRealmObjectField("widgetRO", widgetSchema)
                 .addField("widgetId", String::class.javaObjectType)
 
-            schema[LAST_CONVERSATION_CLASS]!!.addRealmObjectField("widget", widgetSchema)
+            schema[LAST_CONVERSATION_CLASS]!!.addRealmObjectField("widgetRO", widgetSchema)
                 .addField("widgetId", String::class.javaObjectType)
+
+            widgetSchema.isEmbedded = true
 
             olderVersion++
         }
