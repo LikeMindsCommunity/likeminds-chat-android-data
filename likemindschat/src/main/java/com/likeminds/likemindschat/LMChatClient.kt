@@ -11,7 +11,7 @@ import com.likeminds.likemindschat.community.CommunityClient
 import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
-import com.likeminds.likemindschat.conversation.util.LoadConversationType
+import com.likeminds.likemindschat.conversation.model.LoadConversationType
 import com.likeminds.likemindschat.dm.DMClient
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.HelperClient

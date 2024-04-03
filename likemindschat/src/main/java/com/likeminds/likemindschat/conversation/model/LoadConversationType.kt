@@ -1,4 +1,4 @@
-package com.likeminds.likemindschat.conversation.util
+package com.likeminds.likemindschat.conversation.model
 
 enum class LoadConversationType {
     FIRST_TIME,
