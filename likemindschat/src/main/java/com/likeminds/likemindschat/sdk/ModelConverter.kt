@@ -1,9 +1,11 @@
 package com.likeminds.likemindschat.sdk
 
+import com.google.gson.JsonParser
 import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.community.model.*
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.*
+import com.likeminds.internalsdk.dm.model.*
 import com.likeminds.internalsdk.helper.model.*
 import com.likeminds.internalsdk.homefeed.model.*
 import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
@@ -15,10 +17,12 @@ import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.internalsdk.search.model.*
 import com.likeminds.internalsdk.user.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
+import com.likeminds.internalsdk.widget.model._Widget_
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.model.*
+import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.model.*
 import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
@@ -29,6 +33,8 @@ import com.likeminds.likemindschat.notification.model.GetConversationNotificatio
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
+import com.likeminds.likemindschat.widget.model.Widget
+import org.json.JSONObject
 
 object ModelConverter {
 
@@ -752,7 +758,39 @@ object ModelConverter {
             .unreadConversationCount(_chatroom_.unreadConversationCount)
             .chatroomImageUrl(_chatroom_.chatroomImageUrl)
             .accessWithoutSubscription(_chatroom_.accessWithoutSubscription)
+            .chatRequestState(convertChatRequestState(_chatroom_.chatRequestState))
+            .chatRequestedById(_chatroom_.chatRequestedById)
+            .chatRequestCreatedAt(_chatroom_.chatRequestCreatedAt)
+            .isPrivateMember(_chatroom_.isPrivateMember)
+            .chatroomWithUser(convertMember(_chatroom_.chatroomWithUser))
+            .chatroomWithUserId(_chatroom_.chatroomWithUserId)
             .build()
+    }
+
+    private fun convertChatRequestState(
+        chatRequestState: Int?
+    ): ChatRequestState {
+        return when (chatRequestState) {
+            ChatRequestState.NOTHING.value -> {
+                ChatRequestState.NOTHING
+            }
+
+            ChatRequestState.INITIATED.value -> {
+                ChatRequestState.INITIATED
+            }
+
+            ChatRequestState.ACCEPTED.value -> {
+                ChatRequestState.ACCEPTED
+            }
+
+            ChatRequestState.REJECTED.value -> {
+                ChatRequestState.REJECTED
+            }
+
+            else -> {
+                ChatRequestState.NOTHING
+            }
+        }
     }
 
     // converts internal Cohort model list to client model list
@@ -828,6 +866,7 @@ object ModelConverter {
             .hasFiles(_conversation_.hasFiles)
             .hasReactions(_conversation_.hasReactions)
             .lastUpdated(_conversation_.lastUpdated)
+            .widgetId(_conversation_.widgetId)
             .build()
     }
 
@@ -1012,7 +1051,8 @@ object ModelConverter {
         if (_postConversationResponse_ == null) return null
         return PostConversationResponse(
             convertConversation(_postConversationResponse_.conversation),
-            _postConversationResponse_.id
+            _postConversationResponse_.id,
+            convertWidgetMap(_postConversationResponse_.widgets)
         )
     }
 
@@ -1132,6 +1172,233 @@ object ModelConverter {
         )
     }
 
+    //converts API CheckDMTabResponse model to LM model
+    fun convertCheckDMTabResponse(
+        apiResponse: APIResponse<_CheckDMTabResponse_>
+    ): LMResponse<CheckDMTabResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertCheckDMTabResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal CheckDMTabResponse model to client model
+    private fun convertCheckDMTabResponse(
+        _checkDMTabResponse_: _CheckDMTabResponse_?
+    ): CheckDMTabResponse? {
+        if (_checkDMTabResponse_ == null) {
+            return null
+        }
+        return CheckDMTabResponse(
+            _checkDMTabResponse_.hideDMTab,
+            _checkDMTabResponse_.isCM,
+            _checkDMTabResponse_.unreadDMCount,
+            _checkDMTabResponse_.hideDMText
+        )
+    }
+
+    //converts API SendDMResponse model to LM model
+    fun convertSendDMRequestResponse(
+        apiResponse: APIResponse<_SendDMResponse_>
+    ): LMResponse<SendDMResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertSendDMRequestResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal SendDMResponse model to client model
+    private fun convertSendDMRequestResponse(
+        _sendDMResponse_: _SendDMResponse_?
+    ): SendDMResponse? {
+        if (_sendDMResponse_ == null) {
+            return null
+        }
+        return SendDMResponse(
+            convertConversation(_sendDMResponse_.conversation)
+        )
+    }
+
+    //converts API CheckDMStatusResponse model to LM model
+    fun convertCheckDMStatusResponse(
+        apiResponse: APIResponse<_CheckDMStatusResponse_>
+    ): LMResponse<CheckDMStatusResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertCheckDMStatusResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal CheckDMStatusResponse model to client model
+    private fun convertCheckDMStatusResponse(
+        _checkDMStatusResponse_: _CheckDMStatusResponse_?
+    ): CheckDMStatusResponse? {
+        if (_checkDMStatusResponse_ == null) {
+            return null
+        }
+        return CheckDMStatusResponse(
+            _checkDMStatusResponse_.cta,
+            _checkDMStatusResponse_.showDM
+        )
+    }
+
+    //converts API BlockMemberResponse model to LM model
+    fun convertBlockMemberResponse(
+        apiResponse: APIResponse<_BlockMemberResponse_>
+    ): LMResponse<BlockMemberResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertBlockMemberResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal BlockMemberResponse model to client model
+    private fun convertBlockMemberResponse(
+        _blockMemberResponse_: _BlockMemberResponse_?
+    ): BlockMemberResponse? {
+        if (_blockMemberResponse_ == null) {
+            return null
+        }
+        return BlockMemberResponse(
+            convertConversation(_blockMemberResponse_.conversation)
+        )
+    }
+
+    //converts API CheckDMLimitResponse model to LM model
+    fun convertCheckDMLimitResponse(
+        apiResponse: APIResponse<_CheckDMLimitResponse_>
+    ): LMResponse<CheckDMLimitResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertCheckDMLimitResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal CheckDMLimitResponse model to client model
+    private fun convertCheckDMLimitResponse(
+        _checkDMLimitResponse_: _CheckDMLimitResponse_?
+    ): CheckDMLimitResponse? {
+        if (_checkDMLimitResponse_ == null) {
+            return null
+        }
+        return CheckDMLimitResponse(
+            _checkDMLimitResponse_.isRequestDMLimitExceeded,
+            _checkDMLimitResponse_.newRequestDMTimestamp,
+            convertUserDMLimit(_checkDMLimitResponse_.userDMLimit),
+            _checkDMLimitResponse_.chatroomId,
+        )
+    }
+
+    //converts internal UserDMLimit model to client model
+    private fun convertUserDMLimit(
+        _userDMLimit_: _UserDMLimit_?
+    ): UserDMLimit? {
+        if (_userDMLimit_ == null) {
+            return null
+        }
+        return UserDMLimit.Builder()
+            .numberInDuration(_userDMLimit_.numberInDuration)
+            .duration(_userDMLimit_.duration)
+            .build()
+    }
+
+    //converts API CreateDMChatroomResponse model to LM model
+    fun convertCreateDMChatroomResponse(
+        apiResponse: APIResponse<_CreateDMChatroomResponse_>
+    ): LMResponse<CreateDMChatroomResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertCreateDMChatroomResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal CreateDMChatroomResponse model to client model
+    private fun convertCreateDMChatroomResponse(
+        _createDMChatroomResponse_: _CreateDMChatroomResponse_?
+    ): CreateDMChatroomResponse? {
+        if (_createDMChatroomResponse_ == null) {
+            return null
+        }
+        return CreateDMChatroomResponse(convertChatroom(_createDMChatroomResponse_.chatroom))
+    }
+
+    //converts API GetAllMemberResponse model to LM model
+    fun convertGetAllMemberResponse(
+        apiResponse: APIResponse<_GetAllMemberResponse_>
+    ): LMResponse<GetAllMemberResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetAllMemberResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal GetAllMemberResponse model to client model
+    private fun convertGetAllMemberResponse(
+        _getAllMemberResponse_: _GetAllMemberResponse_?
+    ): GetAllMemberResponse? {
+        if (_getAllMemberResponse_ == null) {
+            return null
+        }
+        return GetAllMemberResponse(
+            convertMembers(_getAllMemberResponse_.members),
+            _getAllMemberResponse_.totalMembers,
+            _getAllMemberResponse_.totalPendingMembers,
+            _getAllMemberResponse_.totalFilteredMembers,
+            _getAllMemberResponse_.totalOnlyMembers,
+            _getAllMemberResponse_.adminsCount
+        )
+    }
+
+    //converts API SearchMembersResponse model to LM model
+    fun convertSearchMembersResponse(
+        apiResponse: APIResponse<_SearchMembersResponse_>
+    ): LMResponse<SearchMembersResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertSearchMembersResponse(apiResponse.data)
+        )
+    }
+
+    //converts internal SearchMembersResponse model to client model
+    private fun convertSearchMembersResponse(
+        _searchMembersResponse_: _SearchMembersResponse_?
+    ): SearchMembersResponse? {
+        if (_searchMembersResponse_ == null) {
+            return null
+        }
+        return SearchMembersResponse(
+            convertMembers(_searchMembersResponse_.members),
+            _searchMembersResponse_.recordsCount
+        )
+    }
+
+    // converts internal widget model map to client widget model map
+    fun convertWidgetMap(_widgetsMap_: Map<String, _Widget_>): Map<String, Widget> {
+        return _widgetsMap_.mapValues {
+            convertWidget(it.value)
+        }
+    }
+
+    // converts internal widget model to client widget model
+    fun convertWidget(_widget_: _Widget_): Widget {
+        return Widget.Builder()
+            .id(_widget_.id)
+            .parentEntityId(_widget_.parentEntityId)
+            .parentEntityType(_widget_.parentEntityType)
+            .metadata(JSONObject(_widget_.metadata.toString()))
+            .createdAt(_widget_.createdAt)
+            .updatedAt(_widget_.updatedAt)
+            .build()
+    }
+
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
@@ -1177,6 +1444,8 @@ object ModelConverter {
             .hasFiles(conversation.hasFiles)
             .hasReactions(conversation.hasReactions)
             .lastUpdated(conversation.lastUpdated)
+            .widgetId(conversation.widgetId)
+            .widget(createWidget(conversation.widget))
             .build()
     }
 
@@ -1357,7 +1626,8 @@ object ModelConverter {
             .build()
     }
 
-    fun createSDKClientInfo(sdkClientInfo: SDKClientInfo?): _SDKClientInfo_? {
+    // convert client sdkclientinfo model to internal sdkclientinfo model
+    private fun createSDKClientInfo(sdkClientInfo: SDKClientInfo?): _SDKClientInfo_? {
         if (sdkClientInfo == null) return null
         return _SDKClientInfo_(
             sdkClientInfo.community,
@@ -1366,6 +1636,21 @@ object ModelConverter {
             sdkClientInfo.uuid
         )
     }
+
+    //convert client widget model to internal widget model
+    fun createWidget(widget: Widget?): _Widget_? {
+        if (widget == null) return null
+        val metadataString = widget.metadata.toString()
+        return _Widget_.Builder()
+            .id(widget.id)
+            .parentEntityId(widget.parentEntityId)
+            .parentEntityType(widget.parentEntityType)
+            .metadata(JsonParser.parseString(metadataString).asJsonObject)
+            .createdAt(widget.createdAt)
+            .updatedAt(widget.updatedAt)
+            .build()
+    }
+
 
     /**--------------------------------
      * Db Model -> Client Response Model
@@ -1498,6 +1783,13 @@ object ModelConverter {
             .isConversationStored(chatroomRO.isConversationStored)
             .isDraft(chatroomRO.isDraft)
             .totalAllResponseCount(chatroomRO.totalAllResponseCount)
+            .chatRequestedById(chatroomRO.chatRequestedById)
+            .chatRequestedBy(convertMemberRO(chatroomRO.chatRequestedBy))
+            .chatRequestCreatedAt(chatroomRO.chatRequestCreatedAt)
+            .chatRequestState(convertChatRequestState(chatroomRO.chatRequestState))
+            .chatroomWithUserId(chatroomRO.chatroomWithUserId)
+            .chatroomWithUser(convertMemberRO(chatroomRO.chatroomWithUser))
+            .isPrivateMember(chatroomRO.isPrivateMember)
             .build()
     }
 
@@ -1521,6 +1813,8 @@ object ModelConverter {
             .communityId(lastConversationRO.communityId)
             .ogTags(convertLinkRO(lastConversationRO.link))
             .deletedByMember(convertMemberRO(lastConversationRO.deletedByMember))
+            .widget(convertWidgetRO(lastConversationRO.widgetRO))
+            .widgetId(lastConversationRO.widgetId)
             .build()
     }
 
@@ -1570,6 +1864,8 @@ object ModelConverter {
             .replyChatroomId(conversationRO.replyChatRoomId)
             .lastUpdated(conversationRO.lastUpdatedAt)
             .deletedByMember(convertMemberRO(conversationRO.deletedByMember))
+            .widgetId(conversationRO.widgetId)
+            .widget(convertWidgetRO(conversationRO.widgetRO))
             .build()
     }
 
@@ -1677,6 +1973,19 @@ object ModelConverter {
             .subText(pollRO.subText)
             .noVotes(pollRO.noVotes)
             .member(convertMemberRO(pollRO.member))
+            .build()
+    }
+
+    //convert WidgetRO model to client widget model
+    fun convertWidgetRO(widgetRO: WidgetRO?): Widget? {
+        if (widgetRO == null) return null
+        return Widget.Builder()
+            .id(widgetRO.id)
+            .parentEntityType(widgetRO.parentEntityType)
+            .parentEntityId(widgetRO.parentEntityId)
+            .metadata(JSONObject(widgetRO.metadata.toString()))
+            .createdAt(widgetRO.createdAt)
+            .updatedAt(widgetRO.updatedAt)
             .build()
     }
 }

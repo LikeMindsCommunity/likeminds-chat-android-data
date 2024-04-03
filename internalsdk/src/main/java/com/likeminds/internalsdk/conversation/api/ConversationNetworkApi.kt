@@ -8,6 +8,7 @@ import retrofit2.http.*
 interface ConversationNetworkApi {
 
     @POST("conversation")
+    @Headers("x-api-version: 1")
     suspend fun postConversation(
         @Body request: _PostConversationRequest_
     ): NetworkResponse<APIResponse<_PostConversationResponse_>>

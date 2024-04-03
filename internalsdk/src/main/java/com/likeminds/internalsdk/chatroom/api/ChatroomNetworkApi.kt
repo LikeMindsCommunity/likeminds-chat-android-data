@@ -8,7 +8,10 @@ import retrofit2.http.*
 interface ChatroomNetworkApi {
 
     @GET("chatroom")
-    @Headers("x-accept-version: v2")
+    @Headers(
+        "x-accept-version: v2",
+        "x-api-version: 1"
+    )
     suspend fun getChatroomActions(
         @Query("chatroom_id") chatroomId: String
     ): NetworkResponse<APIResponse<_GetChatroomActionsResponse_>>

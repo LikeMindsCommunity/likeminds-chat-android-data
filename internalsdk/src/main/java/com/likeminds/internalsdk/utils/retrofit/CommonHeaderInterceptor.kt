@@ -10,6 +10,7 @@ import javax.inject.Inject
 class CommonHeaderInterceptor @Inject constructor(
     private val sdkPreferences: SDKPreferences
 ) : Interceptor {
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val requestBuilder = chain.request().newBuilder()
         val chatTokenManager = ChatTokenManager.getInstance()

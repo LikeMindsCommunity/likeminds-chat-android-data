@@ -1,9 +1,6 @@
 package com.likeminds.internalsdk.di.modules
 
-import android.content.Context
-import com.chuckerteam.chucker.api.ChuckerCollector
-import com.chuckerteam.chucker.api.ChuckerInterceptor
-import com.chuckerteam.chucker.api.RetentionManager
+import com.likeminds.internalsdk.BuildConfig
 import com.likeminds.internalsdk.utils.retrofit.CommonHeaderInterceptor
 import com.likeminds.internalsdk.utils.retrofit.TokenAuthenticator
 import com.likeminds.internalsdk.utils.retrofit.model.BaseUrl
@@ -11,6 +8,7 @@ import dagger.Module
 import dagger.Provides
 import io.sentry.android.okhttp.SentryOkHttpInterceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -26,7 +24,7 @@ class NetworkModule {
     @Singleton
     @Provides
     fun provideOkHttpClient(
-        chuckerInterceptor: ChuckerInterceptor,
+        loggingInterceptor: HttpLoggingInterceptor,
         commonHeaderInterceptor: CommonHeaderInterceptor,
         tokenAuthenticator: TokenAuthenticator,
         sentryOkHttpInterceptor: SentryOkHttpInterceptor
@@ -36,7 +34,9 @@ class NetworkModule {
             .connectTimeout(30L, TimeUnit.SECONDS)
             .writeTimeout(30L, TimeUnit.SECONDS)
         clientBuilder.authenticator(tokenAuthenticator)
-        clientBuilder.addInterceptor(chuckerInterceptor)
+        if (BuildConfig.DEBUG) {
+            clientBuilder.addInterceptor(loggingInterceptor)
+        }
         clientBuilder.addInterceptor(commonHeaderInterceptor)
         clientBuilder.addInterceptor(sentryOkHttpInterceptor)
 
@@ -45,12 +45,10 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideChuckerInterceptor(context: Context): ChuckerInterceptor {
-        val collector = ChuckerCollector(context, true, RetentionManager.Period.ONE_WEEK)
-        return ChuckerInterceptor.Builder(context)
-            .collector(collector)
-            .alwaysReadResponseBody(false)
-            .build()
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor {
+        val httpLoggingInterceptor = HttpLoggingInterceptor()
+        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        return httpLoggingInterceptor
     }
 
     @Provides

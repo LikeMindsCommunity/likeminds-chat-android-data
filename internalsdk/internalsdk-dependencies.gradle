@@ -31,8 +31,6 @@ dependencies {
     implementation deps.retrofit.gson
     implementation deps.okhttp.main
     implementation deps.okhttp.http_interceptor
-    debugImplementation deps.chucker.main
-    releaseImplementation deps.chucker.no_op
 
     //coroutines
     implementation deps.kotlin.coroutines_core

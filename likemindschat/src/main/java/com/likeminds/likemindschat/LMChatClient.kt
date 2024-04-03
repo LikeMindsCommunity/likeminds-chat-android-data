@@ -12,6 +12,8 @@ import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.conversation.model.LoadConversationType
+import com.likeminds.likemindschat.dm.DMClient
+import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.HelperClient
 import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
@@ -72,6 +74,9 @@ class LMChatClient private constructor() {
     @Inject
     lateinit var notificationClient: NotificationClient
 
+    @Inject
+    lateinit var dmClient: DMClient
+
     class Builder(val application: Application) {
 
         fun build(): LMChatClient {
@@ -125,7 +130,9 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to start chatroom sync
-    fun syncChatrooms(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+    fun syncChatrooms(
+        context: Context
+    ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
         return homeFeedClient.syncChatrooms(context)
     }
 
@@ -383,5 +390,50 @@ class LMChatClient private constructor() {
     // Exposed function to observe a community
     fun observeCommunity(): Observable<Community> {
         return communityClient.observeCommunity()
+    }
+
+    // Exposed function to check whether dm is enabled or not
+    suspend fun checkDMTab(): LMResponse<CheckDMTabResponse> {
+        return dmClient.checkDMTab()
+    }
+
+    // Exposed function to send a dm request
+    suspend fun sendDMRequest(sendDMRequest: SendDMRequest): LMResponse<SendDMResponse> {
+        return dmClient.sendDMRequest(sendDMRequest)
+    }
+
+    // Exposed function to check the status of the DM
+    suspend fun checkDMStatus(checkDMStatusRequest: CheckDMStatusRequest): LMResponse<CheckDMStatusResponse> {
+        return dmClient.checkDMStatus(checkDMStatusRequest)
+    }
+
+    // Exposed function to block a member
+    suspend fun blockMember(blockMemberRequest: BlockMemberRequest): LMResponse<BlockMemberResponse> {
+        return dmClient.blockMember(blockMemberRequest)
+    }
+
+    // Exposed function to check the DM limit
+    suspend fun checkDMLimit(checkDMLimitRequest: CheckDMLimitRequest): LMResponse<CheckDMLimitResponse> {
+        return dmClient.checkDMLimit(checkDMLimitRequest)
+    }
+
+    // Exposed function to create a DM chatroom
+    suspend fun createDMChatroom(createDMChatroomRequest: CreateDMChatroomRequest): LMResponse<CreateDMChatroomResponse> {
+        return dmClient.createDMChatroom(createDMChatroomRequest)
+    }
+
+    // Exposed function to get all the members in community
+    suspend fun getAllMember(getAllMemberRequest: GetAllMemberRequest): LMResponse<GetAllMemberResponse> {
+        return communityClient.getAllMember(getAllMemberRequest)
+    }
+
+    // Exposed function to search members in community
+    suspend fun searchMember(searchMembersRequest: SearchMembersRequest): LMResponse<SearchMembersResponse> {
+        return communityClient.searchMember(searchMembersRequest)
+    }
+
+    // Exposed function to observe DM chatrooms
+    fun observeDMChatrooms(listener: HomeChatroomListener): Observable<Unit>? {
+        return dmClient.observeDMChatrooms(listener)
     }
 }

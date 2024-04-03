@@ -8,6 +8,8 @@ import com.likeminds.likemindschat.di.community.CommunityModule
 import com.likeminds.likemindschat.di.community.CommunitySubComponent
 import com.likeminds.likemindschat.di.conversation.ConversationModule
 import com.likeminds.likemindschat.di.conversation.ConversationSubComponent
+import com.likeminds.likemindschat.di.dm.DMModule
+import com.likeminds.likemindschat.di.dm.DMSubComponent
 import com.likeminds.likemindschat.di.helper.HelperModule
 import com.likeminds.likemindschat.di.helper.HelperSubComponent
 import com.likeminds.likemindschat.di.homefeed.HomeFeedModule
@@ -44,7 +46,8 @@ import javax.inject.Singleton
         HelperModule::class,
         HomeFeedModule::class,
         ConversationModule::class,
-        NotificationModule::class
+        NotificationModule::class,
+        DMModule::class
     ]
 )
 internal interface LikeMindsChatComponent {
@@ -64,6 +67,7 @@ internal interface LikeMindsChatComponent {
     fun searchSubComponent(): SearchSubComponent.Factory
     fun conversationSubComponent(): ConversationSubComponent.Factory
     fun notificationSubComponent(): NotificationSubComponent.Factory
+    fun dmSubComponent(): DMSubComponent.Factory
 
     @Component.Builder
     interface Builder {

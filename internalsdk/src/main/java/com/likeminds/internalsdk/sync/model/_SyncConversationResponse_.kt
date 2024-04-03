@@ -7,6 +7,7 @@ import com.likeminds.internalsdk.community.model._Member_
 import com.likeminds.internalsdk.conversation.model._Attachment_
 import com.likeminds.internalsdk.conversation.model._Conversation_
 import com.likeminds.internalsdk.poll.model._Poll_
+import com.likeminds.internalsdk.widget.model._Widget_
 
 data class _SyncConversationResponse_(
     @SerializedName("user_meta")
@@ -24,5 +25,7 @@ data class _SyncConversationResponse_(
     @SerializedName("conv_attachments_meta")
     val conversationAttachmentsMeta: Map<String, List<_Attachment_>>,
     @SerializedName("conv_polls_meta")
-    val conversationPollMeta: Map<String, List<_Poll_>>
+    val conversationPollMeta: Map<String, List<_Poll_>>,
+    @SerializedName("widgets")
+    val widgets: Map<String, _Widget_>
 )

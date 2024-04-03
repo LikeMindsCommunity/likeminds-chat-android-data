@@ -103,7 +103,19 @@ class _Chatroom_ private constructor(
     @SerializedName("chatroom_image_url")
     val chatroomImageUrl: String?,
     @SerializedName("access_without_subscription")
-    val accessWithoutSubscription: Boolean?
+    val accessWithoutSubscription: Boolean?,
+    @SerializedName("chat_request_state")
+    val chatRequestState: Int?,
+    @SerializedName("is_private_member")
+    val isPrivateMember: Boolean?,
+    @SerializedName("chat_requested_by_id")
+    val chatRequestedById: String?,
+    @SerializedName("chat_request_created_at")
+    val chatRequestCreatedAt: Long?,
+    @SerializedName("chatroom_with_user")
+    val chatroomWithUser: _Member_?,
+    @SerializedName("chatroom_with_user_id")
+    val chatroomWithUserId: String?
 ) {
 
     class Builder {
@@ -157,6 +169,12 @@ class _Chatroom_ private constructor(
         private var unreadConversationCount: Int? = null
         private var chatroomImageUrl: String? = null
         private var accessWithoutSubscription: Boolean? = null
+        private var chatRequestState: Int? = null
+        private var isPrivateMember: Boolean? = null
+        private var chatRequestedById: String? = null
+        private var chatRequestCreatedAt: Long? = null
+        private var chatroomWithUser: _Member_? = null
+        private var chatroomWithUserId: String? = null
 
         fun member(member: _Member_?) = apply { this.member = member }
         fun id(id: String) = apply { this.id = id }
@@ -237,6 +255,24 @@ class _Chatroom_ private constructor(
         fun accessWithoutSubscription(accessWithoutSubscription: Boolean?) =
             apply { this.accessWithoutSubscription = accessWithoutSubscription }
 
+        fun chatRequestState(chatRequestState: Int?) =
+            apply { this.chatRequestState = chatRequestState }
+
+        fun isPrivateMember(isPrivateMember: Boolean?) =
+            apply { this.isPrivateMember = isPrivateMember }
+
+        fun chatRequestedById(chatRequestedById: String?) =
+            apply { this.chatRequestedById = chatRequestedById }
+
+        fun chatRequestCreatedAt(chatRequestCreatedAt: Long?) =
+            apply { this.chatRequestCreatedAt = chatRequestCreatedAt }
+
+        fun chatroomWithUser(chatroomWithUser: _Member_?) =
+            apply { this.chatroomWithUser = chatroomWithUser }
+
+        fun chatroomWithUserId(chatroomWithUserId: String?) =
+            apply { this.chatroomWithUserId = chatroomWithUserId }
+
         fun build() = _Chatroom_(
             member,
             id,
@@ -286,7 +322,69 @@ class _Chatroom_ private constructor(
             externalSeen,
             unreadConversationCount,
             chatroomImageUrl,
-            accessWithoutSubscription
+            accessWithoutSubscription,
+            chatRequestState,
+            isPrivateMember,
+            chatRequestedById,
+            chatRequestCreatedAt,
+            chatroomWithUser,
+            chatroomWithUserId
         )
+    }
+
+    fun toBuilder(): Builder {
+        return Builder().member(member)
+            .id(id)
+            .title(title)
+            .createdAt(createdAt)
+            .answerText(answerText)
+            .state(state)
+            .unseenCount(unseenCount)
+            .shareUrl(shareUrl)
+            .communityId(communityId)
+            .communityName(communityName)
+            .type(type)
+            .about(about)
+            .showFollowTelescope(showFollowTelescope)
+            .showFollowAutoTag(showFollowAutoTag)
+            .cardCreationTime(cardCreationTime)
+            .participantsCount(participantsCount)
+            .totalResponseCount(totalResponseCount)
+            .muteStatus(muteStatus)
+            .followStatus(followStatus)
+            .hasBeenNamed(hasBeenNamed)
+            .hasReactions(hasReactions)
+            .date(date)
+            .isTagged(isTagged)
+            .isPending(isPending)
+            .isPinned(isPinned)
+            .isDeleted(isDeleted)
+            .deletedBy(deletedBy)
+            .deletedByMember(deletedByMember)
+            .updatedAt(updatedAt)
+            .lastSeenConversationId(lastSeenConversationId)
+            .lastConversationId(lastConversationId)
+            .dateEpoch(dateEpoch)
+            .isSecret(isSecret)
+            .secretChatroomParticipants(secretChatroomParticipants)
+            .secretChatroomLeft(secretChatroomLeft)
+            .reactions(reactions)
+            .topicId(topicId)
+            .topic(topic)
+            .autoFollowDone(autoFollowDone)
+            .isEdited(isEdited)
+            .access(access)
+            .memberCanMessage(memberCanMessage)
+            .cohorts(cohorts)
+            .externalSeen(externalSeen)
+            .unreadConversationCount(unreadConversationCount)
+            .chatroomImageUrl(chatroomImageUrl)
+            .accessWithoutSubscription(accessWithoutSubscription)
+            .chatRequestState(chatRequestState)
+            .isPrivateMember(isPrivateMember)
+            .chatRequestedById(chatRequestedById)
+            .chatRequestCreatedAt(chatRequestCreatedAt)
+            .chatroomWithUser(chatroomWithUser)
+            .chatroomWithUserId(chatroomWithUserId)
     }
 }

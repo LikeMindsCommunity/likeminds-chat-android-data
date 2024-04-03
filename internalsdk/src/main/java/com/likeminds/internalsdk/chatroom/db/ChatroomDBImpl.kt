@@ -1,8 +1,12 @@
 package com.likeminds.internalsdk.chatroom.db
 
 import com.likeminds.internalsdk.chatroom.ChatroomReceiver
+import com.likeminds.internalsdk.chatroom.model._Chatroom_
 import com.likeminds.internalsdk.db.models.ChatroomRO
+import io.reactivex.Observable
 import io.realm.Realm
+import io.realm.RealmResults
+import io.realm.rx.CollectionChange
 import javax.inject.Inject
 
 class ChatroomDBImpl @Inject constructor(
@@ -43,5 +47,17 @@ class ChatroomDBImpl @Inject constructor(
 
     override fun updateLastSeenAndDraft(chatroomId: String, draft: String?) {
         chatroomReceiver.updateLastSeenAndDraft(chatroomId, draft)
+    }
+
+    override fun updateChatRequestState(
+        chatroomId: String,
+        chatRequestState: Int?,
+        chatRequestedById: String?
+    ) {
+        return chatroomReceiver.updateChatRequestState(chatroomId, chatRequestState, chatRequestedById)
+    }
+
+    override fun observeDMChatrooms(realm: Realm): Observable<CollectionChange<RealmResults<ChatroomRO>>>? {
+        return chatroomReceiver.observeDMChatrooms(realm)
     }
 }

@@ -1,6 +1,8 @@
 package com.likeminds.internalsdk.conversation.model
 
+import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
+import org.json.JSONObject
 
 class _PostConversationRequest_ private constructor(
     @SerializedName("chatroom_id")
@@ -18,7 +20,9 @@ class _PostConversationRequest_ private constructor(
     @SerializedName("temporary_id")
     val temporaryId: String?,
     @SerializedName("replied_chatroom_id")
-    val repliedChatroomId: String?
+    val repliedChatroomId: String?,
+    @SerializedName("metadata")
+    val metadata: JsonObject?
 ) {
 
     class Builder {
@@ -31,6 +35,7 @@ class _PostConversationRequest_ private constructor(
         private var attachmentCount: Int? = null
         private var temporaryId: String? = null
         private var repliedChatroomId: String? = null
+        private var metadata: JsonObject? = null
 
         fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
         fun text(text: String) = apply { this.text = text }
@@ -45,6 +50,7 @@ class _PostConversationRequest_ private constructor(
         fun temporaryId(temporaryId: String?) = apply { this.temporaryId = temporaryId }
         fun repliedChatroomId(repliedChatroomId: String?) =
             apply { this.repliedChatroomId = repliedChatroomId }
+        fun metadata(metadata: JsonObject?) = apply { this.metadata = metadata }
 
         fun build() = _PostConversationRequest_(
             chatroomId,
@@ -54,7 +60,8 @@ class _PostConversationRequest_ private constructor(
             repliedConversationId,
             attachmentCount,
             temporaryId,
-            repliedChatroomId
+            repliedChatroomId,
+            metadata
         )
     }
 
@@ -67,5 +74,6 @@ class _PostConversationRequest_ private constructor(
             .attachmentCount(attachmentCount)
             .temporaryId(temporaryId)
             .repliedChatroomId(repliedChatroomId)
+            .metadata(metadata)
     }
 }

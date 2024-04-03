@@ -59,7 +59,14 @@ class Chatroom private constructor(
     val draftConversation: String?,
     val isConversationStored: Boolean,
     val isDraft: Boolean?,
-    val totalAllResponseCount: Int?
+    val totalAllResponseCount: Int?,
+    val chatRequestState: ChatRequestState,
+    val isPrivateMember: Boolean?,
+    val chatRequestedById: String?,
+    val chatRequestCreatedAt: Long?,
+    val chatRequestedBy: Member?,
+    val chatroomWithUser: Member?,
+    val chatroomWithUserId: String?
 ) {
 
     class Builder {
@@ -119,6 +126,13 @@ class Chatroom private constructor(
         private var isConversationStored: Boolean = false
         private var isDraft: Boolean? = null
         private var totalAllResponseCount: Int? = null
+        private var chatRequestState: ChatRequestState = ChatRequestState.NOTHING
+        private var isPrivateMember: Boolean? = null
+        private var chatRequestedById: String? = null
+        private var chatRequestCreatedAt: Long? = null
+        private var chatRequestedBy: Member? = null
+        private var chatroomWithUser: Member? = null
+        private var chatroomWithUserId: String? = null
 
         fun member(member: Member?) = apply { this.member = member }
         fun id(id: String) = apply { this.id = id }
@@ -215,6 +229,27 @@ class Chatroom private constructor(
         fun totalAllResponseCount(totalAllResponseCount: Int?) =
             apply { this.totalAllResponseCount = totalAllResponseCount }
 
+        fun chatRequestState(chatRequestState: ChatRequestState) =
+            apply { this.chatRequestState = chatRequestState }
+
+        fun isPrivateMember(isPrivateMember: Boolean?) =
+            apply { this.isPrivateMember = isPrivateMember }
+
+        fun chatRequestedById(chatRequestedById: String?) =
+            apply { this.chatRequestedById = chatRequestedById }
+
+        fun chatRequestCreatedAt(chatRequestCreatedAt: Long?) =
+            apply { this.chatRequestCreatedAt = chatRequestCreatedAt }
+
+        fun chatRequestedBy(chatRequestedBy: Member?) =
+            apply { this.chatRequestedBy = chatRequestedBy }
+
+        fun chatroomWithUser(chatroomWithUser: Member?) =
+            apply { this.chatroomWithUser = chatroomWithUser }
+
+        fun chatroomWithUserId(chatroomWithUserId: String?) =
+            apply { this.chatroomWithUserId = chatroomWithUserId }
+
         fun build() = Chatroom(
             member,
             id,
@@ -270,7 +305,14 @@ class Chatroom private constructor(
             draftConversation,
             isConversationStored,
             isDraft,
-            totalAllResponseCount
+            totalAllResponseCount,
+            chatRequestState,
+            isPrivateMember,
+            chatRequestedById,
+            chatRequestCreatedAt,
+            chatRequestedBy,
+            chatroomWithUser,
+            chatroomWithUserId
         )
     }
 
@@ -330,5 +372,12 @@ class Chatroom private constructor(
             .isConversationStored(isConversationStored)
             .isDraft(isDraft)
             .totalAllResponseCount(totalAllResponseCount)
+            .chatRequestState(chatRequestState)
+            .isPrivateMember(isPrivateMember)
+            .chatRequestedById(chatRequestedById)
+            .chatRequestCreatedAt(chatRequestCreatedAt)
+            .chatRequestedBy(chatRequestedBy)
+            .chatroomWithUser(chatroomWithUser)
+            .chatroomWithUserId(chatroomWithUserId)
     }
 }

@@ -14,7 +14,7 @@ object SyncUtil {
     //Query Value
     const val CHATROOM_PAGE_SIZE = 50
     const val CONVERSATION_PAGE_SIZE = 500
-    val CHATROOM_TYPE_LIST = listOf(0, 7)
+    val CHATROOM_TYPE_LIST = listOf(0, 7, 10)
 
     //Query Key
     const val PAGE_KEY = "page"
@@ -117,12 +117,22 @@ object SyncUtil {
                     ROConverter.convertMember(lastConversationCreator, communityId)
                         ?: return@forEach
 
+                //widget data
+                val lastConversationWidgetId = lastConversation.widgetId
+                val lastConversationWidget = if (!lastConversationWidgetId.isNullOrEmpty()) {
+                    data.widgets[lastConversationWidgetId]
+                } else {
+                    null
+                }
+                val lastConversationWidgetRO = ROConverter.convertWidgetRO(lastConversationWidget)
+
                 val lastConversationRO = ROConverter.convertLastConversation(
                     realm,
                     lastConversation,
                     lastConversationCreatorRO,
                     lastConversationAttachment,
-                    lastConversationDeletedByMemberRO
+                    lastConversationDeletedByMemberRO,
+                    lastConversationWidgetRO
                 ) ?: return@forEach
 
                 realmWrite.insertOrUpdate(lastConversationRO)
@@ -168,6 +178,16 @@ object SyncUtil {
                             emptyList()
                         }
 
+                    //widget data
+                    val topicConversationWidgetId = topic?.widgetId
+                    val topicConversationWidget = if (!topicConversationWidgetId.isNullOrEmpty()) {
+                        data.widgets[topicConversationWidgetId]
+                    } else {
+                        null
+                    }
+                    val topicConversationWidgetRO =
+                        ROConverter.convertWidgetRO(topicConversationWidget)
+
                     val topicRO =
                         ROConverter.convertConversation(
                             realm,
@@ -176,7 +196,8 @@ object SyncUtil {
                             topicConversationPolls,
                             topicConversationAttachments,
                             loggedInUUID = loggedInUUID,
-                            deletedByMemberRO = topicConversationDeletedByMemberRO
+                            deletedByMemberRO = topicConversationDeletedByMemberRO,
+                            widget = topicConversationWidgetRO
                         )
                     if (topicCreatorRO != null) {
                         realmWrite.insertOrUpdate(topicCreatorRO)
@@ -234,6 +255,18 @@ object SyncUtil {
                             emptyList()
                         }
 
+                    //widget data
+                    val lastSeenConversationWidgetId = lastSeenConversation?.widgetId
+                    val lastSeenConversationWidget =
+                        if (!lastSeenConversationWidgetId.isNullOrEmpty()) {
+                            data.widgets[lastSeenConversationWidgetId]
+                        } else {
+                            null
+                        }
+                    val lastSeenConversationWidgetRO =
+                        ROConverter.convertWidgetRO(lastSeenConversationWidget)
+
+
                     val lastSeenConversationRO = ROConverter.convertConversation(
                         realm,
                         lastSeenConversation,
@@ -241,7 +274,8 @@ object SyncUtil {
                         lastSeenConversationPolls,
                         lastSeenConversationAttachments,
                         loggedInUUID = loggedInUUID,
-                        deletedByMemberRO = lastSeenConversationDeletedByMemberRO
+                        deletedByMemberRO = lastSeenConversationDeletedByMemberRO,
+                        widget = lastSeenConversationWidgetRO
                     )
                     if (lastSeenConversationRO != null) {
                         realmWrite.insertOrUpdate(lastSeenConversationRO)
@@ -251,12 +285,29 @@ object SyncUtil {
                     }
                 }
 
+                // gets the member object for chatRequestedBy
+                val chatRequestedById = chatroom.chatRequestedById
+                val chatRequestedBy = data.userMeta[chatRequestedById.toString()]
+                val chatRequestedByRO = ROConverter.convertMember(chatRequestedBy, communityId)
+                if (chatRequestedByRO != null) {
+                    realmWrite.insertOrUpdate(chatRequestedByRO)
+                }
+
+                // gets the member object for chatroomWithUser
+                val chatroomWithUserId = chatroom.chatroomWithUserId
+                val chatroomWithUser = data.userMeta[chatroomWithUserId.toString()]
+                val chatroomWithUserRO = ROConverter.convertMember(chatroomWithUser, communityId)
+                if (chatroomWithUserRO != null) {
+                    realmWrite.insertOrUpdate(chatroomWithUserRO)
+                }
                 //convert chatroom
                 val chatroomRO = ROConverter.convertChatroom(
                     realm,
                     chatroom,
                     chatroomCreatorRO,
-                    lastConversationRO
+                    lastConversationRO,
+                    chatRequestByRO = chatRequestedByRO,
+                    chatroomWithUserRO = chatroomWithUserRO
                 ) ?: return@forEach
                 chatroomRO.relationshipNeeded = true
 
@@ -306,11 +357,29 @@ object SyncUtil {
                     emptyList()
                 }
 
+                // gets the member object for chatRequestedBy
+                val chatRequestedById = chatroom.chatRequestedById
+                val chatRequestedBy = data.userMeta[chatRequestedById.toString()]
+                val chatRequestedByRO = ROConverter.convertMember(chatRequestedBy, communityId)
+                if (chatRequestedByRO != null) {
+                    realmWrite.insertOrUpdate(chatRequestedByRO)
+                }
+
+                // gets the member object for chatroomWithUser
+                val chatroomWithUserId = chatroom.chatroomWithUserId
+                val chatroomWithUser = data.userMeta[chatroomWithUserId.toString()]
+                val chatroomWithUserRO = ROConverter.convertMember(chatroomWithUser, communityId)
+                if (chatroomWithUserRO != null) {
+                    realmWrite.insertOrUpdate(chatroomWithUserRO)
+                }
+
                 val chatroomRO = ROConverter.convertChatroom(
                     realmWrite,
                     chatroom,
                     chatroomCreatorRO,
-                    reactions = chatroomReactions
+                    reactions = chatroomReactions,
+                    chatRequestByRO = chatRequestedByRO,
+                    chatroomWithUserRO = chatroomWithUserRO
                 ) ?: return@write
                 chatroomRO.relationshipNeeded = true
                 realmWrite.insertOrUpdate(chatroomRO)
@@ -369,6 +438,11 @@ object SyncUtil {
                             emptyList()
                         }
 
+                    //widget data
+                    val widgetId = conversation.widgetId
+                    val widget = data.widgets[widgetId]
+                    val widgetRO = ROConverter.convertWidgetRO(widget)
+
                     val conversationRO =
                         ROConverter.convertConversation(
                             realmWrite,
@@ -378,7 +452,8 @@ object SyncUtil {
                             conversationAttachment,
                             reactions,
                             loggedInUUID = loggedInUUID,
-                            deletedByMemberRO = deletedByMemberRO
+                            deletedByMemberRO = deletedByMemberRO,
+                            widget = widgetRO
                         ) ?: return@conversation
 
                     realmWrite.insertOrUpdate(

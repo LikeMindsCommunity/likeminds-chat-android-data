@@ -33,7 +33,9 @@ object SyncSDK {
      *
      * Return: Pair -> first: live data of blockerWork, second: live data of app config worker
      */
-    fun startFirstHomeFeedSync(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+    fun startFirstHomeFeedSync(
+        context: Context
+    ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
         if (ongoingSyncTypes.contains(SYNC_FIRST_TIME_HOME_FEED)) {
             return null
         }
@@ -85,7 +87,7 @@ object SyncSDK {
             .setInputData(workDataOf(FirstTimeChatroomSyncWorker.IS_BACKGROUND_WORKER to isBackgroundWorker))
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .setConstraints(networkConstraint)
@@ -98,7 +100,7 @@ object SyncSDK {
         return OneTimeWorkRequestBuilder<ReopenChatroomSyncWorker>()
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .setConstraints(networkConstraint)
@@ -127,7 +129,7 @@ object SyncSDK {
             .setConstraints(networkConstraint)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .addTag(DatabaseSyncWorker.NAME)
@@ -239,7 +241,7 @@ object SyncSDK {
             .setConstraints(networkConstraint)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .addTag(FirstTimeConversationSyncWorker.NAME)
@@ -261,7 +263,7 @@ object SyncSDK {
             .setConstraints(networkConstraint)
             .setBackoffCriteria(
                 BackoffPolicy.LINEAR,
-                OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                WorkRequest.MIN_BACKOFF_MILLIS,
                 TimeUnit.MILLISECONDS
             )
             .addTag(ReopenConversationSyncWorker.NAME)

@@ -1,5 +1,7 @@
 package com.likeminds.likemindschat.conversation.model
 
+import org.json.JSONObject
+
 class PostConversationRequest private constructor(
     val chatroomId: String,
     val text: String,
@@ -9,7 +11,8 @@ class PostConversationRequest private constructor(
     val repliedConversationId: String?,
     val attachmentCount: Int?,
     val temporaryId: String?,
-    val repliedChatroomId: String?
+    val repliedChatroomId: String?,
+    val metadata: JSONObject?
 ) {
 
     class Builder {
@@ -23,6 +26,7 @@ class PostConversationRequest private constructor(
         private var attachmentCount: Int? = null
         private var temporaryId: String? = null
         private var repliedChatroomId: String? = null
+        private var metadata: JSONObject? = null
 
         fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
         fun text(text: String) = apply { this.text = text }
@@ -41,6 +45,10 @@ class PostConversationRequest private constructor(
         fun repliedChatroomId(repliedChatroomId: String?) =
             apply { this.repliedChatroomId = repliedChatroomId }
 
+        fun metadata(metadata: JSONObject?) = apply {
+            this.metadata = metadata
+        }
+
         fun build() = PostConversationRequest(
             chatroomId,
             text,
@@ -50,7 +58,8 @@ class PostConversationRequest private constructor(
             repliedConversationId,
             attachmentCount,
             temporaryId,
-            repliedChatroomId
+            repliedChatroomId,
+            metadata
         )
     }
 
@@ -64,5 +73,6 @@ class PostConversationRequest private constructor(
             .attachmentCount(attachmentCount)
             .temporaryId(temporaryId)
             .repliedChatroomId(repliedChatroomId)
+            .metadata(metadata)
     }
 }

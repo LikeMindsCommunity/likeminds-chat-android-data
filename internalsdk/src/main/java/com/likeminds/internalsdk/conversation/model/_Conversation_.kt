@@ -3,6 +3,7 @@ package com.likeminds.internalsdk.conversation.model
 import com.google.gson.annotations.SerializedName
 import com.likeminds.internalsdk.community.model._Member_
 import com.likeminds.internalsdk.poll.model._Poll_
+import com.likeminds.internalsdk.widget.model._Widget_
 
 class _Conversation_ private constructor(
     @SerializedName("id")
@@ -82,7 +83,11 @@ class _Conversation_ private constructor(
     @SerializedName("last_updated")
     val lastUpdated: Long?,
     @SerializedName("deleted_by_member")
-    val deletedByMember: _Member_?
+    val deletedByMember: _Member_?,
+    @SerializedName("widget_id")
+    val widgetId: String?,
+    @SerializedName("widget")
+    val _widget_: _Widget_?
 ) {
 
     class Builder {
@@ -126,6 +131,8 @@ class _Conversation_ private constructor(
         private var hasReactions: Boolean? = false
         private var lastUpdated: Long? = null
         private var deletedByMember: _Member_? = null
+        private var widgetId: String? = null
+        private var _widget_: _Widget_? = null
 
         fun id(id: String?) = apply { this.id = id }
         fun chatroomId(chatroomId: String?) = apply { this.chatroomId = chatroomId }
@@ -186,6 +193,9 @@ class _Conversation_ private constructor(
         fun deletedByMember(deletedByMember: _Member_?) =
             apply { this.deletedByMember = deletedByMember }
 
+        fun widgetId(widgetId: String?) = apply { this.widgetId = widgetId }
+        fun widget(_widget_: _Widget_?) = apply { this._widget_ = _widget_}
+
         fun build() = _Conversation_(
             id,
             chatroomId,
@@ -225,7 +235,9 @@ class _Conversation_ private constructor(
             hasFiles,
             hasReactions,
             lastUpdated,
-            deletedByMember
+            deletedByMember,
+            widgetId,
+            _widget_
         )
     }
 
@@ -269,5 +281,7 @@ class _Conversation_ private constructor(
             .hasReactions(hasReactions)
             .lastUpdated(lastUpdated)
             .deletedByMember(deletedByMember)
+            .widgetId(widgetId)
+            .widget(_widget_)
     }
 }
