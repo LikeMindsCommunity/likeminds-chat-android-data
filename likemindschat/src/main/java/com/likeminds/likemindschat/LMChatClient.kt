@@ -436,4 +436,8 @@ class LMChatClient private constructor() {
     fun observeDMChatrooms(listener: HomeChatroomListener): Observable<Unit>? {
         return dmClient.observeDMChatrooms(listener)
     }
+
+    suspend fun getCommunityConfigurations(): LMResponse<GetCommunityConfigurationsResponse> {
+        return communityClient.getCommunityConfigurations()
+    }
 }

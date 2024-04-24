@@ -212,4 +212,28 @@ class CommunityClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("searchType")
         }
     }
+
+    /****
+     * Calls the community configuration API and
+     * convert internal response model to exposed response model
+     * @throws IllegalArgumentException - when LMFeedClient is not instantiated
+     * @return [GetCommunityConfigurationsResponse] - [GetCommunityConfigurationsResponse] model
+     */
+    suspend fun getCommunityConfigurations(): LMResponse<GetCommunityConfigurationsResponse> {
+        // validates the client request
+        RequestUtils.validate()
+
+        return when (val response = communityApi.getCommunityConfiguration()) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                ModelConverter.convertGetCommunityConfigurationAPIResponse(response.body)
+            }
+        }
+    }
 }

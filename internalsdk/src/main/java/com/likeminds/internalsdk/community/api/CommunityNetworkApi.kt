@@ -23,4 +23,7 @@ interface CommunityNetworkApi {
     suspend fun searchMembers(
         @QueryMap queries: HashMap<String, Any>
     ): NetworkResponse<APIResponse<_SearchMembersResponse_>>
+
+    @GET("community/configurations")
+    suspend fun getCommunityConfiguration(): NetworkResponse<APIResponse<_GetCommunityConfiguration_>>
 }

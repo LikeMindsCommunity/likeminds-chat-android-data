@@ -19,4 +19,7 @@ interface CommunityApi {
 
     // api to search members in the community
     suspend fun searchMembers(request: _SearchMembersRequest_): NetworkResponse<APIResponse<_SearchMembersResponse_>>
+
+    //api to get all community configuration
+    suspend fun getCommunityConfiguration(): NetworkResponse<APIResponse<_GetCommunityConfiguration_>>
 }

@@ -21,6 +21,7 @@ import com.likeminds.internalsdk.widget.model._Widget_
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.*
+import com.likeminds.likemindschat.community.util.ConfigurationUtil.getConfigurationType
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.model.*
@@ -1396,6 +1397,39 @@ object ModelConverter {
             .metadata(JSONObject(_widget_.metadata.toString()))
             .createdAt(_widget_.createdAt)
             .updatedAt(_widget_.updatedAt)
+            .build()
+    }
+
+    // converts APIResponse<_GetCommunityConfiguration_> to LMResponse<GetCommunityConfiguration> model
+    fun convertGetCommunityConfigurationAPIResponse(
+        apiResponse: APIResponse<_GetCommunityConfiguration_>
+    ): LMResponse<GetCommunityConfigurationsResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetCommunityConfiguration(apiResponse.data)
+        )
+    }
+
+    // converts internal _GetCommunityConfiguration_ to client GetCommunityConfiguration
+    private fun convertGetCommunityConfiguration(_getCommunityConfiguration_: _GetCommunityConfiguration_?): GetCommunityConfigurationsResponse? {
+        if (_getCommunityConfiguration_ == null) {
+            return null
+        }
+        return GetCommunityConfigurationsResponse(
+            _getCommunityConfiguration_.configurations.map { _configuration_ ->
+                convertConfiguration(_configuration_)
+            }
+        )
+    }
+
+    // converts internal _Configuration_ to client Configuration
+    private fun convertConfiguration(_configuration_: _Configuration_): Configuration {
+        val jsonString = _configuration_.value.toString()
+        return Configuration.Builder()
+            .type(_configuration_.type.getConfigurationType())
+            .description(_configuration_.description)
+            .value(JSONObject(jsonString))
             .build()
     }
 

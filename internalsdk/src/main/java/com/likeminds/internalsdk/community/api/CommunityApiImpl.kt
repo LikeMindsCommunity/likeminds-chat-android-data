@@ -25,4 +25,8 @@ class CommunityApiImpl @Inject constructor(
     override suspend fun searchMembers(request: _SearchMembersRequest_): NetworkResponse<APIResponse<_SearchMembersResponse_>> {
         return communityReceiver.searchMembers(request)
     }
+
+    override suspend fun getCommunityConfiguration(): NetworkResponse<APIResponse<_GetCommunityConfiguration_>> {
+        return communityReceiver.getCommunityConfiguration()
+    }
 }
