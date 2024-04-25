@@ -41,6 +41,23 @@ class MainActivity : AppCompatActivity() {
                 initiateResponse: ${initiateResponse.data?.user?.id}
             """.trimIndent()
             )
+
+            val configurations = client.getCommunityConfigurations()
+            Log.d(
+                TAG,
+                """
+                    configurations:${
+                    configurations.data?.configurations?.map {
+                        it.type
+                    }
+                }
+                configurations:${
+                    configurations.data?.configurations?.map {
+                        it.value.toString()
+                    }
+                }
+                """.trimIndent()
+            )
         }
     }
 }
