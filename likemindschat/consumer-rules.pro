@@ -2,6 +2,7 @@
 -keep class com.likeminds.likemindschat.chatroom.model.** { *; }
 -keep class com.likeminds.likemindschat.community.model.** { *; }
 -keep class com.likeminds.likemindschat.conversation.model.** { *; }
+-keep class com.likeminds.likemindschat.dm.model.** { *; }
 -keep class com.likeminds.likemindschat.helper.model.** { *; }
 -keep class com.likeminds.likemindschat.homefeed.model.** { *; }
 -keep class com.likeminds.likemindschat.initiateUser.model.** { *; }
