@@ -3,6 +3,7 @@
 -keep class com.likeminds.internalsdk.community.model.** { *; }
 -keep class com.likeminds.internalsdk.conversation.model.** { *; }
 -keep class com.likeminds.internalsdk.db.model.** { *; }
+-keep class com.likeminds.internalsdk.dm.model.** { *; }
 -keep class com.likeminds.internalsdk.helper.model.** { *; }
 -keep class com.likeminds.internalsdk.homefeed.model.** { *; }
 -keep class com.likeminds.internalsdk.moderation.model.** { *; }
