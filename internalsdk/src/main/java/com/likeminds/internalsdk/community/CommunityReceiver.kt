@@ -83,6 +83,10 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
         return communityNetworkApi.searchMembers(queries)
     }
 
+    suspend fun getCommunityConfiguration(): NetworkResponse<APIResponse<_GetCommunityConfiguration_>> {
+        return communityNetworkApi.getCommunityConfiguration()
+    }
+
     /**
      * DB Functions
      */
