@@ -8,7 +8,7 @@ import com.likeminds.internalsdk.conversation.model._Attachment_
 
 data class _SearchChatroomResponse_(
     @SerializedName("chatrooms")
-    val conversations: List<_SearchChatroom_>
+    val chatrooms: List<_SearchChatroom_>
 )
 
 data class _SearchChatroom_(

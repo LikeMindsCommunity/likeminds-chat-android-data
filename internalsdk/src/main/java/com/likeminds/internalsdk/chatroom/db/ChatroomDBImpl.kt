@@ -54,10 +54,18 @@ class ChatroomDBImpl @Inject constructor(
         chatRequestState: Int?,
         chatRequestedById: String?
     ) {
-        return chatroomReceiver.updateChatRequestState(chatroomId, chatRequestState, chatRequestedById)
+        return chatroomReceiver.updateChatRequestState(
+            chatroomId,
+            chatRequestState,
+            chatRequestedById
+        )
     }
 
     override fun observeDMChatrooms(realm: Realm): Observable<CollectionChange<RealmResults<ChatroomRO>>>? {
         return chatroomReceiver.observeDMChatrooms(realm)
+    }
+
+    override fun saveChatroom(chatroom: _Chatroom_) {
+        return chatroomReceiver.saveChatroom(chatroom)
     }
 }

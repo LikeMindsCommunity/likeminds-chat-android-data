@@ -317,6 +317,9 @@ class DMClient @Inject constructor() : BaseClient() {
             is NetworkResponse.Success -> {
                 val body = response.body
 
+                //save the dm chatroom object in local db
+                body.data?.chatroom?.let { chatroomDB.saveChatroom(it) }
+
                 ModelConverter.convertCreateDMChatroomResponse(body)
             }
         }
