@@ -397,7 +397,7 @@ object ModelConverter {
         _searchChatroomResponse_: _SearchChatroomResponse_?
     ): SearchChatroomResponse? {
         if (_searchChatroomResponse_ == null) return null
-        return SearchChatroomResponse(convertSearchChatrooms(_searchChatroomResponse_.conversations))
+        return SearchChatroomResponse(convertSearchChatrooms(_searchChatroomResponse_.chatrooms))
     }
 
     // converts internal SearchChatroom model list to client model list

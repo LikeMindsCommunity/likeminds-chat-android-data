@@ -37,8 +37,15 @@ interface ChatroomDB {
     fun updateLastSeenAndDraft(chatroomId: String, draft: String?)
 
     //query to update chat request state of chatroom
-    fun updateChatRequestState(chatroomId: String, chatRequestState: Int?, chatRequestedById: String?)
+    fun updateChatRequestState(
+        chatroomId: String,
+        chatRequestState: Int?,
+        chatRequestedById: String?
+    )
 
     // query to observe DM chatrooms
     fun observeDMChatrooms(realm: Realm): Observable<CollectionChange<RealmResults<ChatroomRO>>>?
+
+    //query to save the chatroom to local db
+    fun saveChatroom(chatroom: _Chatroom_)
 }

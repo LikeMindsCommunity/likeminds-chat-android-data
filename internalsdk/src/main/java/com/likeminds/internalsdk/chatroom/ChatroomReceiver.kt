@@ -4,6 +4,7 @@ import android.os.Build
 import com.likeminds.internalsdk.chatroom.api.ChatroomNetworkApi
 import com.likeminds.internalsdk.chatroom.model.*
 import com.likeminds.internalsdk.db.ChatDBUtil
+import com.likeminds.internalsdk.db.ROConverter
 import com.likeminds.internalsdk.db.models.*
 import com.likeminds.internalsdk.db.util.DbKey
 import com.likeminds.internalsdk.sdk.util.SDKPreferences
@@ -254,5 +255,36 @@ class ChatroomReceiver @Inject constructor(
             .filter {
                 it.collection.isLoaded && it.changeset != null
             }
+    }
+
+    //saves the chatroom object to the local DB
+    fun saveChatroom(chatroom: _Chatroom_) {
+        ChatDBUtil.write { realm ->
+            val communityId = chatroom.communityId ?: ""
+
+            //gets the creator of the chatroom
+            val chatroomCreator =
+                ROConverter.convertMember(chatroom.member, communityId)
+                    ?: return@write
+
+            realm.insertOrUpdate(chatroomCreator)
+
+            // gets the member object for chatroomWithUser
+            val chatroomWithUser = chatroom.chatroomWithUser
+            val chatroomWithUserRO = ROConverter.convertMember(chatroomWithUser, communityId)
+            if (chatroomWithUserRO != null) {
+                realm.insertOrUpdate(chatroomWithUserRO)
+            }
+
+            //dumps the chatroom object to the db
+            ROConverter.convertChatroom(
+                realm,
+                chatroom,
+                chatroomCreator,
+                chatroomWithUserRO = chatroomWithUserRO
+            )?.let { chatroomRO ->
+                realm.insertOrUpdate(chatroomRO)
+            }
+        }
     }
 }
