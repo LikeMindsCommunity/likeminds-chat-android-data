@@ -6,7 +6,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.likeminds.internalsdk.GroupChatSDK
 import com.likeminds.internalsdk.conversation.model.*
@@ -22,7 +21,6 @@ import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
 import io.realm.RealmResults
-import org.json.JSONObject
 import javax.inject.Inject
 
 class ConversationClient @Inject constructor() : BaseClient() {

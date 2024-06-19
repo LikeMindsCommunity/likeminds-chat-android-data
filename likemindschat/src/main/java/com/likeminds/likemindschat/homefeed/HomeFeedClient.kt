@@ -172,4 +172,13 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
 
         databaseReference?.addValueEventListener(valueChangeListener)
     }
+
+    /**
+     * Removes the live home feed observer
+     */
+    fun removeLiveHomeFeedListener() {
+        if (this::valueChangeListener.isInitialized) {
+            databaseReference?.removeEventListener(valueChangeListener)
+        }
+    }
 }

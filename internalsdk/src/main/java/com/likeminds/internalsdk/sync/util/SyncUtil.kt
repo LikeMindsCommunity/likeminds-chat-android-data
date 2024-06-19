@@ -456,9 +456,7 @@ object SyncUtil {
                             widget = widgetRO
                         ) ?: return@conversation
 
-                    realmWrite.insertOrUpdate(
-                        conversationRO
-                    )
+                    realmWrite.insertOrUpdate(conversationRO)
                 }
             }
         }
