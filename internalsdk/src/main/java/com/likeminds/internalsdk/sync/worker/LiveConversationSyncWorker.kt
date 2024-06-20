@@ -1,0 +1,152 @@
+package com.likeminds.internalsdk.sync.worker
+
+import android.app.Application
+import android.content.Context
+import android.util.Log
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import com.likeminds.internalsdk.GroupChatSDK
+import com.likeminds.internalsdk.sdk.util.SDKPreferences
+import com.likeminds.internalsdk.sync.model._SyncConversationResponse_
+import com.likeminds.internalsdk.sync.util.SyncUtil
+import com.likeminds.internalsdk.user.util.UserPreferences
+import com.likeminds.internalsdk.utils.MAX_RETRY_COUNT
+import com.likeminds.internalsdk.utils.measureExecution
+import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import io.realm.Realm
+import kotlinx.coroutines.runBlocking
+
+/**
+ * Worker to sync conversations when a live conversation is called from Firebase listener
+ * @param context Context object
+ * @param workerParameters Contains meta data and input data of this worker
+ */
+class LiveConversationSyncWorker(
+    context: Context,
+    workerParameters: WorkerParameters
+) : Worker(context, workerParameters) {
+
+    private val collabmatesSdk = GroupChatSDK.getInstance()
+    private val sdkPreferences = SDKPreferences(context as Application)
+    private val userPreferences = UserPreferences(context as Application)
+    private val api = collabmatesSdk.getConversationSyncApi()
+
+    private var maxTimestamp = System.currentTimeMillis()
+    private var minTimeStamp = 0L
+    private var page = 1
+    private var dataList = ArrayList<_SyncConversationResponse_>()
+
+    val chatroomId = workerParameters.inputData.getString(INPUT_DATA_CHATROOM_ID) ?: ""
+    val conversationId = workerParameters.inputData.getString(INPUT_DATA_CONVERSATION_ID) ?: ""
+
+    companion object {
+        const val NAME = "Live Conversation Sync Worker"
+        const val INPUT_DATA_CHATROOM_ID = "chatroom_id"
+        const val INPUT_DATA_CONVERSATION_ID = "conversation_id"
+    }
+
+    override fun doWork(): Result {
+        return measureExecution("${ReopenConversationSyncWorker.NAME}, params -> chatroom_id: $chatroomId, conversation_id: $conversationId") {
+            val realm = Realm.getDefaultInstance()
+            val result = runBlocking {
+                getConversations()
+            }
+            realm.close()
+            return@measureExecution result
+        }
+    }
+
+    private suspend fun getConversations(): Result {
+        if (chatroomId.isEmpty()) return Result.failure()
+        // Set query parameters for request
+        val queries = HashMap<String, Any>()
+        queries[SyncUtil.CHATROOM_ID_KEY] = chatroomId
+        queries[SyncUtil.PAGE_KEY] = page
+        queries[SyncUtil.PAGE_SIZE_KEY] = SyncUtil.CONVERSATION_PAGE_SIZE
+
+        queries[SyncUtil.CONVERSATION_ID_KEY] = conversationId
+
+        queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
+        queries[SyncUtil.MIN_TIMESTAMP_KEY] = minTimeStamp
+
+        var data: _SyncConversationResponse_? = null
+
+        when (val response = api.syncConversations(queries)) {
+            is NetworkResponse.Error -> {
+                // The api call failed with some error, retry again or return failure according to the condition.
+                Log.e(SyncUtil.TAG, "live conversation sync failed: ${response.body.errorMessage}")
+                if (runAttemptCount <= MAX_RETRY_COUNT) {
+                    Result.retry()
+                } else {
+                    Result.failure()
+                }
+            }
+
+            is NetworkResponse.Success -> {
+                data = response.body.data
+            }
+        }
+
+        val communityId = sdkPreferences.getCommunityId() ?: ""
+        val loggedInUUID = userPreferences.getClientUUID()
+        return when {
+            isStopped -> {
+                // The worker is stopped or killed by the OS.
+                Result.success()
+            }
+
+            data == null -> {
+                // The api call failed, retry again or return failure according to the condition.
+                if (runAttemptCount <= MAX_RETRY_COUNT) {
+                    Result.retry()
+                } else {
+                    Result.failure()
+                }
+            }
+
+            /**
+             *to handle edge-case when there is no new conversation
+             * but we get same conversation from api response
+             */
+            data.conversations.size == 1 -> {
+                val conversation = data.conversations.first()
+                if (minTimeStamp == conversation.lastUpdated) {
+                    Result.success()
+                } else {
+                    val creatorId = conversation.memberId
+                    val member = data.userMeta[creatorId.toString()]
+                    val conversationCreatorUUID = member?.sdkClientInfo?.uuid
+                    if (!conversationCreatorUUID.equals(userPreferences.getClientUUID())) {
+                        dataList.add(data)
+                        SyncUtil.saveConversationResponses(
+                            chatroomId,
+                            communityId,
+                            loggedInUUID,
+                            dataList
+                        )
+                    }
+                    Result.success()
+                }
+            }
+
+            else -> {
+                val conversation = data.conversations.firstOrNull()
+                if (conversation != null) {
+                    val creatorId = conversation.memberId
+                    val member = data.userMeta[creatorId.toString()]
+                    val conversationCreatorUUID = member?.sdkClientInfo?.uuid
+                    if (!conversationCreatorUUID.equals(userPreferences.getClientUUID())) {
+                        dataList.add(data)
+                        SyncUtil.saveConversationResponses(
+                            chatroomId,
+                            communityId,
+                            loggedInUUID,
+                            dataList
+                        )
+                    }
+                }
+                Result.success()
+            }
+        }
+    }
+}

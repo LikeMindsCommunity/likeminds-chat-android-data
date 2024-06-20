@@ -244,7 +244,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildAdded -> {
                     val latestConversation = result.response?.answerId
                     if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startReopenSyncForChatroom(
+                        SyncSDK.startLiveSyncConversation(
                             context,
                             chatroomId,
                             latestConversation
@@ -255,7 +255,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildChanged -> {
                     val latestConversation = result.response?.answerId
                     if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startReopenSyncForChatroom(
+                        SyncSDK.startLiveSyncConversation(
                             context,
                             chatroomId,
                             latestConversation
@@ -266,7 +266,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildMoved -> {
                     val latestConversation = result.response?.answerId
                     if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startReopenSyncForChatroom(
+                        SyncSDK.startLiveSyncConversation(
                             context,
                             chatroomId,
                             latestConversation
@@ -277,7 +277,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildRemoved -> {
                     val latestConversation = result.response?.answerId
                     if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startReopenSyncForChatroom(
+                        SyncSDK.startLiveSyncConversation(
                             context,
                             chatroomId,
                             latestConversation
