@@ -7,7 +7,7 @@ import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.JsonParser
-import com.likeminds.internalsdk.GroupChatSDK
+import com.likeminds.internalsdk.LMChatSDK
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.ConversationRO
 import com.likeminds.internalsdk.sync.SyncSDK
@@ -30,19 +30,19 @@ class ConversationClient @Inject constructor() : BaseClient() {
     }
 
     private val conversationApi by lazy {
-        groupChatSDK.getConversationApi()
+        chatSDK.getConversationApi()
     }
 
     private val chatroomDB by lazy {
-        groupChatSDK.getChatroomDb()
+        chatSDK.getChatroomDb()
     }
 
     private val sdkPreferences by lazy {
-        groupChatSDK.getSDKPreferences()
+        chatSDK.getSDKPreferences()
     }
 
     private val conversationDB by lazy {
-        groupChatSDK.getConversationDB()
+        chatSDK.getConversationDB()
     }
 
     /**
@@ -287,7 +287,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
                 is LiveConversationResponse.OnCancelled -> {
                     Log.e(
-                        GroupChatSDK.LOG_TAG,
+                        LMChatSDK.LOG_TAG,
                         "live conversation failed: ${result.errorMessage}"
                     )
                 }

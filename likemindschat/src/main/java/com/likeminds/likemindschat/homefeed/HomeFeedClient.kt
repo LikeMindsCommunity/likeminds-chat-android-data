@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.*
-import com.likeminds.internalsdk.GroupChatSDK
+import com.likeminds.internalsdk.LMChatSDK
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.sync.SyncSDK
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
@@ -29,11 +29,11 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
     }
 
     private val homeFeedApi by lazy {
-        groupChatSDK.getHomeFeedApi()
+        chatSDK.getHomeFeedApi()
     }
 
     private val homeFeedDB by lazy {
-        groupChatSDK.getHomeFeedDb()
+        chatSDK.getHomeFeedDb()
     }
 
     private lateinit var valueChangeListener: ValueEventListener
@@ -144,7 +144,7 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
     fun observeLiveHomeFeed(context: Context) {
         RequestUtils.validate()
 
-        val communityId = groupChatSDK.sdkPreferences.getCommunityId() ?: ""
+        val communityId = chatSDK.sdkPreferences.getCommunityId() ?: ""
         val firebaseApp = FirebaseApp.getInstance("lm-secondary")
         databaseReference = FirebaseDatabase.getInstance(firebaseApp).reference
             .child("community")
@@ -166,7 +166,7 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.d(GroupChatSDK.LOG_TAG, "cancelled: ${error.message}")
+                Log.d(LMChatSDK.LOG_TAG, "cancelled: ${error.message}")
             }
         }
 

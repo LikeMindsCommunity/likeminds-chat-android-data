@@ -54,7 +54,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GroupChatSDK {
+class LMChatSDK {
 
     private var sdkComponent: InternalSDKComponent? = null
 
@@ -132,16 +132,16 @@ class GroupChatSDK {
 
     companion object {
 
-        private var groupChatSDK: GroupChatSDK? = null
+        private var chatSDK: LMChatSDK? = null
         const val LOG_TAG = "LikeMindsChat"
 
         @JvmStatic
-        fun getInstance(): GroupChatSDK {
-            if (groupChatSDK == null) {
-                groupChatSDK = GroupChatSDK()
+        fun getInstance(): LMChatSDK {
+            if (chatSDK == null) {
+                chatSDK = LMChatSDK()
             }
 
-            return groupChatSDK!!
+            return chatSDK!!
         }
     }
 

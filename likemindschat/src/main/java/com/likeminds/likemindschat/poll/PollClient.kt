@@ -20,11 +20,11 @@ class PollClient @Inject constructor() : BaseClient() {
     }
 
     private val pollApi by lazy {
-        groupChatSDK.getPollApi()
+        chatSDK.getPollApi()
     }
 
     private val conversationDB by lazy {
-        groupChatSDK.getConversationDB()
+        chatSDK.getConversationDB()
     }
 
     /**

@@ -21,27 +21,27 @@ class InitiateUserClient @Inject constructor() : BaseClient() {
     }
 
     private val sdkPreferences by lazy {
-        groupChatSDK.getSDKPreferences()
+        chatSDK.getSDKPreferences()
     }
 
     private val userPreferences by lazy {
-        groupChatSDK.getUserPreference()
+        chatSDK.getUserPreference()
     }
 
     private val sdkApi by lazy {
-        groupChatSDK.getSDKApi()
+        chatSDK.getSDKApi()
     }
 
     private val refreshTokenApi by lazy {
-        groupChatSDK.getRefreshTokenApi()
+        chatSDK.getRefreshTokenApi()
     }
 
     private val userApi by lazy {
-        groupChatSDK.getUserApi()
+        chatSDK.getUserApi()
     }
 
     private val userDb by lazy {
-        groupChatSDK.getUserDb()
+        chatSDK.getUserDb()
     }
 
     /**

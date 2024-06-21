@@ -18,7 +18,7 @@ class ModerationClient @Inject constructor() : BaseClient() {
     }
 
     private val moderationApi by lazy {
-        groupChatSDK.getModerationApi()
+        chatSDK.getModerationApi()
     }
 
     /**

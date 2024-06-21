@@ -1,6 +1,6 @@
 package com.likeminds.internalsdk.di
 
-import com.likeminds.internalsdk.GroupChatSDK
+import com.likeminds.internalsdk.LMChatSDK
 import com.likeminds.internalsdk.di.modules.*
 import dagger.BindsInstance
 import dagger.Component
@@ -28,7 +28,7 @@ import javax.inject.Singleton
 )
 interface InternalSDKComponent {
 
-    fun inject(groupChatSDK: GroupChatSDK)
+    fun inject(chatSDK: LMChatSDK)
 
     @Component.Builder
     interface Builder {

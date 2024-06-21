@@ -5,7 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.likeminds.internalsdk.GroupChatSDK
+import com.likeminds.internalsdk.LMChatSDK
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.sync.model._SyncConversationResponse_
@@ -28,11 +28,11 @@ class FirstTimeConversationSyncWorker(
     workerParameters: WorkerParameters
 ) : Worker(context, workerParameters) {
 
-    private val groupChatSDK = GroupChatSDK.getInstance()
+    private val chatSDK = LMChatSDK.getInstance()
     private val sdkPreferences = SDKPreferences(context as Application)
     private val syncPreferences = SyncPreferences(context as Application)
     private val userPreferences = UserPreferences(context as Application)
-    private val api = groupChatSDK.getConversationSyncApi()
+    private val api = chatSDK.getConversationSyncApi()
 
     private var dataList = ArrayList<_SyncConversationResponse_>()
 
