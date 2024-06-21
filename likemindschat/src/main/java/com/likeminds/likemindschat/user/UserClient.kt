@@ -21,11 +21,11 @@ class UserClient @Inject constructor() : BaseClient() {
     }
 
     private val userApi by lazy {
-        groupChatSDK.getUserApi()
+        chatSDK.getUserApi()
     }
 
     private val userDb by lazy {
-        groupChatSDK.getUserDb()
+        chatSDK.getUserDb()
     }
 
     /**
@@ -89,7 +89,7 @@ class UserClient @Inject constructor() : BaseClient() {
         validateGetMemberRequest(getMemberRequest)
 
         val realm = Realm.getDefaultInstance()
-        val communityId = groupChatSDK.sdkPreferences.getCommunityId() ?: ""
+        val communityId = chatSDK.sdkPreferences.getCommunityId() ?: ""
         val memberRO = ChatDBUtil.getMember(
             realm,
             communityId,

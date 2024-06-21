@@ -19,7 +19,7 @@ class HelperClient @Inject constructor() : BaseClient() {
     }
 
     private val helperApi by lazy {
-        groupChatSDK.getHelperApi()
+        chatSDK.getHelperApi()
     }
 
     /**

@@ -2,7 +2,7 @@ package com.likeminds.internalsdk.utils.retrofit
 
 import android.util.Log
 import com.likeminds.internalsdk.ChatTokenManager
-import com.likeminds.internalsdk.GroupChatSDK.Companion.LOG_TAG
+import com.likeminds.internalsdk.LMChatSDK.Companion.LOG_TAG
 import com.likeminds.internalsdk.refreshtoken.RefreshTokenNetworkApi
 import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse

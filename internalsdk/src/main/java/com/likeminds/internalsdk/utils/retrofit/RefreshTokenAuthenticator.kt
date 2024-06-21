@@ -2,7 +2,7 @@ package com.likeminds.internalsdk.utils.retrofit
 
 import android.util.Log
 import com.likeminds.internalsdk.ChatTokenManager
-import com.likeminds.internalsdk.GroupChatSDK.Companion.LOG_TAG
+import com.likeminds.internalsdk.LMChatSDK.Companion.LOG_TAG
 import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response

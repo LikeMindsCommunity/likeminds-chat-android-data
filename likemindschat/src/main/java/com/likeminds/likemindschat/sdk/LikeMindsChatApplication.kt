@@ -4,7 +4,7 @@ import android.app.Application
 import android.util.Base64
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
-import com.likeminds.internalsdk.GroupChatSDK
+import com.likeminds.internalsdk.LMChatSDK
 import com.likeminds.internalsdk.di.SDKSharedResources
 import com.likeminds.likemindschat.di.DaggerLikeMindsChatComponent
 import com.likeminds.likemindschat.di.LikeMindsChatComponent
@@ -26,7 +26,7 @@ import javax.inject.Inject
 internal class LikeMindsChatApplication private constructor() {
 
     @Inject
-    lateinit var groupChatSDK: GroupChatSDK
+    lateinit var chatSDK: LMChatSDK
 
     @Inject
     lateinit var sdkSharedResources: SDKSharedResources
@@ -63,7 +63,7 @@ internal class LikeMindsChatApplication private constructor() {
 
         initLikeMindsChatComponent(application)
         initializeFirebase(application)
-        groupChatSDK.initialize(sdkSharedResources)
+        chatSDK.initialize(sdkSharedResources)
     }
 
     private fun initLikeMindsChatComponent(application: Application) {

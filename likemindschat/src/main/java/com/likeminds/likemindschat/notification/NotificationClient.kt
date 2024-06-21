@@ -16,7 +16,7 @@ class NotificationClient @Inject constructor() : BaseClient() {
     }
 
     private val notificationApi by lazy {
-        groupChatSDK.getNotificationApi()
+        chatSDK.getNotificationApi()
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.likeminds.likemindschat.base
 
-import com.likeminds.internalsdk.GroupChatSDK
+import com.likeminds.internalsdk.LMChatSDK
 import javax.inject.Inject
 
 abstract class BaseClient {
@@ -9,7 +9,7 @@ abstract class BaseClient {
     }
 
     @Inject
-    lateinit var groupChatSDK: GroupChatSDK
+    lateinit var chatSDK: LMChatSDK
 
     protected abstract fun attachDagger()
 }

@@ -5,7 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.likeminds.internalsdk.GroupChatSDK
+import com.likeminds.internalsdk.LMChatSDK
 import com.likeminds.internalsdk.db.ChatDBUtil
 import com.likeminds.internalsdk.sdk.util.SDKPreferences
 import com.likeminds.internalsdk.sync.model._SyncConversationResponse_
@@ -27,10 +27,10 @@ class ReopenConversationSyncWorker(
     workerParameters: WorkerParameters
 ) : Worker(context, workerParameters) {
 
-    private val collabmatesSdk = GroupChatSDK.getInstance()
+    private val chatSDK = LMChatSDK.getInstance()
     private val sdkPreferences = SDKPreferences(context as Application)
     private val userPreferences = UserPreferences(context as Application)
-    private val api = collabmatesSdk.getConversationSyncApi()
+    private val api = chatSDK.getConversationSyncApi()
 
     val chatroomId = workerParameters.inputData.getString(INPUT_DATA_CHATROOM_ID) ?: ""
     val conversationId = workerParameters.inputData.getString(INPUT_DATA_CONVERSATION_ID)

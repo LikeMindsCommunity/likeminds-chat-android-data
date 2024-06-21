@@ -591,8 +591,8 @@ object ROConverter {
             }
 
             !oldAttachments.isNullOrEmpty() && attachments.isNullOrEmpty() -> {
-                oldAttachments.map { attachment ->
-                    convertAttachment(chatroomId, communityId, attachment)
+                oldAttachments.map { oldAttachment ->
+                    convertAttachment(chatroomId, communityId, oldAttachment)
                 }.toRealmList()
             }
 

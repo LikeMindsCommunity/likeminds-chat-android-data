@@ -18,15 +18,15 @@ class CommunityClient @Inject constructor() : BaseClient() {
     }
 
     private val communityApi by lazy {
-        groupChatSDK.getCommunityApi()
+        chatSDK.getCommunityApi()
     }
 
     private val communityDB by lazy {
-        groupChatSDK.getCommunityDB()
+        chatSDK.getCommunityDB()
     }
 
     private val sdkPreferences by lazy {
-        groupChatSDK.getSDKPreferences()
+        chatSDK.getSDKPreferences()
     }
 
     /**

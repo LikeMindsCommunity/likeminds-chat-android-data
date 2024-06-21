@@ -22,19 +22,19 @@ class DMClient @Inject constructor() : BaseClient() {
     }
 
     private val dmApi by lazy {
-        groupChatSDK.getDMApi()
+        chatSDK.getDMApi()
     }
 
     private val chatroomDB by lazy {
-        groupChatSDK.getChatroomDb()
+        chatSDK.getChatroomDb()
     }
 
     private val userDB by lazy {
-        groupChatSDK.getUserDb()
+        chatSDK.getUserDb()
     }
 
     private val conversationDB by lazy {
-        groupChatSDK.getConversationDB()
+        chatSDK.getConversationDB()
     }
 
     /**

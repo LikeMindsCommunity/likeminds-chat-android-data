@@ -18,11 +18,11 @@ class ChatroomClient @Inject constructor() : BaseClient() {
     }
 
     private val chatroomApi by lazy {
-        groupChatSDK.getChatroomApi()
+        chatSDK.getChatroomApi()
     }
 
     private val chatroomDB by lazy {
-        groupChatSDK.getChatroomDb()
+        chatSDK.getChatroomDb()
     }
 
     /**

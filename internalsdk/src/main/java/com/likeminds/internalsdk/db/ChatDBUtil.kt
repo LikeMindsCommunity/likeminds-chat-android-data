@@ -1,7 +1,7 @@
 package com.likeminds.internalsdk.db
 
 import android.util.Log
-import com.likeminds.internalsdk.GroupChatSDK
+import com.likeminds.internalsdk.LMChatSDK
 import com.likeminds.internalsdk.chatroom.model.TYPE_DIRECT_MESSAGE
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.*
@@ -45,7 +45,7 @@ object ChatDBUtil {
             true
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e(GroupChatSDK.LOG_TAG, "write error", e)
+            Log.e(LMChatSDK.LOG_TAG, "write error", e)
             false
         } finally {
             ONGOING_WRITE_TRANSACTION.decrementAndGet()
@@ -68,7 +68,7 @@ object ChatDBUtil {
                 true
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.e(GroupChatSDK.LOG_TAG, "write async error", e)
+                Log.e(LMChatSDK.LOG_TAG, "write async error", e)
                 false
             } finally {
                 ONGOING_WRITE_TRANSACTION.decrementAndGet()
@@ -352,7 +352,7 @@ object ChatDBUtil {
         val uid = "$uuid#${communityId}"
         val member = getMemberByUid(realm, uid)
         if (member == null) {
-            Log.e(GroupChatSDK.LOG_TAG, "Member not found: $uid")
+            Log.e(LMChatSDK.LOG_TAG, "Member not found: $uid")
         }
         return member
     }

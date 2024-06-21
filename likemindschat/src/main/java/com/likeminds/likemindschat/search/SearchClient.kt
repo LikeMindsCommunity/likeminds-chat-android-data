@@ -18,7 +18,7 @@ class SearchClient @Inject constructor() : BaseClient() {
     }
 
     private val searchApi by lazy {
-        groupChatSDK.getSearchApi()
+        chatSDK.getSearchApi()
     }
 
     /**

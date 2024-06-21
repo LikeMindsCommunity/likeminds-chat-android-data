@@ -6,9 +6,8 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.likeminds.internalsdk.GroupChatSDK
+import com.likeminds.internalsdk.LMChatSDK
 import com.likeminds.internalsdk.conversation.model.*
 import com.likeminds.internalsdk.db.models.ConversationRO
 import com.likeminds.internalsdk.sync.SyncSDK
@@ -22,7 +21,6 @@ import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
 import io.realm.RealmResults
-import org.json.JSONObject
 import javax.inject.Inject
 
 class ConversationClient @Inject constructor() : BaseClient() {
@@ -32,19 +30,19 @@ class ConversationClient @Inject constructor() : BaseClient() {
     }
 
     private val conversationApi by lazy {
-        groupChatSDK.getConversationApi()
+        chatSDK.getConversationApi()
     }
 
     private val chatroomDB by lazy {
-        groupChatSDK.getChatroomDb()
+        chatSDK.getChatroomDb()
     }
 
     private val sdkPreferences by lazy {
-        groupChatSDK.getSDKPreferences()
+        chatSDK.getSDKPreferences()
     }
 
     private val conversationDB by lazy {
-        groupChatSDK.getConversationDB()
+        chatSDK.getConversationDB()
     }
 
     /**
@@ -246,7 +244,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildAdded -> {
                     val latestConversation = result.response?.answerId
                     if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startReopenSyncForChatroom(
+                        SyncSDK.startLiveSyncConversation(
                             context,
                             chatroomId,
                             latestConversation
@@ -257,7 +255,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildChanged -> {
                     val latestConversation = result.response?.answerId
                     if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startReopenSyncForChatroom(
+                        SyncSDK.startLiveSyncConversation(
                             context,
                             chatroomId,
                             latestConversation
@@ -268,7 +266,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildMoved -> {
                     val latestConversation = result.response?.answerId
                     if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startReopenSyncForChatroom(
+                        SyncSDK.startLiveSyncConversation(
                             context,
                             chatroomId,
                             latestConversation
@@ -279,7 +277,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildRemoved -> {
                     val latestConversation = result.response?.answerId
                     if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startReopenSyncForChatroom(
+                        SyncSDK.startLiveSyncConversation(
                             context,
                             chatroomId,
                             latestConversation
@@ -289,7 +287,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
                 is LiveConversationResponse.OnCancelled -> {
                     Log.e(
-                        GroupChatSDK.LOG_TAG,
+                        LMChatSDK.LOG_TAG,
                         "live conversation failed: ${result.errorMessage}"
                     )
                 }

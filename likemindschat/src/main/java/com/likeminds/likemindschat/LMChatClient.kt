@@ -146,6 +146,11 @@ class LMChatClient private constructor() {
         homeFeedClient.observeLiveHomeFeed(context)
     }
 
+    // Exposed function to remove home feed listener
+    fun removeLiveHomeFeedListener() {
+        homeFeedClient.removeLiveHomeFeedListener()
+    }
+
     //function to get config details
     suspend fun getConfig(): LMResponse<ConfigResponse> {
         return homeFeedClient.getConfig()
