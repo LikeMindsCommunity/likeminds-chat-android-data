@@ -1,12 +1,12 @@
 ext.versions = [:]
 def versions = [:]
-versions.compile_sdk = 33
+versions.compile_sdk = 34
 versions.min_sdk = 21
-versions.target_sdk = 33
+versions.target_sdk = 34
 versions.sdk_version_major = '2'
-versions.sdk_version_minor = '2'
-versions.sdk_version_patch = '3'
-versions.sdk_version_code = 306
+versions.sdk_version_minor = '3'
+versions.sdk_version_patch = '0'
+versions.sdk_version_code = 307
 versions.core = "1.9.0"
 versions.realm = '10.17.0'
 versions.appcompat = "1.6.1"
