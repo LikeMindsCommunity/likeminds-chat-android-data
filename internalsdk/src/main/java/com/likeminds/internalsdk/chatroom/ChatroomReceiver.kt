@@ -28,6 +28,7 @@ class ChatroomReceiver @Inject constructor(
         private const val PARTICIPANT_NAME_KEY = "participant_name"
         private const val PAGE_KEY = "page"
         private const val PAGE_SIZE_KEY = "page_size"
+        private const val CHANNEL_TYPE_KEY = "channel_type"
     }
 
     /**
@@ -96,6 +97,18 @@ class ChatroomReceiver @Inject constructor(
         request: _UpdateChannelInviteRequest_
     ): NetworkResponse<APIResponse<Nothing>> {
         return chatroomNetworkApi.updateChannelInvite(request)
+    }
+
+    suspend fun getChannelInvites(
+        request: _ChannelInviteRequest_
+    ): NetworkResponse<APIResponse<_ChannelInviteResponse_>> {
+        val queries = HashMap<String, Any>()
+        // Set query parameters for request
+        queries[CHANNEL_TYPE_KEY] = request.channelType
+        queries[PAGE_KEY] = request.page
+        queries[PAGE_SIZE_KEY] = request.pageSize
+
+        return chatroomNetworkApi.getChannelInvites(queries)
     }
 
     /**

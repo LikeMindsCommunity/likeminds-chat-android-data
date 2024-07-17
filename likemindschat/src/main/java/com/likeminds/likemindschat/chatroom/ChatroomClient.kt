@@ -533,4 +533,30 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("channelId")
         }
     }
+
+    suspend fun getChannelInvites(channelInviteRequest: ChannelInviteRequest): LMResponse<ChannelInviteResponse> {
+        // validates the client request
+        RequestUtils.validate()
+
+        // builds internal request model
+        val request = _ChannelInviteRequest_.Builder()
+            .channelType(channelInviteRequest.channelType)
+            .page(channelInviteRequest.page)
+            .pageSize(channelInviteRequest.pageSize)
+            .build()
+
+        // calls api and processes the response accordingly
+        return when (val response = chatroomApi.getChannelInvites(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                ModelConverter.convertGetChannelInvitesResponse(response.body)
+            }
+        }
+    }
 }

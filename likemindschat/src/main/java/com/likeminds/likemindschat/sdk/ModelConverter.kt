@@ -1433,6 +1433,39 @@ object ModelConverter {
             .build()
     }
 
+    // converts APIResponse<_ChannelInviteResponse_> to LMResponse<ChannelInviteResponse> model
+    fun convertGetChannelInvitesResponse(
+        apiResponse: APIResponse<_ChannelInviteResponse_>
+    ): LMResponse<ChannelInviteResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetChannelInvites(apiResponse.data)
+        )
+    }
+
+    // converts internal _ChannelInviteResponse_ to client ChannelInviteResponse
+    private fun convertGetChannelInvites(_channelInviteResponse_: _ChannelInviteResponse_?): ChannelInviteResponse? {
+        val userInvites = _channelInviteResponse_?.userInvites ?: return null
+        return ChannelInviteResponse(
+            userInvites.map { userInvite ->
+                convertUserInvite(userInvite)
+            }
+        )
+    }
+
+    private fun convertUserInvite(_userInvite_: _UserInvite_): UserInvite {
+        return UserInvite(
+            convertChatroom(_userInvite_.chatroom),
+            _userInvite_.createdAt,
+            _userInvite_.id,
+            _userInvite_.inviteStatus,
+            _userInvite_.updatedAt,
+            convertUser(_userInvite_.inviteReceiver),
+            convertUser(_userInvite_.inviteSender)
+        )
+    }
+
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/

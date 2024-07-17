@@ -11,7 +11,6 @@ import com.likeminds.likemindschat.community.CommunityClient
 import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
-import com.likeminds.likemindschat.conversation.model.LoadConversationType
 import com.likeminds.likemindschat.dm.DMClient
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.HelperClient
@@ -450,5 +449,10 @@ class LMChatClient private constructor() {
     // Exposed function to update status of channel invite
     suspend fun updateChannelInvite(updateChannelInviteRequest: UpdateChannelInviteRequest): LMResponse<Nothing> {
         return chatroomClient.updateChannelInvite(updateChannelInviteRequest)
+    }
+
+    // Exposed function to get secret channel invites
+    suspend fun getChannelInvites(getChannelInviteRequest: ChannelInviteRequest): LMResponse<ChannelInviteResponse> {
+        return chatroomClient.getChannelInvites(getChannelInviteRequest)
     }
 }
