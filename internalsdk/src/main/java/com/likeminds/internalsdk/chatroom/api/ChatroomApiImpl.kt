@@ -57,4 +57,10 @@ class ChatroomApiImpl @Inject constructor(
     ): NetworkResponse<APIResponse<Nothing>> {
         return chatroomReceiver.editChatroomTitle(request)
     }
+
+    override suspend fun updateChannelInvite(
+        request: _UpdateChannelInviteRequest_
+    ): NetworkResponse<APIResponse<Nothing>> {
+        return chatroomReceiver.updateChannelInvite(request)
+    }
 }

@@ -442,7 +442,13 @@ class LMChatClient private constructor() {
         return dmClient.observeDMChatrooms(listener)
     }
 
+    // Exposed function to get community configurations
     suspend fun getCommunityConfigurations(): LMResponse<GetCommunityConfigurationsResponse> {
         return communityClient.getCommunityConfigurations()
+    }
+
+    // Exposed function to update status of channel invite
+    suspend fun updateChannelInvite(updateChannelInviteRequest: UpdateChannelInviteRequest): LMResponse<Nothing> {
+        return chatroomClient.updateChannelInvite(updateChannelInviteRequest)
     }
 }

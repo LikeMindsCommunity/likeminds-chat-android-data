@@ -92,6 +92,12 @@ class ChatroomReceiver @Inject constructor(
         return chatroomNetworkApi.editChatroomTitle(request)
     }
 
+    suspend fun updateChannelInvite(
+        request: _UpdateChannelInviteRequest_
+    ): NetworkResponse<APIResponse<Nothing>> {
+        return chatroomNetworkApi.updateChannelInvite(request)
+    }
+
     /**
      * DB Functions
      */
