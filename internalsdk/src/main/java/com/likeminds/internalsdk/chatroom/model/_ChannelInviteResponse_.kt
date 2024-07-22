@@ -5,10 +5,10 @@ import com.likeminds.internalsdk.community.model._Member_
 
 data class _ChannelInviteResponse_(
     @SerializedName("user_invites")
-    val userInvites: List<_UserInvite_>
+    val channelInvites: List<_ChannelInvite_>
 )
 
-data class _UserInvite_(
+data class _ChannelInvite_(
     @SerializedName("chatroom")
     val chatroom: _Chatroom_,
     @SerializedName("created_at")

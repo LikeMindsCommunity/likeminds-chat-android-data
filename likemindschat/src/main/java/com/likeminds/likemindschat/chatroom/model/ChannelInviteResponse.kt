@@ -3,10 +3,10 @@ package com.likeminds.likemindschat.chatroom.model
 import com.likeminds.likemindschat.community.model.Member
 
 data class ChannelInviteResponse(
-    val userInvites: List<UserInvite>
+    val channelInvites: List<ChannelInvite>
 )
 
-data class UserInvite(
+data class ChannelInvite(
     val chatroom: Chatroom,
     val createdAt: Long,
     val id: Int,

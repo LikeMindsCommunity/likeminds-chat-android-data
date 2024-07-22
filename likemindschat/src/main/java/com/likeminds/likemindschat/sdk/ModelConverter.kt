@@ -1446,23 +1446,24 @@ object ModelConverter {
 
     // converts internal _ChannelInviteResponse_ to client ChannelInviteResponse
     private fun convertGetChannelInvites(_channelInviteResponse_: _ChannelInviteResponse_?): ChannelInviteResponse? {
-        val userInvites = _channelInviteResponse_?.userInvites ?: return null
+        val channelInvites = _channelInviteResponse_?.channelInvites ?: return null
         return ChannelInviteResponse(
-            userInvites.map { userInvite ->
-                convertUserInvite(userInvite)
+            channelInvites.map { userInvite ->
+                convertChannelInvite(userInvite)
             }
         )
     }
 
-    private fun convertUserInvite(_userInvite_: _UserInvite_): UserInvite {
-        return UserInvite(
-            convertChatroom(_userInvite_.chatroom),
-            _userInvite_.createdAt,
-            _userInvite_.id,
-            convertChannelInviteStatus(_userInvite_.inviteStatus),
-            _userInvite_.updatedAt,
-            convertMember(_userInvite_.inviteReceiver),
-            convertMember(_userInvite_.inviteSender)
+    // converts internal _ChannelInvite_ to client ChannelInvite
+    private fun convertChannelInvite(_channelInvite_: _ChannelInvite_): ChannelInvite {
+        return ChannelInvite(
+            convertChatroom(_channelInvite_.chatroom),
+            _channelInvite_.createdAt,
+            _channelInvite_.id,
+            convertChannelInviteStatus(_channelInvite_.inviteStatus),
+            _channelInvite_.updatedAt,
+            convertMember(_channelInvite_.inviteReceiver),
+            convertMember(_channelInvite_.inviteSender)
         )
     }
 
