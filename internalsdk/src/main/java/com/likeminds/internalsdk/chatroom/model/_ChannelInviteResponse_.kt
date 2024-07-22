@@ -1,7 +1,7 @@
 package com.likeminds.internalsdk.chatroom.model
 
 import com.google.gson.annotations.SerializedName
-import com.likeminds.internalsdk.user.model._User_
+import com.likeminds.internalsdk.community.model._Member_
 
 data class _ChannelInviteResponse_(
     @SerializedName("user_invites")
@@ -19,8 +19,8 @@ data class _UserInvite_(
     val inviteStatus: Int,
     @SerializedName("updated_at")
     val updatedAt: Long,
-    @SerializedName("invite_receiver")
-    val inviteReceiver: _User_,
     @SerializedName("invite_sender")
-    val inviteSender: _User_
+    val inviteSender: _Member_,
+    @SerializedName("invite_receiver")
+    val inviteReceiver: _Member_
 )

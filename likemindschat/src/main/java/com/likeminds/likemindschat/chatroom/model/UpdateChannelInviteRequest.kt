@@ -2,17 +2,17 @@ package com.likeminds.likemindschat.chatroom.model
 
 class UpdateChannelInviteRequest private constructor(
     val channelId: String,
-    val inviteStatus: Int
+    val inviteStatus: ChannelInviteStatus
 ) {
     class Builder {
         private var channelId: String = ""
-        private var inviteStatus: Int = 0
+        private var inviteStatus: ChannelInviteStatus = ChannelInviteStatus.INVITED
 
         fun channelId(channelId: String) = apply {
             this.channelId = channelId
         }
 
-        fun inviteStatus(inviteStatus: Int) = apply {
+        fun inviteStatus(inviteStatus: ChannelInviteStatus) = apply {
             this.inviteStatus = inviteStatus
         }
 

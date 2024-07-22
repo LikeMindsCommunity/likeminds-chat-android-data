@@ -10,7 +10,7 @@ class Chatroom private constructor(
     val title: String,
     val createdAt: Long?,
     val answerText: String?,
-    val state: Int,
+    val state: Int?,
     val unseenCount: Int?,
     val shareUrl: String?,
     val communityId: String?,
@@ -76,7 +76,7 @@ class Chatroom private constructor(
         private var title: String = ""
         private var createdAt: Long? = null
         private var answerText: String? = null
-        private var state: Int = 0
+        private var state: Int? = null
         private var unseenCount: Int? = null
         private var shareUrl: String? = null
         private var communityId: String? = null
@@ -139,7 +139,7 @@ class Chatroom private constructor(
         fun title(title: String) = apply { this.title = title }
         fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
         fun answerText(answerText: String?) = apply { this.answerText = answerText }
-        fun state(state: Int) = apply { this.state = state }
+        fun state(state: Int?) = apply { this.state = state }
         fun unseenCount(unseenCount: Int?) = apply { this.unseenCount = unseenCount }
         fun shareUrl(shareUrl: String?) = apply { this.shareUrl = shareUrl }
         fun communityId(communityId: String?) = apply { this.communityId = communityId }

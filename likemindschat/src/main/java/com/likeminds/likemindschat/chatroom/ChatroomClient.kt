@@ -504,7 +504,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         // builds internal request model
         val request = _UpdateChannelInviteRequest_.Builder()
             .channelId(updateChannelInviteRequest.channelId)
-            .inviteStatus(updateChannelInviteRequest.inviteStatus)
+            .inviteStatus(updateChannelInviteRequest.inviteStatus.value)
             .build()
 
         // calls api and processes the response accordingly

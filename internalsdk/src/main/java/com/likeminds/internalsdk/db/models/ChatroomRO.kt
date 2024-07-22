@@ -9,7 +9,7 @@ open class ChatroomRO(
     var id: String = "",
     var communityId: String = "",
     var title: String = "",
-    var state: Int = 0,
+    var state: Int? = null,
     var member: MemberRO? = null,
     var createdAt: Long? = null,
     var type: Int? = null,
@@ -133,7 +133,7 @@ open class ChatroomRO(
         var communityId: String
     ) {
 
-        var state: Int = 0
+        var state: Int? = null
         var member: MemberRO? = null
         var createdAt: Long? = null
         var type: Int? = null

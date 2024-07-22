@@ -1459,11 +1459,31 @@ object ModelConverter {
             convertChatroom(_userInvite_.chatroom),
             _userInvite_.createdAt,
             _userInvite_.id,
-            _userInvite_.inviteStatus,
+            convertChannelInviteStatus(_userInvite_.inviteStatus),
             _userInvite_.updatedAt,
-            convertUser(_userInvite_.inviteReceiver),
-            convertUser(_userInvite_.inviteSender)
+            convertMember(_userInvite_.inviteReceiver),
+            convertMember(_userInvite_.inviteSender)
         )
+    }
+
+    private fun convertChannelInviteStatus(inviteStatus: Int): ChannelInviteStatus {
+        return when (inviteStatus) {
+            ChannelInviteStatus.INVITED.value -> {
+                ChannelInviteStatus.INVITED
+            }
+
+            ChannelInviteStatus.ACCEPTED.value -> {
+                ChannelInviteStatus.ACCEPTED
+            }
+
+            ChannelInviteStatus.REJECTED.value -> {
+                ChannelInviteStatus.REJECTED
+            }
+
+            else -> {
+                ChannelInviteStatus.INVITED
+            }
+        }
     }
 
     /**--------------------------------
