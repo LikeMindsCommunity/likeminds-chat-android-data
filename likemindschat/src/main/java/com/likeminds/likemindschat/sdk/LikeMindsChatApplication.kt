@@ -14,7 +14,6 @@ import com.likeminds.likemindschat.di.conversation.ConversationSubComponent
 import com.likeminds.likemindschat.di.dm.DMSubComponent
 import com.likeminds.likemindschat.di.helper.HelperSubComponent
 import com.likeminds.likemindschat.di.homefeed.HomeFeedSubComponent
-import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
 import com.likeminds.likemindschat.di.moderation.ModerationSubComponent
 import com.likeminds.likemindschat.di.notification.NotificationSubComponent
 import com.likeminds.likemindschat.di.poll.PollSubComponent
@@ -31,7 +30,6 @@ internal class LikeMindsChatApplication private constructor() {
     @Inject
     lateinit var sdkSharedResources: SDKSharedResources
     var likeMindsChatComponent: LikeMindsChatComponent? = null
-    private var initiateUserSubComponent: InitiateUserSubComponent? = null
     private var homeFeedSubComponent: HomeFeedSubComponent? = null
     private var userSubComponent: UserSubComponent? = null
     private var communitySubComponent: CommunitySubComponent? = null
@@ -85,13 +83,6 @@ internal class LikeMindsChatApplication private constructor() {
             .build()
 
         FirebaseApp.initializeApp(application, option, "lm-secondary")
-    }
-
-    fun initiateUserComponent(): InitiateUserSubComponent? {
-        if (initiateUserSubComponent == null) {
-            initiateUserSubComponent = likeMindsChatComponent?.initiateUserComponent()?.create()
-        }
-        return initiateUserSubComponent
     }
 
     fun homeFeedComponent(): HomeFeedSubComponent? {

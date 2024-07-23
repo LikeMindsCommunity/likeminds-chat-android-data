@@ -20,8 +20,6 @@ import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
-import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.*
 import com.likeminds.likemindschat.moderation.ModerationClient
 import com.likeminds.likemindschat.moderation.model.*
 import com.likeminds.likemindschat.notification.NotificationClient
@@ -32,17 +30,18 @@ import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.search.SearchClient
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.UserClient
-import com.likeminds.likemindschat.user.model.GetUserResponse
+import com.likeminds.likemindschat.user.model.GetLoggedInUserResponse
+import com.likeminds.likemindschat.user.model.InitiateUserRequest
+import com.likeminds.likemindschat.user.model.InitiateUserResponse
+import com.likeminds.likemindschat.user.model.LogoutRequest
 import com.likeminds.likemindschat.user.model.MemberStateResponse
+import com.likeminds.likemindschat.user.model.RegisterDeviceRequest
 import io.reactivex.Observable
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class LMChatClient private constructor() {
-
-    @Inject
-    lateinit var initiateUserClient: InitiateUserClient
 
     @Inject
     lateinit var homeFeedClient: HomeFeedClient
@@ -106,7 +105,7 @@ class LMChatClient private constructor() {
 
     // Exposed function to process initiate user request
     suspend fun initiateUser(initiateUserRequest: InitiateUserRequest): LMResponse<InitiateUserResponse> {
-        return initiateUserClient.initiateUser(initiateUserRequest)
+        return userClient.initiateUser(initiateUserRequest)
     }
 
     // Exposed function to process initiate user request
@@ -116,12 +115,12 @@ class LMChatClient private constructor() {
 
     // Exposed function to process logout request
     suspend fun logout(logoutRequest: LogoutRequest): LMResponse<Nothing> {
-        return initiateUserClient.logout(logoutRequest)
+        return userClient.logout(logoutRequest)
     }
 
     // Exposed function to register device
     suspend fun registerDevice(registerDeviceRequest: RegisterDeviceRequest): LMResponse<Nothing> {
-        return initiateUserClient.registerDevice(registerDeviceRequest)
+        return userClient.registerDevice(registerDeviceRequest)
     }
 
     // Exposed function to get explore tab count
@@ -157,8 +156,8 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get user from Db
-    fun getUser(): LMResponse<GetUserResponse> {
-        return userClient.getUser()
+    fun getUser(): LMResponse<GetLoggedInUserResponse> {
+        return userClient.getLoggedInUser()
     }
 
     // Exposed function to get member from Db

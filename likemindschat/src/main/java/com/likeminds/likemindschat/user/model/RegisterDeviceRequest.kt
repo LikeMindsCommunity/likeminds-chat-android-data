@@ -1,4 +1,4 @@
-package com.likeminds.likemindschat.initiateUser.model
+package com.likeminds.likemindschat.user.model
 
 class RegisterDeviceRequest private constructor(
     val token: String,

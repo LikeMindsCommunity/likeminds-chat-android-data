@@ -1,4 +1,4 @@
-package com.likeminds.likemindschat.initiateUser.model
+package com.likeminds.likemindschat.user.model
 
 class InitiateUserRequest private constructor(
     val apiKey: String,

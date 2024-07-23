@@ -1,5 +1,5 @@
 package com.likeminds.likemindschat.user.model
 
-data class GetUserResponse(
+data class GetLoggedInUserResponse(
     val user: User?
 )

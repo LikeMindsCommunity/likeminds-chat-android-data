@@ -26,7 +26,7 @@ import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.model.*
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
+import com.likeminds.likemindschat.user.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
 import com.likeminds.likemindschat.notification.model.ChatroomNotificationData
@@ -1690,9 +1690,9 @@ object ModelConverter {
      * Db Model -> Client Response Model
     --------------------------------*/
 
-    //convert [UserRO] to [GetUserResponse]
-    fun convertGetUserResponse(userRO: UserRO?): GetUserResponse {
-        return GetUserResponse(convertUserRO(userRO))
+    //convert [UserRO] to [GetLoggedInUserResponse]
+    fun convertGetLoggedInUserResponse(userRO: UserRO?): GetLoggedInUserResponse {
+        return GetLoggedInUserResponse(convertUserRO(userRO))
     }
 
     //convert [MemberRO] to [GetMemberResponse]

@@ -1,8 +1,7 @@
-package com.likeminds.likemindschat.initiateUser.model
+package com.likeminds.likemindschat.user.model
 
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.community.model.Community
-import com.likeminds.likemindschat.user.model.User
 
 data class InitiateUserResponse(
     val accessToken: String? = null,

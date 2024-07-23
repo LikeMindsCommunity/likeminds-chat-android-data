@@ -1,4 +1,4 @@
-package com.likeminds.likemindschat.initiateUser.model
+package com.likeminds.likemindschat.user.model
 
 class LogoutRequest private constructor(
     val deviceId: String
