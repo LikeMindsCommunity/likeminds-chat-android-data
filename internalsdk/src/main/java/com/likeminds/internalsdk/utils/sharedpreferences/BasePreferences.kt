@@ -45,7 +45,7 @@ abstract class BasePreferences protected constructor(prefName: String, applicati
         return preferences.getInt(key, defaultVal)
     }
 
-    fun getPreference(key: String, defaultVal: String): String? {
+    fun getPreference(key: String, defaultVal: String?): String? {
         return preferences.getString(key, defaultVal)
     }
 

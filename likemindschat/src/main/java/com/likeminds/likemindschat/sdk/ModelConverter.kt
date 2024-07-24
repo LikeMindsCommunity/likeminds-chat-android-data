@@ -14,6 +14,7 @@ import com.likeminds.internalsdk.notification.model._ChatroomNotificationData_
 import com.likeminds.internalsdk.notification.model._GetConversationNotificationUnreadResponse_
 import com.likeminds.internalsdk.poll.model.*
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
+import com.likeminds.internalsdk.sdk.model._ValidateUserResponse_
 import com.likeminds.internalsdk.search.model.*
 import com.likeminds.internalsdk.user.model.*
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
@@ -35,6 +36,7 @@ import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
 import com.likeminds.likemindschat.widget.model.Widget
+import com.likeminds.likemindsfeed.user.model.ValidateUserResponse
 import org.json.JSONObject
 
 object ModelConverter {
@@ -116,8 +118,29 @@ object ModelConverter {
             _community_.name,
             _community_.imageUrl,
             _community_.membersCount,
-            _community_.updatedAt
+            _community_.updatedAt,
+            communitySettings = convertCommunitySettings(_community_.communitySettings)
         )
+    }
+
+    // converts internal CommunitySetting model list to client model list
+    private fun convertCommunitySettings(
+        _communitySettings_: List<_CommunitySetting_>
+    ): List<CommunitySetting> {
+        return _communitySettings_.map {
+            convertCommunitySetting(it)
+        }
+    }
+
+    // converts internal CommunitySetting model to client model
+    private fun convertCommunitySetting(_communitySetting_: _CommunitySetting_): CommunitySetting {
+        return CommunitySetting.Builder()
+            .enabled(_communitySetting_.enabled)
+            .enabledBy(_communitySetting_.enabledBy)
+            .settingType(_communitySetting_.settingType)
+            .settingTitle(_communitySetting_.settingTitle)
+            .settingSubTitle(_communitySetting_.settingSubTitle)
+            .build()
     }
 
     //converts API GetExploreTabCountResponse model to LM model
@@ -1431,6 +1454,25 @@ object ModelConverter {
             .description(_configuration_.description)
             .value(JSONObject(jsonString))
             .build()
+    }
+
+    // converts APIResponse<_ValidateUserResponse_> to LMResponse<ValidateUserResponse>
+    fun convertValidateUserAPIResponse(body: APIResponse<_ValidateUserResponse_>): LMResponse<ValidateUserResponse> {
+        return LMResponse(
+            success = true,
+            errorMessage = null,
+            data = convertValidateUserResponse(body.data)
+        )
+    }
+
+    // converts internal _ValidateUserResponse_ to exposed ValidateUserResponse
+    private fun convertValidateUserResponse(_validateUserResponse_: _ValidateUserResponse_?): ValidateUserResponse? {
+        if (_validateUserResponse_ == null) return null
+        return ValidateUserResponse(
+            user = convertUser(_validateUserResponse_.user),
+            community = convertCommunity(_validateUserResponse_.community),
+            appAccess = _validateUserResponse_.appAccess
+        )
     }
 
     /**--------------------------------

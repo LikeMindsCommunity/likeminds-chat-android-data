@@ -12,5 +12,7 @@ data class _Community_(
     @SerializedName("members_count")
     val membersCount: Int?,
     @SerializedName("updated_at")
-    val updatedAt: Long?
+    val updatedAt: Long?,
+    @SerializedName("community_settings")
+    val communitySettings: List<_CommunitySetting_>
 )

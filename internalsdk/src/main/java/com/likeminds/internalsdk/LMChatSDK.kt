@@ -43,6 +43,7 @@ import com.likeminds.internalsdk.sync.api.chatroom.ChatroomSyncApi
 import com.likeminds.internalsdk.sync.api.chatroom.ChatroomSyncApiImpl
 import com.likeminds.internalsdk.sync.api.conversation.ConversationSyncApi
 import com.likeminds.internalsdk.sync.api.conversation.ConversationSyncApiImpl
+import com.likeminds.internalsdk.sync.util.SyncPreferences
 import com.likeminds.internalsdk.user.api.UserApi
 import com.likeminds.internalsdk.user.api.UserApiImpl
 import com.likeminds.internalsdk.user.db.UserDB
@@ -130,6 +131,9 @@ class LMChatSDK {
     @Inject
     lateinit var userPreferences: UserPreferences
 
+    @Inject
+    lateinit var syncPreferences: SyncPreferences
+
     companion object {
 
         private var chatSDK: LMChatSDK? = null
@@ -202,6 +206,10 @@ class LMChatSDK {
 
     fun getUserPreference(): UserPreferences {
         return userPreferences
+    }
+
+    fun getSyncPreferences(): SyncPreferences {
+        return syncPreferences
     }
 
     fun getSDKApi(): SDKApi {

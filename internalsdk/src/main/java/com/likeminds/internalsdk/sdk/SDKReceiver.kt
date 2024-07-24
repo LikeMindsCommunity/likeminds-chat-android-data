@@ -2,6 +2,7 @@ package com.likeminds.internalsdk.sdk
 
 import com.likeminds.internalsdk.sdk.model._InitiateUserRequest_
 import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
+import com.likeminds.internalsdk.sdk.model._ValidateUserResponse_
 import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
 import javax.inject.Inject
@@ -14,5 +15,9 @@ class SDKReceiver @Inject constructor(private val sdkNetworkApi: SDKNetworkApi) 
     ): NetworkResponse<APIResponse<_InitiateUserResponse_>> {
         val newRequest = request.toBuilder().apiKey(null).build()
         return sdkNetworkApi.initiateUser(apiKey, newRequest)
+    }
+
+    suspend fun validateUser(): NetworkResponse<APIResponse<_ValidateUserResponse_>> {
+        return sdkNetworkApi.validateUser()
     }
 }

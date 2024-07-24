@@ -89,6 +89,12 @@ object ChatDBUtil {
         }
     }
 
+    fun clearDB() {
+        write {
+            it.deleteAll()
+        }
+    }
+
     /**
      * To fetch the [AppConfigRO] object
      * @return [AppConfigRO]

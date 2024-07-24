@@ -36,6 +36,9 @@ import com.likeminds.likemindschat.user.model.InitiateUserResponse
 import com.likeminds.likemindschat.user.model.LogoutRequest
 import com.likeminds.likemindschat.user.model.MemberStateResponse
 import com.likeminds.likemindschat.user.model.RegisterDeviceRequest
+import com.likeminds.likemindschat.user.model.SetTokensRequest
+import com.likeminds.likemindsfeed.user.model.ValidateUserRequest
+import com.likeminds.likemindsfeed.user.model.ValidateUserResponse
 import io.reactivex.Observable
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -108,6 +111,10 @@ class LMChatClient private constructor() {
         return userClient.initiateUser(initiateUserRequest)
     }
 
+    suspend fun validateUser(validateUserRequest: ValidateUserRequest): LMResponse<ValidateUserResponse> {
+        return userClient.validateUser(validateUserRequest)
+    }
+
     // Exposed function to process initiate user request
     suspend fun getMemberState(): LMResponse<MemberStateResponse> {
         return userClient.getMemberState()
@@ -156,13 +163,28 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get user from Db
-    fun getUser(): LMResponse<GetLoggedInUserResponse> {
+    fun getLoggedInUser(): LMResponse<GetLoggedInUserResponse> {
         return userClient.getLoggedInUser()
     }
 
     // Exposed function to get member from Db
     fun getMember(getMemberRequest: GetMemberRequest): LMResponse<GetMemberResponse> {
         return userClient.getMember(getMemberRequest)
+    }
+
+    // Exposed function to get API Key
+    fun getAPIKey(): LMResponse<String> {
+        return userClient.getAPIKey()
+    }
+
+    // Exposed function to set tokens
+    fun setTokens(setTokensRequest: SetTokensRequest): LMResponse<Nothing> {
+        return userClient.setTokens(setTokensRequest)
+    }
+
+    // Exposed function to get tokens
+    fun getTokens(): LMResponse<Pair<String, String>> {
+        return userClient.getTokens()
     }
 
     // Exposed function to get chatroom from Db

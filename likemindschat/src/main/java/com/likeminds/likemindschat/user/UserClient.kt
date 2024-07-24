@@ -19,7 +19,10 @@ import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.user.model.GetLoggedInUserResponse
 import com.likeminds.likemindschat.user.model.MemberStateResponse
+import com.likeminds.likemindschat.user.model.SetTokensRequest
 import com.likeminds.likemindschat.util.RequestUtils
+import com.likeminds.likemindsfeed.user.model.ValidateUserRequest
+import com.likeminds.likemindsfeed.user.model.ValidateUserResponse
 import io.realm.Realm
 import javax.inject.Inject
 
@@ -49,6 +52,10 @@ class UserClient @Inject constructor() : BaseClient() {
         chatSDK.getUserPreference()
     }
 
+    private val syncPreferences by lazy {
+        chatSDK.getSyncPreferences()
+    }
+
     /**
      * Converts client request model to internal model and calls the api
      * @param initiateUserRequest - client request model to initiate user
@@ -59,13 +66,17 @@ class UserClient @Inject constructor() : BaseClient() {
         // validates the client request
         RequestUtils.validate()
         validateInitiateUserRequest(initiateUserRequest)
+
         // builds internal request model
-        val request =
-            _InitiateUserRequest_.Builder().userId(initiateUserRequest.userId)
-                .apiKey(initiateUserRequest.apiKey)
-                .userName(initiateUserRequest.userName)
-                .isGuest(initiateUserRequest.isGuest)
-                .build()
+        val request = _InitiateUserRequest_.Builder()
+            .userId(initiateUserRequest.userId)
+            .apiKey(initiateUserRequest.apiKey)
+            .userName(initiateUserRequest.userName)
+            .isGuest(initiateUserRequest.isGuest)
+            .tokenExpiryBeta(1) // for beta only
+            .rtmTokenExpiryBeta(2) // for beta only
+            .build()
+
         // calls api and processes the response accordingly
         return when (val response = sdkApi.initiateUser(request.apiKey!!, request)) {
             is NetworkResponse.Error -> {
@@ -85,28 +96,42 @@ class UserClient @Inject constructor() : BaseClient() {
                 val communityId = body.data?.community?.id ?: ""
                 val user = body.data?.user
 
-                // todo: remove these tokens
-                sdkPreferences.setAccessToken(accessToken)
-                sdkPreferences.setRefreshToken(refreshToken)
-
+                // update tokens in token manager
                 val chatTokenManager = ChatTokenManager.getInstance()
                 chatTokenManager.updateTokens(accessToken, refreshToken)
 
-                if (body.data?.appAccess == false) {
-                    // logout the user if app access is false
-                    val logoutRequest = LogoutRequest.Builder()
-                        .deviceId(initiateUserRequest.deviceId)
-                        .build()
 
-                    val logoutResponse = logout(logoutRequest)
-                    LMResponse(
-                        success = false,
-                        body.errorMessage,
-                        InitiateUserResponse(
-                            appAccess = false,
-                            logoutResponse = logoutResponse
+                sdkPreferences.setAccessToken(accessToken)
+                sdkPreferences.setRefreshToken(refreshToken)
+                sdkPreferences.setAPIKey(initiateUserRequest.apiKey)
+
+
+                if (body.data?.appAccess == false) {
+                    val deviceId = initiateUserRequest.deviceId
+                    if (!deviceId.isNullOrEmpty()) {
+                        // logout the user if app access is false
+                        val logoutRequest = LogoutRequest.Builder()
+                            .deviceId(initiateUserRequest.deviceId)
+                            .build()
+
+                        val logoutResponse = logout(logoutRequest)
+                        LMResponse(
+                            success = false,
+                            body.errorMessage,
+                            InitiateUserResponse(
+                                appAccess = false,
+                                logoutResponse = logoutResponse
+                            )
                         )
-                    )
+                    } else {
+                        clearLocalStorage()
+
+                        //return response
+                        LMResponse(
+                            success = false,
+                            errorMessage = "App access is denied."
+                        )
+                    }
                 } else {
                     val lmUUID = user?.uuid ?: ""
                     val lmMemberId = user?.id ?: ""
@@ -137,14 +162,6 @@ class UserClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("userName")
         }
 
-        if (initiateUserRequest.deviceId.isEmpty()) {
-            RequestUtils.throwException("deviceId")
-        }
-
-        if (initiateUserRequest.isGuest == null) {
-            RequestUtils.throwException("isGuest")
-        }
-
         if (initiateUserRequest.apiKey.isEmpty()) {
             RequestUtils.throwException("apiKey")
         }
@@ -161,6 +178,7 @@ class UserClient @Inject constructor() : BaseClient() {
         // validates the client request
         RequestUtils.validate()
         validateLogoutResponse(logoutRequest)
+
         // builds internal request model
         val request =
             _LogoutRequest_.Builder()
@@ -177,7 +195,8 @@ class UserClient @Inject constructor() : BaseClient() {
             }
 
             is NetworkResponse.Success -> {
-                ChatTokenManager.getInstance().clear()
+                clearLocalStorage()
+
                 LMResponse(
                     success = response.body.success
                 )
@@ -193,6 +212,19 @@ class UserClient @Inject constructor() : BaseClient() {
         if (logoutRequest.deviceId.isEmpty()) {
             RequestUtils.throwException("deviceId")
         }
+    }
+
+    private fun clearLocalStorage() {
+        //clear token manager
+        ChatTokenManager.getInstance().clear()
+
+        //clear db
+        ChatDBUtil.clearDB()
+
+        //clear preferences
+        sdkPreferences.clear()
+        userPreferences.clear()
+        syncPreferences.clear()
     }
 
     suspend fun registerDevice(registerDeviceRequest: RegisterDeviceRequest): LMResponse<Nothing> {
@@ -322,6 +354,189 @@ class UserClient @Inject constructor() : BaseClient() {
     private fun validateGetMemberRequest(getMemberRequest: GetMemberRequest) {
         if (getMemberRequest.uuid.isEmpty()) {
             RequestUtils.throwException("uuid")
+        }
+    }
+
+
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param validateUserRequest - client request model to validate user
+     * @throws IllegalArgumentException - when LMFeedClient is not instantiated or required properties not provided
+     * @return [ValidateUserResponse] - ValidateUserResponse model for [ValidateUserRequest]
+     */
+    suspend fun validateUser(validateUserRequest: ValidateUserRequest): LMResponse<ValidateUserResponse> {
+        // validates the client request
+        RequestUtils.validate()
+        validateValidateUserRequest(validateUserRequest)
+
+        val accessToken = validateUserRequest.accessToken
+        val refreshToken = validateUserRequest.refreshToken
+
+        //save in token manager
+        val chatTokenManager = ChatTokenManager.getInstance()
+        chatTokenManager.updateTokens(accessToken, refreshToken)
+
+        //save in local prefs
+        sdkPreferences.setAccessToken(accessToken)
+        sdkPreferences.setRefreshToken(refreshToken)
+
+        return when (val response = sdkApi.validateUser()) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = false,
+                    errorMessage = response.body.errorMessage,
+                    null
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                val body = response.body
+                val communityId = body.data?.community?.id ?: ""
+                val user = body.data?.user
+
+
+                if (body.data?.appAccess == false) {
+                    val deviceId = validateUserRequest.deviceId
+                    if (!deviceId.isNullOrEmpty()) {
+                        // logout the user if app access is false
+                        val logoutRequest = LogoutRequest.Builder()
+                            .deviceId(validateUserRequest.deviceId)
+                            .build()
+
+                        val logoutResponse = logout(logoutRequest)
+                        LMResponse(
+                            success = false,
+                            body.errorMessage,
+                            ValidateUserResponse(
+                                appAccess = false,
+                                logoutResponse = logoutResponse
+                            )
+                        )
+                    } else {
+                        clearLocalStorage()
+
+                        //return response
+                        LMResponse(
+                            success = false,
+                            errorMessage = "App access is denied."
+                        )
+                    }
+                } else {
+                    val lmUUID = user?.uuid ?: ""
+                    val lmMemberId = user?.id ?: ""
+                    val clientUUID = user?.sdkClientInfo?.uuid ?: ""
+                    val userRO = ROConverter.convertUser(user)
+
+
+                    sdkPreferences.setCommunityId(communityId)
+                    userPreferences.setLMUUID(lmUUID)
+                    userPreferences.setLMMemberId(lmMemberId)
+                    userPreferences.setClientUUID(clientUUID)
+
+                    userRO?.let {
+                        userDb.saveUser(it)
+                    }
+
+                    ModelConverter.convertValidateUserAPIResponse(body)
+                }
+            }
+        }
+    }
+
+    /**
+     * validates [validateUserRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateValidateUserRequest(validateUserRequest: ValidateUserRequest) {
+        if (validateUserRequest.accessToken.isEmpty()) {
+            RequestUtils.throwException("accessToken")
+        }
+
+        if (validateUserRequest.refreshToken.isEmpty()) {
+            RequestUtils.throwException("refreshToken")
+        }
+    }
+
+
+    /**
+     * Get the API key from local preferences
+     * @throws IllegalArgumentException - when LMFeedClient is not instantiated
+     * @return LMResponse<String> - API key
+     */
+    fun getAPIKey(): LMResponse<String> {
+        // validates the client request
+        RequestUtils.validate()
+
+        val apiKey = sdkPreferences.getAPIKey()
+        return if (!apiKey.isNullOrEmpty()) {
+            LMResponse(
+                success = true,
+                errorMessage = null,
+                data = apiKey
+            )
+        } else {
+            LMResponse(
+                success = false,
+                errorMessage = "API Key not found.",
+                data = null
+            )
+        }
+    }
+
+    /**
+     * Set the access token and refresh token in local preferences
+     * @throws IllegalArgumentException - when LMFeedClient is not instantiated
+     * @param setTokensRequest - [SetTokensRequest] model to set access token and refresh token
+     * @return LMResponse<Pair<String, String>> - access token and refresh token
+     */
+    fun setTokens(setTokensRequest: SetTokensRequest): LMResponse<Nothing> {
+        // validates the client request
+        RequestUtils.validate()
+        validateSetTokensRequest(setTokensRequest)
+        //update local prefs
+        sdkPreferences.setAccessToken(setTokensRequest.accessToken)
+        sdkPreferences.setRefreshToken(setTokensRequest.refreshToken)
+
+        return LMResponse(success = true)
+    }
+
+    /**
+     * validates [setTokensRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateSetTokensRequest(setTokensRequest: SetTokensRequest) {
+        if (setTokensRequest.accessToken.isEmpty()) {
+            RequestUtils.throwException("accessToken")
+        }
+        if (setTokensRequest.refreshToken.isEmpty()) {
+            RequestUtils.throwException("refreshToken")
+        }
+    }
+
+    /**
+     * Get the access token and refresh token from local preferences
+     * @throws IllegalArgumentException - when LMFeedClient is not instantiated
+     * @return LMResponse<Pair<String, String>> - access token and refresh token
+     */
+    fun getTokens(): LMResponse<Pair<String, String>> {
+        // validates the client request
+        RequestUtils.validate()
+
+        val accessToken = sdkPreferences.getAccessToken()
+        val refreshToken = sdkPreferences.getRefreshToken()
+
+        return if (accessToken != null && refreshToken != null) {
+            LMResponse(
+                success = true,
+                errorMessage = null,
+                data = Pair(accessToken, refreshToken)
+            )
+        } else {
+            LMResponse(
+                success = false,
+                errorMessage = "Tokens not found!",
+                data = null
+            )
         }
     }
 }

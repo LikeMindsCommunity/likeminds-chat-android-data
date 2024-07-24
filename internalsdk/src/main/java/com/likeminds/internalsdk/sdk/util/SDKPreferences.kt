@@ -15,9 +15,9 @@ class SDKPreferences @Inject constructor(
         const val SDK_PREFS = "sdk_prefs"
         private const val COMMUNITY_ID = "community_id"
 
-        // todo: remove these tokens
         const val ACCESS_TOKEN = "access_token"
         const val REFRESH_TOKEN = "refresh_token"
+        const val API_KEY = "api_key"
     }
 
     fun setCommunityId(communityId: String) {
@@ -32,15 +32,23 @@ class SDKPreferences @Inject constructor(
         putPreference(ACCESS_TOKEN, accessToken)
     }
 
-    fun getAccessToken(): String {
-        return getPreference(ACCESS_TOKEN, "") ?: ""
+    fun getAccessToken(): String? {
+        return getPreference(ACCESS_TOKEN, null)
     }
 
     fun setRefreshToken(refreshToken: String) {
         putPreference(REFRESH_TOKEN, refreshToken)
     }
 
-    fun getRefreshToken(): String {
-        return getPreference(REFRESH_TOKEN, "") ?: ""
+    fun getRefreshToken(): String? {
+        return getPreference(REFRESH_TOKEN, null)
+    }
+
+    fun setAPIKey(apiKey: String) {
+        putPreference(API_KEY, apiKey)
+    }
+
+    fun getAPIKey(): String? {
+        return getPreference(API_KEY, null)
     }
 }
