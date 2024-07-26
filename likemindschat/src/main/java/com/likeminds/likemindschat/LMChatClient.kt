@@ -452,7 +452,7 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get secret channel invites
-    suspend fun getChannelInvites(getChannelInviteRequest: ChannelInviteRequest): LMResponse<ChannelInviteResponse> {
+    suspend fun getChannelInvites(getChannelInviteRequest: GetChannelInviteRequest): LMResponse<GetChannelInviteResponse> {
         return chatroomClient.getChannelInvites(getChannelInviteRequest)
     }
 }

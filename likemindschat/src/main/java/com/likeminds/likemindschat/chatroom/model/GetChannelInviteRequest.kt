@@ -1,13 +1,8 @@
-package com.likeminds.internalsdk.chatroom.model
+package com.likeminds.likemindschat.chatroom.model
 
-import com.google.gson.annotations.SerializedName
-
-class _ChannelInviteRequest_ private constructor(
-    @SerializedName("channel_type")
+class GetChannelInviteRequest private constructor(
     val channelType: Int,
-    @SerializedName("page")
     val page: Int,
-    @SerializedName("page_size")
     val pageSize: Int
 ) {
     class Builder {
@@ -27,7 +22,7 @@ class _ChannelInviteRequest_ private constructor(
             this.pageSize = pageSize
         }
 
-        fun build() = _ChannelInviteRequest_(
+        fun build() = GetChannelInviteRequest(
             channelType,
             page,
             pageSize

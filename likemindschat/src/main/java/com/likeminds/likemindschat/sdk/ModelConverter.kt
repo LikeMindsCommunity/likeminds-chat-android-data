@@ -1435,8 +1435,8 @@ object ModelConverter {
 
     // converts APIResponse<_ChannelInviteResponse_> to LMResponse<ChannelInviteResponse> model
     fun convertGetChannelInvitesResponse(
-        apiResponse: APIResponse<_ChannelInviteResponse_>
-    ): LMResponse<ChannelInviteResponse> {
+        apiResponse: APIResponse<_GetChannelInviteResponse_>
+    ): LMResponse<GetChannelInviteResponse> {
         return LMResponse(
             apiResponse.success,
             apiResponse.errorMessage,
@@ -1445,9 +1445,9 @@ object ModelConverter {
     }
 
     // converts internal _ChannelInviteResponse_ to client ChannelInviteResponse
-    private fun convertGetChannelInvites(_channelInviteResponse_: _ChannelInviteResponse_?): ChannelInviteResponse? {
-        val channelInvites = _channelInviteResponse_?.channelInvites ?: return null
-        return ChannelInviteResponse(
+    private fun convertGetChannelInvites(_getChannelInviteResponse_: _GetChannelInviteResponse_?): GetChannelInviteResponse? {
+        val channelInvites = _getChannelInviteResponse_?.channelInvites ?: return null
+        return GetChannelInviteResponse(
             channelInvites.map { userInvite ->
                 convertChannelInvite(userInvite)
             }

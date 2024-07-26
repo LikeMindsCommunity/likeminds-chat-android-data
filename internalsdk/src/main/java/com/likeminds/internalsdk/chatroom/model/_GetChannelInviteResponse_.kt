@@ -3,7 +3,7 @@ package com.likeminds.internalsdk.chatroom.model
 import com.google.gson.annotations.SerializedName
 import com.likeminds.internalsdk.community.model._Member_
 
-data class _ChannelInviteResponse_(
+data class _GetChannelInviteResponse_(
     @SerializedName("user_invites")
     val channelInvites: List<_ChannelInvite_>
 )

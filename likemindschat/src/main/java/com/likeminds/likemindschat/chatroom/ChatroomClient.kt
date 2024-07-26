@@ -534,15 +534,15 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         }
     }
 
-    suspend fun getChannelInvites(channelInviteRequest: ChannelInviteRequest): LMResponse<ChannelInviteResponse> {
+    suspend fun getChannelInvites(getChannelInviteRequest: GetChannelInviteRequest): LMResponse<GetChannelInviteResponse> {
         // validates the client request
         RequestUtils.validate()
 
         // builds internal request model
-        val request = _ChannelInviteRequest_.Builder()
-            .channelType(channelInviteRequest.channelType)
-            .page(channelInviteRequest.page)
-            .pageSize(channelInviteRequest.pageSize)
+        val request = _GetChannelInviteRequest_.Builder()
+            .channelType(getChannelInviteRequest.channelType)
+            .page(getChannelInviteRequest.page)
+            .pageSize(getChannelInviteRequest.pageSize)
             .build()
 
         // calls api and processes the response accordingly

@@ -100,8 +100,8 @@ class ChatroomReceiver @Inject constructor(
     }
 
     suspend fun getChannelInvites(
-        request: _ChannelInviteRequest_
-    ): NetworkResponse<APIResponse<_ChannelInviteResponse_>> {
+        request: _GetChannelInviteRequest_
+    ): NetworkResponse<APIResponse<_GetChannelInviteResponse_>> {
         val queries = HashMap<String, Any>()
         // Set query parameters for request
         queries[CHANNEL_TYPE_KEY] = request.channelType

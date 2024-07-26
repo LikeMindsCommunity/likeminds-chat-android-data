@@ -2,7 +2,7 @@ package com.likeminds.likemindschat.chatroom.model
 
 import com.likeminds.likemindschat.community.model.Member
 
-data class ChannelInviteResponse(
+data class GetChannelInviteResponse(
     val channelInvites: List<ChannelInvite>
 )
 

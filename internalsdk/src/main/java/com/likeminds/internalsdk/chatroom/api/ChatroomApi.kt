@@ -53,6 +53,6 @@ interface ChatroomApi {
 
     // api to get channel invites
     suspend fun getChannelInvites(
-        request: _ChannelInviteRequest_
-    ): NetworkResponse<APIResponse<_ChannelInviteResponse_>>
+        request: _GetChannelInviteRequest_
+    ): NetworkResponse<APIResponse<_GetChannelInviteResponse_>>
 }
