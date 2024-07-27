@@ -1,8 +1,8 @@
 package com.likeminds.likemindschat.moderation
 
-import com.likeminds.internalsdk.moderation.model._GetReportTagsRequest_
-import com.likeminds.internalsdk.moderation.model._PostReportRequest_
-import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.moderation.model._GetReportTagsRequest_
+import com.likeminds.chatinternalsdk.moderation.model._PostReportRequest_
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.moderation.model.*

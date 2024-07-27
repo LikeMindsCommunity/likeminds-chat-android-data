@@ -1,9 +1,8 @@
-package com.likeminds.likemindsfeed.user.model
+package com.likeminds.likemindschat.user.model
 
-import com.likeminds.likemindsfeed.LMResponse
-import com.likeminds.likemindsfeed.sdk.model.Community
-import com.likeminds.likemindsfeed.sdk.model.CommunitySetting
-import com.likeminds.likemindsfeed.sdk.model.User
+import com.likeminds.likemindschat.LMResponse
+import com.likeminds.likemindschat.community.model.Community
+
 
 data class ValidateUserResponse(
     val user: User? = null, //user data

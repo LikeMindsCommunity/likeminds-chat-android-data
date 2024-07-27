@@ -1,4 +1,4 @@
-package com.likeminds.likemindsfeed.user.model
+package com.likeminds.likemindschat.user.model
 
 class ValidateUserRequest private constructor(
     val accessToken: String,

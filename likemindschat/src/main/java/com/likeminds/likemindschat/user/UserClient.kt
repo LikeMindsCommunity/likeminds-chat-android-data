@@ -1,28 +1,20 @@
 package com.likeminds.likemindschat.user
 
-import com.likeminds.internalsdk.ChatTokenManager
-import com.likeminds.internalsdk.db.ChatDBUtil
-import com.likeminds.internalsdk.db.ROConverter
-import com.likeminds.internalsdk.sdk.model._InitiateUserRequest_
-import com.likeminds.internalsdk.user.model._LogoutRequest_
-import com.likeminds.internalsdk.user.model._RegisterDeviceRequest_
-import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.ChatTokenManager
+import com.likeminds.chatinternalsdk.db.ChatDBUtil
+import com.likeminds.chatinternalsdk.db.ROConverter
+import com.likeminds.chatinternalsdk.sdk.model._InitiateUserRequest_
+import com.likeminds.chatinternalsdk.user.model._LogoutRequest_
+import com.likeminds.chatinternalsdk.user.model._RegisterDeviceRequest_
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.community.model.GetMemberRequest
 import com.likeminds.likemindschat.community.model.GetMemberResponse
-import com.likeminds.likemindschat.user.model.InitiateUserRequest
-import com.likeminds.likemindschat.user.model.InitiateUserResponse
-import com.likeminds.likemindschat.user.model.LogoutRequest
-import com.likeminds.likemindschat.user.model.RegisterDeviceRequest
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
-import com.likeminds.likemindschat.user.model.GetLoggedInUserResponse
-import com.likeminds.likemindschat.user.model.MemberStateResponse
-import com.likeminds.likemindschat.user.model.SetTokensRequest
+import com.likeminds.likemindschat.user.model.*
 import com.likeminds.likemindschat.util.RequestUtils
-import com.likeminds.likemindsfeed.user.model.ValidateUserRequest
-import com.likeminds.likemindsfeed.user.model.ValidateUserResponse
 import io.realm.Realm
 import javax.inject.Inject
 
@@ -53,7 +45,7 @@ class UserClient @Inject constructor() : BaseClient() {
     }
 
     private val syncPreferences by lazy {
-        chatSDK.getSyncPreferences()
+        chatSDK.getSyncPreference()
     }
 
     /**

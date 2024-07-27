@@ -19,7 +19,7 @@ apply from: '../publish-helper.gradle'
 apply from: "internalsdk-dependencies.gradle"
 
 android {
-    namespace 'com.likeminds.internalsdk'
+    namespace 'com.likeminds.chatinternalsdk'
     compileSdkVersion versions.compile_sdk
 
     defaultConfig {

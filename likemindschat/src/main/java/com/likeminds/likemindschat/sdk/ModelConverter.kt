@@ -1,24 +1,24 @@
 package com.likeminds.likemindschat.sdk
 
 import com.google.gson.JsonParser
-import com.likeminds.internalsdk.chatroom.model.*
-import com.likeminds.internalsdk.community.model.*
-import com.likeminds.internalsdk.conversation.model.*
-import com.likeminds.internalsdk.db.models.*
-import com.likeminds.internalsdk.dm.model.*
-import com.likeminds.internalsdk.helper.model.*
-import com.likeminds.internalsdk.homefeed.model.*
-import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
-import com.likeminds.internalsdk.moderation.model._ReportTag_
-import com.likeminds.internalsdk.notification.model._ChatroomNotificationData_
-import com.likeminds.internalsdk.notification.model._GetConversationNotificationUnreadResponse_
-import com.likeminds.internalsdk.poll.model.*
-import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
-import com.likeminds.internalsdk.sdk.model._ValidateUserResponse_
-import com.likeminds.internalsdk.search.model.*
-import com.likeminds.internalsdk.user.model.*
-import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
-import com.likeminds.internalsdk.widget.model._Widget_
+import com.likeminds.chatinternalsdk.chatroom.model.*
+import com.likeminds.chatinternalsdk.community.model.*
+import com.likeminds.chatinternalsdk.conversation.model.*
+import com.likeminds.chatinternalsdk.db.models.*
+import com.likeminds.chatinternalsdk.dm.model.*
+import com.likeminds.chatinternalsdk.helper.model.*
+import com.likeminds.chatinternalsdk.homefeed.model.*
+import com.likeminds.chatinternalsdk.moderation.model._GetReportTagsResponse_
+import com.likeminds.chatinternalsdk.moderation.model._ReportTag_
+import com.likeminds.chatinternalsdk.notification.model._ChatroomNotificationData_
+import com.likeminds.chatinternalsdk.notification.model._GetConversationNotificationUnreadResponse_
+import com.likeminds.chatinternalsdk.poll.model.*
+import com.likeminds.chatinternalsdk.sdk.model._InitiateUserResponse_
+import com.likeminds.chatinternalsdk.sdk.model._ValidateUserResponse_
+import com.likeminds.chatinternalsdk.search.model.*
+import com.likeminds.chatinternalsdk.user.model.*
+import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
+import com.likeminds.chatinternalsdk.widget.model._Widget_
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.*
@@ -27,7 +27,6 @@ import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.model.*
-import com.likeminds.likemindschat.user.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
 import com.likeminds.likemindschat.notification.model.ChatroomNotificationData
@@ -36,7 +35,6 @@ import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
 import com.likeminds.likemindschat.widget.model.Widget
-import com.likeminds.likemindsfeed.user.model.ValidateUserResponse
 import org.json.JSONObject
 
 object ModelConverter {

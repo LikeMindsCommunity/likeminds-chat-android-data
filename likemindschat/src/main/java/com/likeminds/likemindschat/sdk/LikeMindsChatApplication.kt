@@ -4,9 +4,8 @@ import android.app.Application
 import android.util.Base64
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
-import com.likeminds.internalsdk.LMChatSDK
-import com.likeminds.internalsdk.di.SDKSharedResources
-import com.likeminds.likemindschat.di.DaggerLikeMindsChatComponent
+import com.likeminds.chatinternalsdk.LMChatSDK
+import com.likeminds.chatinternalsdk.di.SDKSharedResources
 import com.likeminds.likemindschat.di.LikeMindsChatComponent
 import com.likeminds.likemindschat.di.chatroom.ChatroomSubComponent
 import com.likeminds.likemindschat.di.community.CommunitySubComponent
@@ -66,9 +65,9 @@ internal class LikeMindsChatApplication private constructor() {
 
     private fun initLikeMindsChatComponent(application: Application) {
         if (likeMindsChatComponent == null) {
-            likeMindsChatComponent = DaggerLikeMindsChatComponent.builder()
-                .application(application)
-                .build()
+//            likeMindsChatComponent = DaggerLikeMindsChatComponent.builder()
+//                .application(application)
+//                .build()
         }
         likeMindsChatComponent?.inject(this)
     }

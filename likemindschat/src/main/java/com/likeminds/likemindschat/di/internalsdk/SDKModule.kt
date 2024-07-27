@@ -1,7 +1,7 @@
 package com.likeminds.likemindschat.di.internalsdk
 
 import com.google.gson.Gson
-import com.likeminds.internalsdk.LMChatSDK
+import com.likeminds.chatinternalsdk.LMChatSDK
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

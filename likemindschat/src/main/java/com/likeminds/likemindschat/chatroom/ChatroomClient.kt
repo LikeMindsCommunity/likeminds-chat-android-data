@@ -1,7 +1,7 @@
 package com.likeminds.likemindschat.chatroom
 
-import com.likeminds.internalsdk.chatroom.model.*
-import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.chatroom.model.*
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.chatroom.model.*

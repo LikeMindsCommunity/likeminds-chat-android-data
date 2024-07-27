@@ -1,9 +1,9 @@
 package com.likeminds.likemindschat.poll
 
 import android.content.Context
-import com.likeminds.internalsdk.poll.model.*
-import com.likeminds.internalsdk.sync.SyncSDK
-import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.poll.model.*
+import com.likeminds.chatinternalsdk.sync.SyncSDK
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.poll.model.*

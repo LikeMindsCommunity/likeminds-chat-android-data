@@ -1,9 +1,9 @@
 package com.likeminds.likemindschat.helper
 
-import com.likeminds.internalsdk.db.ChatDBUtil
-import com.likeminds.internalsdk.helper.model._DecodeUrlRequest_
-import com.likeminds.internalsdk.helper.model._GetTaggingListRequest_
-import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.db.ChatDBUtil
+import com.likeminds.chatinternalsdk.helper.model._DecodeUrlRequest_
+import com.likeminds.chatinternalsdk.helper.model._GetTaggingListRequest_
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.helper.model.*

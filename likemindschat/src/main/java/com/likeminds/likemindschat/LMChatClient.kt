@@ -11,7 +11,6 @@ import com.likeminds.likemindschat.community.CommunityClient
 import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
-import com.likeminds.likemindschat.conversation.model.LoadConversationType
 import com.likeminds.likemindschat.dm.DMClient
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.HelperClient
@@ -30,15 +29,7 @@ import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.search.SearchClient
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.UserClient
-import com.likeminds.likemindschat.user.model.GetLoggedInUserResponse
-import com.likeminds.likemindschat.user.model.InitiateUserRequest
-import com.likeminds.likemindschat.user.model.InitiateUserResponse
-import com.likeminds.likemindschat.user.model.LogoutRequest
-import com.likeminds.likemindschat.user.model.MemberStateResponse
-import com.likeminds.likemindschat.user.model.RegisterDeviceRequest
-import com.likeminds.likemindschat.user.model.SetTokensRequest
-import com.likeminds.likemindsfeed.user.model.ValidateUserRequest
-import com.likeminds.likemindsfeed.user.model.ValidateUserResponse
+import com.likeminds.likemindschat.user.model.*
 import io.reactivex.Observable
 import javax.inject.Inject
 import javax.inject.Singleton

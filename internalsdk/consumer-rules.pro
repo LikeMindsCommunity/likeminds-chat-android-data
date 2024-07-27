@@ -1,20 +1,20 @@
 # Model Class
--keep class com.likeminds.internalsdk.chatroom.model.** { *; }
--keep class com.likeminds.internalsdk.community.model.** { *; }
--keep class com.likeminds.internalsdk.conversation.model.** { *; }
--keep class com.likeminds.internalsdk.db.model.** { *; }
--keep class com.likeminds.internalsdk.dm.model.** { *; }
--keep class com.likeminds.internalsdk.helper.model.** { *; }
--keep class com.likeminds.internalsdk.homefeed.model.** { *; }
--keep class com.likeminds.internalsdk.moderation.model.** { *; }
--keep class com.likeminds.internalsdk.notification.model.** { *; }
--keep class com.likeminds.internalsdk.poll.model.** { *; }
--keep class com.likeminds.internalsdk.refreshtoken.model.** { *; }
--keep class com.likeminds.internalsdk.sdk.model.** { *; }
--keep class com.likeminds.internalsdk.search.model.** { *; }
--keep class com.likeminds.internalsdk.sync.model.** { *; }
--keep class com.likeminds.internalsdk.user.model.** { *; }
--keep class com.likeminds.internalsdk.utils.retrofit.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.chatroom.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.community.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.conversation.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.db.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.dm.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.helper.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.homefeed.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.moderation.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.notification.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.poll.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.refreshtoken.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.sdk.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.search.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.sync.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.user.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.utils.retrofit.model.** { *; }
 
 # Retrofit
 -keep class retrofit2.Response { *; }

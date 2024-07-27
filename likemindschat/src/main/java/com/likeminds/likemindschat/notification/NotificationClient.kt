@@ -1,6 +1,6 @@
 package com.likeminds.likemindschat.notification
 
-import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
