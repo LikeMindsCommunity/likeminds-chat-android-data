@@ -14,7 +14,7 @@ open class MemberRO(
     var customClickText: String? = null,
     var customTitle: String? = null,
     var communityId: Int? = null,
-    var isOwner: Boolean = false,
+    var isOwner: Boolean? = null,
     var isGuest: Boolean = false,
     var userUniqueId: String = "",
     var uuid: String = "",
@@ -57,7 +57,7 @@ open class MemberRO(
         var customClickText: String? = null
         var customTitle: String? = null
         var communityId: Int? = null
-        var isOwner: Boolean = false
+        var isOwner: Boolean? = null
         var isGuest: Boolean = false
         var userUniqueId: String = ""
         var sdkClientInfoRO: SDKClientInfoRO? = null

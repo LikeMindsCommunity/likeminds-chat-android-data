@@ -50,4 +50,14 @@ interface ChatroomNetworkApi {
     suspend fun editChatroomTitle(
         @Body request: _EditChatroomTitleRequest_
     ): NetworkResponse<APIResponse<Nothing>>
+
+    @PUT("channel/invite")
+    suspend fun updateChannelInvite(
+        @Body request: _UpdateChannelInviteRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
+
+    @GET("channel/invites")
+    suspend fun getChannelInvites(
+        @QueryMap queries: HashMap<String, Any>
+    ): NetworkResponse<APIResponse<_GetChannelInviteResponse_>>
 }

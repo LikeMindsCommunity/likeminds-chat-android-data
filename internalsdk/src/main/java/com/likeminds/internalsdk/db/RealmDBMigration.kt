@@ -53,6 +53,16 @@ class RealmDBMigration : RealmMigration {
 
             olderVersion++
         }
+        if (olderVersion == 2L) {
+            schema[CHATROOM_CLASS]!!.apply {
+                removeField("state")
+                addField("state", Int::class.javaObjectType)
+            }
+            schema[MEMBER_CLASS]!!.apply {
+                removeField("isOwner")
+                addField("isOwner", Boolean::class.javaObjectType)
+            }
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -65,4 +75,4 @@ class RealmDBMigration : RealmMigration {
 }
 
 const val DB_SCHEMA_NAME = "likeminds-chat-sdk"
-const val DB_SCHEMA_VERSION = 2L
+const val DB_SCHEMA_VERSION = 3L

@@ -1433,6 +1433,60 @@ object ModelConverter {
             .build()
     }
 
+    // converts APIResponse<_ChannelInviteResponse_> to LMResponse<ChannelInviteResponse> model
+    fun convertGetChannelInvitesResponse(
+        apiResponse: APIResponse<_GetChannelInviteResponse_>
+    ): LMResponse<GetChannelInviteResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetChannelInvites(apiResponse.data)
+        )
+    }
+
+    // converts internal _ChannelInviteResponse_ to client ChannelInviteResponse
+    private fun convertGetChannelInvites(_getChannelInviteResponse_: _GetChannelInviteResponse_?): GetChannelInviteResponse? {
+        val channelInvites = _getChannelInviteResponse_?.channelInvites ?: return null
+        return GetChannelInviteResponse(
+            channelInvites.map { userInvite ->
+                convertChannelInvite(userInvite)
+            }
+        )
+    }
+
+    // converts internal _ChannelInvite_ to client ChannelInvite
+    private fun convertChannelInvite(_channelInvite_: _ChannelInvite_): ChannelInvite {
+        return ChannelInvite(
+            convertChatroom(_channelInvite_.chatroom),
+            _channelInvite_.createdAt,
+            _channelInvite_.id,
+            convertChannelInviteStatus(_channelInvite_.inviteStatus),
+            _channelInvite_.updatedAt,
+            convertMember(_channelInvite_.inviteReceiver),
+            convertMember(_channelInvite_.inviteSender)
+        )
+    }
+
+    private fun convertChannelInviteStatus(inviteStatus: Int): ChannelInviteStatus {
+        return when (inviteStatus) {
+            ChannelInviteStatus.INVITED.value -> {
+                ChannelInviteStatus.INVITED
+            }
+
+            ChannelInviteStatus.ACCEPTED.value -> {
+                ChannelInviteStatus.ACCEPTED
+            }
+
+            ChannelInviteStatus.REJECTED.value -> {
+                ChannelInviteStatus.REJECTED
+            }
+
+            else -> {
+                ChannelInviteStatus.INVITED
+            }
+        }
+    }
+
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/

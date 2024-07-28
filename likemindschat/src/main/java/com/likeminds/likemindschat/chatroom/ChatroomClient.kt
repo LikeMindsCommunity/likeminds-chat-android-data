@@ -489,4 +489,74 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("text")
         }
     }
+
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param updateChannelInviteRequest - client request model to update the status of channel invite
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<Nothing> - Base LM response
+     */
+    suspend fun updateChannelInvite(updateChannelInviteRequest: UpdateChannelInviteRequest): LMResponse<Nothing> {
+        // validates the client request
+        RequestUtils.validate()
+        validateUpdateChannelInviteRequest(updateChannelInviteRequest)
+
+        // builds internal request model
+        val request = _UpdateChannelInviteRequest_.Builder()
+            .channelId(updateChannelInviteRequest.channelId)
+            .inviteStatus(updateChannelInviteRequest.inviteStatus.value)
+            .build()
+
+        // calls api and processes the response accordingly
+        return when (val response = chatroomApi.updateChannelInvite(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                LMResponse(
+                    success = response.body.success
+                )
+            }
+        }
+    }
+
+    /**
+     * validates [updateChannelInviteRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateUpdateChannelInviteRequest(updateChannelInviteRequest: UpdateChannelInviteRequest) {
+        if (updateChannelInviteRequest.channelId.isEmpty()) {
+            RequestUtils.throwException("channelId")
+        }
+    }
+
+    suspend fun getChannelInvites(getChannelInviteRequest: GetChannelInviteRequest): LMResponse<GetChannelInviteResponse> {
+        // validates the client request
+        RequestUtils.validate()
+
+        // builds internal request model
+        val request = _GetChannelInviteRequest_.Builder()
+            .channelType(getChannelInviteRequest.channelType)
+            .page(getChannelInviteRequest.page)
+            .pageSize(getChannelInviteRequest.pageSize)
+            .build()
+
+        // calls api and processes the response accordingly
+        return when (val response = chatroomApi.getChannelInvites(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                ModelConverter.convertGetChannelInvitesResponse(response.body)
+            }
+        }
+    }
 }
