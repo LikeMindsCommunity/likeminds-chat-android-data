@@ -14,7 +14,7 @@ class Member private constructor(
     val customClickText: String?,
     val memberSince: String?,
     val communityName: String?,
-    val isOwner: Boolean,
+    val isOwner: Boolean?,
     val customTitle: String?,
     val menu: List<MemberAction>?,
     val communityId: Int?,
@@ -40,7 +40,7 @@ class Member private constructor(
         private var customClickText: String? = null
         private var memberSince: String? = null
         private var communityName: String? = null
-        private var isOwner: Boolean = false
+        private var isOwner: Boolean? = null
         private var customTitle: String? = null
         private var menu: List<MemberAction>? = null
         private var communityId: Int? = null
@@ -69,7 +69,7 @@ class Member private constructor(
 
         fun memberSince(memberSince: String?) = apply { this.memberSince = memberSince }
         fun communityName(communityName: String?) = apply { this.communityName = communityName }
-        fun isOwner(isOwner: Boolean) = apply { this.isOwner = isOwner }
+        fun isOwner(isOwner: Boolean?) = apply { this.isOwner = isOwner }
         fun customTitle(customTitle: String?) = apply { this.customTitle = customTitle }
         fun menu(menu: List<MemberAction>?) = apply { this.menu = menu }
         fun communityId(communityId: Int?) = apply { this.communityId = communityId }

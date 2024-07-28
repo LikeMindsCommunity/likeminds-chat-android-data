@@ -45,4 +45,14 @@ interface ChatroomApi {
     suspend fun editChatroomTitle(
         request: _EditChatroomTitleRequest_
     ): NetworkResponse<APIResponse<Nothing>>
+
+    // api to update status of the secret chatroom invite
+    suspend fun updateChannelInvite(
+        request: _UpdateChannelInviteRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
+
+    // api to get channel invites
+    suspend fun getChannelInvites(
+        request: _GetChannelInviteRequest_
+    ): NetworkResponse<APIResponse<_GetChannelInviteResponse_>>
 }

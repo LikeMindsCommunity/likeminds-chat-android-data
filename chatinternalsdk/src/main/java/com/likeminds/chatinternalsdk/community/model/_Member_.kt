@@ -27,7 +27,7 @@ class _Member_ private constructor(
     @SerializedName("community_name")
     val communityName: String?,
     @SerializedName("is_owner")
-    val isOwner: Boolean,
+    val isOwner: Boolean?,
     @SerializedName("custom_title")
     val customTitle: String?,
     @SerializedName("menu")
@@ -63,7 +63,7 @@ class _Member_ private constructor(
         private var customClickText: String? = null
         private var memberSince: String? = null
         private var communityName: String? = null
-        private var isOwner: Boolean = false
+        private var isOwner: Boolean? = null
         private var customTitle: String? = null
         private var menu: List<_MemberAction_>? = null
         private var communityId: Int? = null
@@ -92,7 +92,7 @@ class _Member_ private constructor(
 
         fun memberSince(memberSince: String?) = apply { this.memberSince = memberSince }
         fun communityName(communityName: String?) = apply { this.communityName = communityName }
-        fun isOwner(isOwner: Boolean) = apply { this.isOwner = isOwner }
+        fun isOwner(isOwner: Boolean?) = apply { this.isOwner = isOwner }
         fun customTitle(customTitle: String?) = apply { this.customTitle = customTitle }
         fun menu(menu: List<_MemberAction_>?) = apply { this.menu = menu }
         fun communityId(communityId: Int?) = apply { this.communityId = communityId }
