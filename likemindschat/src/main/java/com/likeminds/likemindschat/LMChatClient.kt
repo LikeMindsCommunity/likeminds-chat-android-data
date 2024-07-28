@@ -71,11 +71,16 @@ class LMChatClient private constructor() {
     lateinit var dmClient: DMClient
 
     class Builder(val application: Application) {
+        private var lmChatSDKCallback: LMChatSDKCallback? = null
+
+        fun lmChatSDKCallback(lmChatSDKCallback: LMChatSDKCallback?) = apply {
+            this.lmChatSDKCallback = lmChatSDKCallback
+        }
 
         fun build(): LMChatClient {
             lmChatClientInstance = LMChatClient()
             val sdkApplication = LikeMindsChatApplication.getInstance()
-            sdkApplication.initChatSDKApplication(application)
+            sdkApplication.initChatSDKApplication(application, lmChatSDKCallback)
             sdkApplication.likeMindsChatComponent?.inject(lmChatClientInstance!!)
             return lmChatClientInstance!!
         }

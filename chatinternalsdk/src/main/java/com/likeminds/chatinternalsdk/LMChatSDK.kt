@@ -134,6 +134,8 @@ class LMChatSDK {
     @Inject
     lateinit var syncPreferences: SyncPreferences
 
+    var lmChatInternalCallback: LMChatInternalCallback? = null
+
     companion object {
 
         private var chatSDK: LMChatSDK? = null
@@ -149,9 +151,13 @@ class LMChatSDK {
         }
     }
 
-    fun initialize(sdkSharedResources: SDKSharedResources) {
+    fun initialize(
+        sdkSharedResources: SDKSharedResources,
+        lmChatInternalCallback: LMChatInternalCallback?
+    ) {
         initSDKComponent(sdkSharedResources)
         initRealmAndMigrateAsync()
+        this.lmChatInternalCallback = lmChatInternalCallback
     }
 
     private fun initRealmAndMigrateAsync() {

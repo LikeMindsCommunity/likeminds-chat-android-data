@@ -50,4 +50,8 @@ dependencies {
     testImplementation deps.testing.junit
     androidTestImplementation deps.testing.android_junit
     androidTestImplementation deps.testing.espresso
+
+    //chucker
+    debugImplementation deps.chucker.main
+    releaseImplementation deps.chucker.no_op
 }

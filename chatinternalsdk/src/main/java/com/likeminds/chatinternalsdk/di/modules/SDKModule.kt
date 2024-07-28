@@ -5,7 +5,6 @@ import com.likeminds.chatinternalsdk.BuildConfig
 import com.likeminds.chatinternalsdk.refreshtoken.RefreshTokenNetworkApi
 import com.likeminds.chatinternalsdk.sdk.SDKNetworkApi
 import com.likeminds.chatinternalsdk.utils.retrofit.NetworkResponseAdapterFactory
-import com.likeminds.chatinternalsdk.utils.retrofit.RefreshTokenAuthenticator
 import com.likeminds.chatinternalsdk.utils.retrofit.model.BaseUrl
 import dagger.Module
 import dagger.Provides
@@ -37,17 +36,10 @@ class SDKModule {
     @Provides
     @Singleton
     fun provideRefreshTokenApi(
-        loggingInterceptor: HttpLoggingInterceptor,
+        client: OkHttpClient,
         gson: Gson,
         baseUrl: BaseUrl,
-        refreshTokenAuthenticator: RefreshTokenAuthenticator
     ): RefreshTokenNetworkApi {
-        val clientBuilder = OkHttpClient.Builder()
-        clientBuilder.authenticator(refreshTokenAuthenticator)
-        if (BuildConfig.DEBUG) {
-            clientBuilder.addInterceptor(loggingInterceptor)
-        }
-        val client: OkHttpClient = clientBuilder.build()
         return Retrofit.Builder()
             .baseUrl(baseUrl.getKettleBase())
             .client(client)

@@ -12,6 +12,7 @@ class CommonHeaderInterceptor @Inject constructor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
+        val url = chain.request().url.toString()
         val requestBuilder = chain.request().newBuilder()
         val chatTokenManager = ChatTokenManager.getInstance()
 
@@ -22,7 +23,8 @@ class CommonHeaderInterceptor @Inject constructor(
         } else {
             ""
         }
-        if (!accessToken.isNullOrEmpty()) {
+
+        if (!accessToken.isNullOrEmpty() && !url.contains("user/refresh", false)) {
             requestBuilder.addHeader(AUTH, "Bearer $accessToken")
         }
         requestBuilder.addHeader(X_PLATFORM_CODE, "an")
