@@ -55,8 +55,12 @@ class RealmDBMigration : RealmMigration {
         }
         if (olderVersion == 2L) {
             schema[CHATROOM_CLASS]!!.apply {
-                setNullable("state", true)
-                setNullable("is_owner", true)
+                removeField("state")
+                addField("state", Int::class.javaObjectType)
+            }
+            schema[MEMBER_CLASS]!!.apply {
+                removeField("isOwner")
+                addField("isOwner", Boolean::class.javaObjectType)
             }
         }
     }
