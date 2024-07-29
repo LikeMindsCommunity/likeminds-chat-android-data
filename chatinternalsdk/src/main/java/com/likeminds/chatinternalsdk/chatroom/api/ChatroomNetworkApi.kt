@@ -57,6 +57,7 @@ interface ChatroomNetworkApi {
     ): NetworkResponse<APIResponse<Nothing>>
 
     @GET("channel/invites")
+    @Headers("x-api-version: 1")
     suspend fun getChannelInvites(
         @QueryMap queries: HashMap<String, Any>
     ): NetworkResponse<APIResponse<_GetChannelInviteResponse_>>

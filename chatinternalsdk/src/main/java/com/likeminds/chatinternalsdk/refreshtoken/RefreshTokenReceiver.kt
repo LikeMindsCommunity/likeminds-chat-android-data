@@ -9,11 +9,6 @@ import javax.inject.Inject
 class RefreshTokenReceiver @Inject constructor(private val refreshTokenNetworkApi: RefreshTokenNetworkApi) {
 
     suspend fun refreshAccessToken(refreshToken: String): NetworkResponse<APIResponse<_RefreshTokenResponse_>> {
-        //todo beta request
-        val request = _RefreshTokenRequest_.Builder()
-            .tokenExpiryBeta(1)
-            .build()
-
-        return refreshTokenNetworkApi.refreshAccessToken(refreshToken, request)
+        return refreshTokenNetworkApi.refreshAccessToken(refreshToken)
     }
 }

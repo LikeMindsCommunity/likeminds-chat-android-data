@@ -65,8 +65,6 @@ class UserClient @Inject constructor() : BaseClient() {
             .apiKey(initiateUserRequest.apiKey)
             .userName(initiateUserRequest.userName)
             .isGuest(initiateUserRequest.isGuest)
-            .tokenExpiryBeta(1) // for beta only
-            .rtmTokenExpiryBeta(2) // for beta only
             .build()
 
         // calls api and processes the response accordingly
