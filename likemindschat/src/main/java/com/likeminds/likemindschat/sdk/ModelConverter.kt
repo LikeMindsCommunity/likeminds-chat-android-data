@@ -1,23 +1,24 @@
 package com.likeminds.likemindschat.sdk
 
 import com.google.gson.JsonParser
-import com.likeminds.internalsdk.chatroom.model.*
-import com.likeminds.internalsdk.community.model.*
-import com.likeminds.internalsdk.conversation.model.*
-import com.likeminds.internalsdk.db.models.*
-import com.likeminds.internalsdk.dm.model.*
-import com.likeminds.internalsdk.helper.model.*
-import com.likeminds.internalsdk.homefeed.model.*
-import com.likeminds.internalsdk.moderation.model._GetReportTagsResponse_
-import com.likeminds.internalsdk.moderation.model._ReportTag_
-import com.likeminds.internalsdk.notification.model._ChatroomNotificationData_
-import com.likeminds.internalsdk.notification.model._GetConversationNotificationUnreadResponse_
-import com.likeminds.internalsdk.poll.model.*
-import com.likeminds.internalsdk.sdk.model._InitiateUserResponse_
-import com.likeminds.internalsdk.search.model.*
-import com.likeminds.internalsdk.user.model.*
-import com.likeminds.internalsdk.utils.retrofit.model.APIResponse
-import com.likeminds.internalsdk.widget.model._Widget_
+import com.likeminds.chatinternalsdk.chatroom.model.*
+import com.likeminds.chatinternalsdk.community.model.*
+import com.likeminds.chatinternalsdk.conversation.model.*
+import com.likeminds.chatinternalsdk.db.models.*
+import com.likeminds.chatinternalsdk.dm.model.*
+import com.likeminds.chatinternalsdk.helper.model.*
+import com.likeminds.chatinternalsdk.homefeed.model.*
+import com.likeminds.chatinternalsdk.moderation.model._GetReportTagsResponse_
+import com.likeminds.chatinternalsdk.moderation.model._ReportTag_
+import com.likeminds.chatinternalsdk.notification.model._ChatroomNotificationData_
+import com.likeminds.chatinternalsdk.notification.model._GetConversationNotificationUnreadResponse_
+import com.likeminds.chatinternalsdk.poll.model.*
+import com.likeminds.chatinternalsdk.sdk.model._InitiateUserResponse_
+import com.likeminds.chatinternalsdk.sdk.model._ValidateUserResponse_
+import com.likeminds.chatinternalsdk.search.model.*
+import com.likeminds.chatinternalsdk.user.model.*
+import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
+import com.likeminds.chatinternalsdk.widget.model._Widget_
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
 import com.likeminds.likemindschat.community.model.*
@@ -26,7 +27,6 @@ import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.homefeed.model.*
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserResponse
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
 import com.likeminds.likemindschat.notification.model.ChatroomNotificationData
@@ -116,8 +116,29 @@ object ModelConverter {
             _community_.name,
             _community_.imageUrl,
             _community_.membersCount,
-            _community_.updatedAt
+            _community_.updatedAt,
+            communitySettings = convertCommunitySettings(_community_.communitySettings)
         )
+    }
+
+    // converts internal CommunitySetting model list to client model list
+    private fun convertCommunitySettings(
+        _communitySettings_: List<_CommunitySetting_>
+    ): List<CommunitySetting> {
+        return _communitySettings_.map {
+            convertCommunitySetting(it)
+        }
+    }
+
+    // converts internal CommunitySetting model to client model
+    private fun convertCommunitySetting(_communitySetting_: _CommunitySetting_): CommunitySetting {
+        return CommunitySetting.Builder()
+            .enabled(_communitySetting_.enabled)
+            .enabledBy(_communitySetting_.enabledBy)
+            .settingType(_communitySetting_.settingType)
+            .settingTitle(_communitySetting_.settingTitle)
+            .settingSubTitle(_communitySetting_.settingSubTitle)
+            .build()
     }
 
     //converts API GetExploreTabCountResponse model to LM model
@@ -1433,6 +1454,79 @@ object ModelConverter {
             .build()
     }
 
+    // converts APIResponse<_ValidateUserResponse_> to LMResponse<ValidateUserResponse>
+    fun convertValidateUserAPIResponse(body: APIResponse<_ValidateUserResponse_>): LMResponse<ValidateUserResponse> {
+        return LMResponse(
+            success = true,
+            errorMessage = null,
+            data = convertValidateUserResponse(body.data)
+        )
+    }
+
+    // converts internal _ValidateUserResponse_ to exposed ValidateUserResponse
+    private fun convertValidateUserResponse(_validateUserResponse_: _ValidateUserResponse_?): ValidateUserResponse? {
+        if (_validateUserResponse_ == null) return null
+        return ValidateUserResponse(
+            user = convertUser(_validateUserResponse_.user),
+            community = convertCommunity(_validateUserResponse_.community),
+            appAccess = _validateUserResponse_.appAccess
+        )
+    }
+
+    // converts APIResponse<_ChannelInviteResponse_> to LMResponse<ChannelInviteResponse> model
+    fun convertGetChannelInvitesResponse(
+        apiResponse: APIResponse<_GetChannelInviteResponse_>
+    ): LMResponse<GetChannelInviteResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetChannelInvites(apiResponse.data)
+        )
+    }
+
+    // converts internal _ChannelInviteResponse_ to client ChannelInviteResponse
+    private fun convertGetChannelInvites(_getChannelInviteResponse_: _GetChannelInviteResponse_?): GetChannelInviteResponse? {
+        val channelInvites = _getChannelInviteResponse_?.channelInvites ?: return null
+        return GetChannelInviteResponse(
+            channelInvites.map { userInvite ->
+                convertChannelInvite(userInvite)
+            }
+        )
+    }
+
+    // converts internal _ChannelInvite_ to client ChannelInvite
+    private fun convertChannelInvite(_channelInvite_: _ChannelInvite_): ChannelInvite {
+        return ChannelInvite(
+            convertChatroom(_channelInvite_.chatroom),
+            _channelInvite_.createdAt,
+            _channelInvite_.id,
+            convertChannelInviteStatus(_channelInvite_.inviteStatus),
+            _channelInvite_.updatedAt,
+            convertMember(_channelInvite_.inviteReceiver),
+            convertMember(_channelInvite_.inviteSender)
+        )
+    }
+
+    private fun convertChannelInviteStatus(inviteStatus: Int): ChannelInviteStatus {
+        return when (inviteStatus) {
+            ChannelInviteStatus.INVITED.value -> {
+                ChannelInviteStatus.INVITED
+            }
+
+            ChannelInviteStatus.ACCEPTED.value -> {
+                ChannelInviteStatus.ACCEPTED
+            }
+
+            ChannelInviteStatus.REJECTED.value -> {
+                ChannelInviteStatus.REJECTED
+            }
+
+            else -> {
+                ChannelInviteStatus.INVITED
+            }
+        }
+    }
+
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
@@ -1690,9 +1784,9 @@ object ModelConverter {
      * Db Model -> Client Response Model
     --------------------------------*/
 
-    //convert [UserRO] to [GetUserResponse]
-    fun convertGetUserResponse(userRO: UserRO?): GetUserResponse {
-        return GetUserResponse(convertUserRO(userRO))
+    //convert [UserRO] to [GetLoggedInUserResponse]
+    fun convertGetLoggedInUserResponse(userRO: UserRO?): GetLoggedInUserResponse {
+        return GetLoggedInUserResponse(convertUserRO(userRO))
     }
 
     //convert [MemberRO] to [GetMemberResponse]

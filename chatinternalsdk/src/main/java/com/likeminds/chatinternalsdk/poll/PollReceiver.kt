@@ -1,0 +1,37 @@
+package com.likeminds.chatinternalsdk.poll
+
+import com.likeminds.chatinternalsdk.poll.model.*
+import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
+import javax.inject.Inject
+
+class PollReceiver @Inject constructor(
+    private val pollNetworkApi: PollNetworkApi
+) {
+
+    suspend fun postPollConversation(
+        request: _PostPollConversationRequest_
+    ): NetworkResponse<APIResponse<_PostPollConversationResponse_>> {
+        return pollNetworkApi.postPollConversation(request)
+    }
+
+    suspend fun addPollOption(
+        request: _AddPollOptionRequest_
+    ): NetworkResponse<APIResponse<_AddPollOptionResponse_>> {
+        return pollNetworkApi.addPollOption(request)
+    }
+
+    suspend fun submitPoll(
+        request: _SubmitPollRequest_
+    ): NetworkResponse<APIResponse<Nothing>> {
+        return pollNetworkApi.submitPoll(request)
+    }
+
+    suspend fun getPollUsers(
+        request: _GetPollUsersRequest_
+    ): NetworkResponse<APIResponse<_GetPollUsersResponse_>> {
+        val pollId = request.pollId
+        val conversationId = request.conversationId
+        return pollNetworkApi.getPollUsers(pollId, conversationId)
+    }
+}

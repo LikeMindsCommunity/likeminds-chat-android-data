@@ -11,7 +11,6 @@ import com.likeminds.likemindschat.community.CommunityClient
 import com.likeminds.likemindschat.community.model.*
 import com.likeminds.likemindschat.conversation.ConversationClient
 import com.likeminds.likemindschat.conversation.model.*
-import com.likeminds.likemindschat.conversation.model.LoadConversationType
 import com.likeminds.likemindschat.dm.DMClient
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.helper.HelperClient
@@ -20,8 +19,6 @@ import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
 import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
 import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
-import com.likeminds.likemindschat.initiateUser.InitiateUserClient
-import com.likeminds.likemindschat.initiateUser.model.*
 import com.likeminds.likemindschat.moderation.ModerationClient
 import com.likeminds.likemindschat.moderation.model.*
 import com.likeminds.likemindschat.notification.NotificationClient
@@ -32,17 +29,13 @@ import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.search.SearchClient
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.UserClient
-import com.likeminds.likemindschat.user.model.GetUserResponse
-import com.likeminds.likemindschat.user.model.MemberStateResponse
+import com.likeminds.likemindschat.user.model.*
 import io.reactivex.Observable
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class LMChatClient private constructor() {
-
-    @Inject
-    lateinit var initiateUserClient: InitiateUserClient
 
     @Inject
     lateinit var homeFeedClient: HomeFeedClient
@@ -78,11 +71,16 @@ class LMChatClient private constructor() {
     lateinit var dmClient: DMClient
 
     class Builder(val application: Application) {
+        private var lmChatSDKCallback: LMChatSDKCallback? = null
+
+        fun lmChatSDKCallback(lmChatSDKCallback: LMChatSDKCallback?) = apply {
+            this.lmChatSDKCallback = lmChatSDKCallback
+        }
 
         fun build(): LMChatClient {
             lmChatClientInstance = LMChatClient()
             val sdkApplication = LikeMindsChatApplication.getInstance()
-            sdkApplication.initChatSDKApplication(application)
+            sdkApplication.initChatSDKApplication(application, lmChatSDKCallback)
             sdkApplication.likeMindsChatComponent?.inject(lmChatClientInstance!!)
             return lmChatClientInstance!!
         }
@@ -106,7 +104,11 @@ class LMChatClient private constructor() {
 
     // Exposed function to process initiate user request
     suspend fun initiateUser(initiateUserRequest: InitiateUserRequest): LMResponse<InitiateUserResponse> {
-        return initiateUserClient.initiateUser(initiateUserRequest)
+        return userClient.initiateUser(initiateUserRequest)
+    }
+
+    suspend fun validateUser(validateUserRequest: ValidateUserRequest): LMResponse<ValidateUserResponse> {
+        return userClient.validateUser(validateUserRequest)
     }
 
     // Exposed function to process initiate user request
@@ -116,12 +118,12 @@ class LMChatClient private constructor() {
 
     // Exposed function to process logout request
     suspend fun logout(logoutRequest: LogoutRequest): LMResponse<Nothing> {
-        return initiateUserClient.logout(logoutRequest)
+        return userClient.logout(logoutRequest)
     }
 
     // Exposed function to register device
     suspend fun registerDevice(registerDeviceRequest: RegisterDeviceRequest): LMResponse<Nothing> {
-        return initiateUserClient.registerDevice(registerDeviceRequest)
+        return userClient.registerDevice(registerDeviceRequest)
     }
 
     // Exposed function to get explore tab count
@@ -157,13 +159,28 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get user from Db
-    fun getUser(): LMResponse<GetUserResponse> {
-        return userClient.getUser()
+    fun getLoggedInUser(): LMResponse<GetLoggedInUserResponse> {
+        return userClient.getLoggedInUser()
     }
 
     // Exposed function to get member from Db
     fun getMember(getMemberRequest: GetMemberRequest): LMResponse<GetMemberResponse> {
         return userClient.getMember(getMemberRequest)
+    }
+
+    // Exposed function to get API Key
+    fun getAPIKey(): LMResponse<String> {
+        return userClient.getAPIKey()
+    }
+
+    // Exposed function to set tokens
+    fun setTokens(setTokensRequest: SetTokensRequest): LMResponse<Nothing> {
+        return userClient.setTokens(setTokensRequest)
+    }
+
+    // Exposed function to get tokens
+    fun getTokens(): LMResponse<Pair<String, String>> {
+        return userClient.getTokens()
     }
 
     // Exposed function to get chatroom from Db
@@ -442,7 +459,18 @@ class LMChatClient private constructor() {
         return dmClient.observeDMChatrooms(listener)
     }
 
+    // Exposed function to get community configurations
     suspend fun getCommunityConfigurations(): LMResponse<GetCommunityConfigurationsResponse> {
         return communityClient.getCommunityConfigurations()
+    }
+
+    // Exposed function to update status of channel invite
+    suspend fun updateChannelInvite(updateChannelInviteRequest: UpdateChannelInviteRequest): LMResponse<Nothing> {
+        return chatroomClient.updateChannelInvite(updateChannelInviteRequest)
+    }
+
+    // Exposed function to get secret channel invites
+    suspend fun getChannelInvites(getChannelInviteRequest: GetChannelInviteRequest): LMResponse<GetChannelInviteResponse> {
+        return chatroomClient.getChannelInvites(getChannelInviteRequest)
     }
 }

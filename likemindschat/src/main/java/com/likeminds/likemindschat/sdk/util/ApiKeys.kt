@@ -2,7 +2,6 @@ package com.likeminds.likemindschat.sdk.util
 
 import com.likeminds.likemindschat.BuildConfig
 
-// todo: check
 class ApiKeys {
     companion object {
         //return project id of the firebase
