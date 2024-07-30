@@ -15,6 +15,7 @@
 -keep class com.likeminds.chatinternalsdk.sync.model.** { *; }
 -keep class com.likeminds.chatinternalsdk.user.model.** { *; }
 -keep class com.likeminds.chatinternalsdk.utils.retrofit.model.** { *; }
+-keep class com.likeminds.chatinternalsdk.widget.model.** { *; }
 
 # Retrofit
 -keep class retrofit2.Response { *; }
