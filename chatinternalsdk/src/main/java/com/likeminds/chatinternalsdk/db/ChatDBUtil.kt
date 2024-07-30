@@ -89,6 +89,7 @@ object ChatDBUtil {
         }
     }
 
+    //clear the whole realm db
     fun clearDB() {
         write {
             it.deleteAll()
