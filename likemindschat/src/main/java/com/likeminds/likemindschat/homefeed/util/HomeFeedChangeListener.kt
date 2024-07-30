@@ -1,6 +1,6 @@
 package com.likeminds.likemindschat.homefeed.util
 
-import com.likeminds.internalsdk.db.models.ChatroomRO
+import com.likeminds.chatinternalsdk.db.models.ChatroomRO
 import com.likeminds.likemindschat.chatroom.model.Chatroom
 import com.likeminds.likemindschat.sdk.ModelConverter
 import io.realm.OrderedCollectionChangeSet

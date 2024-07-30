@@ -1,6 +1,6 @@
 package com.likeminds.likemindschat.base
 
-import com.likeminds.internalsdk.LMChatSDK
+import com.likeminds.chatinternalsdk.LMChatSDK
 import javax.inject.Inject
 
 abstract class BaseClient {

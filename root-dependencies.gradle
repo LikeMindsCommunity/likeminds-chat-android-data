@@ -24,6 +24,7 @@ versions.sentry = '6.28.0'
 versions.work_manager = '2.8.1'
 versions.dagger = '2.48'
 versions.firebaseBOM = '32.6.0'
+versions.chucker = '3.5.2'
 ext.versions = versions
 
 
@@ -31,7 +32,7 @@ ext.deps = [:]
 def deps = [:]
 
 def internal = [:]
-internal.sdk = project(":internalsdk")
+internal.sdk = project(":chatinternalsdk")
 deps.internal = internal
 
 def android_core = [:]
@@ -95,5 +96,10 @@ testing.junit = "junit:junit:$versions.junit"
 testing.android_junit = "androidx.test.ext:junit:$versions.android_junit"
 testing.espresso = "androidx.test.espresso:espresso-core:$versions.espresso_core"
 deps.testing = testing
+
+def chucker = [:]
+chucker.main = "com.github.chuckerteam.chucker:library:$versions.chucker"
+chucker.no_op = "com.github.chuckerteam.chucker:library-no-op:$versions.chucker"
+deps.chucker = chucker
 
 ext.deps = deps

@@ -6,10 +6,10 @@ import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.*
-import com.likeminds.internalsdk.LMChatSDK
-import com.likeminds.internalsdk.db.ChatDBUtil
-import com.likeminds.internalsdk.sync.SyncSDK
-import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.LMChatSDK
+import com.likeminds.chatinternalsdk.db.ChatDBUtil
+import com.likeminds.chatinternalsdk.sync.SyncSDK
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse

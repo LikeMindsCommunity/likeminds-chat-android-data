@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
-import com.likeminds.likemindschat.conversation.model.PostConversationRequest
-import com.likeminds.likemindschat.initiateUser.model.InitiateUserRequest
+import com.likeminds.likemindschat.user.model.InitiateUserRequest
 import com.likeminds.samplechatapp.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
     companion object {

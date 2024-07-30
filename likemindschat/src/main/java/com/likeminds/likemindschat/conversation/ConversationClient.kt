@@ -7,11 +7,11 @@ import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.JsonParser
-import com.likeminds.internalsdk.LMChatSDK
-import com.likeminds.internalsdk.conversation.model.*
-import com.likeminds.internalsdk.db.models.ConversationRO
-import com.likeminds.internalsdk.sync.SyncSDK
-import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.LMChatSDK
+import com.likeminds.chatinternalsdk.conversation.model.*
+import com.likeminds.chatinternalsdk.db.models.ConversationRO
+import com.likeminds.chatinternalsdk.sync.SyncSDK
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.conversation.model.*

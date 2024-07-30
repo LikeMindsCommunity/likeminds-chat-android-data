@@ -1,0 +1,64 @@
+package com.likeminds.chatinternalsdk.chatroom.api
+
+import com.likeminds.chatinternalsdk.chatroom.model.*
+import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
+import retrofit2.http.*
+
+interface ChatroomNetworkApi {
+
+    @GET("chatroom")
+    @Headers(
+        "x-accept-version: v2",
+        "x-api-version: 1"
+    )
+    suspend fun getChatroomActions(
+        @Query("chatroom_id") chatroomId: String
+    ): NetworkResponse<APIResponse<_GetChatroomActionsResponse_>>
+
+    @PUT("chatroom/follow")
+    suspend fun followChatroom(
+        @Body request: _FollowChatroomRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
+
+    @HTTP(method = "DELETE", path = "chatroom/participants", hasBody = true)
+    suspend fun leaveSecretChatroom(
+        @Body request: _LeaveSecretChatroomRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
+
+    @PUT("chatroom/mute")
+    suspend fun muteChatroom(
+        @Body request: _MuteChatroomRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
+
+    @POST("chatroom/mark_read")
+    suspend fun markReadChatroom(
+        @Body request: _MarkReadChatroomRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
+
+    @PUT("conversation/topic")
+    suspend fun setChatroomTopic(
+        @Body request: _SetChatroomTopicRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
+
+    @GET("chatroom/participants")
+    suspend fun getParticipants(
+        @QueryMap queries: HashMap<String, Any?>
+    ): NetworkResponse<APIResponse<_GetParticipantsResponse_>>
+
+    @PUT("chatroom")
+    suspend fun editChatroomTitle(
+        @Body request: _EditChatroomTitleRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
+
+    @PUT("channel/invite")
+    suspend fun updateChannelInvite(
+        @Body request: _UpdateChannelInviteRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
+
+    @GET("channel/invites")
+    @Headers("x-api-version: 1")
+    suspend fun getChannelInvites(
+        @QueryMap queries: HashMap<String, Any>
+    ): NetworkResponse<APIResponse<_GetChannelInviteResponse_>>
+}

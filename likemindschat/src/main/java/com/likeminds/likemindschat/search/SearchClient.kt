@@ -1,8 +1,8 @@
 package com.likeminds.likemindschat.search
 
-import com.likeminds.internalsdk.search.model._SearchChatroomRequest_
-import com.likeminds.internalsdk.search.model._SearchConversationRequest_
-import com.likeminds.internalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.search.model._SearchChatroomRequest_
+import com.likeminds.chatinternalsdk.search.model._SearchConversationRequest_
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication

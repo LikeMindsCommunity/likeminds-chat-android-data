@@ -14,8 +14,6 @@ import com.likeminds.likemindschat.di.helper.HelperModule
 import com.likeminds.likemindschat.di.helper.HelperSubComponent
 import com.likeminds.likemindschat.di.homefeed.HomeFeedModule
 import com.likeminds.likemindschat.di.homefeed.HomeFeedSubComponent
-import com.likeminds.likemindschat.di.initiateUser.InitiateUserModule
-import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
 import com.likeminds.likemindschat.di.internalsdk.SDKModule
 import com.likeminds.likemindschat.di.internalsdk.SharedModule
 import com.likeminds.likemindschat.di.moderation.ModerationModule
@@ -37,7 +35,6 @@ import javax.inject.Singleton
     modules = [
         SDKModule::class,
         SharedModule::class,
-        InitiateUserModule::class,
         UserModule::class,
         ChatroomModule::class,
         CommunityModule::class,
@@ -56,7 +53,6 @@ internal interface LikeMindsChatComponent {
 
     fun inject(lmChatClient: LMChatClient)
 
-    fun initiateUserComponent(): InitiateUserSubComponent.Factory
     fun userComponent(): UserSubComponent.Factory
     fun chatroomSubComponent(): ChatroomSubComponent.Factory
     fun communitySubComponent(): CommunitySubComponent.Factory

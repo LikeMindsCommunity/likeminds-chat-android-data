@@ -4,8 +4,10 @@ import android.app.Application
 import android.util.Base64
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
-import com.likeminds.internalsdk.LMChatSDK
-import com.likeminds.internalsdk.di.SDKSharedResources
+import com.likeminds.chatinternalsdk.LMChatInternalCallback
+import com.likeminds.chatinternalsdk.LMChatSDK
+import com.likeminds.chatinternalsdk.di.SDKSharedResources
+import com.likeminds.likemindschat.LMChatSDKCallback
 import com.likeminds.likemindschat.di.DaggerLikeMindsChatComponent
 import com.likeminds.likemindschat.di.LikeMindsChatComponent
 import com.likeminds.likemindschat.di.chatroom.ChatroomSubComponent
@@ -14,7 +16,6 @@ import com.likeminds.likemindschat.di.conversation.ConversationSubComponent
 import com.likeminds.likemindschat.di.dm.DMSubComponent
 import com.likeminds.likemindschat.di.helper.HelperSubComponent
 import com.likeminds.likemindschat.di.homefeed.HomeFeedSubComponent
-import com.likeminds.likemindschat.di.initiateUser.InitiateUserSubComponent
 import com.likeminds.likemindschat.di.moderation.ModerationSubComponent
 import com.likeminds.likemindschat.di.notification.NotificationSubComponent
 import com.likeminds.likemindschat.di.poll.PollSubComponent
@@ -23,7 +24,7 @@ import com.likeminds.likemindschat.di.user.UserSubComponent
 import com.likeminds.likemindschat.sdk.util.ApiKeys
 import javax.inject.Inject
 
-internal class LikeMindsChatApplication private constructor() {
+internal class LikeMindsChatApplication private constructor() : LMChatInternalCallback {
 
     @Inject
     lateinit var chatSDK: LMChatSDK
@@ -31,7 +32,6 @@ internal class LikeMindsChatApplication private constructor() {
     @Inject
     lateinit var sdkSharedResources: SDKSharedResources
     var likeMindsChatComponent: LikeMindsChatComponent? = null
-    private var initiateUserSubComponent: InitiateUserSubComponent? = null
     private var homeFeedSubComponent: HomeFeedSubComponent? = null
     private var userSubComponent: UserSubComponent? = null
     private var communitySubComponent: CommunitySubComponent? = null
@@ -43,6 +43,7 @@ internal class LikeMindsChatApplication private constructor() {
     private var conversationSubComponent: ConversationSubComponent? = null
     private var notificationSubComponent: NotificationSubComponent? = null
     private var dmSubComponent: DMSubComponent? = null
+    private var lmChatSDKCallback: LMChatSDKCallback? = null
 
     companion object {
 
@@ -58,12 +59,16 @@ internal class LikeMindsChatApplication private constructor() {
         }
     }
 
-    fun initChatSDKApplication(application: Application) {
+    fun initChatSDKApplication(
+        application: Application,
+        lmChatSDKCallback: LMChatSDKCallback? = null
+    ) {
         likeMindsChatApplicationInstance = this
+        this.lmChatSDKCallback = lmChatSDKCallback
 
         initLikeMindsChatComponent(application)
         initializeFirebase(application)
-        chatSDK.initialize(sdkSharedResources)
+        chatSDK.initialize(sdkSharedResources, this)
     }
 
     private fun initLikeMindsChatComponent(application: Application) {
@@ -85,13 +90,6 @@ internal class LikeMindsChatApplication private constructor() {
             .build()
 
         FirebaseApp.initializeApp(application, option, "lm-secondary")
-    }
-
-    fun initiateUserComponent(): InitiateUserSubComponent? {
-        if (initiateUserSubComponent == null) {
-            initiateUserSubComponent = likeMindsChatComponent?.initiateUserComponent()?.create()
-        }
-        return initiateUserSubComponent
     }
 
     fun homeFeedComponent(): HomeFeedSubComponent? {
@@ -170,5 +168,13 @@ internal class LikeMindsChatApplication private constructor() {
             dmSubComponent = likeMindsChatComponent?.dmSubComponent()?.create()
         }
         return dmSubComponent
+    }
+
+    override fun onAccessTokenExpiredAndRefreshed(accessToken: String, refreshToken: String) {
+        lmChatSDKCallback?.onAccessTokenExpiredAndRefreshed(accessToken, refreshToken)
+    }
+
+    override fun onRefreshTokenExpired(): Pair<String?, String?> {
+        return lmChatSDKCallback?.onRefreshTokenExpired() ?: Pair(null, null)
     }
 }
