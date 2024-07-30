@@ -123,8 +123,11 @@ object ModelConverter {
 
     // converts internal CommunitySetting model list to client model list
     private fun convertCommunitySettings(
-        _communitySettings_: List<_CommunitySetting_>
-    ): List<CommunitySetting> {
+        _communitySettings_: List<_CommunitySetting_>?
+    ): List<CommunitySetting>? {
+        if (_communitySettings_ == null) {
+            return  null
+        }
         return _communitySettings_.map {
             convertCommunitySetting(it)
         }
