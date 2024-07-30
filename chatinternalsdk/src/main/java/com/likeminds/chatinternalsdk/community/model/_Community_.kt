@@ -14,5 +14,5 @@ data class _Community_(
     @SerializedName("updated_at")
     val updatedAt: Long?,
     @SerializedName("community_settings")
-    val communitySettings: List<_CommunitySetting_>
+    val communitySettings: List<_CommunitySetting_>?
 )
