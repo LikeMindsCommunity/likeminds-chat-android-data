@@ -182,6 +182,7 @@ class CommunityClient @Inject constructor() : BaseClient() {
             .page(searchMembersRequest.page)
             .pageSize(searchMembersRequest.pageSize)
             .excludeSelfUser(searchMembersRequest.excludeSelfUser)
+            .memberStates(searchMembersRequest.memberStates)
             .build()
 
         return when (val response = communityApi.searchMembers(request)) {
