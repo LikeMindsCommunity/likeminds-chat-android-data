@@ -18,7 +18,6 @@ class TokenAuthenticator @Inject constructor(
     companion object {
 
         private const val AUTH = "Authorization"
-        const val INVALID_LTM = "Invalid LTM!"
     }
 
     override fun authenticate(route: Route?, response: Response): Request? {
