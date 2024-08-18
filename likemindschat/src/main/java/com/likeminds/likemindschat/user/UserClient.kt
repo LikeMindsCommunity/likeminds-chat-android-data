@@ -167,40 +167,41 @@ class UserClient @Inject constructor() : BaseClient() {
     suspend fun logout(logoutRequest: LogoutRequest): LMResponse<Nothing> {
         // validates the client request
         RequestUtils.validate()
-        validateLogoutResponse(logoutRequest)
 
         // builds internal request model
-        val request =
-            _LogoutRequest_.Builder()
-                .refreshToken(ChatTokenManager.getInstance().refreshToken ?: "")
-                .deviceId(logoutRequest.deviceId)
-                .build()
+        if (logoutRequest.deviceId != null) {
+            //call api only when the device id is received in the logout request
 
-        return when (val response = userApi.logout(request)) {
-            is NetworkResponse.Error -> {
-                LMResponse(
-                    success = response.body.success,
-                    errorMessage = response.body.errorMessage
-                )
+            val request =
+                _LogoutRequest_.Builder()
+                    .refreshToken(ChatTokenManager.getInstance().refreshToken ?: "")
+                    .deviceId(logoutRequest.deviceId)
+                    .build()
+
+            return when (val response = userApi.logout(request)) {
+                is NetworkResponse.Error -> {
+                    LMResponse(
+                        success = response.body.success,
+                        errorMessage = response.body.errorMessage
+                    )
+                }
+
+                is NetworkResponse.Success -> {
+                    clearLocalStorage()
+
+                    LMResponse(
+                        success = response.body.success
+                    )
+                }
             }
+        } else {
+            //deviceId is null so don't call the API and clear the local storage directly
 
-            is NetworkResponse.Success -> {
-                clearLocalStorage()
+            clearLocalStorage()
 
-                LMResponse(
-                    success = response.body.success
-                )
-            }
-        }
-    }
-
-    /**
-     * validates [logoutRequest]
-     * @throws IllegalArgumentException - when required properties not provided
-     */
-    private fun validateLogoutResponse(logoutRequest: LogoutRequest) {
-        if (logoutRequest.deviceId.isEmpty()) {
-            RequestUtils.throwException("deviceId")
+            return LMResponse(
+                success = true
+            )
         }
     }
 
