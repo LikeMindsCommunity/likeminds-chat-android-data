@@ -173,8 +173,6 @@ class UserClient @Inject constructor() : BaseClient() {
 
         //tokens are null, don't make an API call
         return if (tokens?.first.isNullOrEmpty() || tokens?.second.isNullOrEmpty()) {
-            Log.d("PUI", "tokens are null")
-
             clearLocalStorage()
 
             LMResponse(
@@ -183,7 +181,6 @@ class UserClient @Inject constructor() : BaseClient() {
         } else{
             // builds internal request model
             if (logoutRequest.deviceId != null) {
-                Log.d("PUI", "device id is not null")
                 //call api only when the device id is received in the logout request
 
                 val request =
@@ -194,7 +191,6 @@ class UserClient @Inject constructor() : BaseClient() {
 
                 when (val response = userApi.logout(request)) {
                     is NetworkResponse.Error -> {
-                        Log.d("PUI", "logout api error")
                         LMResponse(
                             success = response.body.success,
                             errorMessage = response.body.errorMessage
@@ -202,7 +198,6 @@ class UserClient @Inject constructor() : BaseClient() {
                     }
 
                     is NetworkResponse.Success -> {
-                        Log.d("PUI", "logout api success")
                         clearLocalStorage()
 
                         LMResponse(
@@ -212,8 +207,6 @@ class UserClient @Inject constructor() : BaseClient() {
                 }
             } else {
                 //deviceId is null so don't call the API and clear the local storage directly
-                Log.d("PUI", "device id is null")
-
                 clearLocalStorage()
 
                 LMResponse(
