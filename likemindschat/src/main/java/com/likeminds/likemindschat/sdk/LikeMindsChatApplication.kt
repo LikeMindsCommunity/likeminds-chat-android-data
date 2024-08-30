@@ -2,6 +2,7 @@ package com.likeminds.likemindschat.sdk
 
 import android.app.Application
 import android.util.Base64
+import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.likeminds.chatinternalsdk.LMChatInternalCallback
@@ -175,6 +176,8 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
     }
 
     override fun onRefreshTokenExpired(): Pair<String?, String?> {
-        return lmChatSDKCallback?.onRefreshTokenExpired() ?: Pair(null, null)
+        val tokens = lmChatSDKCallback?.onRefreshTokenExpired() ?: Pair(null, null)
+        Log.d("PUI","LikeMindsChat Layer new tokens are $tokens")
+        return tokens
     }
 }

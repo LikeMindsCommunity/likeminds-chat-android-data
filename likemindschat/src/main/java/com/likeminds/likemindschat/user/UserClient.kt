@@ -169,44 +169,57 @@ class UserClient @Inject constructor() : BaseClient() {
         // validates the client request
         RequestUtils.validate()
 
-        // builds internal request model
-        if (logoutRequest.deviceId != null) {
-            Log.d("PUI", "device id is not null")
-            //call api only when the device id is received in the logout request
+        val tokens = getTokens().data
 
-            val request =
-                _LogoutRequest_.Builder()
-                    .refreshToken(ChatTokenManager.getInstance().refreshToken ?: "")
-                    .deviceId(logoutRequest.deviceId)
-                    .build()
-
-            return when (val response = userApi.logout(request)) {
-                is NetworkResponse.Error -> {
-                    Log.d("PUI", "logout api error")
-                    LMResponse(
-                        success = response.body.success,
-                        errorMessage = response.body.errorMessage
-                    )
-                }
-
-                is NetworkResponse.Success -> {
-                    Log.d("PUI", "logout api success")
-                    clearLocalStorage()
-
-                    LMResponse(
-                        success = response.body.success
-                    )
-                }
-            }
-        } else {
-            //deviceId is null so don't call the API and clear the local storage directly
-            Log.d("PUI", "device id is null")
+        //tokens are null, don't make an API call
+        return if (tokens?.first.isNullOrEmpty() || tokens?.second.isNullOrEmpty()) {
+            Log.d("PUI", "tokens are null")
 
             clearLocalStorage()
 
-            return LMResponse(
+            LMResponse(
                 success = true
             )
+        } else{
+            // builds internal request model
+            if (logoutRequest.deviceId != null) {
+                Log.d("PUI", "device id is not null")
+                //call api only when the device id is received in the logout request
+
+                val request =
+                    _LogoutRequest_.Builder()
+                        .refreshToken(ChatTokenManager.getInstance().refreshToken ?: "")
+                        .deviceId(logoutRequest.deviceId)
+                        .build()
+
+                when (val response = userApi.logout(request)) {
+                    is NetworkResponse.Error -> {
+                        Log.d("PUI", "logout api error")
+                        LMResponse(
+                            success = response.body.success,
+                            errorMessage = response.body.errorMessage
+                        )
+                    }
+
+                    is NetworkResponse.Success -> {
+                        Log.d("PUI", "logout api success")
+                        clearLocalStorage()
+
+                        LMResponse(
+                            success = response.body.success
+                        )
+                    }
+                }
+            } else {
+                //deviceId is null so don't call the API and clear the local storage directly
+                Log.d("PUI", "device id is null")
+
+                clearLocalStorage()
+
+                LMResponse(
+                    success = true
+                )
+            }
         }
     }
 

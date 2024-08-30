@@ -75,19 +75,27 @@ class TokenAuthenticator @Inject constructor(
                 chatTokenManager.clear()
                 val tokens = lmInternalCallback?.onRefreshTokenExpired()
 
-                val newAccessToken = tokens?.first ?: ""
-                val newRefreshToken = tokens?.second ?: ""
+                Log.d("PUI", "token authenticator new tokens: $tokens")
 
-                //update token manager
-                chatTokenManager.updateTokens(newAccessToken, newRefreshToken)
+                val newAccessToken = tokens?.first
+                val newRefreshToken = tokens?.second
 
-                //update local prefs
-                sdkPreferences.setAccessToken(newAccessToken)
-                sdkPreferences.setRefreshToken(newRefreshToken)
+                if (!newAccessToken.isNullOrEmpty() || !newRefreshToken.isNullOrEmpty()) {
+                    Log.d("PUI", "token authenticator new tokens are not null")
+                    //update token manager
+                    chatTokenManager.updateTokens(newAccessToken, newRefreshToken)
 
-                response.request.newBuilder()
-                    .header(AUTH, newRefreshToken)
-                    .build()
+                    //update local prefs
+                    sdkPreferences.setAccessToken(newAccessToken ?: "")
+                    sdkPreferences.setRefreshToken(newRefreshToken ?: "")
+
+                    response.request.newBuilder()
+                        .header(AUTH, newRefreshToken ?: "")
+                        .build()
+                } else {
+                    Log.d("PUI", "token authenticator new tokens are null")
+                    null
+                }
             }
         } else {
             response.request
