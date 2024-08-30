@@ -92,6 +92,7 @@ object ChatDBUtil {
     //clear the whole realm db
     fun clearDB() {
         write {
+            Log.d("PUI", "clearing realm")
             it.deleteAll()
         }
     }

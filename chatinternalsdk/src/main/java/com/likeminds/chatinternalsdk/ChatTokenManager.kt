@@ -1,5 +1,6 @@
 package com.likeminds.chatinternalsdk
 
+import android.util.Log
 import javax.inject.Singleton
 
 @Singleton
@@ -33,6 +34,7 @@ class ChatTokenManager {
 
     // clears existing tokens inside TokenManager
     fun clear() {
+        Log.d("PUI", "clearing tokens")
         accessToken = null
         refreshToken = null
     }
