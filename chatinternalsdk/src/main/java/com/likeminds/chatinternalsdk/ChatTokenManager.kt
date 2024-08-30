@@ -1,6 +1,5 @@
 package com.likeminds.chatinternalsdk
 
-import android.util.Log
 import javax.inject.Singleton
 
 @Singleton
