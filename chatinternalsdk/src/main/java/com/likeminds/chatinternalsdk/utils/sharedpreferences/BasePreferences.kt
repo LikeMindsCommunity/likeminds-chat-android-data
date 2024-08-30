@@ -3,7 +3,6 @@ package com.likeminds.chatinternalsdk.utils.sharedpreferences
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 
 abstract class BasePreferences protected constructor(prefName: String, application: Application) {
 

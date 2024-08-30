@@ -2,7 +2,6 @@ package com.likeminds.likemindschat.sdk
 
 import android.app.Application
 import android.util.Base64
-import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.likeminds.chatinternalsdk.LMChatInternalCallback
