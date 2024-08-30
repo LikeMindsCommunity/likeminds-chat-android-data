@@ -176,8 +176,6 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
     }
 
     override fun onRefreshTokenExpired(): Pair<String?, String?> {
-        val tokens = lmChatSDKCallback?.onRefreshTokenExpired() ?: Pair(null, null)
-        Log.d("PUI","LikeMindsChat Layer new tokens are $tokens")
-        return tokens
+        return lmChatSDKCallback?.onRefreshTokenExpired() ?: Pair(null, null)
     }
 }

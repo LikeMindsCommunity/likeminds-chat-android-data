@@ -71,7 +71,6 @@ abstract class BasePreferences protected constructor(prefName: String, applicati
         // clear all the keys individually to notify the listeners
         val editor = preferences.edit()
         for (key in preferences.all.keys) {
-            Log.d("PUI", "clearing $key from local prefs")
             editor.remove(key)
         }
         editor.apply()
