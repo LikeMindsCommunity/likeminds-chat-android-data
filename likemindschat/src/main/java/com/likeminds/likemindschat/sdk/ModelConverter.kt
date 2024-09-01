@@ -1,5 +1,6 @@
 package com.likeminds.likemindschat.sdk
 
+import android.util.Log
 import com.google.gson.JsonParser
 import com.likeminds.chatinternalsdk.chatroom.model.*
 import com.likeminds.chatinternalsdk.community.model.*
@@ -32,6 +33,7 @@ import com.likeminds.likemindschat.notification.model.GetConversationNotificatio
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
+import com.likeminds.likemindschat.util.ResponseUtils
 import com.likeminds.likemindschat.widget.model.Widget
 import org.json.JSONObject
 
@@ -1781,25 +1783,30 @@ object ModelConverter {
     }
 
     private fun convertGetConversationNotificationUnread(chatroom: ChatroomRO): ChatroomNotificationData {
-        return ChatroomNotificationData(
-            chatroom.getCommunity()?.name ?: "",
+        val community = chatroom.getCommunity()
+
+        val resp =  ChatroomNotificationData(
+            community?.name ?: "",
             chatroom.header ?: "",
             chatroom.title,
             chatroom.member?.name ?: "",
             chatroom.member?.imageUrl ?: "",
             chatroom.id,
-            chatroom.getCommunity()?.imageUrl ?: "",
-            chatroom.getCommunity()?.id?.toInt() ?: 0,
-            "route://chatroom_followed_feed?community_id=50624&community_name=Trazoo",
-            chatroom.unreadConversationsCount ?: 0,
+            community?.imageUrl ?: "",
+            community?.id?.toInt() ?: 0,
+            ResponseUtils.generateRouteForChatroom(community?.id ?: "", community?.name ?: ""),
+            chatroom.totalAllResponseCount,
             chatroom.lastConversationRO?.answer ?: "",
             chatroom.lastConversationRO?.member?.name ?: "",
             chatroom.lastConversationRO?.member?.imageUrl ?: "",
-            "route://collabcard?collabcard_id=4300285&last_conversation_id=5479693",
+            ResponseUtils.generateRouteChildForChatroom(chatroom.id),
             chatroom.lastConversationRO?.createdEpoch,
             convertAttachmentsRO(chatroom.lastConversationRO?.attachments),
             ""
         )
+
+        Log.d("PUI", "convertGetConversationNotificationUnread: $resp")
+        return resp
     }
 
     // converts UserRO model to client model

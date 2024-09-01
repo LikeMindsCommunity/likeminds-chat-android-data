@@ -58,6 +58,10 @@ class NotificationReceiver @Inject constructor(
                 Log.d("PUI", "validity: ${chatroomRO.isManaged} ${lastConversationRO.isManaged} ${conversationCreatorRO?.isManaged}")
 
                 chatroomRO.lastConversationRO = realmWrite.copyToRealmOrUpdate(lastConversationRO)
+
+                //Update the total response count of this chatroom
+                chatroomRO.totalResponseCount += 1
+                chatroomRO.totalAllResponseCount += 1
             }
         }
 
