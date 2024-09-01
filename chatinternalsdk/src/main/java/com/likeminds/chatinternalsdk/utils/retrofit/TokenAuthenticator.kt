@@ -75,19 +75,23 @@ class TokenAuthenticator @Inject constructor(
                 chatTokenManager.clear()
                 val tokens = lmInternalCallback?.onRefreshTokenExpired()
 
-                val newAccessToken = tokens?.first ?: ""
-                val newRefreshToken = tokens?.second ?: ""
+                val newAccessToken = tokens?.first
+                val newRefreshToken = tokens?.second
 
-                //update token manager
-                chatTokenManager.updateTokens(newAccessToken, newRefreshToken)
+                if (!newAccessToken.isNullOrEmpty() || !newRefreshToken.isNullOrEmpty()) {
+                    //update token manager
+                    chatTokenManager.updateTokens(newAccessToken, newRefreshToken)
 
-                //update local prefs
-                sdkPreferences.setAccessToken(newAccessToken)
-                sdkPreferences.setRefreshToken(newRefreshToken)
+                    //update local prefs
+                    sdkPreferences.setAccessToken(newAccessToken ?: "")
+                    sdkPreferences.setRefreshToken(newRefreshToken ?: "")
 
-                response.request.newBuilder()
-                    .header(AUTH, newRefreshToken)
-                    .build()
+                    response.request.newBuilder()
+                        .header(AUTH, newRefreshToken ?: "")
+                        .build()
+                } else {
+                    null
+                }
             }
         } else {
             response.request

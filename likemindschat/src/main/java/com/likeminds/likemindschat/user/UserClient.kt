@@ -1,5 +1,6 @@
 package com.likeminds.likemindschat.user
 
+import android.util.Log
 import com.likeminds.chatinternalsdk.ChatTokenManager
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
@@ -168,40 +169,50 @@ class UserClient @Inject constructor() : BaseClient() {
         // validates the client request
         RequestUtils.validate()
 
-        // builds internal request model
-        if (logoutRequest.deviceId != null) {
-            //call api only when the device id is received in the logout request
+        val tokens = getTokens().data
 
-            val request =
-                _LogoutRequest_.Builder()
-                    .refreshToken(ChatTokenManager.getInstance().refreshToken ?: "")
-                    .deviceId(logoutRequest.deviceId)
-                    .build()
-
-            return when (val response = userApi.logout(request)) {
-                is NetworkResponse.Error -> {
-                    LMResponse(
-                        success = response.body.success,
-                        errorMessage = response.body.errorMessage
-                    )
-                }
-
-                is NetworkResponse.Success -> {
-                    clearLocalStorage()
-
-                    LMResponse(
-                        success = response.body.success
-                    )
-                }
-            }
-        } else {
-            //deviceId is null so don't call the API and clear the local storage directly
-
+        //tokens are null, don't make an API call
+        return if (tokens?.first.isNullOrEmpty() || tokens?.second.isNullOrEmpty()) {
             clearLocalStorage()
 
-            return LMResponse(
+            LMResponse(
                 success = true
             )
+        } else{
+            // builds internal request model
+            if (logoutRequest.deviceId != null) {
+                //call api only when the device id is received in the logout request
+
+                val request =
+                    _LogoutRequest_.Builder()
+                        .refreshToken(ChatTokenManager.getInstance().refreshToken ?: "")
+                        .deviceId(logoutRequest.deviceId)
+                        .build()
+
+                when (val response = userApi.logout(request)) {
+                    is NetworkResponse.Error -> {
+                        LMResponse(
+                            success = response.body.success,
+                            errorMessage = response.body.errorMessage
+                        )
+                    }
+
+                    is NetworkResponse.Success -> {
+                        clearLocalStorage()
+
+                        LMResponse(
+                            success = response.body.success
+                        )
+                    }
+                }
+            } else {
+                //deviceId is null so don't call the API and clear the local storage directly
+                clearLocalStorage()
+
+                LMResponse(
+                    success = true
+                )
+            }
         }
     }
 
