@@ -10,8 +10,6 @@ import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.homefeed.model.*
 import com.likeminds.chatinternalsdk.moderation.model._GetReportTagsResponse_
 import com.likeminds.chatinternalsdk.moderation.model._ReportTag_
-import com.likeminds.chatinternalsdk.notification.model._ChatroomNotificationData_
-import com.likeminds.chatinternalsdk.notification.model._GetConversationNotificationUnreadResponse_
 import com.likeminds.chatinternalsdk.poll.model.*
 import com.likeminds.chatinternalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.chatinternalsdk.sdk.model._ValidateUserResponse_
@@ -126,7 +124,7 @@ object ModelConverter {
         _communitySettings_: List<_CommunitySetting_>?
     ): List<CommunitySetting>? {
         if (_communitySettings_ == null) {
-            return  null
+            return null
         }
         return _communitySettings_.map {
             convertCommunitySetting(it)
@@ -563,63 +561,6 @@ object ModelConverter {
             _contentDownloadSetting_.downloadSettingType,
             _contentDownloadSetting_.downloadSettingTitle,
             _contentDownloadSetting_.enabled,
-        )
-    }
-
-    // converts api GetConversationNotificationUnreadResponse model to LM GetConversationNotificationUnreadResponse model
-    fun convertGetConversationNotificationUnreadResponse(
-        apiResponse: APIResponse<_GetConversationNotificationUnreadResponse_>
-    ): LMResponse<GetConversationNotificationUnreadResponse> {
-        return LMResponse(
-            apiResponse.success,
-            apiResponse.errorMessage,
-            convertGetConversationNotificationUnreadResponse(apiResponse.data)
-        )
-    }
-
-    // converts internal GetConversationNotificationUnreadResponse model to client model
-    private fun convertGetConversationNotificationUnreadResponse(
-        _getConversationNotificationUnreadResponse_: _GetConversationNotificationUnreadResponse_?
-    ): GetConversationNotificationUnreadResponse? {
-        if (_getConversationNotificationUnreadResponse_ == null) {
-            return null
-        }
-        return GetConversationNotificationUnreadResponse(
-            convertChatroomNotificationDataList(_getConversationNotificationUnreadResponse_.unreadConversation)
-        )
-    }
-
-    // converts internal ChatroomNotificationData model list to client model list
-    private fun convertChatroomNotificationDataList(
-        _unreadConversation_: List<_ChatroomNotificationData_>
-    ): List<ChatroomNotificationData> {
-        return _unreadConversation_.map {
-            convertChatroomNotificationData(it)
-        }
-    }
-
-    // converts internal ChatroomNotificationData model to client model
-    private fun convertChatroomNotificationData(
-        _chatroomNotificationData_: _ChatroomNotificationData_
-    ): ChatroomNotificationData {
-        return ChatroomNotificationData(
-            _chatroomNotificationData_.communityName,
-            _chatroomNotificationData_.chatroomName,
-            _chatroomNotificationData_.chatroomTitle,
-            _chatroomNotificationData_.chatroomUserName,
-            _chatroomNotificationData_.chatroomUserImage,
-            _chatroomNotificationData_.chatroomId,
-            _chatroomNotificationData_.communityImage,
-            _chatroomNotificationData_.communityId,
-            _chatroomNotificationData_.route,
-            _chatroomNotificationData_.chatroomUnreadConversationCount,
-            _chatroomNotificationData_.chatroomLastConversation,
-            _chatroomNotificationData_.chatroomLastConversationUserName,
-            _chatroomNotificationData_.chatroomLastConversationUserImage,
-            _chatroomNotificationData_.routeChild,
-            _chatroomNotificationData_.chatroomLastConversationUserTimestamp,
-            convertAttachments(_chatroomNotificationData_.attachments),
-            _chatroomNotificationData_.sortKey
         )
     }
 
@@ -1534,6 +1475,16 @@ object ModelConverter {
      * Client Model -> Internal Model
     --------------------------------*/
 
+    //create internal Chatroom from client model
+    fun createChatroom(chatroom: Chatroom): _Chatroom_ {
+        return _Chatroom_.Builder()
+            .id(chatroom.id)
+            .title(chatroom.title)
+            .communityName(chatroom.communityName)
+            .header(chatroom.header)
+            .build()
+    }
+
     //create internal Conversation from client model
     fun createConversation(conversation: Conversation): _Conversation_ {
         return _Conversation_.Builder()
@@ -1769,7 +1720,7 @@ object ModelConverter {
     }
 
     //convert client widget model to internal widget model
-    fun createWidget(widget: Widget?): _Widget_? {
+    private fun createWidget(widget: Widget?): _Widget_? {
         if (widget == null) return null
         val metadataString = widget.metadata.toString()
         return _Widget_.Builder()
@@ -1820,9 +1771,36 @@ object ModelConverter {
         return GetConversationsCountResponse(count)
     }
 
-    /**--------------------------------
-     * Db Model -> Client Model
-    --------------------------------*/
+    //convert list of [ChatroomRO] to [GetConversationNotificationUnreadResponse]
+    fun convertGetConversationNotificationUnreadResponse(chatroomRO: List<ChatroomRO>): GetConversationNotificationUnreadResponse {
+        return GetConversationNotificationUnreadResponse(
+            chatroomRO.map { chatroom ->
+                convertGetConversationNotificationUnread(chatroom)
+            }
+        )
+    }
+
+    private fun convertGetConversationNotificationUnread(chatroom: ChatroomRO): ChatroomNotificationData {
+        return ChatroomNotificationData(
+            chatroom.getCommunity()?.name ?: "",
+            chatroom.header ?: "",
+            chatroom.title,
+            chatroom.member?.name ?: "",
+            chatroom.member?.imageUrl ?: "",
+            chatroom.id,
+            chatroom.getCommunity()?.imageUrl ?: "",
+            chatroom.getCommunity()?.id?.toInt() ?: 0,
+            "route://chatroom_followed_feed?community_id=50624&community_name=Trazoo",
+            chatroom.unreadConversationsCount ?: 0,
+            chatroom.lastConversationRO?.answer ?: "",
+            chatroom.lastConversationRO?.member?.name ?: "",
+            chatroom.lastConversationRO?.member?.imageUrl ?: "",
+            "route://collabcard?collabcard_id=4300285&last_conversation_id=5479693",
+            chatroom.lastConversationRO?.createdEpoch,
+            convertAttachmentsRO(chatroom.lastConversationRO?.attachments),
+            ""
+        )
+    }
 
     // converts UserRO model to client model
     private fun convertUserRO(userRO: UserRO?): User? {

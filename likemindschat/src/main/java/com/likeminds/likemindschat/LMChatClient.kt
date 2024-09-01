@@ -23,6 +23,7 @@ import com.likeminds.likemindschat.moderation.ModerationClient
 import com.likeminds.likemindschat.moderation.model.*
 import com.likeminds.likemindschat.notification.NotificationClient
 import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
+import com.likeminds.likemindschat.notification.model.GetUnreadConversationNotificationRequest
 import com.likeminds.likemindschat.poll.PollClient
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -380,8 +381,8 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to fetch unread conversation for notification
-    suspend fun getUnreadConversationNotification(): LMResponse<GetConversationNotificationUnreadResponse> {
-        return notificationClient.getUnreadConversationNotification()
+    suspend fun getUnreadConversationNotification(getUnreadConversationNotificationRequest: GetUnreadConversationNotificationRequest): LMResponse<GetConversationNotificationUnreadResponse> {
+        return notificationClient.getUnreadConversationNotification(getUnreadConversationNotificationRequest)
     }
 
     // Exposed function to upload a conversation media
