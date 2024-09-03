@@ -1,6 +1,5 @@
 package com.likeminds.chatinternalsdk.notification
 
-import android.util.Log
 import com.likeminds.chatinternalsdk.chatroom.model._Chatroom_
 import com.likeminds.chatinternalsdk.conversation.model._Conversation_
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
@@ -15,7 +14,7 @@ class NotificationReceiver @Inject constructor(
     private val sdkPreferences: SDKPreferences
 ) {
     companion object {
-        private const val UNREAD_CHATROOM_LIMIT = 10L
+        private const val UNREAD_CHATROOM_LIMIT = 7L
     }
 
     // fetches latest [UNREAD_CHATROOM_LIMIT] chatrooms from local db with unread conversations
@@ -25,44 +24,42 @@ class NotificationReceiver @Inject constructor(
         chatroomLastConversation: _Conversation_
     ): RealmResults<ChatroomRO> {
         ChatDBUtil.write(realm) { realmWrite ->
-            val chatroomRO = ChatDBUtil.getChatroom(realmWrite, chatroom.id)
 
-            val memberRO = ChatDBUtil.getMember(realmWrite, chatroom.communityId, chatroomLastConversation.member?.sdkClientInfo?.uuid)
-
+            // get the existing chatroom from DB
+            var chatroomRO = ChatDBUtil.getChatroom(realmWrite, chatroom.id)
             if (chatroomRO == null) {
-                //todo:
-                // chatroom doesn't exist so insert it first
-            } else {
-                val conversationCreatorRO = ROConverter.convertMember(
-                    chatroomLastConversation.member,
-                    chatroomRO.communityId
+                // insert the chatroom in DB if it doesn't exist already
+                chatroomRO = ROConverter.convertChatroom(
+                    realmWrite,
+                    chatroom,
+                    null
                 )
 
-                val lastConversationRO = ROConverter.convertLastConversation(
-                    realm,
-                    chatroomLastConversation,
-                    conversationCreatorRO,
-                    chatroomLastConversation.attachments,
-                    widget = null
-                ) ?: return@write
-
-                Log.d(
-                    "PUI",
-                    "getUnreadConversationNotification: communityId: ${chatroomLastConversation.communityId} chatroomId: ${chatroomLastConversation.chatroomId} createdEpoch: ${chatroomLastConversation.createdEpoch} state: ${chatroomLastConversation.state} answer: ${chatroomLastConversation.answer} id: ${chatroomLastConversation.id}"
-                )
-
-//                realmWrite.copyToRealm(lastConversationRO)
-//                if (memberRO == null && conversationCreatorRO != null) {
-//                    realmWrite.copyToRealmOrUpdate(conversationCreatorRO)
-//                }
-                Log.d("PUI", "validity: ${chatroomRO.isManaged} ${lastConversationRO.isManaged} ${conversationCreatorRO?.isManaged}")
-
-                chatroomRO.lastConversationRO = realmWrite.copyToRealmOrUpdate(lastConversationRO)
-
-                //Update the total response count of this chatroom
-                chatroomRO.totalResponseCount += 1
-                chatroomRO.totalAllResponseCount += 1
+                if (chatroomRO != null) {
+                    chatroomRO = realmWrite.copyToRealmOrUpdate(chatroomRO)
+                }
             }
+
+            chatroomRO = chatroomRO ?: return@write
+
+            // create the conversationCreatorRO and add to add it to lastConversationRO
+            val conversationCreatorRO = ROConverter.convertMember(
+                chatroomLastConversation.member,
+                chatroomRO.communityId
+            )
+
+            val lastConversationRO = ROConverter.convertLastConversation(
+                realm,
+                chatroomLastConversation,
+                conversationCreatorRO,
+                chatroomLastConversation.attachments,
+                widget = null
+            ) ?: return@write
+
+            chatroomRO.lastConversationRO = realmWrite.copyToRealmOrUpdate(lastConversationRO)
+
+            //Update the unseen count of this chatroom
+            chatroomRO.unseenCount += 1
         }
 
         val communityId = sdkPreferences.getCommunityId()
@@ -73,8 +70,11 @@ class NotificationReceiver @Inject constructor(
 
         return query.equalTo(DbKey.FOLLOW_STATUS, true) // Filter out unfollowed chatrooms
             .equalTo(DbKey.MUTE_STATUS, false) // Filter out muted chatrooms
-            .greaterThan(DbKey.UNSEEN_COUNT, 0)  // Ensure unseenCount is greater than 0
-            .sort(DbKey.UPDATED_AT, Sort.DESCENDING) // Sort by updatedAt in descending order
+            .greaterThan(DbKey.UNSEEN_COUNT, 0)  // Ensure unseen count is greater than 0
+            .sort(
+                "lastConversationRO.createdAt",
+                Sort.DESCENDING
+            ) // Sort by createdAt in descending order
             .limit(UNREAD_CHATROOM_LIMIT)
             .findAll()
     }

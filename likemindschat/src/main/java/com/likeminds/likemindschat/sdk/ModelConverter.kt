@@ -1,6 +1,5 @@
 package com.likeminds.likemindschat.sdk
 
-import android.util.Log
 import com.google.gson.JsonParser
 import com.likeminds.chatinternalsdk.chatroom.model.*
 import com.likeminds.chatinternalsdk.community.model.*
@@ -1785,9 +1784,12 @@ object ModelConverter {
     private fun convertGetConversationNotificationUnread(chatroom: ChatroomRO): ChatroomNotificationData {
         val community = chatroom.getCommunity()
 
-        val resp =  ChatroomNotificationData(
+        val resp = ChatroomNotificationData(
             community?.name ?: "",
-            chatroom.header ?: "",
+            ResponseUtils.generateChatroomNameWithMessagesCount(
+                chatroom.header ?: "",
+                chatroom.unseenCount
+            ),
             chatroom.title,
             chatroom.member?.name ?: "",
             chatroom.member?.imageUrl ?: "",
@@ -1795,7 +1797,7 @@ object ModelConverter {
             community?.imageUrl ?: "",
             community?.id?.toInt() ?: 0,
             ResponseUtils.generateRouteForChatroom(community?.id ?: "", community?.name ?: ""),
-            chatroom.totalAllResponseCount,
+            chatroom.unseenCount,
             chatroom.lastConversationRO?.answer ?: "",
             chatroom.lastConversationRO?.member?.name ?: "",
             chatroom.lastConversationRO?.member?.imageUrl ?: "",
@@ -1805,7 +1807,6 @@ object ModelConverter {
             ""
         )
 
-        Log.d("PUI", "convertGetConversationNotificationUnread: $resp")
         return resp
     }
 
