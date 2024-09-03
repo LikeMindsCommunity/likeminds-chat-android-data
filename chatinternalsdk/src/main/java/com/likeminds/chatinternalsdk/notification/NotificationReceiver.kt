@@ -48,6 +48,7 @@ class NotificationReceiver @Inject constructor(
                 chatroomRO.communityId
             )
 
+            // creates lastConversationRO object
             val lastConversationRO = ROConverter.convertLastConversation(
                 realm,
                 chatroomLastConversation,
@@ -56,6 +57,7 @@ class NotificationReceiver @Inject constructor(
                 widget = null
             ) ?: return@write
 
+            // writes lastConversationRO to DB and updates chatroom's lastConversationRO
             chatroomRO.lastConversationRO = realmWrite.copyToRealmOrUpdate(lastConversationRO)
 
             //Update the unseen count of this chatroom
@@ -68,14 +70,14 @@ class NotificationReceiver @Inject constructor(
             query = query.equalTo(DbKey.COMMUNITY_ID, communityId)
         }
 
-        return query.equalTo(DbKey.FOLLOW_STATUS, true) // Filter out unfollowed chatrooms
-            .equalTo(DbKey.MUTE_STATUS, false) // Filter out muted chatrooms
+        return query.equalTo(DbKey.FOLLOW_STATUS, true) // filter out unfollowed chatrooms
+            .equalTo(DbKey.MUTE_STATUS, false) // filter out muted chatrooms
             .greaterThan(DbKey.UNSEEN_COUNT, 0)  // Ensure unseen count is greater than 0
             .sort(
                 "lastConversationRO.createdAt",
                 Sort.DESCENDING
-            ) // Sort by createdAt in descending order
-            .limit(UNREAD_CHATROOM_LIMIT)
+            ) // sort by createdAt in descending order
+            .limit(UNREAD_CHATROOM_LIMIT) // limits the count of chatroom by [UNREAD_CHATROOM_LIMIT]
             .findAll()
     }
 }

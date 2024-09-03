@@ -1481,6 +1481,7 @@ object ModelConverter {
         return _Chatroom_.Builder()
             .id(chatroom.id)
             .title(chatroom.title)
+            .communityId(chatroom.communityId)
             .communityName(chatroom.communityName)
             .header(chatroom.header)
             .build()
@@ -1772,7 +1773,7 @@ object ModelConverter {
         return GetConversationsCountResponse(count)
     }
 
-    //convert list of [ChatroomRO] to [GetConversationNotificationUnreadResponse]
+    //converts list of [ChatroomRO] to [GetConversationNotificationUnreadResponse]
     fun convertGetConversationNotificationUnreadResponse(chatroomRO: List<ChatroomRO>): GetConversationNotificationUnreadResponse {
         return GetConversationNotificationUnreadResponse(
             chatroomRO.map { chatroom ->
@@ -1781,33 +1782,36 @@ object ModelConverter {
         )
     }
 
+    //converts [ChatroomRO] to [ChatroomNotificationData]
     private fun convertGetConversationNotificationUnread(chatroom: ChatroomRO): ChatroomNotificationData {
         val community = chatroom.getCommunity()
 
-        val resp = ChatroomNotificationData(
+        val creatorChatroomRO = chatroom.member
+        val lastConversationRO = chatroom.lastConversationRO
+        val creatorLastConversationRO = lastConversationRO?.member
+
+        return ChatroomNotificationData(
             community?.name ?: "",
             ResponseUtils.generateChatroomNameWithMessagesCount(
                 chatroom.header ?: "",
                 chatroom.unseenCount
             ),
             chatroom.title,
-            chatroom.member?.name ?: "",
-            chatroom.member?.imageUrl ?: "",
+            creatorChatroomRO?.name ?: "",
+            creatorChatroomRO?.imageUrl ?: "",
             chatroom.id,
             community?.imageUrl ?: "",
             community?.id?.toInt() ?: 0,
             ResponseUtils.generateRouteForChatroom(community?.id ?: "", community?.name ?: ""),
             chatroom.unseenCount,
-            chatroom.lastConversationRO?.answer ?: "",
-            chatroom.lastConversationRO?.member?.name ?: "",
-            chatroom.lastConversationRO?.member?.imageUrl ?: "",
+            lastConversationRO?.answer ?: "",
+            creatorLastConversationRO?.name ?: "",
+            creatorLastConversationRO?.imageUrl ?: "",
             ResponseUtils.generateRouteChildForChatroom(chatroom.id),
-            chatroom.lastConversationRO?.createdEpoch,
-            convertAttachmentsRO(chatroom.lastConversationRO?.attachments),
+            lastConversationRO?.createdEpoch,
+            convertAttachmentsRO(lastConversationRO?.attachments),
             ""
         )
-
-        return resp
     }
 
     // converts UserRO model to client model
