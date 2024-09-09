@@ -49,6 +49,7 @@ class SearchClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage,
                 )
             }
+
             is NetworkResponse.Success -> {
                 val body = response.body
                 ModelConverter.convertSearchChatroomAPIResponse(body)
@@ -85,6 +86,7 @@ class SearchClient @Inject constructor() : BaseClient() {
         val request = _SearchConversationRequest_.Builder()
             .search(searchConversationRequest.search)
             .followStatus(searchConversationRequest.followStatus)
+            .chatroomId(searchConversationRequest.chatroomId)
             .page(searchConversationRequest.page)
             .pageSize(searchConversationRequest.pageSize)
             .build()
@@ -97,6 +99,7 @@ class SearchClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage,
                 )
             }
+
             is NetworkResponse.Success -> {
                 val body = response.body
                 ModelConverter.convertSearchConversationAPIResponse(body)

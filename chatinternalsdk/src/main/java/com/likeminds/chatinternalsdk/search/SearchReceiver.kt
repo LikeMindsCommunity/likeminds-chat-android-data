@@ -12,6 +12,7 @@ class SearchReceiver @Inject constructor(
     companion object {
         private const val SEARCH_KEY = "search"
         private const val FOLLOW_STATUS_KEY = "follow_status"
+        private const val CHATROOM_ID_KEY = "chatroom_id"
         private const val PAGE_KEY = "page"
         private const val PAGE_SIZE_KEY = "page_size"
         private const val SEARCH_TYPE_KEY = "search_type"
@@ -40,6 +41,10 @@ class SearchReceiver @Inject constructor(
         queries[FOLLOW_STATUS_KEY] = request.followStatus
         queries[PAGE_KEY] = request.page
         queries[PAGE_SIZE_KEY] = request.pageSize
+
+        if (request.chatroomId != null) {
+            queries[CHATROOM_ID_KEY] = request.chatroomId
+        }
 
         return searchNetworkApi.searchConversation(queries)
     }

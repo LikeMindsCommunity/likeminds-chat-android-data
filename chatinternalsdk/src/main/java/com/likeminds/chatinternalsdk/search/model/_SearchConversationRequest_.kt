@@ -7,6 +7,8 @@ class _SearchConversationRequest_ private constructor(
     val search: String,
     @SerializedName("follow_status")
     val followStatus: Boolean,
+    @SerializedName("chatroom_id")
+    val chatroomId: String?,
     @SerializedName("page")
     val page: Int,
     @SerializedName("page_size")
@@ -15,17 +17,34 @@ class _SearchConversationRequest_ private constructor(
     class Builder {
         private var search: String = ""
         private var followStatus: Boolean = false
+        private var chatroomId: String? = null
         private var page: Int = 1
         private var pageSize: Int = 10
 
-        fun search(search: String) = apply { this.search = search }
-        fun followStatus(followStatus: Boolean) = apply { this.followStatus = followStatus }
-        fun page(page: Int) = apply { this.page = page }
-        fun pageSize(pageSize: Int) = apply { this.pageSize = pageSize }
+        fun search(search: String) = apply {
+            this.search = search
+        }
+
+        fun followStatus(followStatus: Boolean) = apply {
+            this.followStatus = followStatus
+        }
+
+        fun chatroomId(chatroomId: String?) = apply {
+            this.chatroomId = chatroomId
+        }
+
+        fun page(page: Int) = apply {
+            this.page = page
+        }
+
+        fun pageSize(pageSize: Int) = apply {
+            this.pageSize = pageSize
+        }
 
         fun build() = _SearchConversationRequest_(
             search,
             followStatus,
+            chatroomId,
             page,
             pageSize
         )
@@ -34,6 +53,7 @@ class _SearchConversationRequest_ private constructor(
     fun toBuilder(): Builder {
         return Builder().search(search)
             .followStatus(followStatus)
+            .chatroomId(chatroomId)
             .page(page)
             .pageSize(pageSize)
     }
