@@ -9,7 +9,7 @@ import io.realm.RealmResults
 interface NotificationDB {
 
     // fetches unread conversation for notification
-    suspend fun getUnreadConversationNotification(
+    suspend fun getUnreadChatrooms(
         realm: Realm,
         chatroom: _Chatroom_,
         chatroomLastConversation: _Conversation_

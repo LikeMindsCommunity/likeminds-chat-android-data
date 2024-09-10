@@ -3,7 +3,7 @@ package com.likeminds.likemindschat.notification.model
 import com.likeminds.likemindschat.chatroom.model.Chatroom
 import com.likeminds.likemindschat.conversation.model.Conversation
 
-class GetUnreadConversationNotificationRequest private constructor(
+class GetUnreadChatroomsRequest private constructor(
     val chatroom: Chatroom,
     val chatroomLastConversation: Conversation
 ) {
@@ -19,7 +19,7 @@ class GetUnreadConversationNotificationRequest private constructor(
             this.chatroomLastConversation = chatroomLastConversation
         }
 
-        fun build() = GetUnreadConversationNotificationRequest(chatroom, chatroomLastConversation)
+        fun build() = GetUnreadChatroomsRequest(chatroom, chatroomLastConversation)
     }
 
     fun toBuilder(): Builder {

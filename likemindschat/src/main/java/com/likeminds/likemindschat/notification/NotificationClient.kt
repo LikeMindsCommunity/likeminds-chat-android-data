@@ -2,8 +2,8 @@ package com.likeminds.likemindschat.notification
 
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
-import com.likeminds.likemindschat.notification.model.GetUnreadConversationNotificationRequest
+import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsResponse
+import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsRequest
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -23,22 +23,22 @@ class NotificationClient @Inject constructor() : BaseClient() {
     /**
      * Converts client request model to internal model and calls the api
      * @throws IllegalArgumentException - when LMFeedClient is not instantiated
-     * @param getUnreadConversationNotificationRequest - client request model to get unread conversations for notification
-     * @return GetConversationNotificationUnreadResponse - GetConversationNotificationUnreadResponse model
+     * @param getUnreadChatroomsRequest - client request model to get unread conversations for notification
+     * @return GetUnreadChatroomsResponse - GetUnreadChatroomsResponse model
      */
-    suspend fun getUnreadConversationNotification(getUnreadConversationNotificationRequest: GetUnreadConversationNotificationRequest): LMResponse<GetConversationNotificationUnreadResponse> {
+    suspend fun getUnreadChatrooms(getUnreadChatroomsRequest: GetUnreadChatroomsRequest): LMResponse<GetUnreadChatroomsResponse> {
         // validates the client request
         RequestUtils.validate()
-        validateGetUnreadConversationNotification(getUnreadConversationNotificationRequest)
+        validateGetUnreadChatroomsRequest(getUnreadChatroomsRequest)
 
         val realm = Realm.getDefaultInstance()
 
         // inserts the last conversation and chatroom (if missing) to DB and fetches chatrooms with unread conversations
-        val response = ModelConverter.convertGetConversationNotificationUnreadResponse(
-            notificationDB.getUnreadConversationNotification(
+        val response = ModelConverter.convertGetUnreadChatroomsResponse(
+            notificationDB.getUnreadChatrooms(
                 realm,
-                ModelConverter.createChatroom(getUnreadConversationNotificationRequest.chatroom),
-                ModelConverter.createConversation(getUnreadConversationNotificationRequest.chatroomLastConversation)
+                ModelConverter.createChatroom(getUnreadChatroomsRequest.chatroom),
+                ModelConverter.createConversation(getUnreadChatroomsRequest.chatroomLastConversation)
             )
         )
         realm.close()
@@ -51,15 +51,15 @@ class NotificationClient @Inject constructor() : BaseClient() {
     }
 
     /**
-     * validates [getUnreadConversationNotificationRequest]
+     * validates [getUnreadChatroomsRequest]
      * @throws IllegalArgumentException - when required properties not provided
      */
-    private fun validateGetUnreadConversationNotification(getUnreadConversationNotificationRequest: GetUnreadConversationNotificationRequest) {
-        if (getUnreadConversationNotificationRequest.chatroomLastConversation.id.isNullOrEmpty()) {
+    private fun validateGetUnreadChatroomsRequest(getUnreadChatroomsRequest: GetUnreadChatroomsRequest) {
+        if (getUnreadChatroomsRequest.chatroomLastConversation.id.isNullOrEmpty()) {
             RequestUtils.throwException("chatroomLastConversation")
         }
 
-        if (getUnreadConversationNotificationRequest.chatroom.id.isEmpty()) {
+        if (getUnreadChatroomsRequest.chatroom.id.isEmpty()) {
             RequestUtils.throwException("chatroom")
         }
     }

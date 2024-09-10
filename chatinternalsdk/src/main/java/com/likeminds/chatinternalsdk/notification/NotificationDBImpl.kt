@@ -11,12 +11,12 @@ class NotificationDBImpl @Inject constructor(
     private val notificationReceiver: NotificationReceiver
 ) : NotificationDB {
 
-    override suspend fun getUnreadConversationNotification(
+    override suspend fun getUnreadChatrooms(
         realm: Realm,
         chatroom: _Chatroom_,
         chatroomLastConversation: _Conversation_
     ): RealmResults<ChatroomRO> {
-        return notificationReceiver.getUnreadConversationNotification(
+        return notificationReceiver.getUnreadChatrooms(
             realm,
             chatroom,
             chatroomLastConversation

@@ -18,7 +18,7 @@ class NotificationReceiver @Inject constructor(
     }
 
     // fetches latest [UNREAD_CHATROOM_LIMIT] chatrooms from local db with unread conversations
-    fun getUnreadConversationNotification(
+    fun getUnreadChatrooms(
         realm: Realm,
         chatroom: _Chatroom_,
         chatroomLastConversation: _Conversation_

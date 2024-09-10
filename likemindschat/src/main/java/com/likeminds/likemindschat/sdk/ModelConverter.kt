@@ -28,7 +28,7 @@ import com.likeminds.likemindschat.homefeed.model.*
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
 import com.likeminds.likemindschat.notification.model.ChatroomNotificationData
-import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
+import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsResponse
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
@@ -1773,17 +1773,17 @@ object ModelConverter {
         return GetConversationsCountResponse(count)
     }
 
-    //converts list of [ChatroomRO] to [GetConversationNotificationUnreadResponse]
-    fun convertGetConversationNotificationUnreadResponse(chatroomRO: List<ChatroomRO>): GetConversationNotificationUnreadResponse {
-        return GetConversationNotificationUnreadResponse(
+    //converts list of [ChatroomRO] to [GetUnreadChatroomsResponse]
+    fun convertGetUnreadChatroomsResponse(chatroomRO: List<ChatroomRO>): GetUnreadChatroomsResponse {
+        return GetUnreadChatroomsResponse(
             chatroomRO.map { chatroom ->
-                convertGetConversationNotificationUnread(chatroom)
+                convertGetUnreadChatrooms(chatroom)
             }
         )
     }
 
     //converts [ChatroomRO] to [ChatroomNotificationData]
-    private fun convertGetConversationNotificationUnread(chatroom: ChatroomRO): ChatroomNotificationData {
+    private fun convertGetUnreadChatrooms(chatroom: ChatroomRO): ChatroomNotificationData {
         val community = chatroom.getCommunity()
 
         val creatorChatroomRO = chatroom.member
