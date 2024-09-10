@@ -178,8 +178,8 @@ class ConversationReceiver @Inject constructor(
                 conversation.deleteFromRealm()
 
                 //Update the total response count of this chatroom
-                chatroomRO.totalResponseCount = chatroomRO.totalResponseCount - 1
-                chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount - 1
+                chatroomRO.totalResponseCount -= 1
+                chatroomRO.totalAllResponseCount -= 1
 
                 val lastConversation = chatroomRO.conversations.where()
                     .equalTo(DbKey.STATE, STATE_NORMAL)
@@ -230,8 +230,8 @@ class ConversationReceiver @Inject constructor(
                     }
 
                     //Update the total response count of this chatroom
-                    chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
-                    chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                    chatroomRO.totalResponseCount += 1
+                    chatroomRO.totalAllResponseCount += 1
                 }
             }
         })
@@ -311,8 +311,8 @@ class ConversationReceiver @Inject constructor(
                     }
 
                     //Update the total response count of this chatroom
-                    chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
-                    chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                    chatroomRO.totalResponseCount += 1
+                    chatroomRO.totalAllResponseCount += 1
                 }
             }
         })
@@ -366,8 +366,8 @@ class ConversationReceiver @Inject constructor(
                     chatroomRO.updatedAt = conversationRO.createdEpoch
                 }
                 //Update the total response count of this chatroom
-                chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
-                chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                chatroomRO.totalResponseCount += 1
+                chatroomRO.totalAllResponseCount += 1
             }
         }
     }

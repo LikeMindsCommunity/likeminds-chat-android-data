@@ -22,7 +22,8 @@ import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.moderation.ModerationClient
 import com.likeminds.likemindschat.moderation.model.*
 import com.likeminds.likemindschat.notification.NotificationClient
-import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
+import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsResponse
+import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsRequest
 import com.likeminds.likemindschat.poll.PollClient
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -380,8 +381,8 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to fetch unread conversation for notification
-    suspend fun getUnreadConversationNotification(): LMResponse<GetConversationNotificationUnreadResponse> {
-        return notificationClient.getUnreadConversationNotification()
+    suspend fun getUnreadChatrooms(getUnreadChatroomsRequest: GetUnreadChatroomsRequest): LMResponse<GetUnreadChatroomsResponse> {
+        return notificationClient.getUnreadChatrooms(getUnreadChatroomsRequest)
     }
 
     // Exposed function to upload a conversation media

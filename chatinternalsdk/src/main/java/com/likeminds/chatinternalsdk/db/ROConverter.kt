@@ -45,7 +45,7 @@ object ROConverter {
     fun convertChatroom(
         realm: Realm,
         chatroom: _Chatroom_?,
-        chatroomCreatorRO: MemberRO,
+        chatroomCreatorRO: MemberRO?,
         lastConversationRO: LastConversationRO? = null,
         reactions: List<_ReactionMeta_> = emptyList(),
         chatRequestByRO: MemberRO? = null,

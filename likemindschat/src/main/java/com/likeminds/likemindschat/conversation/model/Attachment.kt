@@ -90,4 +90,38 @@ class Attachment private constructor(
             .createdAt(createdAt)
             .updatedAt(updatedAt)
     }
+
+    override fun toString(): String {
+        return buildString {
+            append("Attachment(id=")
+            append(id)
+            append(", name=")
+            append(name)
+            append(", url=")
+            append(url)
+            append(", type=")
+            append(type)
+            append(", width=")
+            append(width)
+            append(", height=")
+            append(height)
+            append(", awsFolderPath=")
+            append(awsFolderPath)
+            append(", localFilePath=")
+            append(localFilePath)
+            append(", thumbnailUrl=")
+            append(thumbnailUrl)
+            append(", thumbnailAWSFolderPath=")
+            append(thumbnailAWSFolderPath)
+            append(", thumbnailLocalFilePath=")
+            append(thumbnailLocalFilePath)
+            append(", meta=")
+            append(meta)
+            append(", createdAt=")
+            append(createdAt)
+            append(", updatedAt=")
+            append(updatedAt)
+            append(")")
+        }
+    }
 }
