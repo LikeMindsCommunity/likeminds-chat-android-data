@@ -38,9 +38,12 @@ class SearchReceiver @Inject constructor(
         val queries = HashMap<String, Any?>()
         // Set query parameters for request
         queries[SEARCH_KEY] = request.search
-        queries[FOLLOW_STATUS_KEY] = request.followStatus
         queries[PAGE_KEY] = request.page
         queries[PAGE_SIZE_KEY] = request.pageSize
+
+        if (request.followStatus != null) {
+            queries[FOLLOW_STATUS_KEY] = request.followStatus
+        }
 
         if (request.chatroomId != null) {
             queries[CHATROOM_ID_KEY] = request.chatroomId

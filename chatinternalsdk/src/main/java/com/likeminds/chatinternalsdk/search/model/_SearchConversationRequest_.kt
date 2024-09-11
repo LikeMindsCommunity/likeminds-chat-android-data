@@ -6,7 +6,7 @@ class _SearchConversationRequest_ private constructor(
     @SerializedName("search")
     val search: String,
     @SerializedName("follow_status")
-    val followStatus: Boolean,
+    val followStatus: Boolean?,
     @SerializedName("chatroom_id")
     val chatroomId: String?,
     @SerializedName("page")
@@ -16,7 +16,7 @@ class _SearchConversationRequest_ private constructor(
 ) {
     class Builder {
         private var search: String = ""
-        private var followStatus: Boolean = false
+        private var followStatus: Boolean? = null
         private var chatroomId: String? = null
         private var page: Int = 1
         private var pageSize: Int = 10
@@ -25,7 +25,7 @@ class _SearchConversationRequest_ private constructor(
             this.search = search
         }
 
-        fun followStatus(followStatus: Boolean) = apply {
+        fun followStatus(followStatus: Boolean?) = apply {
             this.followStatus = followStatus
         }
 

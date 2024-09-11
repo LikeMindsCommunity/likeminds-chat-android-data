@@ -2,14 +2,14 @@ package com.likeminds.likemindschat.search.model
 
 class SearchConversationRequest private constructor(
     val search: String,
-    val followStatus: Boolean,
+    val followStatus: Boolean?,
     val chatroomId: String?,
     val page: Int,
     val pageSize: Int
 ) {
     class Builder {
         private var search: String = ""
-        private var followStatus: Boolean = false
+        private var followStatus: Boolean? = null
         private var chatroomId: String? = null
         private var page: Int = 1
         private var pageSize: Int = 10
@@ -18,7 +18,7 @@ class SearchConversationRequest private constructor(
             this.search = search
         }
 
-        fun followStatus(followStatus: Boolean) = apply {
+        fun followStatus(followStatus: Boolean?) = apply {
             this.followStatus = followStatus
         }
 
