@@ -21,7 +21,9 @@ class _PostConversationRequest_ private constructor(
     @SerializedName("replied_chatroom_id")
     val repliedChatroomId: String?,
     @SerializedName("metadata")
-    val metadata: JsonObject?
+    val metadata: JsonObject?,
+    @SerializedName("trigger_bot")
+    val triggerBot: Boolean?
 ) {
 
     class Builder {
@@ -35,6 +37,7 @@ class _PostConversationRequest_ private constructor(
         private var temporaryId: String? = null
         private var repliedChatroomId: String? = null
         private var metadata: JsonObject? = null
+        private var triggerBot: Boolean? = null
 
         fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
         fun text(text: String) = apply { this.text = text }
@@ -49,7 +52,9 @@ class _PostConversationRequest_ private constructor(
         fun temporaryId(temporaryId: String?) = apply { this.temporaryId = temporaryId }
         fun repliedChatroomId(repliedChatroomId: String?) =
             apply { this.repliedChatroomId = repliedChatroomId }
+
         fun metadata(metadata: JsonObject?) = apply { this.metadata = metadata }
+        fun triggerBot(triggerBot: Boolean?) = apply { this.triggerBot = triggerBot }
 
         fun build() = _PostConversationRequest_(
             chatroomId,
@@ -60,7 +65,8 @@ class _PostConversationRequest_ private constructor(
             attachmentCount,
             temporaryId,
             repliedChatroomId,
-            metadata
+            metadata,
+            triggerBot
         )
     }
 
@@ -74,5 +80,6 @@ class _PostConversationRequest_ private constructor(
             .temporaryId(temporaryId)
             .repliedChatroomId(repliedChatroomId)
             .metadata(metadata)
+            .triggerBot(triggerBot)
     }
 }

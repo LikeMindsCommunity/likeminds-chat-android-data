@@ -70,6 +70,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
             requestBuilder.metadata(JsonParser.parseString(postConversationRequest.metadata.toString()).asJsonObject)
         }
 
+        if (postConversationRequest.triggerBot) {
+            requestBuilder.triggerBot(true)
+        }
+
         val request = requestBuilder.build()
 
         return when (val response = conversationApi.postConversation(request)) {

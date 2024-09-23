@@ -34,6 +34,7 @@ import com.likeminds.likemindschat.notification.model.GetConversationNotificatio
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
+import com.likeminds.likemindschat.user.util.UserRoleUtil.getUserRole
 import com.likeminds.likemindschat.widget.model.Widget
 import org.json.JSONObject
 
@@ -78,19 +79,22 @@ object ModelConverter {
     private fun convertUser(
         _user_: _User_
     ): User {
-        return User(
-            _user_.id,
-            _user_.imageUrl,
-            _user_.isGuest,
-            _user_.name,
-            _user_.organisationName,
-            convertSDKClientInfo(_user_.sdkClientInfo),
-            _user_.isDeleted,
-            _user_.customTitle,
-            _user_.updatedAt,
-            _user_.userUniqueId,
-            _user_.uuid
-        )
+        return User.Builder()
+            .id(_user_.id)
+            .imageUrl(_user_.imageUrl)
+            .isGuest(_user_.isGuest)
+            .name(_user_.name)
+            .organisationName(_user_.organisationName)
+            .sdkClientInfo(convertSDKClientInfo(_user_.sdkClientInfo))
+            .isDeleted(_user_.isDeleted)
+            .customTitle(_user_.customTitle)
+            .updatedAt(_user_.updatedAt)
+            .userUniqueId(_user_.userUniqueId)
+            .uuid(_user_.uuid)
+            .roles(_user_.roles.map { role ->
+                role.getUserRole()
+            })
+            .build()
     }
 
     // converts internal SDKClientInfo model to client model
@@ -126,7 +130,7 @@ object ModelConverter {
         _communitySettings_: List<_CommunitySetting_>?
     ): List<CommunitySetting>? {
         if (_communitySettings_ == null) {
-            return  null
+            return null
         }
         return _communitySettings_.map {
             convertCommunitySetting(it)
@@ -662,6 +666,9 @@ object ModelConverter {
             .updatedAt(_member_.updatedAt)
             .sdkClientInfo(convertSDKClientInfo(_member_.sdkClientInfo))
             .uuid(_member_.uuid)
+            .roles(_member_.roles.map { role ->
+                role.getUserRole()
+            })
             .build()
     }
 
@@ -1827,19 +1834,22 @@ object ModelConverter {
     // converts UserRO model to client model
     private fun convertUserRO(userRO: UserRO?): User? {
         if (userRO == null) return null
-        return User(
-            userRO.id,
-            userRO.imageUrl,
-            userRO.isGuest,
-            userRO.name,
-            userRO.organizationName,
-            convertSDKClientInfoRO(userRO.sdkClientInfoRO),
-            userRO.isDeleted,
-            userRO.customTitle,
-            userRO.updatedAt,
-            userRO.userUniqueId,
-            userRO.uuid
-        )
+        return User.Builder()
+            .id(userRO.id)
+            .imageUrl(userRO.imageUrl)
+            .isGuest(userRO.isGuest)
+            .name(userRO.name)
+            .organisationName(userRO.organizationName)
+            .sdkClientInfo(convertSDKClientInfoRO(userRO.sdkClientInfoRO))
+            .isDeleted(userRO.isDeleted)
+            .customTitle(userRO.customTitle)
+            .updatedAt(userRO.updatedAt)
+            .userUniqueId(userRO.userUniqueId)
+            .uuid(userRO.uuid)
+            .roles(userRO.roles.map { role ->
+                role.getUserRole()
+            })
+            .build()
     }
 
     // converts SDKClientInfoRO model to client model
@@ -2017,6 +2027,9 @@ object ModelConverter {
             .isGuest(memberRO.isGuest)
             .sdkClientInfo(convertSDKClientInfoRO(memberRO.sdkClientInfoRO))
             .uuid(memberRO.uuid)
+            .roles(memberRO.roles.map { role ->
+                role.getUserRole()
+            })
             .build()
     }
 

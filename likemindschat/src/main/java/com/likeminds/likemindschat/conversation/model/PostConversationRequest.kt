@@ -12,7 +12,8 @@ class PostConversationRequest private constructor(
     val attachmentCount: Int?,
     val temporaryId: String?,
     val repliedChatroomId: String?,
-    val metadata: JSONObject?
+    val metadata: JSONObject?,
+    val triggerBot: Boolean
 ) {
 
     class Builder {
@@ -27,6 +28,7 @@ class PostConversationRequest private constructor(
         private var temporaryId: String? = null
         private var repliedChatroomId: String? = null
         private var metadata: JSONObject? = null
+        private var triggerBot: Boolean = false
 
         fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
         fun text(text: String) = apply { this.text = text }
@@ -49,6 +51,10 @@ class PostConversationRequest private constructor(
             this.metadata = metadata
         }
 
+        fun triggerBot(triggerBot: Boolean) = apply {
+            this.triggerBot = triggerBot
+        }
+
         fun build() = PostConversationRequest(
             chatroomId,
             text,
@@ -59,7 +65,8 @@ class PostConversationRequest private constructor(
             attachmentCount,
             temporaryId,
             repliedChatroomId,
-            metadata
+            metadata,
+            triggerBot
         )
     }
 
@@ -74,5 +81,6 @@ class PostConversationRequest private constructor(
             .temporaryId(temporaryId)
             .repliedChatroomId(repliedChatroomId)
             .metadata(metadata)
+            .triggerBot(triggerBot)
     }
 }
