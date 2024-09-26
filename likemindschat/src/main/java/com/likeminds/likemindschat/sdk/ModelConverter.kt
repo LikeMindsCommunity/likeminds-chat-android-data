@@ -1167,7 +1167,8 @@ object ModelConverter {
             convertManagerRights(_memberStateResponse_.managerRights),
             convertMemberRights(_memberStateResponse_.memberRights),
             member.updatedAt ?: 0L,
-            convertSDKClientInfo(member.sdkClientInfo)
+            convertSDKClientInfo(member.sdkClientInfo),
+            member.roles.map { it.getUserRole() }
         )
     }
 
@@ -1726,7 +1727,7 @@ object ModelConverter {
     }
 
     // creates internal Attachment model list from client model list
-    private fun createAttachments(attachments: List<Attachment>?): List<_Attachment_>? {
+    fun createAttachments(attachments: List<Attachment>?): List<_Attachment_>? {
         if (attachments.isNullOrEmpty()) return null
         return attachments.map {
             createAttachment(it)

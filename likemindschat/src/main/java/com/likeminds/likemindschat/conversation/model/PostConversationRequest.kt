@@ -9,11 +9,11 @@ class PostConversationRequest private constructor(
     val shareLink: String?,
     val ogTags: LinkOGTags?,
     val repliedConversationId: String?,
-    val attachmentCount: Int?,
     val temporaryId: String?,
     val repliedChatroomId: String?,
     val metadata: JSONObject?,
-    val triggerBot: Boolean
+    val triggerBot: Boolean,
+    val attachments: List<Attachment>?
 ) {
 
     class Builder {
@@ -24,11 +24,11 @@ class PostConversationRequest private constructor(
         private var shareLink: String? = null
         private var ogTags: LinkOGTags? = null
         private var repliedConversationId: String? = null
-        private var attachmentCount: Int? = null
         private var temporaryId: String? = null
         private var repliedChatroomId: String? = null
         private var metadata: JSONObject? = null
         private var triggerBot: Boolean = false
+        private var attachments: List<Attachment>? = null
 
         fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
         fun text(text: String) = apply { this.text = text }
@@ -39,9 +39,6 @@ class PostConversationRequest private constructor(
         fun ogTags(ogTags: LinkOGTags?) = apply { this.ogTags = ogTags }
         fun repliedConversationId(repliedConversationId: String?) =
             apply { this.repliedConversationId = repliedConversationId }
-
-        fun attachmentCount(attachmentCount: Int?) =
-            apply { this.attachmentCount = attachmentCount }
 
         fun temporaryId(temporaryId: String?) = apply { this.temporaryId = temporaryId }
         fun repliedChatroomId(repliedChatroomId: String?) =
@@ -55,6 +52,10 @@ class PostConversationRequest private constructor(
             this.triggerBot = triggerBot
         }
 
+        fun attachments(attachments: List<Attachment>?) = apply {
+            this.attachments = attachments
+        }
+
         fun build() = PostConversationRequest(
             chatroomId,
             text,
@@ -62,11 +63,11 @@ class PostConversationRequest private constructor(
             shareLink,
             ogTags,
             repliedConversationId,
-            attachmentCount,
             temporaryId,
             repliedChatroomId,
             metadata,
-            triggerBot
+            triggerBot,
+            attachments
         )
     }
 
@@ -77,10 +78,10 @@ class PostConversationRequest private constructor(
             .shareLink(shareLink)
             .ogTags(ogTags)
             .repliedConversationId(repliedConversationId)
-            .attachmentCount(attachmentCount)
             .temporaryId(temporaryId)
             .repliedChatroomId(repliedChatroomId)
             .metadata(metadata)
             .triggerBot(triggerBot)
+            .attachments(attachments)
     }
 }

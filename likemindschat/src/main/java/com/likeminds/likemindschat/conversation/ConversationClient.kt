@@ -62,9 +62,9 @@ class ConversationClient @Inject constructor() : BaseClient() {
             .shareLink(postConversationRequest.shareLink)
             .ogTags(ModelConverter.createLinkOGTags(postConversationRequest.ogTags))
             .repliedConversationId(postConversationRequest.repliedConversationId)
-            .attachmentCount(postConversationRequest.attachmentCount)
             .temporaryId(postConversationRequest.temporaryId)
             .repliedChatroomId(postConversationRequest.repliedChatroomId)
+            .attachments(ModelConverter.createAttachments(postConversationRequest.attachments))
 
         if (postConversationRequest.metadata != null) {
             requestBuilder.metadata(JsonParser.parseString(postConversationRequest.metadata.toString()).asJsonObject)
@@ -101,7 +101,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("chatroomId")
         }
         if (postConversationRequest.text.isEmpty()
-            && (postConversationRequest.attachmentCount ?: 0) <= 0
+            && (postConversationRequest.attachments.isNullOrEmpty())
             && postConversationRequest.metadata == null
         ) {
             RequestUtils.throwException("text or attachments or metadata")
