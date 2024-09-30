@@ -1124,20 +1124,6 @@ object ModelConverter {
         )
     }
 
-    //converts API PutMultimediaResponse model to LM model
-    fun convertPutMultimediaAPIResponse(apiResponse: APIResponse<_PutMultimediaResponse_>): LMResponse<PutMultimediaResponse> {
-        return LMResponse(
-            apiResponse.success,
-            apiResponse.errorMessage,
-            convertPutMultimediaResponse(apiResponse.data)
-        )
-    }
-
-    //converts internal PutMultimediaResponse model to client model
-    private fun convertPutMultimediaResponse(data: _PutMultimediaResponse_?): PutMultimediaResponse {
-        return PutMultimediaResponse(data?.conversation?.let { convertConversation(it) })
-    }
-
     // converts api MemberStateResponse model to LM MemberStateResponse model
     fun convertMemberStateResponse(
         apiResponse: APIResponse<_MemberStateResponse_>
