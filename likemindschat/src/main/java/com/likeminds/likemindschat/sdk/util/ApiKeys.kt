@@ -43,19 +43,19 @@ class ApiKeys {
 
     class DebugKeys {
         companion object {
-            const val PROJECT_ID = "Y29sbGFibWF0ZXMtYmV0YQ=="
-            const val APP_ID = "MTo5ODM2OTAzMDIzNzg6YW5kcm9pZDo5ZWVhN2Q2ZjYzZjYwZmY3MWI5MWQz"
-            const val API_KEY = "QUl6YVN5QldqRFFFaVlLZFFiUU52b2lWdnZPbl9jYnVmUXp2V3Vv"
-            const val DATABASE_URL = "aHR0cHM6Ly9jb2xsYWJtYXRlcy1iZXRhLmZpcmViYXNlaW8uY29t"
+            const val PROJECT_ID = "Y29sbGFibWF0ZXMtM2Q2MDE="
+            const val APP_ID = "MTo2NDU3MTY0NTg3OTM6YW5kcm9pZDpiODY4Yjk0YjY2ODM5MDVl"
+            const val API_KEY = "QUl6YVN5RE4xMFR3Q1BWTWRMRUU2dnZUaWdsS0hHbGtUSVlLZHVj"
+            const val DATABASE_URL = "aHR0cHM6Ly9jb2xsYWJtYXRlcy0zZDYwMS5maXJlYmFzZWlvLmNvbQ=="
         }
     }
 
     class ProdKeys {
         companion object {
-            const val PROJECT_ID = "Y29sbGFibWF0ZXMtYmV0YQ=="
-            const val APP_ID = "MTo5ODM2OTAzMDIzNzg6YW5kcm9pZDo5ZWVhN2Q2ZjYzZjYwZmY3MWI5MWQz"
-            const val API_KEY = "QUl6YVN5QldqRFFFaVlLZFFiUU52b2lWdnZPbl9jYnVmUXp2V3Vv"
-            const val DATABASE_URL = "aHR0cHM6Ly9jb2xsYWJtYXRlcy1iZXRhLmZpcmViYXNlaW8uY29t"
+            const val PROJECT_ID = "Y29sbGFibWF0ZXMtM2Q2MDE="
+            const val APP_ID = "MTo2NDU3MTY0NTg3OTM6YW5kcm9pZDpiODY4Yjk0YjY2ODM5MDVl"
+            const val API_KEY = "QUl6YVN5RE4xMFR3Q1BWTWRMRUU2dnZUaWdsS0hHbGtUSVlLZHVj"
+            const val DATABASE_URL = "aHR0cHM6Ly9jb2xsYWJtYXRlcy0zZDYwMS5maXJlYmFzZWlvLmNvbQ=="
         }
     }
 }
