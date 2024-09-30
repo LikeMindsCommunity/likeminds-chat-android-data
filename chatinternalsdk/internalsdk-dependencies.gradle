@@ -13,7 +13,7 @@ ext.urls = urls
 
 ext.beta_urls = [:]
 def beta_urls = [:]
-beta_urls."$keys.BASE_URL" = "\"https://auth.likeminds.community/\""
+beta_urls."$keys.BASE_URL" = "\"https://betauth.likeminds.community/\""
 beta_urls."$keys.SENTRY_DSN" = "\"https://5802d81a53354c2593a6683813e26f78@o613148.ingest.sentry.io/5748758\""
 ext.beta_urls = beta_urls
 
