@@ -28,11 +28,16 @@ class NotificationReceiver @Inject constructor(
             // get the existing chatroom from DB
             var chatroomRO = ChatDBUtil.getChatroom(realmWrite, chatroom.id)
             if (chatroomRO == null) {
+                val chatroomCreatorRO = ROConverter.convertMember(
+                    chatroom.member,
+                    chatroom.communityId ?: ""
+                )
+
                 // insert the chatroom in DB if it doesn't exist already
                 chatroomRO = ROConverter.convertChatroom(
                     realmWrite,
                     chatroom,
-                    null
+                    chatroomCreatorRO
                 )
 
                 if (chatroomRO != null) {

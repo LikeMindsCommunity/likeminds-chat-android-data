@@ -1484,6 +1484,7 @@ object ModelConverter {
             .communityId(chatroom.communityId)
             .communityName(chatroom.communityName)
             .header(chatroom.header)
+            .member(createMember(chatroom.member))
             .build()
     }
 
