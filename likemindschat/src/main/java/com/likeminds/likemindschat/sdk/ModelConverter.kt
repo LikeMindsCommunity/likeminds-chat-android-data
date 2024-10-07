@@ -1994,6 +1994,7 @@ object ModelConverter {
             .deletedByMember(convertMemberRO(conversationRO.deletedByMember))
             .widgetId(conversationRO.widgetId)
             .widget(convertWidgetRO(conversationRO.widgetRO))
+            .localCreatedEpoch(conversationRO.localSavedEpoch)
             .build()
     }
 

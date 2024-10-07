@@ -1,6 +1,7 @@
 package com.likeminds.chatinternalsdk.conversation
 
 import android.os.Build
+import android.util.Log
 import com.likeminds.chatinternalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
@@ -193,6 +194,16 @@ class ConversationReceiver @Inject constructor(
 
             val conversationRO =
                 ROConverter.convertConversation(realm, conversation, loggedInMember = userRO)
+
+            Log.d(
+                "PUI", """
+                Local db -> saveTemporaryConversation
+                conversationId: ${conversationRO?.id}
+                conversationText: ${conversationRO?.answer}
+                conversationLocalEpoch: ${conversationRO?.localSavedEpoch}
+            """.trimIndent()
+            )
+
             if (conversationRO != null) {
                 ChatDBUtil.getChatroom(realm, conversationRO.chatroomId)?.let { chatroomRO ->
                     //add the conversation to db
@@ -224,8 +235,8 @@ class ConversationReceiver @Inject constructor(
                     }
 
                     //Update the total response count of this chatroom
-                    chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
-                    chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                    chatroomRO.totalResponseCount += 1
+                    chatroomRO.totalAllResponseCount += 1
                 }
             }
         })
@@ -305,8 +316,8 @@ class ConversationReceiver @Inject constructor(
                     }
 
                     //Update the total response count of this chatroom
-                    chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
-                    chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                    chatroomRO.totalResponseCount += 1
+                    chatroomRO.totalAllResponseCount += 1
                 }
             }
         })
@@ -360,8 +371,8 @@ class ConversationReceiver @Inject constructor(
                     chatroomRO.updatedAt = conversationRO.createdEpoch
                 }
                 //Update the total response count of this chatroom
-                chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
-                chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                chatroomRO.totalResponseCount += 1
+                chatroomRO.totalAllResponseCount += 1
             }
         }
     }
