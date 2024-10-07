@@ -194,16 +194,6 @@ class ConversationReceiver @Inject constructor(
 
             val conversationRO =
                 ROConverter.convertConversation(realm, conversation, loggedInMember = userRO)
-
-            Log.d(
-                "PUI", """
-                Local db -> saveTemporaryConversation
-                conversationId: ${conversationRO?.id}
-                conversationText: ${conversationRO?.answer}
-                conversationLocalEpoch: ${conversationRO?.localSavedEpoch}
-            """.trimIndent()
-            )
-
             if (conversationRO != null) {
                 ChatDBUtil.getChatroom(realm, conversationRO.chatroomId)?.let { chatroomRO ->
                     //add the conversation to db

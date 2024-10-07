@@ -580,16 +580,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
         val conversation =
             ModelConverter.createConversation(saveConversationRequest.conversation)
 
-        Log.d(
-            "PUI", """
-            saveTemporaryConversation
-            conversationId: ${conversation.id}
-            chatroomId: ${conversation.chatroomId}
-            text: ${conversation.answer}
-            localCreatedEpoch: ${conversation.localCreatedEpoch}
-        """.trimIndent()
-        )
-
         conversationDB.saveTemporaryConversation(conversation)
     }
 
