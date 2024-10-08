@@ -1,7 +1,6 @@
 package com.likeminds.chatinternalsdk.conversation
 
 import android.os.Build
-import android.util.Log
 import com.likeminds.chatinternalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.ChatDBUtil

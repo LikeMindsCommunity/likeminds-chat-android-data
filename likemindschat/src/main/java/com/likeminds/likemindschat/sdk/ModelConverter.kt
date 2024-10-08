@@ -1154,7 +1154,9 @@ object ModelConverter {
             convertMemberRights(_memberStateResponse_.memberRights),
             member.updatedAt ?: 0L,
             convertSDKClientInfo(member.sdkClientInfo),
-            member.roles.map { it.getUserRole() }
+            member.roles.map { role ->
+                role.getUserRole()
+            }
         )
     }
 

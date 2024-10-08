@@ -1,6 +1,5 @@
 package com.likeminds.likemindschat.user
 
-import android.util.Log
 import com.likeminds.chatinternalsdk.ChatTokenManager
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
@@ -66,8 +65,6 @@ class UserClient @Inject constructor() : BaseClient() {
             .apiKey(initiateUserRequest.apiKey)
             .userName(initiateUserRequest.userName)
             .isGuest(initiateUserRequest.isGuest)
-            .tokenExpiryBeta(400)
-            .rtmTokenExpiryBeta(800)
             .build()
 
         // calls api and processes the response accordingly
