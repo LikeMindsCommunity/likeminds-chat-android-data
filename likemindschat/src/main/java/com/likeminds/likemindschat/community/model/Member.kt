@@ -1,6 +1,7 @@
 package com.likeminds.likemindschat.community.model
 
 import com.likeminds.likemindschat.user.model.SDKClientInfo
+import com.likeminds.likemindschat.user.model.UserRole
 
 class Member private constructor(
     val id: String,
@@ -24,7 +25,8 @@ class Member private constructor(
     val hasProfileImage: Boolean?,
     val updatedAt: Long?,
     val sdkClientInfo: SDKClientInfo?,
-    val uuid: String
+    val uuid: String,
+    val roles: List<UserRole>
 ) {
 
     class Builder {
@@ -51,6 +53,7 @@ class Member private constructor(
         private var updatedAt: Long? = null
         private var sdkClientInfo: SDKClientInfo? = null
         private var uuid: String = ""
+        private var roles: List<UserRole> = emptyList()
 
         fun id(id: String) = apply { this.id = id }
         fun userUniqueId(userUniqueId: String) = apply { this.userUniqueId = userUniqueId }
@@ -87,6 +90,7 @@ class Member private constructor(
             apply { this.sdkClientInfo = sdkClientInfo }
 
         fun uuid(uuid: String) = apply { this.uuid = uuid }
+        fun roles(roles: List<UserRole>) = apply { this.roles = roles }
 
         fun build() = Member(
             id,
@@ -110,7 +114,8 @@ class Member private constructor(
             hasProfileImage,
             updatedAt,
             sdkClientInfo,
-            uuid
+            uuid,
+            roles
         )
     }
 
@@ -137,5 +142,6 @@ class Member private constructor(
             .updatedAt(updatedAt)
             .sdkClientInfo(sdkClientInfo)
             .uuid(uuid)
+            .roles(roles)
     }
 }
