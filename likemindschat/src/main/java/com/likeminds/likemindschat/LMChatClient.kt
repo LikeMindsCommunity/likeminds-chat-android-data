@@ -384,11 +384,6 @@ class LMChatClient private constructor() {
         return notificationClient.getUnreadConversationNotification()
     }
 
-    // Exposed function to upload a conversation media
-    suspend fun putMultimedia(putMultimediaRequest: PutMultimediaRequest): LMResponse<PutMultimediaResponse> {
-        return conversationClient.putMultimedia(putMultimediaRequest)
-    }
-
     // Exposed function to set last seen to true and saves draft response
     fun updateLastSeenAndDraft(updateLastSeenAndDraftRequest: UpdateLastSeenAndDraftRequest) {
         chatroomClient.updateLastSeenAndDraft(updateLastSeenAndDraftRequest)

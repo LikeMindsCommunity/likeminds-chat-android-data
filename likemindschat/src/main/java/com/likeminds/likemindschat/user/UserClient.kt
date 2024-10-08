@@ -1,6 +1,5 @@
 package com.likeminds.likemindschat.user
 
-import android.util.Log
 import com.likeminds.chatinternalsdk.ChatTokenManager
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter

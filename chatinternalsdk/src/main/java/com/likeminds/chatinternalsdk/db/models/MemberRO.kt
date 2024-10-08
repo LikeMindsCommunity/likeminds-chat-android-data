@@ -1,5 +1,6 @@
 package com.likeminds.chatinternalsdk.db.models
 
+import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
@@ -18,7 +19,8 @@ open class MemberRO(
     var isGuest: Boolean = false,
     var userUniqueId: String = "",
     var uuid: String = "",
-    var sdkClientInfoRO: SDKClientInfoRO? = null
+    var sdkClientInfoRO: SDKClientInfoRO? = null,
+    var roles: RealmList<String> = RealmList()
 ) : RealmObject() {
 
     private constructor(builder: Builder) : this(
@@ -35,7 +37,8 @@ open class MemberRO(
         builder.isGuest,
         builder.userUniqueId,
         builder.uuid,
-        builder.sdkClientInfoRO
+        builder.sdkClientInfoRO,
+        builder.roles
     )
 
     companion object {
@@ -61,6 +64,7 @@ open class MemberRO(
         var isGuest: Boolean = false
         var userUniqueId: String = ""
         var sdkClientInfoRO: SDKClientInfoRO? = null
+        var roles: RealmList<String> = RealmList()
 
         fun build() = MemberRO(this)
     }
@@ -77,6 +81,7 @@ open class MemberRO(
             isGuest = this@MemberRO.isGuest
             userUniqueId = this@MemberRO.userUniqueId
             sdkClientInfoRO = this@MemberRO.sdkClientInfoRO
+            roles = this@MemberRO.roles
         }
     }
 }
