@@ -33,6 +33,7 @@ import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
 import com.likeminds.likemindschat.util.ResponseUtils
+import com.likeminds.likemindschat.user.util.UserRoleUtil.getUserRole
 import com.likeminds.likemindschat.widget.model.Widget
 import org.json.JSONObject
 
@@ -77,19 +78,22 @@ object ModelConverter {
     private fun convertUser(
         _user_: _User_
     ): User {
-        return User(
-            _user_.id,
-            _user_.imageUrl,
-            _user_.isGuest,
-            _user_.name,
-            _user_.organisationName,
-            convertSDKClientInfo(_user_.sdkClientInfo),
-            _user_.isDeleted,
-            _user_.customTitle,
-            _user_.updatedAt,
-            _user_.userUniqueId,
-            _user_.uuid
-        )
+        return User.Builder()
+            .id(_user_.id)
+            .imageUrl(_user_.imageUrl)
+            .isGuest(_user_.isGuest)
+            .name(_user_.name)
+            .organisationName(_user_.organisationName)
+            .sdkClientInfo(convertSDKClientInfo(_user_.sdkClientInfo))
+            .isDeleted(_user_.isDeleted)
+            .customTitle(_user_.customTitle)
+            .updatedAt(_user_.updatedAt)
+            .userUniqueId(_user_.userUniqueId)
+            .uuid(_user_.uuid)
+            .roles(_user_.roles.map { role ->
+                role.getUserRole()
+            })
+            .build()
     }
 
     // converts internal SDKClientInfo model to client model
@@ -604,6 +608,9 @@ object ModelConverter {
             .updatedAt(_member_.updatedAt)
             .sdkClientInfo(convertSDKClientInfo(_member_.sdkClientInfo))
             .uuid(_member_.uuid)
+            .roles(_member_.roles.map { role ->
+                role.getUserRole()
+            })
             .build()
     }
 
@@ -1059,20 +1066,6 @@ object ModelConverter {
         )
     }
 
-    //converts API PutMultimediaResponse model to LM model
-    fun convertPutMultimediaAPIResponse(apiResponse: APIResponse<_PutMultimediaResponse_>): LMResponse<PutMultimediaResponse> {
-        return LMResponse(
-            apiResponse.success,
-            apiResponse.errorMessage,
-            convertPutMultimediaResponse(apiResponse.data)
-        )
-    }
-
-    //converts internal PutMultimediaResponse model to client model
-    private fun convertPutMultimediaResponse(data: _PutMultimediaResponse_?): PutMultimediaResponse {
-        return PutMultimediaResponse(data?.conversation?.let { convertConversation(it) })
-    }
-
     // converts api MemberStateResponse model to LM MemberStateResponse model
     fun convertMemberStateResponse(
         apiResponse: APIResponse<_MemberStateResponse_>
@@ -1102,7 +1095,10 @@ object ModelConverter {
             convertManagerRights(_memberStateResponse_.managerRights),
             convertMemberRights(_memberStateResponse_.memberRights),
             member.updatedAt ?: 0L,
-            convertSDKClientInfo(member.sdkClientInfo)
+            convertSDKClientInfo(member.sdkClientInfo),
+            member.roles.map { role ->
+                role.getUserRole()
+            }
         )
     }
 
@@ -1675,7 +1671,7 @@ object ModelConverter {
     }
 
     // creates internal Attachment model list from client model list
-    private fun createAttachments(attachments: List<Attachment>?): List<_Attachment_>? {
+    fun createAttachments(attachments: List<Attachment>?): List<_Attachment_>? {
         if (attachments.isNullOrEmpty()) return null
         return attachments.map {
             createAttachment(it)
@@ -1820,19 +1816,22 @@ object ModelConverter {
     // converts UserRO model to client model
     private fun convertUserRO(userRO: UserRO?): User? {
         if (userRO == null) return null
-        return User(
-            userRO.id,
-            userRO.imageUrl,
-            userRO.isGuest,
-            userRO.name,
-            userRO.organizationName,
-            convertSDKClientInfoRO(userRO.sdkClientInfoRO),
-            userRO.isDeleted,
-            userRO.customTitle,
-            userRO.updatedAt,
-            userRO.userUniqueId,
-            userRO.uuid
-        )
+        return User.Builder()
+            .id(userRO.id)
+            .imageUrl(userRO.imageUrl)
+            .isGuest(userRO.isGuest)
+            .name(userRO.name)
+            .organisationName(userRO.organizationName)
+            .sdkClientInfo(convertSDKClientInfoRO(userRO.sdkClientInfoRO))
+            .isDeleted(userRO.isDeleted)
+            .customTitle(userRO.customTitle)
+            .updatedAt(userRO.updatedAt)
+            .userUniqueId(userRO.userUniqueId)
+            .uuid(userRO.uuid)
+            .roles(userRO.roles.map { role ->
+                role.getUserRole()
+            })
+            .build()
     }
 
     // converts SDKClientInfoRO model to client model
@@ -1990,6 +1989,7 @@ object ModelConverter {
             .deletedByMember(convertMemberRO(conversationRO.deletedByMember))
             .widgetId(conversationRO.widgetId)
             .widget(convertWidgetRO(conversationRO.widgetRO))
+            .localCreatedEpoch(conversationRO.localSavedEpoch)
             .build()
     }
 
@@ -2010,6 +2010,9 @@ object ModelConverter {
             .isGuest(memberRO.isGuest)
             .sdkClientInfo(convertSDKClientInfoRO(memberRO.sdkClientInfoRO))
             .uuid(memberRO.uuid)
+            .roles(memberRO.roles.map { role ->
+                role.getUserRole()
+            })
             .build()
     }
 

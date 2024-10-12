@@ -39,10 +39,4 @@ class ConversationApiImpl @Inject constructor(
     ): NetworkResponse<APIResponse<Nothing>> {
         return conversationReceiver.deleteReaction(request)
     }
-
-    override suspend fun putMultimedia(
-        request: _PutMultimediaRequest_
-    ): NetworkResponse<APIResponse<_PutMultimediaResponse_>> {
-        return conversationReceiver.putMultimedia(request)
-    }
 }

@@ -62,12 +62,16 @@ class ConversationClient @Inject constructor() : BaseClient() {
             .shareLink(postConversationRequest.shareLink)
             .ogTags(ModelConverter.createLinkOGTags(postConversationRequest.ogTags))
             .repliedConversationId(postConversationRequest.repliedConversationId)
-            .attachmentCount(postConversationRequest.attachmentCount)
             .temporaryId(postConversationRequest.temporaryId)
             .repliedChatroomId(postConversationRequest.repliedChatroomId)
+            .attachments(ModelConverter.createAttachments(postConversationRequest.attachments))
 
         if (postConversationRequest.metadata != null) {
             requestBuilder.metadata(JsonParser.parseString(postConversationRequest.metadata.toString()).asJsonObject)
+        }
+
+        if (postConversationRequest.triggerBot) {
+            requestBuilder.triggerBot(true)
         }
 
         val request = requestBuilder.build()
@@ -97,7 +101,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("chatroomId")
         }
         if (postConversationRequest.text.isEmpty()
-            && (postConversationRequest.attachmentCount ?: 0) <= 0
+            && (postConversationRequest.attachments.isNullOrEmpty())
             && postConversationRequest.metadata == null
         ) {
             RequestUtils.throwException("text or attachments or metadata")
@@ -913,60 +917,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
     private fun validateDeleteReactionRequest(deleteReactionRequest: DeleteReactionRequest) {
         if (deleteReactionRequest.chatroomId.isNullOrEmpty() && deleteReactionRequest.conversationId.isNullOrEmpty()) {
             RequestUtils.throwException("conversationId")
-        }
-    }
-
-    /**
-     * Converts client request model to internal model and calls the api
-     * @param putMultimediaRequest - client request model to upload a conversation attachment
-     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
-     * @return LMResponse<PutMultimediaResponse> - Base LM response[PutMultimediaResponse]
-     */
-    suspend fun putMultimedia(
-        putMultimediaRequest: PutMultimediaRequest
-    ): LMResponse<PutMultimediaResponse> {
-        // validates the client request
-        RequestUtils.validate()
-        validatePutMultimediaRequest(putMultimediaRequest)
-
-        val request = _PutMultimediaRequest_.Builder()
-            .conversationId(putMultimediaRequest.conversationId)
-            .name(putMultimediaRequest.name)
-            .url(putMultimediaRequest.url)
-            .thumbnailUrl(putMultimediaRequest.thumbnailUrl)
-            .type(putMultimediaRequest.type)
-            .filesCount(putMultimediaRequest.filesCount)
-            .index(putMultimediaRequest.index)
-            .width(putMultimediaRequest.width)
-            .height(putMultimediaRequest.height)
-            .meta(ModelConverter.createAttachmentMeta(putMultimediaRequest.meta))
-            .build()
-
-        return when (val response = conversationApi.putMultimedia(request)) {
-            is NetworkResponse.Error -> {
-                LMResponse(
-                    success = response.body.success,
-                    errorMessage = response.body.errorMessage
-                )
-            }
-
-            is NetworkResponse.Success -> {
-                val body = response.body
-                ModelConverter.convertPutMultimediaAPIResponse(body)
-            }
-        }
-    }
-
-    /**
-     * validates [putMultimediaRequest]
-     * @throws IllegalArgumentException - when required properties not provided
-     */
-    private fun validatePutMultimediaRequest(putMultimediaRequest: PutMultimediaRequest) {
-        if (putMultimediaRequest.conversationId.isEmpty()) {
-            RequestUtils.throwException("conversationId")
-        }
-        if (putMultimediaRequest.url.isEmpty()) {
-            RequestUtils.throwException("url")
         }
     }
 }
