@@ -16,6 +16,7 @@ import io.realm.*
 import io.realm.rx.CollectionChange
 import javax.inject.Inject
 
+
 class ChatroomReceiver @Inject constructor(
     private val chatroomNetworkApi: ChatroomNetworkApi,
     private val sdkPreferences: SDKPreferences,

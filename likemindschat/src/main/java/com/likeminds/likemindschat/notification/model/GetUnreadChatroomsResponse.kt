@@ -2,7 +2,7 @@ package com.likeminds.likemindschat.notification.model
 
 import com.likeminds.likemindschat.conversation.model.Attachment
 
-data class GetConversationNotificationUnreadResponse(
+data class GetUnreadChatroomsResponse(
     val unreadConversation: List<ChatroomNotificationData>
 )
 
