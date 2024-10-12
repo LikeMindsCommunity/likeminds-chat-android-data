@@ -79,7 +79,7 @@ class NotificationReceiver @Inject constructor(
             .equalTo(DbKey.MUTE_STATUS, false) // filter out muted chatrooms
             .greaterThan(DbKey.UNSEEN_COUNT, 0)  // Ensure unseen count is greater than 0
             .sort(
-                "lastConversationRO.createdAt",
+                "lastConversationRO.createdEpoch",
                 Sort.DESCENDING
             ) // sort by createdAt in descending order
             .limit(UNREAD_CHATROOM_LIMIT) // limits the count of chatroom by [UNREAD_CHATROOM_LIMIT]

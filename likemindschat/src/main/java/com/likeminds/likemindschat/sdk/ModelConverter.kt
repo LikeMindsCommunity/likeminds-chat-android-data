@@ -1485,6 +1485,8 @@ object ModelConverter {
             .communityName(chatroom.communityName)
             .header(chatroom.header)
             .member(createMember(chatroom.member))
+            .muteStatus(chatroom.muteStatus)
+            .followStatus(chatroom.followStatus)
             .build()
     }
 
