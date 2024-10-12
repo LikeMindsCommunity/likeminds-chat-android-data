@@ -5,7 +5,9 @@ import com.likeminds.chatinternalsdk.conversation.model._Conversation_
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
 import com.likeminds.chatinternalsdk.db.models.ChatroomRO
+import com.likeminds.chatinternalsdk.db.models.CommunityRO
 import com.likeminds.chatinternalsdk.db.util.DbKey
+import com.likeminds.chatinternalsdk.db.util.toRealmList
 import com.likeminds.chatinternalsdk.sdk.util.SDKPreferences
 import io.realm.*
 import javax.inject.Inject
@@ -67,6 +69,18 @@ class NotificationReceiver @Inject constructor(
 
             //Update the unseen count of this chatroom
             chatroomRO.unseenCount += 1
+
+            //Add inverse relationships to communities
+            val communities = realmWrite.where(CommunityRO::class.java)
+                .equalTo(DbKey.RELATIONSHIP_NEEDED, true)
+                .findAll()
+            communities.forEach { communityRO ->
+                //Add inverse relationships for chatrooms
+                communityRO.chatrooms = ChatDBUtil.getChatrooms(
+                    realmWrite,
+                    communityRO.id
+                ).toRealmList()
+            }
         }
 
         val communityId = sdkPreferences.getCommunityId()
