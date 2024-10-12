@@ -55,12 +55,6 @@ class ConversationReceiver @Inject constructor(
         return conversationNetworkApi.deleteReaction(request)
     }
 
-    suspend fun putMultimedia(
-        request: _PutMultimediaRequest_
-    ): NetworkResponse<APIResponse<_PutMultimediaResponse_>> {
-        return conversationNetworkApi.putMultimedia(request)
-    }
-
     /**
      * Db Functions
      */
@@ -230,8 +224,8 @@ class ConversationReceiver @Inject constructor(
                     }
 
                     //Update the total response count of this chatroom
-                    chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
-                    chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                    chatroomRO.totalResponseCount += 1
+                    chatroomRO.totalAllResponseCount += 1
                 }
             }
         })
@@ -311,8 +305,8 @@ class ConversationReceiver @Inject constructor(
                     }
 
                     //Update the total response count of this chatroom
-                    chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
-                    chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                    chatroomRO.totalResponseCount += 1
+                    chatroomRO.totalAllResponseCount += 1
                 }
             }
         })
@@ -366,8 +360,8 @@ class ConversationReceiver @Inject constructor(
                     chatroomRO.updatedAt = conversationRO.createdEpoch
                 }
                 //Update the total response count of this chatroom
-                chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
-                chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+                chatroomRO.totalResponseCount += 1
+                chatroomRO.totalAllResponseCount += 1
             }
         }
     }
