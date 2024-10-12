@@ -63,4 +63,5 @@ object DbKey {
     const val TOTAL_RESPONSE_COUNT = "totalResponseCount"
     const val MUTE_STATUS = "muteStatus"
     const val UNSEEN_COUNT = "unseenCount"
+    const val LAST_CONVERSATION_CREATED_EPOCH = "lastConversationRO.createdEpoch"
 }

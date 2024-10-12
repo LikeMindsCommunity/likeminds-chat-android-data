@@ -56,11 +56,11 @@ class NotificationClient @Inject constructor() : BaseClient() {
      */
     private fun validateGetUnreadChatroomsRequest(getUnreadChatroomsRequest: GetUnreadChatroomsRequest) {
         if (getUnreadChatroomsRequest.chatroomLastConversation.id.isNullOrEmpty()) {
-            RequestUtils.throwException("chatroomLastConversation")
+            RequestUtils.throwException("chatroomLastConversation.id")
         }
 
         if (getUnreadChatroomsRequest.chatroom.id.isEmpty()) {
-            RequestUtils.throwException("chatroom")
+            RequestUtils.throwException("chatroom.id")
         }
     }
 }

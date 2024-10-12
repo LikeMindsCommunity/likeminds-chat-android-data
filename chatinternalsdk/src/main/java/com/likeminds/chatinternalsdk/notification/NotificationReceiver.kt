@@ -7,6 +7,7 @@ import com.likeminds.chatinternalsdk.db.ROConverter
 import com.likeminds.chatinternalsdk.db.models.ChatroomRO
 import com.likeminds.chatinternalsdk.db.models.CommunityRO
 import com.likeminds.chatinternalsdk.db.util.DbKey
+import com.likeminds.chatinternalsdk.db.util.DbKey.LAST_CONVERSATION_CREATED_EPOCH
 import com.likeminds.chatinternalsdk.db.util.toRealmList
 import com.likeminds.chatinternalsdk.sdk.util.SDKPreferences
 import io.realm.*
@@ -93,7 +94,7 @@ class NotificationReceiver @Inject constructor(
             .equalTo(DbKey.MUTE_STATUS, false) // filter out muted chatrooms
             .greaterThan(DbKey.UNSEEN_COUNT, 0)  // Ensure unseen count is greater than 0
             .sort(
-                "lastConversationRO.createdEpoch",
+                LAST_CONVERSATION_CREATED_EPOCH,
                 Sort.DESCENDING
             ) // sort by createdAt in descending order
             .limit(UNREAD_CHATROOM_LIMIT) // limits the count of chatroom by [UNREAD_CHATROOM_LIMIT]
