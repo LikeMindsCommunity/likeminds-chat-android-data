@@ -53,5 +53,5 @@ dependencies {
 
     //chucker
 //    debugImplementation deps.chucker.main
-//    releaseImplementation deps.chucker.no_op
+//    releaseImplementation deps.chucker.main
 }

@@ -22,7 +22,6 @@ import javax.inject.Singleton
         HelperModule::class,
         SearchModule::class,
         ConversationModule::class,
-        NotificationModule::class,
         DMModule::class
     ]
 )
