@@ -28,7 +28,7 @@ data class _User_(
     @SerializedName("is_owner")
     val isOwner: Boolean?,
     @SerializedName("roles")
-    val roles: List<String>
+    val roles: List<String>?
 )
 
 data class _SDKClientInfo_(

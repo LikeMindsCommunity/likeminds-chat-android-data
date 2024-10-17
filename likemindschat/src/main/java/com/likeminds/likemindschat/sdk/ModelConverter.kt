@@ -90,9 +90,9 @@ object ModelConverter {
             .updatedAt(_user_.updatedAt)
             .userUniqueId(_user_.userUniqueId)
             .uuid(_user_.uuid)
-            .roles(_user_.roles.map { role ->
+            .roles(_user_.roles?.map { role ->
                 role.getUserRole()
-            })
+            } ?:  emptyList())
             .build()
     }
 
