@@ -32,8 +32,8 @@ import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsResponse
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
-import com.likeminds.likemindschat.util.ResponseUtils
 import com.likeminds.likemindschat.user.util.UserRoleUtil.getUserRole
+import com.likeminds.likemindschat.util.ResponseUtils
 import com.likeminds.likemindschat.widget.model.Widget
 import org.json.JSONObject
 
@@ -608,9 +608,9 @@ object ModelConverter {
             .updatedAt(_member_.updatedAt)
             .sdkClientInfo(convertSDKClientInfo(_member_.sdkClientInfo))
             .uuid(_member_.uuid)
-            .roles(_member_.roles.map { role ->
+            .roles(_member_.roles?.map { role ->
                 role.getUserRole()
-            })
+            } ?: emptyList())
             .build()
     }
 
@@ -1096,9 +1096,9 @@ object ModelConverter {
             convertMemberRights(_memberStateResponse_.memberRights),
             member.updatedAt ?: 0L,
             convertSDKClientInfo(member.sdkClientInfo),
-            member.roles.map { role ->
+            member.roles?.map { role ->
                 role.getUserRole()
-            }
+            } ?: emptyList()
         )
     }
 
