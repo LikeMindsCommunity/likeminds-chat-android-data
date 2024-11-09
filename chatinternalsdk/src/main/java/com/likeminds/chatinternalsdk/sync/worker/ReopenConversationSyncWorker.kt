@@ -139,7 +139,13 @@ class ReopenConversationSyncWorker(
                 * The response contains no more data.
                 * Stores loaded conversations to DB.
                 * */
-                SyncUtil.saveConversationResponses(chatroomId, communityId, loggedInUUID, dataList)
+                SyncUtil.saveConversationResponses(
+                    chatroomId,
+                    communityId,
+                    loggedInUUID,
+                    dataList,
+                    isFromLive
+                )
                 ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
                 Result.success()
             }

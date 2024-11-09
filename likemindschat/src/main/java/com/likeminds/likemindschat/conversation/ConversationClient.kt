@@ -272,8 +272,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                             SyncSDK.startReopenSyncForChatroom(
                                 context,
                                 chatroomId,
-                                latestConversation,
-                                true
+                                isFromLive = true
                             )
                         }
                     }
@@ -306,8 +305,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                             SyncSDK.startReopenSyncForChatroom(
                                 context,
                                 chatroomId,
-                                latestConversation,
-                                true
+                                isFromLive = true
                             )
                         }
                     }
@@ -340,8 +338,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                             SyncSDK.startReopenSyncForChatroom(
                                 context,
                                 chatroomId,
-                                latestConversation,
-                                true
+                                isFromLive = true
                             )
                         }
                     }
@@ -363,8 +360,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
                             SyncSDK.startReopenSyncForChatroom(
                                 context,
                                 chatroomId,
-                                latestConversation,
-                                true
+                                isFromLive = true
                             )
                         }
                     }
