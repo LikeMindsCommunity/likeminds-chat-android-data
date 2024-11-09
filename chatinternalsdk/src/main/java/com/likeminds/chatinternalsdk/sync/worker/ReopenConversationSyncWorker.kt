@@ -33,6 +33,7 @@ class ReopenConversationSyncWorker(
     private val api = chatSDK.getConversationSyncApi()
 
     val chatroomId = workerParameters.inputData.getString(INPUT_DATA_CHATROOM_ID) ?: ""
+    val isFromLive = workerParameters.inputData.getBoolean(INPUT_DATA_IS_FROM_LIVE, false)
     val conversationId = workerParameters.inputData.getString(INPUT_DATA_CONVERSATION_ID)
 
     private var maxTimestamp = System.currentTimeMillis()
@@ -44,6 +45,7 @@ class ReopenConversationSyncWorker(
 
         const val NAME = "Reopen Conversation Sync Worker"
         const val INPUT_DATA_CHATROOM_ID = "chatroom_id"
+        const val INPUT_DATA_IS_FROM_LIVE = "is_from_live"
         const val INPUT_DATA_CONVERSATION_ID = "conversation_id"
     }
 
@@ -77,7 +79,13 @@ class ReopenConversationSyncWorker(
             } else {
                 val chatroomRO =
                     ChatDBUtil.getChatroom(realm, chatroomId) ?: return Result.failure()
-                val lastSyncedAt = chatroomRO.lastSeenConversation?.lastUpdatedAt ?: 0
+
+                val lastSyncedAt =
+                    if (chatroomRO.conversationSyncMinTimestamp == null && chatroomRO.conversations.isNotEmpty()) {
+                        chatroomRO.lastSeenConversation?.lastUpdatedAt ?: 0
+                    } else {
+                        chatroomRO.conversationSyncMinTimestamp ?: 0
+                    }
                 lastSyncedAt
             }
         }
@@ -85,6 +93,14 @@ class ReopenConversationSyncWorker(
         queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
         queries[SyncUtil.MIN_TIMESTAMP_KEY] = minTimeStamp
         var data: _SyncConversationResponse_? = null
+
+        ChatDBUtil.write(realm) { realmWrite ->
+            // get the chatroom from DB
+            val chatroomRO = ChatDBUtil.getChatroom(realmWrite, chatroomId)
+
+            chatroomRO?.conversationSyncMinTimestamp = System.currentTimeMillis()
+        }
+
         when (val response = api.syncConversations(queries)) {
             is NetworkResponse.Error -> {
                 // The api call failed with some error, retry again or return failure according to the condition.
@@ -127,13 +143,24 @@ class ReopenConversationSyncWorker(
                 ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
                 Result.success()
             }
+
             /**
              *to handle edge-case when there is no new conversation
              * but we get same conversation from api response
              */
             data.conversations.size == 1 -> {
+                //TODO: check this case
                 val conversation = data.conversations.first()
-                if (minTimeStamp == conversation.lastUpdated) {
+                Log.d(
+                    "PUI",
+                    "getConversations: $minTimeStamp:::${conversation.lastUpdated}:::$conversation"
+                )
+
+                val conversationCreatorUUID = conversation.member?.sdkClientInfo?.uuid ?: ""
+
+                if (isFromLive && conversationCreatorUUID == userPreferences.getClientUUID()) {
+                    Result.success()
+                } else if (minTimeStamp == conversation.lastUpdated) {
                     Result.success()
                 } else {
                     dataList.add(data)

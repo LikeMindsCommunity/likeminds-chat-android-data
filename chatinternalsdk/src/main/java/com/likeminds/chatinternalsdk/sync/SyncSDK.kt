@@ -204,10 +204,17 @@ object SyncSDK {
     fun startReopenSyncForChatroom(
         context: Context,
         chatroomId: String,
-        conversationId: String? = null
+        conversationId: String? = null,
+        isFromLive: Boolean = false
     ): MediatorLiveData<WorkInfo.State> {
         val work = WorkManager.getInstance(context)
-            .beginWith(reopenSyncConversation(chatroomId, conversationId))
+            .beginWith(
+                reopenSyncConversation(
+                    chatroomId,
+                    isFromLive,
+                    conversationId
+                )
+            )
             .then(syncDatabase(SYNC_CHATROOM, chatroomId = chatroomId))
         work.enqueue()
         //MediatorLiveData is a subclass of live data, it will observe the list of worker's live data
@@ -281,12 +288,14 @@ object SyncSDK {
     //return reopen conversation sync worker
     private fun reopenSyncConversation(
         chatroomId: String,
-        conversationId: String?
+        isFromLive: Boolean,
+        conversationId: String?,
     ): OneTimeWorkRequest {
         return OneTimeWorkRequestBuilder<ReopenConversationSyncWorker>()
             .setInputData(
                 workDataOf(
                     ReopenConversationSyncWorker.INPUT_DATA_CHATROOM_ID to chatroomId,
+                    ReopenConversationSyncWorker.INPUT_DATA_IS_FROM_LIVE to isFromLive,
                     ReopenConversationSyncWorker.INPUT_DATA_CONVERSATION_ID to conversationId
                 )
             )

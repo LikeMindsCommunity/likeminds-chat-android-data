@@ -36,8 +36,9 @@ class LiveConversationSyncWorker(
     private var page = 1
     private var dataList = ArrayList<_SyncConversationResponse_>()
 
-    val chatroomId = workerParameters.inputData.getString(INPUT_DATA_CHATROOM_ID) ?: ""
-    val conversationId = workerParameters.inputData.getString(INPUT_DATA_CONVERSATION_ID) ?: ""
+    private val chatroomId = workerParameters.inputData.getString(INPUT_DATA_CHATROOM_ID) ?: ""
+    private val conversationId =
+        workerParameters.inputData.getString(INPUT_DATA_CONVERSATION_ID) ?: ""
 
     companion object {
         const val NAME = "Live Conversation Sync Worker"
@@ -46,7 +47,7 @@ class LiveConversationSyncWorker(
     }
 
     override fun doWork(): Result {
-        return measureExecution("${ReopenConversationSyncWorker.NAME}, params -> chatroom_id: $chatroomId, conversation_id: $conversationId") {
+        return measureExecution("$NAME, params -> chatroom_id: $chatroomId, conversation_id: $conversationId") {
             val realm = Realm.getDefaultInstance()
             val result = runBlocking {
                 getConversations()
