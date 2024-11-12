@@ -1,6 +1,7 @@
 package com.likeminds.chatinternalsdk.conversation
 
 import android.os.Build
+import android.util.Log
 import com.likeminds.chatinternalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
@@ -194,6 +195,7 @@ class ConversationReceiver @Inject constructor(
 
     fun saveTemporaryConversation(conversation: _Conversation_) {
         ChatDBUtil.writeAsync({ realm ->
+            val startTime = System.currentTimeMillis()
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
 
@@ -211,7 +213,7 @@ class ConversationReceiver @Inject constructor(
                     if (conversationRO.createdEpoch > (chatroomRO.lastConversationRO?.createdEpoch
                             ?: 0)
                     ) {
-                        val lastConversation = chatroomRO.conversations.last(null)
+                        val lastConversation = chatroomRO.conversations.last()
                         val lastConversationRO =
                             ROConverter.convertConversationToLastConversation(lastConversation)
                                 ?: return@writeAsync
@@ -220,7 +222,7 @@ class ConversationReceiver @Inject constructor(
                     if (conversationRO.createdEpoch > (chatroomRO.lastSeenConversation?.createdEpoch
                             ?: 0L)
                     ) {
-                        chatroomRO.lastSeenConversation = chatroomRO.conversations.last(null)
+                        chatroomRO.lastSeenConversation = chatroomRO.conversations.last()
                     }
                     //Update the chatroom timestamp for sorting of chatrooms
                     if ((conversationRO.state == STATE_NORMAL || conversationRO.state == STATE_FOLLOWED || conversationRO.state == STATE_POLL) && conversationRO.createdEpoch > (chatroomRO.updatedAt
@@ -232,6 +234,12 @@ class ConversationReceiver @Inject constructor(
                     //Update the total response count of this chatroom
                     chatroomRO.totalResponseCount = chatroomRO.totalResponseCount + 1
                     chatroomRO.totalAllResponseCount = chatroomRO.totalAllResponseCount + 1
+
+                    val endTime = System.currentTimeMillis()
+                    Log.d("PUI","""
+                        Data Layer Save Temporary Conversation Called
+                        time taken = ${endTime - startTime}
+                    """.trimIndent())
                 }
             }
         })
@@ -268,6 +276,29 @@ class ConversationReceiver @Inject constructor(
                     ?: return@writeAsync
 
             ChatDBUtil.getChatroom(realm, conversation.chatroomId)?.let { chatroomRO ->
+                Log.d(
+                    "PUI", """
+                    -------------------
+                    Data Layer Save Posted Conversation Called
+                    
+                    Request Details
+                    isFromNotification: $isFromNotification
+                    conversation widget id: ${conversation.widgetId}
+                    
+                    Chatroom RO Details
+                    chatroom id: ${chatroomRO.id}
+                    chatroom name: ${chatroomRO.header}
+                    chatroom existing conversation count: ${chatroomRO.conversations.count()}
+                    
+                    Conversation RO Details
+                    conversation id: ${conversationRO.id}
+                    conversation text: ${conversationRO.answer}
+                    conversation temp Id: ${conversationRO.temporaryId}
+                    conversation widget id: ${conversationRO.widgetId}
+                    conversation widget: ${conversationRO.widgetRO}
+                    -------------------
+                """.trimIndent()
+                )
                 //add the conversation to db
                 if (chatroomRO.conversations.isEmpty()) {
                     chatroomRO.conversations.add(conversationRO)
@@ -295,9 +326,10 @@ class ConversationReceiver @Inject constructor(
                 if (conversationRO.createdEpoch > (chatroomRO.lastSeenConversation?.createdEpoch
                         ?: 0L)
                 ) {
-                    chatroomRO.lastSeenConversation = chatroomRO.conversations.last(null)
-                    chatroomRO.lastSeenConversationId = chatroomRO.conversations.last(null)?.id
+                    chatroomRO.lastSeenConversation = chatroomRO.conversations.last()
+                    chatroomRO.lastSeenConversationId = chatroomRO.conversations.last()?.id
                 }
+
                 if (isFromNotification) {
                     //Make the chatroom followed, if it is not already followed
                     if (chatroomRO.followStatus != true) {

@@ -48,4 +48,8 @@ open class WidgetRO(
             updatedAt = this@WidgetRO.updatedAt
         }
     }
+
+    override fun toString(): String {
+        return "WidgetRO(id='$id', parentEntityId='$parentEntityId', parentEntityType='$parentEntityType', metadata=$metadata, createdAt=$createdAt, updatedAt=$updatedAt)"
+    }
 }
