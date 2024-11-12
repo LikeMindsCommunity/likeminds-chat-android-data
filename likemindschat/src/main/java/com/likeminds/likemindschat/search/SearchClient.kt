@@ -85,6 +85,8 @@ class SearchClient @Inject constructor() : BaseClient() {
         val request = _SearchConversationRequest_.Builder()
             .search(searchConversationRequest.search)
             .followStatus(searchConversationRequest.followStatus)
+            .chatroomId(searchConversationRequest.chatroomId)
+            .page(searchConversationRequest.page)
             .page(searchConversationRequest.page)
             .pageSize(searchConversationRequest.pageSize)
             .build()

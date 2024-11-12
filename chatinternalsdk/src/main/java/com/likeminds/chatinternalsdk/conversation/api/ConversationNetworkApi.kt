@@ -32,9 +32,4 @@ interface ConversationNetworkApi {
     suspend fun deleteReaction(
         @Body request: _DeleteReactionRequest_
     ): NetworkResponse<APIResponse<Nothing>>
-
-    @POST("helper/media/upload")
-    suspend fun putMultimedia(
-        @Body request: _PutMultimediaRequest_
-    ): NetworkResponse<APIResponse<_PutMultimediaResponse_>>
 }

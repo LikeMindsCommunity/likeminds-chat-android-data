@@ -10,8 +10,6 @@ import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.homefeed.model.*
 import com.likeminds.chatinternalsdk.moderation.model._GetReportTagsResponse_
 import com.likeminds.chatinternalsdk.moderation.model._ReportTag_
-import com.likeminds.chatinternalsdk.notification.model._ChatroomNotificationData_
-import com.likeminds.chatinternalsdk.notification.model._GetConversationNotificationUnreadResponse_
 import com.likeminds.chatinternalsdk.poll.model.*
 import com.likeminds.chatinternalsdk.sdk.model._InitiateUserResponse_
 import com.likeminds.chatinternalsdk.sdk.model._ValidateUserResponse_
@@ -30,10 +28,12 @@ import com.likeminds.likemindschat.homefeed.model.*
 import com.likeminds.likemindschat.moderation.model.GetReportTagsResponse
 import com.likeminds.likemindschat.moderation.model.ReportTag
 import com.likeminds.likemindschat.notification.model.ChatroomNotificationData
-import com.likeminds.likemindschat.notification.model.GetConversationNotificationUnreadResponse
+import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsResponse
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
+import com.likeminds.likemindschat.user.util.UserRoleUtil.getUserRole
+import com.likeminds.likemindschat.util.ResponseUtils
 import com.likeminds.likemindschat.widget.model.Widget
 import org.json.JSONObject
 
@@ -78,19 +78,22 @@ object ModelConverter {
     private fun convertUser(
         _user_: _User_
     ): User {
-        return User(
-            _user_.id,
-            _user_.imageUrl,
-            _user_.isGuest,
-            _user_.name,
-            _user_.organisationName,
-            convertSDKClientInfo(_user_.sdkClientInfo),
-            _user_.isDeleted,
-            _user_.customTitle,
-            _user_.updatedAt,
-            _user_.userUniqueId,
-            _user_.uuid
-        )
+        return User.Builder()
+            .id(_user_.id)
+            .imageUrl(_user_.imageUrl)
+            .isGuest(_user_.isGuest)
+            .name(_user_.name)
+            .organisationName(_user_.organisationName)
+            .sdkClientInfo(convertSDKClientInfo(_user_.sdkClientInfo))
+            .isDeleted(_user_.isDeleted)
+            .customTitle(_user_.customTitle)
+            .updatedAt(_user_.updatedAt)
+            .userUniqueId(_user_.userUniqueId)
+            .uuid(_user_.uuid)
+            .roles(_user_.roles?.map { role ->
+                role.getUserRole()
+            } ?:  emptyList())
+            .build()
     }
 
     // converts internal SDKClientInfo model to client model
@@ -126,7 +129,7 @@ object ModelConverter {
         _communitySettings_: List<_CommunitySetting_>?
     ): List<CommunitySetting>? {
         if (_communitySettings_ == null) {
-            return  null
+            return null
         }
         return _communitySettings_.map {
             convertCommunitySetting(it)
@@ -566,63 +569,6 @@ object ModelConverter {
         )
     }
 
-    // converts api GetConversationNotificationUnreadResponse model to LM GetConversationNotificationUnreadResponse model
-    fun convertGetConversationNotificationUnreadResponse(
-        apiResponse: APIResponse<_GetConversationNotificationUnreadResponse_>
-    ): LMResponse<GetConversationNotificationUnreadResponse> {
-        return LMResponse(
-            apiResponse.success,
-            apiResponse.errorMessage,
-            convertGetConversationNotificationUnreadResponse(apiResponse.data)
-        )
-    }
-
-    // converts internal GetConversationNotificationUnreadResponse model to client model
-    private fun convertGetConversationNotificationUnreadResponse(
-        _getConversationNotificationUnreadResponse_: _GetConversationNotificationUnreadResponse_?
-    ): GetConversationNotificationUnreadResponse? {
-        if (_getConversationNotificationUnreadResponse_ == null) {
-            return null
-        }
-        return GetConversationNotificationUnreadResponse(
-            convertChatroomNotificationDataList(_getConversationNotificationUnreadResponse_.unreadConversation)
-        )
-    }
-
-    // converts internal ChatroomNotificationData model list to client model list
-    private fun convertChatroomNotificationDataList(
-        _unreadConversation_: List<_ChatroomNotificationData_>
-    ): List<ChatroomNotificationData> {
-        return _unreadConversation_.map {
-            convertChatroomNotificationData(it)
-        }
-    }
-
-    // converts internal ChatroomNotificationData model to client model
-    private fun convertChatroomNotificationData(
-        _chatroomNotificationData_: _ChatroomNotificationData_
-    ): ChatroomNotificationData {
-        return ChatroomNotificationData(
-            _chatroomNotificationData_.communityName,
-            _chatroomNotificationData_.chatroomName,
-            _chatroomNotificationData_.chatroomTitle,
-            _chatroomNotificationData_.chatroomUserName,
-            _chatroomNotificationData_.chatroomUserImage,
-            _chatroomNotificationData_.chatroomId,
-            _chatroomNotificationData_.communityImage,
-            _chatroomNotificationData_.communityId,
-            _chatroomNotificationData_.route,
-            _chatroomNotificationData_.chatroomUnreadConversationCount,
-            _chatroomNotificationData_.chatroomLastConversation,
-            _chatroomNotificationData_.chatroomLastConversationUserName,
-            _chatroomNotificationData_.chatroomLastConversationUserImage,
-            _chatroomNotificationData_.routeChild,
-            _chatroomNotificationData_.chatroomLastConversationUserTimestamp,
-            convertAttachments(_chatroomNotificationData_.attachments),
-            _chatroomNotificationData_.sortKey
-        )
-    }
-
     // converts internal Member model list to client model list
     private fun convertMembers(
         _members_: List<_Member_>
@@ -662,6 +608,9 @@ object ModelConverter {
             .updatedAt(_member_.updatedAt)
             .sdkClientInfo(convertSDKClientInfo(_member_.sdkClientInfo))
             .uuid(_member_.uuid)
+            .roles(_member_.roles?.map { role ->
+                role.getUserRole()
+            } ?: emptyList())
             .build()
     }
 
@@ -1117,20 +1066,6 @@ object ModelConverter {
         )
     }
 
-    //converts API PutMultimediaResponse model to LM model
-    fun convertPutMultimediaAPIResponse(apiResponse: APIResponse<_PutMultimediaResponse_>): LMResponse<PutMultimediaResponse> {
-        return LMResponse(
-            apiResponse.success,
-            apiResponse.errorMessage,
-            convertPutMultimediaResponse(apiResponse.data)
-        )
-    }
-
-    //converts internal PutMultimediaResponse model to client model
-    private fun convertPutMultimediaResponse(data: _PutMultimediaResponse_?): PutMultimediaResponse {
-        return PutMultimediaResponse(data?.conversation?.let { convertConversation(it) })
-    }
-
     // converts api MemberStateResponse model to LM MemberStateResponse model
     fun convertMemberStateResponse(
         apiResponse: APIResponse<_MemberStateResponse_>
@@ -1160,7 +1095,10 @@ object ModelConverter {
             convertManagerRights(_memberStateResponse_.managerRights),
             convertMemberRights(_memberStateResponse_.memberRights),
             member.updatedAt ?: 0L,
-            convertSDKClientInfo(member.sdkClientInfo)
+            convertSDKClientInfo(member.sdkClientInfo),
+            member.roles?.map { role ->
+                role.getUserRole()
+            } ?: emptyList()
         )
     }
 
@@ -1534,6 +1472,20 @@ object ModelConverter {
      * Client Model -> Internal Model
     --------------------------------*/
 
+    //create internal Chatroom from client model
+    fun createChatroom(chatroom: Chatroom): _Chatroom_ {
+        return _Chatroom_.Builder()
+            .id(chatroom.id)
+            .title(chatroom.title)
+            .communityId(chatroom.communityId)
+            .communityName(chatroom.communityName)
+            .header(chatroom.header)
+            .member(createMember(chatroom.member))
+            .muteStatus(chatroom.muteStatus)
+            .followStatus(chatroom.followStatus)
+            .build()
+    }
+
     //create internal Conversation from client model
     fun createConversation(conversation: Conversation): _Conversation_ {
         return _Conversation_.Builder()
@@ -1719,7 +1671,7 @@ object ModelConverter {
     }
 
     // creates internal Attachment model list from client model list
-    private fun createAttachments(attachments: List<Attachment>?): List<_Attachment_>? {
+    fun createAttachments(attachments: List<Attachment>?): List<_Attachment_>? {
         if (attachments.isNullOrEmpty()) return null
         return attachments.map {
             createAttachment(it)
@@ -1769,7 +1721,7 @@ object ModelConverter {
     }
 
     //convert client widget model to internal widget model
-    fun createWidget(widget: Widget?): _Widget_? {
+    private fun createWidget(widget: Widget?): _Widget_? {
         if (widget == null) return null
         val metadataString = widget.metadata.toString()
         return _Widget_.Builder()
@@ -1820,26 +1772,66 @@ object ModelConverter {
         return GetConversationsCountResponse(count)
     }
 
-    /**--------------------------------
-     * Db Model -> Client Model
-    --------------------------------*/
+    //converts list of [ChatroomRO] to [GetUnreadChatroomsResponse]
+    fun convertGetUnreadChatroomsResponse(chatroomRO: List<ChatroomRO>): GetUnreadChatroomsResponse {
+        return GetUnreadChatroomsResponse(
+            chatroomRO.map { chatroom ->
+                convertGetUnreadChatrooms(chatroom)
+            }
+        )
+    }
+
+    //converts [ChatroomRO] to [ChatroomNotificationData]
+    private fun convertGetUnreadChatrooms(chatroom: ChatroomRO): ChatroomNotificationData {
+        val community = chatroom.getCommunity()
+
+        val creatorChatroomRO = chatroom.member
+        val lastConversationRO = chatroom.lastConversationRO
+        val creatorLastConversationRO = lastConversationRO?.member
+
+        return ChatroomNotificationData(
+            community?.name ?: "",
+            ResponseUtils.generateChatroomNameWithMessagesCount(
+                chatroom.header ?: "",
+                chatroom.unseenCount
+            ),
+            chatroom.title,
+            creatorChatroomRO?.name ?: "",
+            creatorChatroomRO?.imageUrl ?: "",
+            chatroom.id,
+            community?.imageUrl ?: "",
+            community?.id?.toInt() ?: 0,
+            ResponseUtils.generateRouteForChatroom(community?.id ?: "", community?.name ?: ""),
+            chatroom.unseenCount,
+            lastConversationRO?.answer ?: "",
+            creatorLastConversationRO?.name ?: "",
+            creatorLastConversationRO?.imageUrl ?: "",
+            ResponseUtils.generateRouteChildForChatroom(chatroom.id),
+            lastConversationRO?.createdEpoch,
+            convertAttachmentsRO(lastConversationRO?.attachments),
+            ""
+        )
+    }
 
     // converts UserRO model to client model
     private fun convertUserRO(userRO: UserRO?): User? {
         if (userRO == null) return null
-        return User(
-            userRO.id,
-            userRO.imageUrl,
-            userRO.isGuest,
-            userRO.name,
-            userRO.organizationName,
-            convertSDKClientInfoRO(userRO.sdkClientInfoRO),
-            userRO.isDeleted,
-            userRO.customTitle,
-            userRO.updatedAt,
-            userRO.userUniqueId,
-            userRO.uuid
-        )
+        return User.Builder()
+            .id(userRO.id)
+            .imageUrl(userRO.imageUrl)
+            .isGuest(userRO.isGuest)
+            .name(userRO.name)
+            .organisationName(userRO.organizationName)
+            .sdkClientInfo(convertSDKClientInfoRO(userRO.sdkClientInfoRO))
+            .isDeleted(userRO.isDeleted)
+            .customTitle(userRO.customTitle)
+            .updatedAt(userRO.updatedAt)
+            .userUniqueId(userRO.userUniqueId)
+            .uuid(userRO.uuid)
+            .roles(userRO.roles.map { role ->
+                role.getUserRole()
+            })
+            .build()
     }
 
     // converts SDKClientInfoRO model to client model
@@ -1997,6 +1989,7 @@ object ModelConverter {
             .deletedByMember(convertMemberRO(conversationRO.deletedByMember))
             .widgetId(conversationRO.widgetId)
             .widget(convertWidgetRO(conversationRO.widgetRO))
+            .localCreatedEpoch(conversationRO.localSavedEpoch)
             .build()
     }
 
@@ -2017,6 +2010,9 @@ object ModelConverter {
             .isGuest(memberRO.isGuest)
             .sdkClientInfo(convertSDKClientInfoRO(memberRO.sdkClientInfoRO))
             .uuid(memberRO.uuid)
+            .roles(memberRO.roles.map { role ->
+                role.getUserRole()
+            })
             .build()
     }
 

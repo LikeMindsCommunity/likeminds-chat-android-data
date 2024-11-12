@@ -22,4 +22,16 @@ class AttachmentMeta private constructor(
             .numberOfPage(numberOfPage)
             .size(size)
     }
+
+    override fun toString(): String {
+        return buildString {
+            append("AttachmentMeta(numberOfPage=")
+            append(numberOfPage)
+            append(", size=")
+            append(size)
+            append(", duration=")
+            append(duration)
+            append(")")
+        }
+    }
 }

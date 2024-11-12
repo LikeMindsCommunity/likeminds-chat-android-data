@@ -28,8 +28,8 @@ import com.likeminds.chatinternalsdk.homefeed.db.HomeFeedDB
 import com.likeminds.chatinternalsdk.homefeed.db.HomeFeedDBImpl
 import com.likeminds.chatinternalsdk.moderation.ModerationApi
 import com.likeminds.chatinternalsdk.moderation.ModerationApiImpl
-import com.likeminds.chatinternalsdk.notification.NotificationApi
-import com.likeminds.chatinternalsdk.notification.NotificationApiImpl
+import com.likeminds.chatinternalsdk.notification.NotificationDB
+import com.likeminds.chatinternalsdk.notification.NotificationDBImpl
 import com.likeminds.chatinternalsdk.poll.PollApi
 import com.likeminds.chatinternalsdk.poll.PollApiImpl
 import com.likeminds.chatinternalsdk.refreshtoken.RefreshTokenApi
@@ -120,7 +120,7 @@ class LMChatSDK {
     lateinit var conversationDBImpl: ConversationDbImpl
 
     @Inject
-    lateinit var notificationApiImpl: NotificationApiImpl
+    lateinit var notificationDBImpl: NotificationDBImpl
 
     @Inject
     lateinit var dmApi: DMApiImpl
@@ -290,8 +290,8 @@ class LMChatSDK {
         return conversationDBImpl
     }
 
-    fun getNotificationApi(): NotificationApi {
-        return notificationApiImpl
+    fun getNotificationDB(): NotificationDB {
+        return notificationDBImpl
     }
 
     fun getDMApi(): DMApi {

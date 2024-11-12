@@ -61,4 +61,7 @@ object DbKey {
     const val POLLS_COUNT = "pollsCount"
     const val DOWNLOADABLE_CONTENT_TYPES = "downloadableContentTypes"
     const val TOTAL_RESPONSE_COUNT = "totalResponseCount"
+    const val MUTE_STATUS = "muteStatus"
+    const val UNSEEN_COUNT = "unseenCount"
+    const val LAST_CONVERSATION_CREATED_EPOCH = "lastConversationRO.createdEpoch"
 }

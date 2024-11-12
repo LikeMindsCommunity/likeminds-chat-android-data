@@ -11,6 +11,7 @@ class RealmDBMigration : RealmMigration {
         private const val WIDGET_CLASS = "WidgetRO"
         private const val CONVERSATION_CLASS = "ConversationRO"
         private const val LAST_CONVERSATION_CLASS = "LastConversationRO"
+        private const val USER_CLASS = "UserRO"
     }
 
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
@@ -51,6 +52,7 @@ class RealmDBMigration : RealmMigration {
 
             olderVersion++
         }
+
         if (olderVersion == 2L) {
             schema[CHATROOM_CLASS]!!.apply {
                 removeField("state")
@@ -60,6 +62,19 @@ class RealmDBMigration : RealmMigration {
                 removeField("isOwner")
                 addField("isOwner", Boolean::class.javaObjectType)
             }
+
+            olderVersion++
+        }
+
+        if (olderVersion == 3L) {
+            schema[USER_CLASS]!!.apply {
+                addRealmListField("roles", String::class.javaObjectType)
+            }
+            schema[MEMBER_CLASS]!!.apply {
+                addRealmListField("roles", String::class.javaObjectType)
+            }
+
+            olderVersion++
         }
     }
 
@@ -73,4 +88,4 @@ class RealmDBMigration : RealmMigration {
 }
 
 const val DB_SCHEMA_NAME = "likeminds-chat-sdk"
-const val DB_SCHEMA_VERSION = 3L
+const val DB_SCHEMA_VERSION = 4L

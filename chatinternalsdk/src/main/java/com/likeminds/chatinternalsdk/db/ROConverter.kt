@@ -45,7 +45,7 @@ object ROConverter {
     fun convertChatroom(
         realm: Realm,
         chatroom: _Chatroom_?,
-        chatroomCreatorRO: MemberRO,
+        chatroomCreatorRO: MemberRO?,
         lastConversationRO: LastConversationRO? = null,
         reactions: List<_ReactionMeta_> = emptyList(),
         chatRequestByRO: MemberRO? = null,
@@ -384,6 +384,7 @@ object ROConverter {
             sdkClientInfoRO = convertSDKClientInfo(user.sdkClientInfo)
             isDeleted = user.isDeleted
             customTitle = user.customTitle
+            roles = user.roles.toRealmList()
         }
     }
 
@@ -406,6 +407,7 @@ object ROConverter {
             userUniqueId = userRO.userUniqueId
             isGuest = userRO.isGuest
             sdkClientInfoRO = userRO.sdkClientInfoRO
+            roles = userRO.roles
         }
         ChatDBUtil.writeAsync({
             it.insertOrUpdate(memberRO)
@@ -444,6 +446,7 @@ object ROConverter {
             isGuest = member.isGuest
             userUniqueId = member.userUniqueId
             sdkClientInfoRO = convertSDKClientInfo(member.sdkClientInfo)
+            roles = member.roles.toRealmList()
         }
     }
 

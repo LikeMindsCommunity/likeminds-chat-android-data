@@ -14,14 +14,16 @@ class _PostConversationRequest_ private constructor(
     val ogTags: _LinkOGTags_?,
     @SerializedName("replied_conversation_id")
     val repliedConversationId: String?,
-    @SerializedName("attachment_count")
-    val attachmentCount: Int?,
     @SerializedName("temporary_id")
     val temporaryId: String?,
     @SerializedName("replied_chatroom_id")
     val repliedChatroomId: String?,
     @SerializedName("metadata")
-    val metadata: JsonObject?
+    val metadata: JsonObject?,
+    @SerializedName("trigger_bot")
+    val triggerBot: Boolean?,
+    @SerializedName("attachments")
+    val attachments: List<_Attachment_>?
 ) {
 
     class Builder {
@@ -31,10 +33,11 @@ class _PostConversationRequest_ private constructor(
         private var shareLink: String? = null
         private var ogTags: _LinkOGTags_? = null
         private var repliedConversationId: String? = null
-        private var attachmentCount: Int? = null
         private var temporaryId: String? = null
         private var repliedChatroomId: String? = null
         private var metadata: JsonObject? = null
+        private var triggerBot: Boolean? = null
+        private var attachments: List<_Attachment_>? = null
 
         fun chatroomId(chatroomId: String) = apply { this.chatroomId = chatroomId }
         fun text(text: String) = apply { this.text = text }
@@ -43,13 +46,13 @@ class _PostConversationRequest_ private constructor(
         fun repliedConversationId(repliedConversationId: String?) =
             apply { this.repliedConversationId = repliedConversationId }
 
-        fun attachmentCount(attachmentCount: Int?) =
-            apply { this.attachmentCount = attachmentCount }
-
         fun temporaryId(temporaryId: String?) = apply { this.temporaryId = temporaryId }
         fun repliedChatroomId(repliedChatroomId: String?) =
             apply { this.repliedChatroomId = repliedChatroomId }
+
         fun metadata(metadata: JsonObject?) = apply { this.metadata = metadata }
+        fun triggerBot(triggerBot: Boolean?) = apply { this.triggerBot = triggerBot }
+        fun attachments(attachments: List<_Attachment_>?) = apply { this.attachments = attachments }
 
         fun build() = _PostConversationRequest_(
             chatroomId,
@@ -57,10 +60,11 @@ class _PostConversationRequest_ private constructor(
             shareLink,
             ogTags,
             repliedConversationId,
-            attachmentCount,
             temporaryId,
             repliedChatroomId,
-            metadata
+            metadata,
+            triggerBot,
+            attachments
         )
     }
 
@@ -70,9 +74,10 @@ class _PostConversationRequest_ private constructor(
             .shareLink(shareLink)
             .ogTags(ogTags)
             .repliedConversationId(repliedConversationId)
-            .attachmentCount(attachmentCount)
             .temporaryId(temporaryId)
             .repliedChatroomId(repliedChatroomId)
             .metadata(metadata)
+            .triggerBot(triggerBot)
+            .attachments(attachments)
     }
 }
