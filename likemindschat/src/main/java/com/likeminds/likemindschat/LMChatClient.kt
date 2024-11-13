@@ -22,8 +22,8 @@ import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.moderation.ModerationClient
 import com.likeminds.likemindschat.moderation.model.*
 import com.likeminds.likemindschat.notification.NotificationClient
-import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsResponse
 import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsRequest
+import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsResponse
 import com.likeminds.likemindschat.poll.PollClient
 import com.likeminds.likemindschat.poll.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
@@ -134,7 +134,7 @@ class LMChatClient private constructor() {
 
     // Exposed function to start chatroom sync
     fun syncChatrooms(
-        context: Context
+        context: Context,
     ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
         return homeFeedClient.syncChatrooms(context)
     }
@@ -247,7 +247,7 @@ class LMChatClient private constructor() {
     // Exposed function to process request to submit polls selected
     suspend fun submitPoll(
         context: Context,
-        submitPollRequest: SubmitPollRequest
+        submitPollRequest: SubmitPollRequest,
     ): LMResponse<Nothing> {
         return pollClient.submitPoll(context, submitPollRequest)
     }
@@ -290,7 +290,7 @@ class LMChatClient private constructor() {
 
     // Exposed function to observe new conversations
     suspend fun observeConversations(
-        observeConversationsRequest: ObserveConversationsRequest
+        observeConversationsRequest: ObserveConversationsRequest,
     ) {
         conversationClient.observeConversations(observeConversationsRequest)
     }
@@ -298,7 +298,7 @@ class LMChatClient private constructor() {
     //Exposed function to observe live conversations
     suspend fun observeLiveConversations(
         context: Context,
-        chatroomId: String
+        chatroomId: String,
     ) {
         return conversationClient.observeLiveConversations(context, chatroomId)
     }
@@ -307,7 +307,7 @@ class LMChatClient private constructor() {
     fun loadConversations(
         context: Context,
         type: LoadConversationType,
-        chatroomId: String
+        chatroomId: String,
     ): MediatorLiveData<WorkInfo.State> {
         return conversationClient.loadConversations(context, type, chatroomId)
     }
@@ -358,6 +358,13 @@ class LMChatClient private constructor() {
     // Exposed function to post conversation
     suspend fun postConversation(postConversationRequest: PostConversationRequest): LMResponse<PostConversationResponse> {
         return conversationClient.postConversation(postConversationRequest)
+    }
+
+    fun createConversation(
+        context: Context,
+        postConversationRequest: PostConversationRequest,
+    ): MediatorLiveData<WorkInfo.State> {
+        return conversationClient.createConversation(context, postConversationRequest)
     }
 
     // Exposed function to edit conversation

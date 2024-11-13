@@ -289,6 +289,10 @@ class ConversationReceiver @Inject constructor(
                         ?.deleteFromRealm()
                 }
 
+                val existingConversation = ChatDBUtil.getConversation(realm, conversation.id)
+
+                if (existingConversation != null) return@writeAsync
+
                 //add the conversation to db
                 chatroomRO.conversations.add(conversationRO)
 

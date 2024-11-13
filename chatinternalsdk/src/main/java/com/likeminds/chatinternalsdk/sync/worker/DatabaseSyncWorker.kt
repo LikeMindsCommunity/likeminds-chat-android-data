@@ -134,6 +134,9 @@ class DatabaseSyncWorker(
                                 realmInstance,
                                 chatroomId
                             )
+
+
+
                             ChatDBUtil.updateRelationshipsOfChatroom(
                                 chatroomRO,
                                 conversations,
