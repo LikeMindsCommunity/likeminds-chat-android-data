@@ -135,6 +135,24 @@ class ReopenConversationSyncWorker(
             }
 
             data.conversations.isEmpty() -> {
+                //TODO: check this out whether to do this or not
+
+                // Iterate through dataList and create new instances with filtered conversations
+//                val updatedDataList = if (isFromLive) {
+//                    dataList.map { syncConversationResponse ->
+//                        // Filter conversations based on the condition
+//                        val filteredConversations =
+//                            syncConversationResponse.conversations.filter { conversation ->
+//                                conversation.member?.sdkClientInfo?.uuid != userPreferences.getClientUUID()
+//                            }
+//
+//                        // Return a new instance with the filtered list of conversations
+//                        syncConversationResponse.copy(conversations = filteredConversations)
+//                    } as ArrayList
+//                } else {
+//                    dataList
+//                }
+
                 /*
                 * The response contains no more data.
                 * Stores loaded conversations to DB.
@@ -143,8 +161,7 @@ class ReopenConversationSyncWorker(
                     chatroomId,
                     communityId,
                     loggedInUUID,
-                    dataList,
-                    isFromLive
+                    dataList
                 )
                 ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
                 Result.success()

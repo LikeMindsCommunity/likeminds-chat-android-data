@@ -322,8 +322,7 @@ object SyncUtil {
         chatroomId: String,
         communityId: String,
         loggedInUUID: String,
-        dataList: ArrayList<_SyncConversationResponse_>,
-        isFromLive: Boolean = false
+        dataList: ArrayList<_SyncConversationResponse_>
     ) {
         val realm = Realm.getDefaultInstance()
         ChatDBUtil.write(realm) { realmWrite ->
@@ -390,10 +389,6 @@ object SyncUtil {
                     //conversation creator
                     val creatorId = conversation.memberId
                     val creatorUUID = conversation.member?.sdkClientInfo?.uuid ?: ""
-
-                    if (isFromLive && creatorUUID == loggedInUUID) {
-                        return@conversation
-                    }
 
                     val creator = data.userMeta[creatorId.toString()] ?: return@conversation
                     val creatorRO =
