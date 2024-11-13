@@ -342,7 +342,7 @@ object SyncUtil {
                 //chatroom creator
                 val chatroomCreatorId = chatroom.userId
                 val chatroomCreator =
-                    data.userMeta[chatroomCreatorId.toString()] ?: return@write
+                    data.userMeta?.get(chatroomCreatorId.toString()) ?: return@write
                 val chatroomCreatorRO =
                     ROConverter.convertMember(chatroomCreator, communityId) ?: return@write
                 realmWrite.insertOrUpdate(chatroomCreatorRO)

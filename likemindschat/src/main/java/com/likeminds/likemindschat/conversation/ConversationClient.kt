@@ -303,11 +303,11 @@ class ConversationClient @Inject constructor() : BaseClient() {
                             "PUI",
                             "called at: ${System.currentTimeMillis()}" +
                                     "observeLiveConversations: ${
-                                conversationDB.getConversation(
-                                    Realm.getDefaultInstance(),
-                                    latestConversation
-                                )
-                            }"
+                                        conversationDB.getConversation(
+                                            Realm.getDefaultInstance(),
+                                            latestConversation
+                                        )
+                                    }"
                         )
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(

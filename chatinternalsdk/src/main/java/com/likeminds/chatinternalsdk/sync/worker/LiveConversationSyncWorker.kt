@@ -108,6 +108,11 @@ class LiveConversationSyncWorker(
                 }
             }
 
+            data.conversations.isEmpty() -> {
+                ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
+                Result.success()
+            }
+
             /**
              *to handle edge-case when there is no new conversation
              * but we get same conversation from api response
@@ -118,7 +123,7 @@ class LiveConversationSyncWorker(
                     Result.success()
                 } else {
                     val creatorId = conversation.memberId
-                    val member = data.userMeta[creatorId.toString()]
+                    val member = data.userMeta?.get(creatorId.toString())
                     val conversationCreatorUUID = member?.sdkClientInfo?.uuid
                     if (!conversationCreatorUUID.equals(userPreferences.getClientUUID())) {
                         dataList.add(data)
