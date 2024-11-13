@@ -384,6 +384,7 @@ object ChatDBUtil {
             val chatroomRO = getChatroom(realm, chatroomId)
 
             chatroomRO?.isConversationStored = isConversationStored
+            chatroomRO?.conversationSyncMinTimestamp = System.currentTimeMillis()
         }
     }
 }

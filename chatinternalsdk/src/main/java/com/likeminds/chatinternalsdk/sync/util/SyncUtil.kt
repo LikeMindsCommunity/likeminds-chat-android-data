@@ -4,6 +4,8 @@ import com.likeminds.chatinternalsdk.conversation.model._ConversationState_
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
 import com.likeminds.chatinternalsdk.db.models.AppConfigRO
+import com.likeminds.chatinternalsdk.db.models.ConversationRO
+import com.likeminds.chatinternalsdk.db.util.DbKey
 import com.likeminds.chatinternalsdk.db.util.toRealmList
 import com.likeminds.chatinternalsdk.sync.model._SyncChatroomResponse_
 import com.likeminds.chatinternalsdk.sync.model._SyncConversationResponse_
@@ -48,7 +50,7 @@ object SyncUtil {
     fun saveChatroomResponse(
         communityId: String,
         loggedInUUID: String,
-        data: _SyncChatroomResponse_
+        data: _SyncChatroomResponse_,
     ) {
         val chatrooms = data.chatrooms
         val realm = Realm.getDefaultInstance()
@@ -323,7 +325,6 @@ object SyncUtil {
         communityId: String,
         loggedInUUID: String,
         dataList: ArrayList<_SyncConversationResponse_>,
-        isFromLive: Boolean = false
     ) {
         val realm = Realm.getDefaultInstance()
         ChatDBUtil.write(realm) { realmWrite ->
@@ -390,10 +391,6 @@ object SyncUtil {
                     //conversation creator
                     val creatorId = conversation.memberId
                     val creatorUUID = conversation.member?.sdkClientInfo?.uuid ?: ""
-
-                    if (isFromLive && creatorUUID == loggedInUUID) {
-                        return@conversation
-                    }
 
                     val creator = data.userMeta[creatorId.toString()] ?: return@conversation
                     val creatorRO =
@@ -464,6 +461,15 @@ object SyncUtil {
                         ) ?: return@conversation
 
                     realmWrite.insertOrUpdate(conversationRO)
+
+                    realmWrite.where(ConversationRO::class.java)
+                        .beginGroup()
+                        .equalTo(DbKey.TEMPORARY_ID, conversation.temporaryId)
+                        .and()
+                        .equalTo(DbKey.ID, conversation.temporaryId)
+                        .endGroup()
+                        .findAll()
+                        .deleteAllFromRealm()
                 }
             }
         }

@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.likeminds.chatinternalsdk.LMChatSDK
+import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.sdk.util.SDKPreferences
 import com.likeminds.chatinternalsdk.sync.model._SyncConversationResponse_
 import com.likeminds.chatinternalsdk.sync.util.SyncUtil
@@ -23,7 +24,7 @@ import kotlinx.coroutines.runBlocking
  */
 class LiveConversationSyncWorker(
     context: Context,
-    workerParameters: WorkerParameters
+    workerParameters: WorkerParameters,
 ) : Worker(context, workerParameters) {
 
     private val chatSDK = LMChatSDK.getInstance()
@@ -50,14 +51,14 @@ class LiveConversationSyncWorker(
         return measureExecution("$NAME, params -> chatroom_id: $chatroomId, conversation_id: $conversationId") {
             val realm = Realm.getDefaultInstance()
             val result = runBlocking {
-                getConversations()
+                getConversations(realm)
             }
             realm.close()
             return@measureExecution result
         }
     }
 
-    private suspend fun getConversations(): Result {
+    private suspend fun getConversations(realm: Realm): Result {
         if (chatroomId.isEmpty()) return Result.failure()
         // Set query parameters for request
         val queries = HashMap<String, Any>()
@@ -65,7 +66,8 @@ class LiveConversationSyncWorker(
         queries[SyncUtil.PAGE_KEY] = page
         queries[SyncUtil.PAGE_SIZE_KEY] = SyncUtil.CONVERSATION_PAGE_SIZE
 
-        queries[SyncUtil.CONVERSATION_ID_KEY] = conversationId
+        val chatroomRO = ChatDBUtil.getChatroom(realm, chatroomId) ?: return Result.failure()
+        minTimeStamp = chatroomRO.conversationSyncMinTimestamp ?: 0L
 
         queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
         queries[SyncUtil.MIN_TIMESTAMP_KEY] = minTimeStamp
@@ -131,21 +133,25 @@ class LiveConversationSyncWorker(
             }
 
             else -> {
-                val conversation = data.conversations.firstOrNull()
-                if (conversation != null) {
-                    val creatorId = conversation.memberId
-                    val member = data.userMeta[creatorId.toString()]
-                    val conversationCreatorUUID = member?.sdkClientInfo?.uuid
-                    if (!conversationCreatorUUID.equals(userPreferences.getClientUUID())) {
-                        dataList.add(data)
-                        SyncUtil.saveConversationResponses(
-                            chatroomId,
-                            communityId,
-                            loggedInUUID,
-                            dataList
-                        )
-                    }
+                val conversations = data.conversations.toMutableList()
+
+                val selfConversationIndex = conversations.indexOfFirst {
+                    it.id == conversationId && it.member?.sdkClientInfo?.uuid == loggedInUUID
                 }
+
+                if (selfConversationIndex != -1) {
+                    conversations.removeAt(selfConversationIndex)
+                }
+
+                val updatedData = data.copy(conversations = conversations)
+
+                dataList.add(updatedData)
+                SyncUtil.saveConversationResponses(
+                    chatroomId,
+                    communityId,
+                    loggedInUUID,
+                    dataList
+                )
                 Result.success()
             }
         }

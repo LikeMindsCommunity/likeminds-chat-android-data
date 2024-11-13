@@ -135,7 +135,22 @@ class DatabaseSyncWorker(
                                 chatroomId
                             )
 
+                            // filters all the conversations with duplicate temporary ids
+                            val duplicateTempIdConversations =
+                                conversations.groupBy { it.temporaryId }
+                                    .filter { it.value.size > 1 }
 
+                            // loops through each temporary ids which are duplicate and delete the one with id also equal to temporary id
+                            duplicateTempIdConversations.keys.forEach { tempId ->
+                                conversations.where()
+                                    .beginGroup()
+                                    .equalTo(DbKey.TEMPORARY_ID, tempId)
+                                    .and()
+                                    .equalTo(DbKey.ID, tempId)
+                                    .endGroup()
+                                    .findAll()
+                                    .deleteAllFromRealm()
+                            }
 
                             ChatDBUtil.updateRelationshipsOfChatroom(
                                 chatroomRO,

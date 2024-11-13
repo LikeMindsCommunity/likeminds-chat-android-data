@@ -308,22 +308,17 @@ class ConversationClient @Inject constructor() : BaseClient() {
                                 )
                             }"
                         )
-                    }
-                    if (!latestConversation.isNullOrEmpty()) {
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(
                             Realm.getDefaultInstance(),
                             latestConversation
                         )
 
-                        // sync the conversations only if this conversation is not created by the logged in user
-                        val conversationCreatorUUID =
-                            conversationRO?.member?.sdkClientInfoRO?.uuid ?: ""
-                        if (conversationCreatorUUID != chatSDK.userPreferences.getClientUUID()) {
-                            SyncSDK.startReopenSyncForChatroom(
+                        if (conversationRO == null) {
+                            SyncSDK.startLiveSyncConversation(
                                 context,
                                 chatroomId,
-                                isFromLive = true
+                                latestConversation
                             )
                         }
                     }
@@ -341,22 +336,17 @@ class ConversationClient @Inject constructor() : BaseClient() {
                                 )
                             }"
                         )
-                    }
-                    if (!latestConversation.isNullOrEmpty()) {
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(
                             Realm.getDefaultInstance(),
                             latestConversation
                         )
 
-                        // sync the conversations only if this conversation is not created by the logged in user
-                        val conversationCreatorUUID =
-                            conversationRO?.member?.sdkClientInfoRO?.uuid ?: ""
-                        if (conversationCreatorUUID != chatSDK.userPreferences.getClientUUID()) {
-                            SyncSDK.startReopenSyncForChatroom(
+                        if (conversationRO == null) {
+                            SyncSDK.startLiveSyncConversation(
                                 context,
                                 chatroomId,
-                                isFromLive = true
+                                latestConversation
                             )
                         }
                     }
@@ -374,22 +364,17 @@ class ConversationClient @Inject constructor() : BaseClient() {
                                 )
                             }"
                         )
-                    }
-                    if (!latestConversation.isNullOrEmpty()) {
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(
                             Realm.getDefaultInstance(),
                             latestConversation
                         )
 
-                        // sync the conversations only if this conversation is not created by the logged in user
-                        val conversationCreatorUUID =
-                            conversationRO?.member?.sdkClientInfoRO?.uuid ?: ""
-                        if (conversationCreatorUUID != chatSDK.userPreferences.getClientUUID()) {
-                            SyncSDK.startReopenSyncForChatroom(
+                        if (conversationRO == null) {
+                            SyncSDK.startLiveSyncConversation(
                                 context,
                                 chatroomId,
-                                isFromLive = true
+                                latestConversation
                             )
                         }
                     }
@@ -397,21 +382,27 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
                 is LiveConversationResponse.ChildRemoved -> {
                     val latestConversation = result.response?.answerId
-                    if (!latestConversation.isNullOrEmpty()) {
+                    latestConversation?.let {
+                        Log.d(
+                            "PUI",
+                            "observeLiveConversations: ${
+                                conversationDB.getConversation(
+                                    Realm.getDefaultInstance(),
+                                    latestConversation
+                                )
+                            }"
+                        )
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(
                             Realm.getDefaultInstance(),
                             latestConversation
                         )
 
-                        // sync the conversations only if this conversation is not created by the logged in user
-                        val conversationCreatorUUID =
-                            conversationRO?.member?.sdkClientInfoRO?.uuid ?: ""
-                        if (conversationCreatorUUID != chatSDK.userPreferences.getClientUUID()) {
-                            SyncSDK.startReopenSyncForChatroom(
+                        if (conversationRO == null) {
+                            SyncSDK.startLiveSyncConversation(
                                 context,
                                 chatroomId,
-                                isFromLive = true
+                                latestConversation
                             )
                         }
                     }
