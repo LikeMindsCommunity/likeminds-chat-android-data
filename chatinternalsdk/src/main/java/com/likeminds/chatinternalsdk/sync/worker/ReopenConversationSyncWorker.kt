@@ -81,8 +81,10 @@ class ReopenConversationSyncWorker(
 
                 val lastSyncedAt =
                     if (chatroomRO.conversationSyncMinTimestamp == null) {
+                        Log.d("PUI", "lastSeenConversation taken")
                         chatroomRO.lastSeenConversation?.lastUpdatedAt ?: 0
                     } else {
+                        Log.d("PUI", "conversationSyncMinTimestamp taken")
                         chatroomRO.conversationSyncMinTimestamp ?: 0
                     }
                 lastSyncedAt
@@ -93,6 +95,7 @@ class ReopenConversationSyncWorker(
         queries[SyncUtil.MIN_TIMESTAMP_KEY] = minTimeStamp
         var data: _SyncConversationResponse_? = null
 
+        Log.d("PUI", "reopen conversation worker called with $queries")
         when (val response = api.syncConversations(queries)) {
             is NetworkResponse.Error -> {
                 // The api call failed with some error, retry again or return failure according to the condition.
@@ -127,6 +130,7 @@ class ReopenConversationSyncWorker(
             }
 
             data.conversations.isEmpty() -> {
+                Log.d("PUI", "conversation sync empty")
                 /*
                 * The response contains no more data.
                 * Stores loaded conversations to DB.
@@ -138,6 +142,7 @@ class ReopenConversationSyncWorker(
                     dataList
                 )
                 ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
+                ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
                 Result.success()
             }
 
@@ -149,10 +154,11 @@ class ReopenConversationSyncWorker(
                 val conversation = data.conversations.first()
                 Log.d(
                     "PUI",
-                    "getConversations: $minTimeStamp:::${conversation.lastUpdated}:::$conversation"
+                    "getConversations size 1"
                 )
 
                 if (minTimeStamp == conversation.lastUpdated) {
+                    ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
                     Result.success()
                 } else {
                     dataList.add(data)
@@ -162,12 +168,17 @@ class ReopenConversationSyncWorker(
                         loggedInUUID,
                         dataList
                     )
+                    ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
                     Result.success()
                 }
             }
 
             else -> {
                 // Further conversations are loaded.
+                Log.d(
+                    "PUI",
+                    "getConversations else"
+                )
                 if (page % 5 != 1) {
                     dataList.add(data)
                     page++

@@ -117,6 +117,7 @@ object ROConverter {
                 chatroom.chatroomWithUser,
                 (chatroom.communityId ?: "")
             )
+            conversationSyncMinTimestamp = savedChatroom?.conversationSyncMinTimestamp
         }
     }
 

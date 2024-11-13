@@ -32,7 +32,6 @@ class LiveConversationSyncWorker(
     private val userPreferences = UserPreferences(context as Application)
     private val api = chatSDK.getConversationSyncApi()
 
-    private var maxTimestamp = System.currentTimeMillis()
     private var minTimeStamp = 0L
     private var page = 1
     private var dataList = ArrayList<_SyncConversationResponse_>()
@@ -69,10 +68,12 @@ class LiveConversationSyncWorker(
         val chatroomRO = ChatDBUtil.getChatroom(realm, chatroomId) ?: return Result.failure()
         minTimeStamp = chatroomRO.conversationSyncMinTimestamp ?: 0L
 
-        queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
+        queries[SyncUtil.MAX_TIMESTAMP_KEY] = System.currentTimeMillis()
         queries[SyncUtil.MIN_TIMESTAMP_KEY] = minTimeStamp
 
         var data: _SyncConversationResponse_? = null
+
+        Log.d("PUI", "live sync worker with $queries")
 
         when (val response = api.syncConversations(queries)) {
             is NetworkResponse.Error -> {
@@ -128,12 +129,15 @@ class LiveConversationSyncWorker(
                             dataList
                         )
                     }
+                    ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
                     Result.success()
                 }
             }
 
             else -> {
                 val conversations = data.conversations.toMutableList()
+
+                Log.d("PUI", "live conversation sync size: ${conversations.count()}")
 
                 val selfConversationIndex = conversations.indexOfFirst {
                     it.id == conversationId && it.member?.sdkClientInfo?.uuid == loggedInUUID
@@ -152,6 +156,7 @@ class LiveConversationSyncWorker(
                     loggedInUUID,
                     dataList
                 )
+                ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
                 Result.success()
             }
         }

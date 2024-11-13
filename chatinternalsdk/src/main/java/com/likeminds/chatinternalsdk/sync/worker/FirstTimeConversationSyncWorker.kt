@@ -92,6 +92,7 @@ class FirstTimeConversationSyncWorker(
             syncPreferences.setTimestampForSyncConversation(maxTimestamp)
         }
 
+        Log.d("PUI","First time conversation worker called with $queries")
         var data: _SyncConversationResponse_? = null
         when (val response = api.syncConversations(queries)) {
             is NetworkResponse.Error -> {
@@ -134,6 +135,7 @@ class FirstTimeConversationSyncWorker(
                 * */
                 SyncUtil.saveConversationResponses(chatroomId, communityId, loggedInUUID, dataList)
                 ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
+                ChatDBUtil.updateChatroomMinTimestamp(chatroomId,System.currentTimeMillis())
                 Result.success()
             }
 
@@ -148,6 +150,7 @@ class FirstTimeConversationSyncWorker(
                         dataList
                     )
                     ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
+                    ChatDBUtil.updateChatroomMinTimestamp(chatroomId,System.currentTimeMillis())
                     Result.success()
                 } else {
                     /*

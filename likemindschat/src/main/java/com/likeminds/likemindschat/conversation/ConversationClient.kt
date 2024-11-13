@@ -301,7 +301,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
                     latestConversation?.let {
                         Log.d(
                             "PUI",
-                            "observeLiveConversations: ${
+                            "called at: ${System.currentTimeMillis()}" +
+                                    "observeLiveConversations: ${
                                 conversationDB.getConversation(
                                     Realm.getDefaultInstance(),
                                     latestConversation
@@ -329,12 +330,13 @@ class ConversationClient @Inject constructor() : BaseClient() {
                     latestConversation?.let {
                         Log.d(
                             "PUI",
-                            "observeLiveConversations: ${
-                                conversationDB.getConversation(
-                                    Realm.getDefaultInstance(),
-                                    latestConversation
-                                )
-                            }"
+                            "called at: ${System.currentTimeMillis()}" +
+                                    "observeLiveConversations: ${
+                                        conversationDB.getConversation(
+                                            Realm.getDefaultInstance(),
+                                            latestConversation
+                                        )
+                                    }"
                         )
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(
@@ -357,12 +359,13 @@ class ConversationClient @Inject constructor() : BaseClient() {
                     latestConversation?.let {
                         Log.d(
                             "PUI",
-                            "observeLiveConversations: ${
-                                conversationDB.getConversation(
-                                    Realm.getDefaultInstance(),
-                                    latestConversation
-                                )
-                            }"
+                            "called at: ${System.currentTimeMillis()}" +
+                                    "observeLiveConversations: ${
+                                        conversationDB.getConversation(
+                                            Realm.getDefaultInstance(),
+                                            latestConversation
+                                        )
+                                    }"
                         )
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(
@@ -385,12 +388,13 @@ class ConversationClient @Inject constructor() : BaseClient() {
                     latestConversation?.let {
                         Log.d(
                             "PUI",
-                            "observeLiveConversations: ${
-                                conversationDB.getConversation(
-                                    Realm.getDefaultInstance(),
-                                    latestConversation
-                                )
-                            }"
+                            "called at: ${System.currentTimeMillis()}" +
+                                    "observeLiveConversations: ${
+                                        conversationDB.getConversation(
+                                            Realm.getDefaultInstance(),
+                                            latestConversation
+                                        )
+                                    }"
                         )
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(
