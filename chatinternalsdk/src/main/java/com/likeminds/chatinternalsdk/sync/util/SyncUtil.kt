@@ -462,6 +462,7 @@ object SyncUtil {
 
                     realmWrite.insertOrUpdate(conversationRO)
 
+                    //defensive check to remove any temporary conversation if it present in the chatroom
                     realmWrite.where(ConversationRO::class.java)
                         .beginGroup()
                         .equalTo(DbKey.TEMPORARY_ID, conversation.temporaryId)

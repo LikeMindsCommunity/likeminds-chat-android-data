@@ -119,7 +119,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
      */
     fun createConversation(
         context: Context,
-        postConversationRequest: PostConversationRequest,
+        postConversationRequest: PostConversationRequest
     ): LMResponse<String> {
         // validates the client request
         RequestUtils.validate()
@@ -170,7 +170,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
      */
     suspend fun observeConversations(
-        observeConversationsRequest: ObserveConversationsRequest,
+        observeConversationsRequest: ObserveConversationsRequest
     ) {
         //validates the client request
         RequestUtils.validate()
@@ -232,7 +232,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
      */
     private fun getConversationFromChanges(
         list: RealmResults<ConversationRO>,
-        indexes: IntArray?,
+        indexes: IntArray?
     ): List<ConversationRO>? {
         if (list.isEmpty()) {
             return null
@@ -248,7 +248,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
     fun loadConversations(
         context: Context,
         type: LoadConversationType,
-        chatroomId: String,
+        chatroomId: String
     ): MediatorLiveData<WorkInfo.State> {
         //validates the client request
         RequestUtils.validate()
@@ -272,7 +272,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
      */
     suspend fun observeLiveConversations(
         context: Context,
-        chatroomId: String,
+        chatroomId: String
     ) {
         val app = FirebaseApp.getInstance("lm-secondary")
         val dataBaseReference = FirebaseDatabase.getInstance(app).reference
@@ -429,7 +429,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
     private fun getBelowConversations(
         chatroomId: String,
         limit: Int,
-        belowConversation: Conversation?,
+        belowConversation: Conversation?
     ): LMResponse<GetConversationsResponse> {
         val realm = Realm.getDefaultInstance()
         val conversationsRO = conversationDB.getConversationsBelow(
@@ -452,7 +452,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
     private fun getAboveConversation(
         chatroomId: String,
         limit: Int,
-        conversation: Conversation?,
+        conversation: Conversation?
     ): LMResponse<GetConversationsResponse> {
         val realm = Realm.getDefaultInstance()
         val conversationsRO = conversationDB.getConversationsAbove(
@@ -474,7 +474,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
     //get conversations from start of a chatroom
     private fun getTopConversations(
         chatroomId: String,
-        limit: Int,
+        limit: Int
     ): LMResponse<GetConversationsResponse> {
         val realm = Realm.getDefaultInstance()
         val conversationsRO = conversationDB.getTopConversations(
@@ -494,7 +494,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
     //get conversations from end of a chatroom
     private fun getBottomConversations(
         chatroomId: String,
-        limit: Int,
+        limit: Int
     ): LMResponse<GetConversationsResponse> {
         val realm = Realm.getDefaultInstance()
         val conversationsRO = conversationDB.getBottomConversations(realm, chatroomId, limit)
@@ -567,7 +567,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
     private fun getConversationsAboveCount(
         chatroomId: String,
         conversationId: String,
-        createdEpoch: Long,
+        createdEpoch: Long
     ): LMResponse<GetConversationsCountResponse> {
         val realm = Realm.getDefaultInstance()
         val count = conversationDB.getConversationsAboveCount(
@@ -589,7 +589,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
     private fun getConversationsBelowCount(
         chatroomId: String,
         conversationId: String,
-        createdEpoch: Long,
+        createdEpoch: Long
     ): LMResponse<GetConversationsCountResponse> {
         val realm = Realm.getDefaultInstance()
         val count = conversationDB.getConversationsBelowCount(

@@ -24,7 +24,7 @@ import kotlinx.coroutines.runBlocking
  */
 class LiveConversationSyncWorker(
     context: Context,
-    workerParameters: WorkerParameters,
+    workerParameters: WorkerParameters
 ) : Worker(context, workerParameters) {
 
     private val chatSDK = LMChatSDK.getInstance()

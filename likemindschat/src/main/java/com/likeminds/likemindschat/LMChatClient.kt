@@ -246,8 +246,7 @@ class LMChatClient private constructor() {
 
     // Exposed function to process request to submit polls selected
     suspend fun submitPoll(
-        context: Context,
-        submitPollRequest: SubmitPollRequest,
+        context: Context, submitPollRequest: SubmitPollRequest
     ): LMResponse<Nothing> {
         return pollClient.submitPoll(context, submitPollRequest)
     }
@@ -289,25 +288,18 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to observe new conversations
-    suspend fun observeConversations(
-        observeConversationsRequest: ObserveConversationsRequest,
-    ) {
+    suspend fun observeConversations(observeConversationsRequest: ObserveConversationsRequest) {
         conversationClient.observeConversations(observeConversationsRequest)
     }
 
     //Exposed function to observe live conversations
-    suspend fun observeLiveConversations(
-        context: Context,
-        chatroomId: String,
-    ) {
+    suspend fun observeLiveConversations(context: Context, chatroomId: String) {
         return conversationClient.observeLiveConversations(context, chatroomId)
     }
 
     //Exposed function to load conversation to db
     fun loadConversations(
-        context: Context,
-        type: LoadConversationType,
-        chatroomId: String,
+        context: Context, type: LoadConversationType, chatroomId: String
     ): MediatorLiveData<WorkInfo.State> {
         return conversationClient.loadConversations(context, type, chatroomId)
     }
@@ -363,7 +355,7 @@ class LMChatClient private constructor() {
     // Exposed function to create conversation
     fun createConversation(
         context: Context,
-        postConversationRequest: PostConversationRequest,
+        postConversationRequest: PostConversationRequest
     ): LMResponse<String> {
         return conversationClient.createConversation(context, postConversationRequest)
     }
