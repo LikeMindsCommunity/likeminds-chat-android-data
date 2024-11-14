@@ -11,7 +11,7 @@ import com.likeminds.chatinternalsdk.widget.model._Widget_
 
 data class _SyncConversationResponse_(
     @SerializedName("user_meta")
-    val userMeta: Map<String, _Member_>,
+    val userMeta: Map<String, _Member_>?,
     @SerializedName("community_meta")
     val communityMeta: Map<String, _Community_>,
     @SerializedName("chatroom_meta")

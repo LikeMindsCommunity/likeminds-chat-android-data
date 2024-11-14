@@ -57,6 +57,7 @@ open class ChatroomRO(
     var chatRequestCreatedAt: Long? = null,
     var chatroomWithUser: MemberRO? = null,
     var chatroomWithUserId: String? = null,
+    var conversationSyncMinTimestamp: Long? = null,
     @LinkingObjects("chatrooms")
     val communities: RealmResults<CommunityRO>? = null
 ) : RealmObject() {
@@ -114,7 +115,8 @@ open class ChatroomRO(
         builder.chatRequestedBy,
         builder.chatRequestCreatedAt,
         builder.chatroomWithUser,
-        builder.chatroomWithUserId
+        builder.chatroomWithUserId,
+        builder.conversationSyncMinTimestamp
     )
 
     companion object {
@@ -181,6 +183,7 @@ open class ChatroomRO(
         var chatRequestCreatedAt: Long? = null
         var chatroomWithUser: MemberRO? = null
         var chatroomWithUserId: String? = null
+        var conversationSyncMinTimestamp: Long? = null
 
         fun build() = ChatroomRO(this)
     }
@@ -234,6 +237,7 @@ open class ChatroomRO(
             chatRequestCreatedAt = this@ChatroomRO.chatRequestCreatedAt
             chatroomWithUser = this@ChatroomRO.chatroomWithUser
             chatroomWithUserId = this@ChatroomRO.chatroomWithUserId
+            conversationSyncMinTimestamp = this@ChatroomRO.conversationSyncMinTimestamp
         }
     }
 }

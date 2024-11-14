@@ -76,6 +76,14 @@ class RealmDBMigration : RealmMigration {
 
             olderVersion++
         }
+
+        if (olderVersion == 4L) {
+            schema[CHATROOM_CLASS]!!.apply {
+                addField("conversationSyncMinTimestamp", Long::class.javaObjectType)
+            }
+
+            olderVersion++
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -88,4 +96,4 @@ class RealmDBMigration : RealmMigration {
 }
 
 const val DB_SCHEMA_NAME = "likeminds-chat-sdk"
-const val DB_SCHEMA_VERSION = 4L
+const val DB_SCHEMA_VERSION = 5L

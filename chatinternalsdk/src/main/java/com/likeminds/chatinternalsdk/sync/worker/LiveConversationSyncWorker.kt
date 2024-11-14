@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.likeminds.chatinternalsdk.LMChatSDK
+import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.sdk.util.SDKPreferences
 import com.likeminds.chatinternalsdk.sync.model._SyncConversationResponse_
 import com.likeminds.chatinternalsdk.sync.util.SyncUtil
@@ -31,13 +32,13 @@ class LiveConversationSyncWorker(
     private val userPreferences = UserPreferences(context as Application)
     private val api = chatSDK.getConversationSyncApi()
 
-    private var maxTimestamp = System.currentTimeMillis()
     private var minTimeStamp = 0L
     private var page = 1
     private var dataList = ArrayList<_SyncConversationResponse_>()
 
-    val chatroomId = workerParameters.inputData.getString(INPUT_DATA_CHATROOM_ID) ?: ""
-    val conversationId = workerParameters.inputData.getString(INPUT_DATA_CONVERSATION_ID) ?: ""
+    private val chatroomId = workerParameters.inputData.getString(INPUT_DATA_CHATROOM_ID) ?: ""
+    private val conversationId =
+        workerParameters.inputData.getString(INPUT_DATA_CONVERSATION_ID) ?: ""
 
     companion object {
         const val NAME = "Live Conversation Sync Worker"
@@ -46,30 +47,33 @@ class LiveConversationSyncWorker(
     }
 
     override fun doWork(): Result {
-        return measureExecution("${ReopenConversationSyncWorker.NAME}, params -> chatroom_id: $chatroomId, conversation_id: $conversationId") {
+        return measureExecution("$NAME, params -> chatroom_id: $chatroomId, conversation_id: $conversationId") {
             val realm = Realm.getDefaultInstance()
             val result = runBlocking {
-                getConversations()
+                getConversations(realm)
             }
             realm.close()
             return@measureExecution result
         }
     }
 
-    private suspend fun getConversations(): Result {
+    private suspend fun getConversations(realm: Realm): Result {
         if (chatroomId.isEmpty()) return Result.failure()
+
         // Set query parameters for request
         val queries = HashMap<String, Any>()
         queries[SyncUtil.CHATROOM_ID_KEY] = chatroomId
         queries[SyncUtil.PAGE_KEY] = page
         queries[SyncUtil.PAGE_SIZE_KEY] = SyncUtil.CONVERSATION_PAGE_SIZE
 
-        queries[SyncUtil.CONVERSATION_ID_KEY] = conversationId
+        val chatroomRO = ChatDBUtil.getChatroom(realm, chatroomId) ?: return Result.failure()
+        minTimeStamp = chatroomRO.conversationSyncMinTimestamp ?: 0L
 
-        queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
+        queries[SyncUtil.MAX_TIMESTAMP_KEY] = System.currentTimeMillis() + (2 * 1000) //todo revert after backend fix
         queries[SyncUtil.MIN_TIMESTAMP_KEY] = minTimeStamp
 
         var data: _SyncConversationResponse_? = null
+
 
         when (val response = api.syncConversations(queries)) {
             is NetworkResponse.Error -> {
@@ -104,6 +108,10 @@ class LiveConversationSyncWorker(
                 }
             }
 
+            data.conversations.isEmpty() -> {
+                Result.success()
+            }
+
             /**
              *to handle edge-case when there is no new conversation
              * but we get same conversation from api response
@@ -114,15 +122,12 @@ class LiveConversationSyncWorker(
                     Result.success()
                 } else {
                     val creatorId = conversation.memberId
-                    val member = data.userMeta[creatorId.toString()]
+                    val member = data.userMeta?.get(creatorId.toString())
                     val conversationCreatorUUID = member?.sdkClientInfo?.uuid
                     if (!conversationCreatorUUID.equals(userPreferences.getClientUUID())) {
                         dataList.add(data)
                         SyncUtil.saveConversationResponses(
-                            chatroomId,
-                            communityId,
-                            loggedInUUID,
-                            dataList
+                            chatroomId, communityId, loggedInUUID, dataList
                         )
                     }
                     Result.success()
@@ -130,21 +135,26 @@ class LiveConversationSyncWorker(
             }
 
             else -> {
-                val conversation = data.conversations.firstOrNull()
-                if (conversation != null) {
-                    val creatorId = conversation.memberId
-                    val member = data.userMeta[creatorId.toString()]
-                    val conversationCreatorUUID = member?.sdkClientInfo?.uuid
-                    if (!conversationCreatorUUID.equals(userPreferences.getClientUUID())) {
-                        dataList.add(data)
-                        SyncUtil.saveConversationResponses(
-                            chatroomId,
-                            communityId,
-                            loggedInUUID,
-                            dataList
-                        )
-                    }
+                val conversations = data.conversations.toMutableList()
+
+                //exclude the conversation from which the real time is trigger and creator of the conversation is logged in user
+                val selfConversationIndex = conversations.indexOfFirst {
+                    it.id == conversationId && it.member?.sdkClientInfo?.uuid == loggedInUUID
                 }
+
+                //if index is valid then remove the conversation
+                if (selfConversationIndex != -1) {
+                    conversations.removeAt(selfConversationIndex)
+                }
+
+                //update the response
+                val updatedData = data.copy(conversations = conversations)
+
+                //save to db
+                dataList.add(updatedData)
+                SyncUtil.saveConversationResponses(
+                    chatroomId, communityId, loggedInUUID, dataList
+                )
                 Result.success()
             }
         }
