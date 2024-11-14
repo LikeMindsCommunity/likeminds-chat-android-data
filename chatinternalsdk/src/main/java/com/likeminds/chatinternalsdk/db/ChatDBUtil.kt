@@ -384,10 +384,15 @@ object ChatDBUtil {
             val chatroomRO = getChatroom(realm, chatroomId)
 
             chatroomRO?.isConversationStored = isConversationStored
-            Log.d("PUI", "updated isConversationStored")
         }
     }
 
+    /**
+     * to update chatroom's [conversationSyncMinTimestamp]
+     *
+     * @param chatroomId: id of chatroom to be updated
+     * @param newMinTimestamp: value of [conversationSyncMinTimestamp]
+     */
     fun updateChatroomMinTimestamp(
         chatroomId: String,
         newMinTimestamp: Long,
@@ -395,7 +400,6 @@ object ChatDBUtil {
         write { realm ->
             val chatroomRO = getChatroom(realm, chatroomId)
             chatroomRO?.conversationSyncMinTimestamp = newMinTimestamp
-            Log.d("PUI", "updated conversationSyncMinTimestamp with $newMinTimestamp")
         }
     }
 }

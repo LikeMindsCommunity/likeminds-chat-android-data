@@ -59,6 +59,7 @@ class LiveConversationSyncWorker(
 
     private suspend fun getConversations(realm: Realm): Result {
         if (chatroomId.isEmpty()) return Result.failure()
+
         // Set query parameters for request
         val queries = HashMap<String, Any>()
         queries[SyncUtil.CHATROOM_ID_KEY] = chatroomId
@@ -68,12 +69,11 @@ class LiveConversationSyncWorker(
         val chatroomRO = ChatDBUtil.getChatroom(realm, chatroomId) ?: return Result.failure()
         minTimeStamp = chatroomRO.conversationSyncMinTimestamp ?: 0L
 
-        queries[SyncUtil.MAX_TIMESTAMP_KEY] = System.currentTimeMillis()
+        queries[SyncUtil.MAX_TIMESTAMP_KEY] = System.currentTimeMillis() + (2 * 1000) //todo revert after backend fix
         queries[SyncUtil.MIN_TIMESTAMP_KEY] = minTimeStamp
 
         var data: _SyncConversationResponse_? = null
 
-        Log.d("PUI", "live sync worker with $queries")
 
         when (val response = api.syncConversations(queries)) {
             is NetworkResponse.Error -> {
@@ -109,7 +109,6 @@ class LiveConversationSyncWorker(
             }
 
             data.conversations.isEmpty() -> {
-                ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
                 Result.success()
             }
 
@@ -128,13 +127,9 @@ class LiveConversationSyncWorker(
                     if (!conversationCreatorUUID.equals(userPreferences.getClientUUID())) {
                         dataList.add(data)
                         SyncUtil.saveConversationResponses(
-                            chatroomId,
-                            communityId,
-                            loggedInUUID,
-                            dataList
+                            chatroomId, communityId, loggedInUUID, dataList
                         )
                     }
-                    ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
                     Result.success()
                 }
             }
@@ -142,26 +137,24 @@ class LiveConversationSyncWorker(
             else -> {
                 val conversations = data.conversations.toMutableList()
 
-                Log.d("PUI", "live conversation sync size: ${conversations.count()}")
-
+                //exclude the conversation from which the real time is trigger and creator of the conversation is logged in user
                 val selfConversationIndex = conversations.indexOfFirst {
                     it.id == conversationId && it.member?.sdkClientInfo?.uuid == loggedInUUID
                 }
 
+                //if index is valid then remove the conversation
                 if (selfConversationIndex != -1) {
                     conversations.removeAt(selfConversationIndex)
                 }
 
+                //update the response
                 val updatedData = data.copy(conversations = conversations)
 
+                //save to db
                 dataList.add(updatedData)
                 SyncUtil.saveConversationResponses(
-                    chatroomId,
-                    communityId,
-                    loggedInUUID,
-                    dataList
+                    chatroomId, communityId, loggedInUUID, dataList
                 )
-                ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
                 Result.success()
             }
         }

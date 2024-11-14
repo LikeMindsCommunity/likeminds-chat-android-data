@@ -12,9 +12,10 @@ import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.conversation.model.PostConversationRequest
 import com.likeminds.likemindschat.conversation.model.PostConversationResponse
 import com.likeminds.likemindschat.sdk.ModelConverter
+import java.util.concurrent.TimeUnit
 
 class CreateConversationWorker(
-    private val context: Context,
+    context: Context,
     workerParameters: WorkerParameters,
 ) : CoroutineWorker(context, workerParameters) {
 
@@ -29,6 +30,27 @@ class CreateConversationWorker(
         const val NAME = "Create Conversation Worker"
 
         const val INPUT_POST_CONVERSATION_REQUEST = "post_conversation_request"
+        const val OUTPUT_POST_CONVERSATION_RESPONSE = "post_conversation_response"
+
+        //All work manager will run only if internet connection is stable
+        private val networkConstraint = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        fun getInstance(inputData: String): OneTimeWorkRequest {
+            return OneTimeWorkRequestBuilder<CreateConversationWorker>()
+                .setInputData(
+                    workDataOf(INPUT_POST_CONVERSATION_REQUEST to inputData)
+                )
+                .setConstraints(networkConstraint)
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    WorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
+                )
+                .addTag(NAME)
+                .build()
+        }
     }
 
     override suspend fun doWork(): Result {
@@ -41,6 +63,7 @@ class CreateConversationWorker(
         val postConversationRequest =
             gson.fromJson(inputString, PostConversationRequest::class.java)
 
+        //create internal api request
         val requestBuilder = _PostConversationRequest_.Builder()
             .chatroomId(postConversationRequest.chatroomId)
             .text(postConversationRequest.text)
@@ -61,6 +84,7 @@ class CreateConversationWorker(
 
         val request = requestBuilder.build()
 
+        //call api
         return when (val response = conversationApi.postConversation(request)) {
             is NetworkResponse.Error -> {
                 val lmResponse = LMResponse<PostConversationResponse>(
@@ -69,10 +93,10 @@ class CreateConversationWorker(
                 )
 
                 // Serialize response to JSON
-                val outputJson = Gson().toJson(lmResponse)
+                val outputJson = gson.toJson(lmResponse)
 
                 // Pass the created conversation as output
-                val outputData = workDataOf("output_data" to outputJson)
+                val outputData = workDataOf(OUTPUT_POST_CONVERSATION_RESPONSE to outputJson)
 
                 Result.failure(outputData)
             }
@@ -87,23 +111,28 @@ class CreateConversationWorker(
                     val widgetId = conversation.widgetId
                     val widget = data.widgets[widgetId]
 
+                    //update conversation with widget
                     val updatedConversation = conversation.toBuilder()
                         .widget(widget)
                         .build()
 
+                    //create save conversation request
                     val saveConversationRequest = _SavePostedConversationRequest_.Builder()
                         .conversation(updatedConversation)
                         .isFromNotification(false)
                         .build()
+
+                    //save conversation to db
                     conversationDB.savePostedConversation(saveConversationRequest)
 
+                    //create lm response
                     val lmResponse = ModelConverter.convertPostConversationAPIResponse(body)
 
                     // Serialize response to JSON
-                    val outputJson = Gson().toJson(lmResponse)
+                    val outputJson = gson.toJson(lmResponse)
 
                     // Pass the created conversation as output
-                    val outputData = workDataOf("output_data" to outputJson)
+                    val outputData = workDataOf(OUTPUT_POST_CONVERSATION_RESPONSE to outputJson)
 
                     Result.success(outputData)
                 } else {
@@ -113,10 +142,10 @@ class CreateConversationWorker(
                     )
 
                     // Serialize response to JSON
-                    val outputJson = Gson().toJson(lmResponse)
+                    val outputJson = gson.toJson(lmResponse)
 
                     // Pass the created conversation as output
-                    val outputData = workDataOf("output_data" to outputJson)
+                    val outputData = workDataOf(OUTPUT_POST_CONVERSATION_RESPONSE to outputJson)
 
                     Result.failure(outputData)
                 }

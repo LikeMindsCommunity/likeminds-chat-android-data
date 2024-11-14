@@ -3,7 +3,8 @@ package com.likeminds.likemindschat.conversation
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
-import androidx.work.*
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.Gson
@@ -23,7 +24,6 @@ import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
 import io.realm.RealmResults
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ConversationClient @Inject constructor() : BaseClient() {
@@ -111,51 +111,37 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param postConversationRequest - client request model to post a conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<String> - Base LM response[String] -> the uuid of the worker
+     */
     fun createConversation(
         context: Context,
         postConversationRequest: PostConversationRequest,
-    ): MediatorLiveData<WorkInfo.State> {
+    ): LMResponse<String> {
         // validates the client request
         RequestUtils.validate()
         validatePostConversationRequest(postConversationRequest)
 
-        //All work manager will run only if internet connection is stable
-        val networkConstraint = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
+        // create input data
         val inputJson = Gson().toJson(postConversationRequest)
 
-        val createConversationWorker = OneTimeWorkRequestBuilder<CreateConversationWorker>()
-            .setInputData(
-                workDataOf(CreateConversationWorker.INPUT_POST_CONVERSATION_REQUEST to inputJson)
-            )
-            .setConstraints(networkConstraint)
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                WorkRequest.MIN_BACKOFF_MILLIS,
-                TimeUnit.MILLISECONDS
-            )
-            .addTag(CreateConversationWorker.NAME)
-            .build()
+        // create conversation worker
+        val createConversationWorker = CreateConversationWorker.getInstance(inputJson)
 
+        // enqueue worker
         val work = WorkManager.getInstance(context)
             .beginWith(createConversationWorker)
-
         work.enqueue()
 
-        return MediatorLiveData<WorkInfo.State>().apply {
-            addSource(work.workInfosLiveData) { workInfoList ->
-                //Post the status of only the database sync worker as that is the last worker and
-                //we want to observe the completion of the last worker
-                val workInfo = workInfoList.firstOrNull {
-                    it.tags.contains(CreateConversationWorker.NAME)
-                }
-                if (workInfo != null) {
-                    value = workInfo.state
-                }
-            }
-        }
+        // return success
+        return LMResponse(
+            success = true,
+            errorMessage = null,
+            data = createConversationWorker.id.toString()
+        )
     }
 
 
@@ -299,16 +285,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildAdded -> {
                     val latestConversation = result.response?.answerId
                     latestConversation?.let {
-                        Log.d(
-                            "PUI",
-                            "called at: ${System.currentTimeMillis()}" +
-                                    "observeLiveConversations: ${
-                                        conversationDB.getConversation(
-                                            Realm.getDefaultInstance(),
-                                            latestConversation
-                                        )
-                                    }"
-                        )
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(
                             Realm.getDefaultInstance(),
@@ -328,16 +304,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildChanged -> {
                     val latestConversation = result.response?.answerId
                     latestConversation?.let {
-                        Log.d(
-                            "PUI",
-                            "called at: ${System.currentTimeMillis()}" +
-                                    "observeLiveConversations: ${
-                                        conversationDB.getConversation(
-                                            Realm.getDefaultInstance(),
-                                            latestConversation
-                                        )
-                                    }"
-                        )
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(
                             Realm.getDefaultInstance(),
@@ -357,16 +323,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildMoved -> {
                     val latestConversation = result.response?.answerId
                     latestConversation?.let {
-                        Log.d(
-                            "PUI",
-                            "called at: ${System.currentTimeMillis()}" +
-                                    "observeLiveConversations: ${
-                                        conversationDB.getConversation(
-                                            Realm.getDefaultInstance(),
-                                            latestConversation
-                                        )
-                                    }"
-                        )
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(
                             Realm.getDefaultInstance(),
@@ -386,16 +342,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 is LiveConversationResponse.ChildRemoved -> {
                     val latestConversation = result.response?.answerId
                     latestConversation?.let {
-                        Log.d(
-                            "PUI",
-                            "called at: ${System.currentTimeMillis()}" +
-                                    "observeLiveConversations: ${
-                                        conversationDB.getConversation(
-                                            Realm.getDefaultInstance(),
-                                            latestConversation
-                                        )
-                                    }"
-                        )
                         // get the conversation from db
                         val conversationRO = conversationDB.getConversation(
                             Realm.getDefaultInstance(),

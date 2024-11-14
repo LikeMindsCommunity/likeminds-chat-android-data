@@ -1,7 +1,6 @@
 package com.likeminds.chatinternalsdk.conversation
 
 import android.os.Build
-import android.util.Log
 import com.likeminds.chatinternalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
@@ -191,11 +190,9 @@ class ConversationReceiver @Inject constructor(
         ChatDBUtil.writeAsync({ realm ->
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
-
-            Log.d("PUI", "saveTemporaryConversation: ${conversation.temporaryId}:::${conversation.answer}")
-
             val conversationRO =
                 ROConverter.convertConversation(realm, conversation, loggedInMember = userRO)
+
             if (conversationRO != null) {
                 ChatDBUtil.getChatroom(realm, conversationRO.chatroomId)?.let { chatroomRO ->
                     //add the conversation to db
@@ -260,27 +257,11 @@ class ConversationReceiver @Inject constructor(
             val conversation = savePostedConversationRequest.conversation
             val isFromNotification = savePostedConversationRequest.isFromNotification
 
-            Log.d(
-                "PUI",
-                "savePostedConversation: 1 ${conversation.temporaryId}:::${conversation.answer}"
-            )
-
             val conversationRO =
                 ROConverter.convertConversation(realm, conversation, loggedInMember = userRO)
                     ?: return@writeAsync
 
-            Log.d(
-                "PUI",
-                "savePostedConversation: 2 ${conversationRO.temporaryId}:::${conversationRO.answer}"
-            )
-
             ChatDBUtil.getChatroom(realm, conversation.chatroomId)?.let { chatroomRO ->
-
-                Log.d(
-                    "PUI",
-                    "savePostedConversation: 3 ${conversationRO.temporaryId}:::${conversationRO.answer}:::$chatroomRO:::${chatroomRO.id}:::${chatroomRO.conversations.isEmpty()}"
-                )
-
                 //delete the temporary conversation if present
                 if (!isFromNotification) {
                     chatroomRO.conversations.where()
@@ -300,7 +281,7 @@ class ConversationReceiver @Inject constructor(
                 if (conversationRO.createdEpoch > (chatroomRO.lastConversationRO?.createdEpoch
                         ?: 0)
                 ) {
-                    val lastConversation = chatroomRO.conversations.last(null)
+                    val lastConversation = chatroomRO.conversations.last()
                     val lastConversationRO =
                         ROConverter.convertConversationToLastConversation(lastConversation)
                             ?: return@writeAsync
@@ -311,8 +292,8 @@ class ConversationReceiver @Inject constructor(
                 if (conversationRO.createdEpoch > (chatroomRO.lastSeenConversation?.createdEpoch
                         ?: 0L)
                 ) {
-                    chatroomRO.lastSeenConversation = chatroomRO.conversations.last(null)
-                    chatroomRO.lastSeenConversationId = chatroomRO.conversations.last(null)?.id
+                    chatroomRO.lastSeenConversation = chatroomRO.conversations.last()
+                    chatroomRO.lastSeenConversationId = chatroomRO.conversations.last()?.id
                 }
 
                 if (isFromNotification) {

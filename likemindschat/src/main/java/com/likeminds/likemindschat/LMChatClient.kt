@@ -360,10 +360,11 @@ class LMChatClient private constructor() {
         return conversationClient.postConversation(postConversationRequest)
     }
 
+    // Exposed function to create conversation
     fun createConversation(
         context: Context,
         postConversationRequest: PostConversationRequest,
-    ): MediatorLiveData<WorkInfo.State> {
+    ): LMResponse<String> {
         return conversationClient.createConversation(context, postConversationRequest)
     }
 

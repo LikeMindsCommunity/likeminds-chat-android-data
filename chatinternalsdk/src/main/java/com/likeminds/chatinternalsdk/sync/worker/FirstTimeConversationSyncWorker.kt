@@ -92,7 +92,6 @@ class FirstTimeConversationSyncWorker(
             syncPreferences.setTimestampForSyncConversation(maxTimestamp)
         }
 
-        Log.d("PUI","First time conversation worker called with $queries")
         var data: _SyncConversationResponse_? = null
         when (val response = api.syncConversations(queries)) {
             is NetworkResponse.Error -> {
