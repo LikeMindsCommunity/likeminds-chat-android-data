@@ -4,6 +4,8 @@ import com.likeminds.chatinternalsdk.conversation.model._ConversationState_
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
 import com.likeminds.chatinternalsdk.db.models.AppConfigRO
+import com.likeminds.chatinternalsdk.db.models.ConversationRO
+import com.likeminds.chatinternalsdk.db.util.DbKey
 import com.likeminds.chatinternalsdk.db.util.toRealmList
 import com.likeminds.chatinternalsdk.sync.model._SyncChatroomResponse_
 import com.likeminds.chatinternalsdk.sync.model._SyncConversationResponse_
@@ -48,7 +50,7 @@ object SyncUtil {
     fun saveChatroomResponse(
         communityId: String,
         loggedInUUID: String,
-        data: _SyncChatroomResponse_
+        data: _SyncChatroomResponse_,
     ) {
         val chatrooms = data.chatrooms
         val realm = Realm.getDefaultInstance()
@@ -322,7 +324,7 @@ object SyncUtil {
         chatroomId: String,
         communityId: String,
         loggedInUUID: String,
-        dataList: ArrayList<_SyncConversationResponse_>
+        dataList: ArrayList<_SyncConversationResponse_>,
     ) {
         val realm = Realm.getDefaultInstance()
         ChatDBUtil.write(realm) { realmWrite ->
@@ -340,7 +342,7 @@ object SyncUtil {
                 //chatroom creator
                 val chatroomCreatorId = chatroom.userId
                 val chatroomCreator =
-                    data.userMeta[chatroomCreatorId.toString()] ?: return@write
+                    data.userMeta?.get(chatroomCreatorId.toString()) ?: return@write
                 val chatroomCreatorRO =
                     ROConverter.convertMember(chatroomCreator, communityId) ?: return@write
                 realmWrite.insertOrUpdate(chatroomCreatorRO)
@@ -388,6 +390,8 @@ object SyncUtil {
                     val id = conversation.id
                     //conversation creator
                     val creatorId = conversation.memberId
+                    val creatorUUID = conversation.member?.sdkClientInfo?.uuid ?: ""
+
                     val creator = data.userMeta[creatorId.toString()] ?: return@conversation
                     val creatorRO =
                         ROConverter.convertMember(creator, communityId) ?: return@conversation
@@ -457,6 +461,16 @@ object SyncUtil {
                         ) ?: return@conversation
 
                     realmWrite.insertOrUpdate(conversationRO)
+
+                    //defensive check to remove any temporary conversation if it present in the chatroom
+                    realmWrite.where(ConversationRO::class.java)
+                        .beginGroup()
+                        .equalTo(DbKey.TEMPORARY_ID, conversation.temporaryId)
+                        .and()
+                        .equalTo(DbKey.ID, conversation.temporaryId)
+                        .endGroup()
+                        .findAll()
+                        .deleteAllFromRealm()
                 }
             }
         }

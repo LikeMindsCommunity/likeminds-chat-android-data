@@ -35,10 +35,6 @@ dependencies {
     //coroutines
     implementation deps.kotlin.coroutines_core
 
-    //sentry
-    implementation deps.sentry.main
-    implementation deps.sentry.okhttp
-
     //rx
     implementation deps.rxJava.main
     implementation deps.rxJava.android

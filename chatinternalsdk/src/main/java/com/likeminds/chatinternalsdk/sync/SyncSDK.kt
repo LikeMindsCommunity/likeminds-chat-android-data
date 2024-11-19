@@ -207,7 +207,12 @@ object SyncSDK {
         conversationId: String? = null
     ): MediatorLiveData<WorkInfo.State> {
         val work = WorkManager.getInstance(context)
-            .beginWith(reopenSyncConversation(chatroomId, conversationId))
+            .beginWith(
+                reopenSyncConversation(
+                    chatroomId,
+                    conversationId
+                )
+            )
             .then(syncDatabase(SYNC_CHATROOM, chatroomId = chatroomId))
         work.enqueue()
         //MediatorLiveData is a subclass of live data, it will observe the list of worker's live data

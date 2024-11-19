@@ -4,8 +4,10 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.likeminds.chatinternalsdk.LMChatSDK
 import com.likeminds.chatinternalsdk.conversation.model.*
@@ -16,6 +18,7 @@ import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
+import com.likeminds.likemindschat.conversation.worker.CreateConversationWorker
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -109,6 +112,40 @@ class ConversationClient @Inject constructor() : BaseClient() {
     }
 
     /**
+     * Converts client request model to internal model and calls the api
+     * @param postConversationRequest - client request model to post a conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<String> - Base LM response[String] -> the uuid of the worker
+     */
+    fun createConversation(
+        context: Context,
+        postConversationRequest: PostConversationRequest
+    ): LMResponse<String> {
+        // validates the client request
+        RequestUtils.validate()
+        validatePostConversationRequest(postConversationRequest)
+
+        // create input data
+        val inputJson = Gson().toJson(postConversationRequest)
+
+        // create conversation worker
+        val createConversationWorker = CreateConversationWorker.getInstance(inputJson)
+
+        // enqueue worker
+        val work = WorkManager.getInstance(context)
+            .beginWith(createConversationWorker)
+        work.enqueue()
+
+        // return success
+        return LMResponse(
+            success = true,
+            errorMessage = null,
+            data = createConversationWorker.id.toString()
+        )
+    }
+
+
+    /**
      * Converts client request model to internal model and stores the posted conversation in DB
      * @param savePostedConversationRequest - client request model to store a posted conversation
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
@@ -195,7 +232,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
      */
     private fun getConversationFromChanges(
         list: RealmResults<ConversationRO>,
-        indexes: IntArray?,
+        indexes: IntArray?
     ): List<ConversationRO>? {
         if (list.isEmpty()) {
             return null
@@ -247,45 +284,77 @@ class ConversationClient @Inject constructor() : BaseClient() {
             when (result) {
                 is LiveConversationResponse.ChildAdded -> {
                     val latestConversation = result.response?.answerId
-                    if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startLiveSyncConversation(
-                            context,
-                            chatroomId,
+                    latestConversation?.let {
+                        // get the conversation from db
+                        val conversationRO = conversationDB.getConversation(
+                            Realm.getDefaultInstance(),
                             latestConversation
                         )
+
+                        if (conversationRO == null) {
+                            SyncSDK.startLiveSyncConversation(
+                                context,
+                                chatroomId,
+                                latestConversation
+                            )
+                        }
                     }
                 }
 
                 is LiveConversationResponse.ChildChanged -> {
                     val latestConversation = result.response?.answerId
-                    if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startLiveSyncConversation(
-                            context,
-                            chatroomId,
+                    latestConversation?.let {
+                        // get the conversation from db
+                        val conversationRO = conversationDB.getConversation(
+                            Realm.getDefaultInstance(),
                             latestConversation
                         )
+
+                        if (conversationRO == null) {
+                            SyncSDK.startLiveSyncConversation(
+                                context,
+                                chatroomId,
+                                latestConversation
+                            )
+                        }
                     }
                 }
 
                 is LiveConversationResponse.ChildMoved -> {
                     val latestConversation = result.response?.answerId
-                    if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startLiveSyncConversation(
-                            context,
-                            chatroomId,
+                    latestConversation?.let {
+                        // get the conversation from db
+                        val conversationRO = conversationDB.getConversation(
+                            Realm.getDefaultInstance(),
                             latestConversation
                         )
+
+                        if (conversationRO == null) {
+                            SyncSDK.startLiveSyncConversation(
+                                context,
+                                chatroomId,
+                                latestConversation
+                            )
+                        }
                     }
                 }
 
                 is LiveConversationResponse.ChildRemoved -> {
                     val latestConversation = result.response?.answerId
-                    if (!latestConversation.isNullOrEmpty()) {
-                        SyncSDK.startLiveSyncConversation(
-                            context,
-                            chatroomId,
+                    latestConversation?.let {
+                        // get the conversation from db
+                        val conversationRO = conversationDB.getConversation(
+                            Realm.getDefaultInstance(),
                             latestConversation
                         )
+
+                        if (conversationRO == null) {
+                            SyncSDK.startLiveSyncConversation(
+                                context,
+                                chatroomId,
+                                latestConversation
+                            )
+                        }
                     }
                 }
 
@@ -658,7 +727,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when required properties not provided
      */
     private fun validateUpdateConversationUploadWorkerUUIDRequest(
-        updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest
+        updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest,
     ) {
         if (updateConversationUploadWorkerUUIDRequest.conversationId.isEmpty()) {
             RequestUtils.throwException("conversationId")

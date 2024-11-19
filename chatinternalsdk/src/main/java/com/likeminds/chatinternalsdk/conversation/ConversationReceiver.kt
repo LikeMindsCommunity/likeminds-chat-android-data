@@ -192,9 +192,9 @@ class ConversationReceiver @Inject constructor(
             val startTime = System.currentTimeMillis()
             //get logged in member
             val userRO = realm.where(UserRO::class.java).findFirst()
-
             val conversationRO =
                 ROConverter.convertConversation(realm, conversation, loggedInMember = userRO)
+
             if (conversationRO != null) {
                 ChatDBUtil.getChatroom(realm, conversationRO.chatroomId)?.let { chatroomRO ->
                     //add the conversation to db
@@ -293,29 +293,31 @@ class ConversationReceiver @Inject constructor(
                     -------------------
                 """.trimIndent()
                 )
-                //add the conversation to db
-                if (chatroomRO.conversations.isEmpty()) {
-                    chatroomRO.conversations.add(conversationRO)
-                } else {
-                    //delete the temporary conversation if present
-                    if (!isFromNotification) {
-                        chatroomRO.conversations.where()
-                            .equalTo(DbKey.ID, conversationRO.temporaryId)
-                            .findFirst()
-                            ?.deleteFromRealm()
-                    }
-                    chatroomRO.conversations.add(conversationRO)
+                //delete the temporary conversation if present
+                if (!isFromNotification) {
+                    chatroomRO.conversations.where()
+                        .equalTo(DbKey.ID, conversationRO.temporaryId)
+                        .findFirst()
+                        ?.deleteFromRealm()
                 }
+
+                val existingConversation = ChatDBUtil.getConversation(realm, conversation.id)
+
+                if (existingConversation != null) return@writeAsync
+
+                //add the conversation to db
+                chatroomRO.conversations.add(conversationRO)
                 //Save this conversation as the last conversation
                 if (conversationRO.createdEpoch > (chatroomRO.lastConversationRO?.createdEpoch
                         ?: 0)
                 ) {
-                    val lastConversation = chatroomRO.conversations.last(null)
+                    val lastConversation = chatroomRO.conversations.last()
                     val lastConversationRO =
                         ROConverter.convertConversationToLastConversation(lastConversation)
                             ?: return@writeAsync
                     chatroomRO.lastConversationRO = realm.copyToRealm(lastConversationRO)
                 }
+
                 //Save this conversation as the last seen conversation
                 if (conversationRO.createdEpoch > (chatroomRO.lastSeenConversation?.createdEpoch
                         ?: 0L)
