@@ -4,7 +4,6 @@ import android.util.Log
 import com.likeminds.chatinternalsdk.ChatTokenManager
 import com.likeminds.chatinternalsdk.LMChatSDK
 import com.likeminds.chatinternalsdk.LMChatSDK.Companion.LOG_TAG
-import com.likeminds.chatinternalsdk.refreshtoken.RefreshTokenNetworkApi
 import com.likeminds.chatinternalsdk.sdk.util.SDKPreferences
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import kotlinx.coroutines.runBlocking
@@ -31,7 +30,7 @@ class TokenAuthenticator @Inject constructor(
         return if (code == 401) {
             if (!endPoint.contains("user/refresh", false)) {
                 Log.d(LOG_TAG, "new access token required")
-                val refreshToken = chatTokenManager.refreshToken
+                val refreshToken = chatTokenManager.refreshToken ?: sdkPreferences.getRefreshToken()
                 runBlocking {
                     when (val refreshResponse =
                         refreshTokenNetworkApi.refreshAccessToken("Bearer $refreshToken")) {
