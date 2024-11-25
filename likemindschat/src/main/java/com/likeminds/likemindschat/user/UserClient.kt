@@ -177,7 +177,7 @@ class UserClient @Inject constructor() : BaseClient() {
             LMResponse(
                 success = true
             )
-        } else{
+        } else {
             // builds internal request model
             if (logoutRequest.deviceId != null) {
                 //call api only when the device id is received in the logout request
