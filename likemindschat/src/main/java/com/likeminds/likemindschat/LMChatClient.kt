@@ -352,14 +352,6 @@ class LMChatClient private constructor() {
         return conversationClient.postConversation(postConversationRequest)
     }
 
-    // Exposed function to create conversation
-    fun createConversation(
-        context: Context,
-        postConversationRequest: PostConversationRequest
-    ): LMResponse<String> {
-        return conversationClient.createConversation(context, postConversationRequest)
-    }
-
     // Exposed function to edit conversation
     suspend fun editConversation(editConversationRequest: EditConversationRequest): LMResponse<EditConversationResponse> {
         return conversationClient.editConversation(editConversationRequest)

@@ -84,6 +84,14 @@ class RealmDBMigration : RealmMigration {
 
             olderVersion++
         }
+
+        if (olderVersion == 5L) {
+            schema[CONVERSATION_CLASS]!!.apply {
+                addField("attachmentsUploadedEpoch", Long::class.javaObjectType)
+            }
+
+            olderVersion++
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -96,4 +104,4 @@ class RealmDBMigration : RealmMigration {
 }
 
 const val DB_SCHEMA_NAME = "likeminds-chat-sdk"
-const val DB_SCHEMA_VERSION = 5L
+const val DB_SCHEMA_VERSION = 6L

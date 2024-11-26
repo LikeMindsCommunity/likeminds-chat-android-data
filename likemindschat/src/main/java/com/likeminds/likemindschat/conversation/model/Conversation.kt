@@ -46,11 +46,10 @@ class Conversation private constructor(
     val lastUpdated: Long?,
     val deletedByMember: Member?,
     val widgetId: String?,
-    val widget: Widget?
+    val widget: Widget?,
+    val attachmentsUploadedEpoch: Long?
 ) {
-
     class Builder {
-
         private var id: String? = ""
         private var chatroomId: String? = null
         private var communityId: String? = null
@@ -93,71 +92,178 @@ class Conversation private constructor(
         private var deletedByMember: Member? = null
         private var widgetId: String? = null
         private var widget: Widget? = null
+        private var attachmentsUploadedEpoch: Long? = null
 
-        fun id(id: String?) = apply { this.id = id }
-        fun chatroomId(chatroomId: String?) = apply { this.chatroomId = chatroomId }
-        fun communityId(communityId: String?) = apply { this.communityId = communityId }
-        fun member(member: Member?) = apply { this.member = member }
-        fun answer(answer: String) = apply { this.answer = answer }
-        fun createdAt(createdAt: String?) = apply { this.createdAt = createdAt }
-        fun state(state: Int) = apply { this.state = state }
-        fun attachments(attachments: List<Attachment>?) = apply { this.attachments = attachments }
-        fun lastSeen(lastSeen: Boolean?) = apply { this.lastSeen = lastSeen }
-        fun ogTags(ogTags: LinkOGTags?) = apply { this.ogTags = ogTags }
-        fun date(date: String?) = apply { this.date = date }
-        fun isEdited(isEdited: Boolean?) = apply { this.isEdited = isEdited }
-        fun memberId(memberId: String?) = apply { this.memberId = memberId }
-        fun replyConversationId(replyConversationId: String?) =
-            apply { this.replyConversationId = replyConversationId }
+        fun id(id: String?) = apply {
+            this.id = id
+        }
 
-        fun replyConversation(replyConversation: Conversation?) =
-            apply { this.replyConversation = replyConversation }
+        fun chatroomId(chatroomId: String?) = apply {
+            this.chatroomId = chatroomId
+        }
 
-        fun deletedBy(deletedBy: String?) = apply { this.deletedBy = deletedBy }
-        fun createdEpoch(createdEpoch: Long?) = apply { this.createdEpoch = createdEpoch }
-        fun attachmentCount(attachmentCount: Int?) =
-            apply { this.attachmentCount = attachmentCount }
+        fun communityId(communityId: String?) = apply {
+            this.communityId = communityId
+        }
 
-        fun attachmentUploaded(attachmentUploaded: Boolean?) =
-            apply { this.attachmentUploaded = attachmentUploaded }
+        fun member(member: Member?) = apply {
+            this.member = member
+        }
 
-        fun uploadWorkerUUID(uploadWorkerUUID: String?) =
-            apply { this.uploadWorkerUUID = uploadWorkerUUID }
+        fun answer(answer: String) = apply {
+            this.answer = answer
+        }
 
-        fun temporaryId(temporaryId: String?) = apply { this.temporaryId = temporaryId }
-        fun localCreatedEpoch(localCreatedEpoch: Long?) =
-            apply { this.localCreatedEpoch = localCreatedEpoch }
+        fun createdAt(createdAt: String?) = apply {
+            this.createdAt = createdAt
+        }
 
-        fun reactions(reactions: List<Reaction>?) = apply { this.reactions = reactions }
-        fun isAnonymous(isAnonymous: Boolean?) = apply { this.isAnonymous = isAnonymous }
+        fun state(state: Int) = apply {
+            this.state = state
+        }
+
+        fun attachments(attachments: List<Attachment>?) = apply {
+            this.attachments = attachments
+        }
+
+        fun lastSeen(lastSeen: Boolean?) = apply {
+            this.lastSeen = lastSeen
+        }
+
+        fun ogTags(ogTags: LinkOGTags?) = apply {
+            this.ogTags = ogTags
+        }
+
+        fun date(date: String?) = apply {
+            this.date = date
+        }
+
+        fun isEdited(isEdited: Boolean?) = apply {
+            this.isEdited = isEdited
+        }
+
+        fun memberId(memberId: String?) = apply {
+            this.memberId = memberId
+        }
+
+        fun replyConversationId(replyConversationId: String?) = apply {
+            this.replyConversationId = replyConversationId
+        }
+
+        fun replyConversation(replyConversation: Conversation?) = apply {
+            this.replyConversation = replyConversation
+        }
+
+        fun deletedBy(deletedBy: String?) = apply {
+            this.deletedBy = deletedBy
+        }
+
+        fun createdEpoch(createdEpoch: Long?) = apply {
+            this.createdEpoch = createdEpoch
+        }
+
+        fun attachmentCount(attachmentCount: Int?) = apply {
+            this.attachmentCount = attachmentCount
+        }
+
+        fun attachmentUploaded(attachmentUploaded: Boolean?) = apply {
+            this.attachmentUploaded = attachmentUploaded
+        }
+
+        fun uploadWorkerUUID(uploadWorkerUUID: String?) = apply {
+            this.uploadWorkerUUID = uploadWorkerUUID
+        }
+
+        fun temporaryId(temporaryId: String?) = apply {
+            this.temporaryId = temporaryId
+        }
+
+        fun localCreatedEpoch(localCreatedEpoch: Long?) = apply {
+            this.localCreatedEpoch = localCreatedEpoch
+        }
+
+        fun reactions(reactions: List<Reaction>?) = apply {
+            this.reactions = reactions
+        }
+
+        fun isAnonymous(isAnonymous: Boolean?) = apply {
+            this.isAnonymous = isAnonymous
+        }
+
         fun allowAddOption(allowAddOption: Boolean?) =
             apply { this.allowAddOption = allowAddOption }
 
-        fun pollType(pollType: Int?) = apply { this.pollType = pollType }
-        fun pollTypeText(pollTypeText: String?) = apply { this.pollTypeText = pollTypeText }
-        fun submitTypeText(submitTypeText: String?) = apply { this.submitTypeText = submitTypeText }
-        fun expiryTime(expiryTime: Long?) = apply { this.expiryTime = expiryTime }
-        fun multipleSelectNum(multipleSelectNum: Int?) =
-            apply { this.multipleSelectNum = multipleSelectNum }
+        fun pollType(pollType: Int?) = apply {
+            this.pollType = pollType
+        }
 
-        fun multipleSelectState(multipleSelectState: Int?) =
-            apply { this.multipleSelectState = multipleSelectState }
+        fun pollTypeText(pollTypeText: String?) = apply {
+            this.pollTypeText = pollTypeText
+        }
 
-        fun polls(polls: List<Poll>?) = apply { this.polls = polls }
-        fun toShowResults(toShowResults: Boolean?) = apply { this.toShowResults = toShowResults }
-        fun pollAnswerText(pollAnswerText: String?) = apply { this.pollAnswerText = pollAnswerText }
-        fun replyChatroomId(replyChatroomId: String?) =
-            apply { this.replyChatroomId = replyChatroomId }
+        fun submitTypeText(submitTypeText: String?) = apply {
+            this.submitTypeText = submitTypeText
+        }
 
-        fun deviceId(deviceId: String?) = apply { this.deviceId = deviceId }
-        fun hasFiles(hasFiles: Boolean?) = apply { this.hasFiles = hasFiles }
-        fun hasReactions(hasReactions: Boolean?) = apply { this.hasReactions = hasReactions }
-        fun lastUpdated(lastUpdated: Long?) = apply { this.lastUpdated = lastUpdated }
-        fun deletedByMember(deletedByMember: Member?) =
-            apply { this.deletedByMember = deletedByMember }
+        fun expiryTime(expiryTime: Long?) = apply {
+            this.expiryTime = expiryTime
+        }
 
-        fun widgetId(widgetId: String?) = apply { this.widgetId = widgetId }
-        fun widget(widget: Widget?) = apply { this.widget = widget }
+        fun multipleSelectNum(multipleSelectNum: Int?) = apply {
+            this.multipleSelectNum = multipleSelectNum
+        }
+
+        fun multipleSelectState(multipleSelectState: Int?) = apply {
+            this.multipleSelectState = multipleSelectState
+        }
+
+        fun polls(polls: List<Poll>?) = apply {
+            this.polls = polls
+        }
+
+        fun toShowResults(toShowResults: Boolean?) = apply {
+            this.toShowResults = toShowResults
+        }
+
+        fun pollAnswerText(pollAnswerText: String?) = apply {
+            this.pollAnswerText = pollAnswerText
+        }
+
+        fun replyChatroomId(replyChatroomId: String?) = apply {
+            this.replyChatroomId = replyChatroomId
+        }
+
+        fun deviceId(deviceId: String?) = apply {
+            this.deviceId = deviceId
+        }
+
+        fun hasFiles(hasFiles: Boolean?) = apply {
+            this.hasFiles = hasFiles
+        }
+
+        fun hasReactions(hasReactions: Boolean?) = apply {
+            this.hasReactions = hasReactions
+        }
+
+        fun lastUpdated(lastUpdated: Long?) = apply {
+            this.lastUpdated = lastUpdated
+        }
+
+        fun deletedByMember(deletedByMember: Member?) = apply {
+            this.deletedByMember = deletedByMember
+        }
+
+        fun widgetId(widgetId: String?) = apply {
+            this.widgetId = widgetId
+        }
+
+        fun widget(widget: Widget?) = apply {
+            this.widget = widget
+        }
+
+        fun attachmentsUploadedEpoch(attachmentsUploadedEpoch: Long?) = apply {
+            this.attachmentsUploadedEpoch = attachmentsUploadedEpoch
+        }
 
         fun build() = Conversation(
             id,
@@ -201,7 +307,8 @@ class Conversation private constructor(
             lastUpdated,
             deletedByMember,
             widgetId,
-            widget
+            widget,
+            attachmentsUploadedEpoch
         )
     }
 
@@ -248,5 +355,6 @@ class Conversation private constructor(
             .deletedByMember(deletedByMember)
             .widget(widget)
             .widgetId(widgetId)
+            .attachmentsUploadedEpoch(attachmentsUploadedEpoch)
     }
 }

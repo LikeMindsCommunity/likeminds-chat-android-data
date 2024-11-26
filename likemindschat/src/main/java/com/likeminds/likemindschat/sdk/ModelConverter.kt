@@ -92,7 +92,7 @@ object ModelConverter {
             .uuid(_user_.uuid)
             .roles(_user_.roles?.map { role ->
                 role.getUserRole()
-            } ?:  emptyList())
+            } ?: emptyList())
             .build()
     }
 
@@ -1529,6 +1529,7 @@ object ModelConverter {
             .lastUpdated(conversation.lastUpdated)
             .widgetId(conversation.widgetId)
             .widget(createWidget(conversation.widget))
+            .attachmentsUploadedEpoch(conversation.attachmentsUploadedEpoch)
             .build()
     }
 
@@ -1990,6 +1991,7 @@ object ModelConverter {
             .widgetId(conversationRO.widgetId)
             .widget(convertWidgetRO(conversationRO.widgetRO))
             .localCreatedEpoch(conversationRO.localSavedEpoch)
+            .attachmentsUploadedEpoch(conversationRO.attachmentsUploadedEpoch)
             .build()
     }
 

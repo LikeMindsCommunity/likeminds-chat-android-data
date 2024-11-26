@@ -44,27 +44,16 @@ open class ConversationRO(
     var deletedByMember: MemberRO? = null,
     var widgetId: String? = null,
     var widgetRO: WidgetRO? = null,
+    var attachmentsUploadedEpoch: Long? =null,
 
     @LinkingObjects("conversations")
     val community: RealmResults<CommunityRO>? = null,
 
     @LinkingObjects("conversations")
-    val chatroom: RealmResults<ChatroomRO>? = null
+    val chatroom: RealmResults<ChatroomRO>? = null,
 ) : RealmObject() {
 
     fun getChatroom() = chatroom?.firstOrNull()
-
-    fun getCommunity() = community?.firstOrNull()
-
-    fun isTemporaryConversation() = id.startsWith("-")
-
-    fun attachmentsToUpload() = attachments.filter {
-        !it.awsFolderPath.isNullOrEmpty()
-    }
-
-    fun thumbnailsToUpload() = attachments.filter {
-        !it.thumbnailAWSFolderPath.isNullOrEmpty()
-    }
 
     private constructor (builder: Builder) : this(
         builder.id,
@@ -104,7 +93,8 @@ open class ConversationRO(
         builder.lastUpdatedAt,
         builder.deletedByMember,
         builder.widgetId,
-        builder.widgetRO
+        builder.widgetRO,
+        builder.attachmentsUploadedEpoch
     )
 
     companion object {
@@ -159,6 +149,7 @@ open class ConversationRO(
         var deletedByMember: MemberRO? = null
         var widgetId: String? = null
         var widgetRO: WidgetRO? = null
+        var attachmentsUploadedEpoch: Long? = null
 
         fun build() = ConversationRO(this)
     }
@@ -198,6 +189,7 @@ open class ConversationRO(
             lastUpdatedAt = this@ConversationRO.lastUpdatedAt
             widgetId = this@ConversationRO.widgetId
             widgetRO = this@ConversationRO.widgetRO
+            attachmentsUploadedEpoch = this@ConversationRO.attachmentsUploadedEpoch
         }
     }
 }

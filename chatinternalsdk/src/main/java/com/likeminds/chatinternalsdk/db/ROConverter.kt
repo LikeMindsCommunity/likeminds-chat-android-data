@@ -179,7 +179,7 @@ object ROConverter {
         )
         val pollsList = convertPolls(realm, conversation.polls as? MutableList<_Poll_>, communityId)
 
-        val widgetRO = convertWidgetRO(conversation._widget_)
+        val widgetRO = convertWidgetRO(conversation.widget)
 
         //Clear embedded object list if already present else calling insertToRealmOrUpdate will duplicate it
         savedAnswer?.reactions?.deleteAllFromRealm()
@@ -235,6 +235,7 @@ object ROConverter {
             replyChatRoomId = conversation.replyChatroomId
             this.widgetRO = widgetRO
             widgetId = conversation.widgetId
+            attachmentsUploadedEpoch = conversation.attachmentsUploadedEpoch
         }
     }
 
