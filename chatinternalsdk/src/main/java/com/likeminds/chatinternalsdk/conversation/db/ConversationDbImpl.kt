@@ -144,8 +144,8 @@ class ConversationDbImpl @Inject constructor(
         conversationReceiver.updateEditedConversation(conversationId, conversationText, linkOgTags)
     }
 
-    override fun updateConversationUploadWorkerUUID(conversationId: String, uuid: String) {
-        conversationReceiver.updateConversationUploadWorkerUUID(conversationId, uuid)
+    override fun updateConversationWorkerUUID(conversationId: String, uuid: String) {
+        conversationReceiver.updateConversationWorkerUUID(conversationId, uuid)
     }
 
     override fun updateConversationSubmitPoll(conversationId: String, allPollItems: List<_Poll_>) {

@@ -693,31 +693,31 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
     /**
      * update conversation uuid in local db
-     * @param updateConversationUploadWorkerUUIDRequest - client request model to update conversation upload worker
+     * @param updateConversationWorkerUUIDRequest - client request model to update conversation worker uuid
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
      * */
-    fun updateConversationUploadWorkerUUID(updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest) {
+    fun updateConversationWorkerUUID(updateConversationWorkerUUIDRequest: UpdateConversationWorkerUUIDRequest) {
         // validates the client request
         RequestUtils.validate()
-        validateUpdateConversationUploadWorkerUUIDRequest(updateConversationUploadWorkerUUIDRequest)
+        validateUpdateConversationWorkerUUIDRequest(updateConversationWorkerUUIDRequest)
 
-        conversationDB.updateConversationUploadWorkerUUID(
-            updateConversationUploadWorkerUUIDRequest.conversationId,
-            updateConversationUploadWorkerUUIDRequest.uuid
+        conversationDB.updateConversationWorkerUUID(
+            updateConversationWorkerUUIDRequest.conversationId,
+            updateConversationWorkerUUIDRequest.uuid
         )
     }
 
     /**
-     * validates [updateConversationUploadWorkerUUIDRequest]
+     * validates [updateConversationWorkerUUIDRequest]
      * @throws IllegalArgumentException - when required properties not provided
      */
-    private fun validateUpdateConversationUploadWorkerUUIDRequest(
-        updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest,
+    private fun validateUpdateConversationWorkerUUIDRequest(
+        updateConversationWorkerUUIDRequest: UpdateConversationWorkerUUIDRequest,
     ) {
-        if (updateConversationUploadWorkerUUIDRequest.conversationId.isEmpty()) {
+        if (updateConversationWorkerUUIDRequest.conversationId.isEmpty()) {
             RequestUtils.throwException("conversationId")
         }
-        if (updateConversationUploadWorkerUUIDRequest.uuid.isEmpty()) {
+        if (updateConversationWorkerUUIDRequest.uuid.isEmpty()) {
             RequestUtils.throwException("uuid")
         }
     }

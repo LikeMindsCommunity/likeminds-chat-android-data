@@ -1,6 +1,8 @@
 package com.likeminds.chatinternalsdk.db
 
 import android.util.Log
+import com.likeminds.chatinternalsdk.db.util.DbKey.UPLOAD_WORKER_UUID
+import com.likeminds.chatinternalsdk.db.util.DbKey.WORKER_UUID
 import io.realm.*
 
 class RealmDBMigration : RealmMigration {
@@ -88,6 +90,11 @@ class RealmDBMigration : RealmMigration {
         if (olderVersion == 5L) {
             schema[CONVERSATION_CLASS]!!.apply {
                 addField("attachmentsUploadedEpoch", Long::class.javaObjectType)
+                renameField(UPLOAD_WORKER_UUID, WORKER_UUID)
+            }
+
+            schema[LAST_CONVERSATION_CLASS]!!.apply {
+                renameField(UPLOAD_WORKER_UUID, WORKER_UUID)
             }
 
             olderVersion++

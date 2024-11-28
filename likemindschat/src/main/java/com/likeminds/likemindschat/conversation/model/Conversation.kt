@@ -24,7 +24,7 @@ class Conversation private constructor(
     val createdEpoch: Long?,
     val attachmentCount: Int?,
     val attachmentUploaded: Boolean?,
-    val uploadWorkerUUID: String?,
+    val workerUUID: String?,
     val temporaryId: String?,
     val localCreatedEpoch: Long?,
     val reactions: List<Reaction>?,
@@ -69,7 +69,7 @@ class Conversation private constructor(
         private var createdEpoch: Long? = null
         private var attachmentCount: Int? = null
         private var attachmentUploaded: Boolean? = null
-        private var uploadWorkerUUID: String? = null
+        private var workerUUID: String? = null
         private var temporaryId: String? = null
         private var localCreatedEpoch: Long? = null
         private var reactions: List<Reaction>? = null
@@ -170,8 +170,8 @@ class Conversation private constructor(
             this.attachmentUploaded = attachmentUploaded
         }
 
-        fun uploadWorkerUUID(uploadWorkerUUID: String?) = apply {
-            this.uploadWorkerUUID = uploadWorkerUUID
+        fun workerUUID(workerUUID: String?) = apply {
+            this.workerUUID = workerUUID
         }
 
         fun temporaryId(temporaryId: String?) = apply {
@@ -285,7 +285,7 @@ class Conversation private constructor(
             createdEpoch,
             attachmentCount,
             attachmentUploaded,
-            uploadWorkerUUID,
+            workerUUID,
             temporaryId,
             localCreatedEpoch,
             reactions,
@@ -332,7 +332,7 @@ class Conversation private constructor(
             .createdEpoch(createdEpoch)
             .attachmentCount(attachmentCount)
             .attachmentUploaded(attachmentUploaded)
-            .uploadWorkerUUID(uploadWorkerUUID)
+            .workerUUID(workerUUID)
             .temporaryId(temporaryId)
             .localCreatedEpoch(localCreatedEpoch)
             .reactions(reactions)

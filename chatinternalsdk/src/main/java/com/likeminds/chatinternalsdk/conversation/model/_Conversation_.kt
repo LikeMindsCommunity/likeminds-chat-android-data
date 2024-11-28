@@ -42,8 +42,8 @@ class _Conversation_ private constructor(
     val attachmentCount: Int?,
     @SerializedName("attachments_uploaded")
     val attachmentUploaded: Boolean?,
-    @SerializedName("upload_worker_uuid")
-    val uploadWorkerUUID: String?,
+    @SerializedName("worker_uuid")
+    val workerUUID: String?,
     @SerializedName("temporary_id")
     val temporaryId: String?,
     @SerializedName("local_created_epoch")
@@ -110,7 +110,7 @@ class _Conversation_ private constructor(
         private var createdEpoch: Long? = null
         private var attachmentCount: Int? = null
         private var attachmentUploaded: Boolean? = null
-        private var uploadWorkerUUID: String? = null
+        private var workerUUID: String? = null
         private var temporaryId: String? = null
         private var localCreatedEpoch: Long? = null
         private var reactions: List<_Reaction_>? = null
@@ -207,8 +207,8 @@ class _Conversation_ private constructor(
             this.attachmentUploaded = attachmentUploaded
         }
 
-        fun uploadWorkerUUID(uploadWorkerUUID: String?) = apply {
-            this.uploadWorkerUUID = uploadWorkerUUID
+        fun workerUUID(workerUUID: String?) = apply {
+            this.workerUUID = workerUUID
         }
 
         fun temporaryId(temporaryId: String?) = apply {
@@ -322,7 +322,7 @@ class _Conversation_ private constructor(
             createdEpoch,
             attachmentCount,
             attachmentUploaded,
-            uploadWorkerUUID,
+            workerUUID,
             temporaryId,
             localCreatedEpoch,
             reactions,
@@ -368,7 +368,7 @@ class _Conversation_ private constructor(
             .createdEpoch(createdEpoch)
             .attachmentCount(attachmentCount)
             .attachmentUploaded(attachmentUploaded)
-            .uploadWorkerUUID(uploadWorkerUUID)
+            .workerUUID(workerUUID)
             .temporaryId(temporaryId)
             .localCreatedEpoch(localCreatedEpoch)
             .reactions(reactions)

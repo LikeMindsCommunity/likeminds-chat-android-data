@@ -16,7 +16,7 @@ open class LastConversationRO(
     var deletedBy: String? = null,
     var attachmentCount: Int? = null,
     var attachmentsUploaded: Boolean? = null,
-    var uploadWorkerUUID: String? = null,
+    var workerUUID: String? = null,
     var createdEpoch: Long = 0L,
     var chatroomId: String = "",
     var communityId: String = "",
@@ -37,7 +37,7 @@ open class LastConversationRO(
         builder.deletedBy,
         builder.attachmentCount,
         builder.attachmentsUploaded,
-        builder.uploadWorkerUUID,
+        builder.workerUUID,
         builder.createdEpoch,
         builder.chatroomId,
         builder.communityId,
@@ -75,7 +75,7 @@ open class LastConversationRO(
         var attachments: RealmList<AttachmentRO> = RealmList()
         var attachmentCount: Int? = null
         var attachmentsUploaded: Boolean? = null
-        var uploadWorkerUUID: String? = null
+        var workerUUID: String? = null
         var deletedByMember: MemberRO? = null
         var widgetId: String? = null
         var widgetRO: WidgetRO? = null

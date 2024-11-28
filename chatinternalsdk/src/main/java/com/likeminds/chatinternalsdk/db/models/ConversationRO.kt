@@ -24,7 +24,7 @@ open class ConversationRO(
     var deletedBy: String? = null,
     var attachmentCount: Int? = null,
     var attachmentsUploaded: Boolean? = null,
-    var uploadWorkerUUID: String? = null,
+    var workerUUID: String? = null,
     var localSavedEpoch: Long = 0L,
     var temporaryId: String? = null,
     var reactions: RealmList<ReactionRO> = RealmList(),
@@ -74,7 +74,7 @@ open class ConversationRO(
         builder.deletedBy,
         builder.attachmentCount,
         builder.attachmentsUploaded,
-        builder.uploadWorkerUUID,
+        builder.workerUUID,
         builder.localSavedEpoch,
         builder.temporaryId,
         builder.reactions,
@@ -129,7 +129,7 @@ open class ConversationRO(
         var deletedBy: String? = null
         var attachmentCount: Int? = null
         var attachmentsUploaded: Boolean? = null
-        var uploadWorkerUUID: String? = null
+        var workerUUID: String? = null
         var localSavedEpoch: Long = 0L
         var temporaryId: String? = null
         var reactions: RealmList<ReactionRO> = RealmList()
@@ -170,7 +170,7 @@ open class ConversationRO(
             deletedBy = this@ConversationRO.deletedBy
             attachmentCount = this@ConversationRO.attachmentCount
             attachmentsUploaded = this@ConversationRO.attachmentsUploaded
-            uploadWorkerUUID = this@ConversationRO.uploadWorkerUUID
+            workerUUID = this@ConversationRO.workerUUID
             localSavedEpoch = this@ConversationRO.localSavedEpoch
             temporaryId = this@ConversationRO.temporaryId
             reactions = this@ConversationRO.reactions

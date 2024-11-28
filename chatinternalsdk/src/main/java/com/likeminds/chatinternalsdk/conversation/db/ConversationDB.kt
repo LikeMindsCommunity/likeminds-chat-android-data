@@ -95,8 +95,8 @@ interface ConversationDB {
         linkOgTags: _LinkOGTags_?
     )
 
-    //query to update conversation upload worker uuid
-    fun updateConversationUploadWorkerUUID(conversationId: String, uuid: String)
+    //query to update conversation worker uuid
+    fun updateConversationWorkerUUID(conversationId: String, uuid: String)
 
     //query to update conversation after submitting poll
     fun updateConversationSubmitPoll(conversationId: String, allPollItems: List<_Poll_>)
