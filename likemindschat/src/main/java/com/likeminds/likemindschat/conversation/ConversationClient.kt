@@ -127,9 +127,14 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
         // create input data
         val inputJson = Gson().toJson(postConversationRequest)
+        val metadata = if (postConversationRequest.metadata == null) {
+            null
+        } else {
+            postConversationRequest.metadata.toString()
+        }
 
         // create conversation worker
-        val createConversationWorker = CreateConversationWorker.getInstance(inputJson)
+        val createConversationWorker = CreateConversationWorker.getInstance(inputJson, metadata)
 
         // enqueue worker
         val work = WorkManager.getInstance(context)
