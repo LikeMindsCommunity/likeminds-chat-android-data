@@ -750,7 +750,7 @@ object ROConverter {
         communityId: String?,
         reactions: List<_ReactionMeta_>?,
     ): RealmList<ReactionRO> {
-        return reactions.orEmpty().reversed().mapNotNull { reaction ->
+        return reactions.orEmpty().asReversed().mapNotNull { reaction ->
             convertReactionMeta(realm, reaction, communityId)
         }.toRealmList()
     }
@@ -785,7 +785,7 @@ object ROConverter {
         communityId: String?,
         reactions: List<_Reaction_>?
     ): RealmList<ReactionRO> {
-        return reactions.orEmpty().reversed().mapNotNull { reaction ->
+        return reactions.orEmpty().asReversed().mapNotNull { reaction ->
             convertReaction(realm, reaction, communityId)
         }.toRealmList()
     }
