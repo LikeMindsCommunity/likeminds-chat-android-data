@@ -30,6 +30,7 @@ class CreateConversationWorker(
         const val NAME = "Create Conversation Worker"
 
         const val INPUT_POST_CONVERSATION_REQUEST = "post_conversation_request"
+        const val INPUT_POST_METADATA = "post_metadata"
         const val OUTPUT_POST_CONVERSATION_RESPONSE = "post_conversation_response"
 
         //All work manager will run only if internet connection is stable
@@ -37,10 +38,16 @@ class CreateConversationWorker(
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        fun getInstance(inputData: String): OneTimeWorkRequest {
+        fun getInstance(
+            inputData: String,
+            metadata: String?
+        ): OneTimeWorkRequest {
             return OneTimeWorkRequestBuilder<CreateConversationWorker>()
                 .setInputData(
-                    workDataOf(INPUT_POST_CONVERSATION_REQUEST to inputData)
+                    workDataOf(
+                        INPUT_POST_CONVERSATION_REQUEST to inputData,
+                        INPUT_POST_METADATA to metadata
+                    ),
                 )
                 .setConstraints(networkConstraint)
                 .setBackoffCriteria(
@@ -60,6 +67,9 @@ class CreateConversationWorker(
     private suspend fun createConversation(): Result {
         val inputString =
             inputData.getString(INPUT_POST_CONVERSATION_REQUEST) ?: return Result.failure()
+
+        val metadataString = inputData.getString(INPUT_POST_METADATA)
+
         val postConversationRequest =
             gson.fromJson(inputString, PostConversationRequest::class.java)
 
@@ -74,8 +84,8 @@ class CreateConversationWorker(
             .repliedChatroomId(postConversationRequest.repliedChatroomId)
             .attachments(ModelConverter.createAttachments(postConversationRequest.attachments))
 
-        if (postConversationRequest.metadata != null) {
-            requestBuilder.metadata(JsonParser.parseString(postConversationRequest.metadata.toString()).asJsonObject)
+        if (!metadataString.isNullOrEmpty()) {
+            requestBuilder.metadata(JsonParser.parseString(metadataString).asJsonObject)
         }
 
         if (postConversationRequest.triggerBot) {
