@@ -132,11 +132,18 @@ class LMChatClient private constructor() {
         return homeFeedClient.getExploreTabCount()
     }
 
-    // Exposed function to start chatroom sync
-    fun syncChatrooms(
+    // Exposed function to start group chatroom sync
+    fun loadGroupChatrooms(
         context: Context,
     ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
-        return homeFeedClient.syncChatrooms(context)
+        return homeFeedClient.loadGroupChatrooms(context)
+    }
+
+    // Exposed function to start dm chatroom sync
+    fun loadDMChatrooms(
+        context: Context
+    ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+        return dmClient.loadDMChatrooms(context)
     }
 
     // Exposed function to get chatrooms for home feed

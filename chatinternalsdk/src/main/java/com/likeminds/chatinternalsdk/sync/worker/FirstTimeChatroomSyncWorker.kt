@@ -27,7 +27,6 @@ class FirstTimeChatroomSyncWorker(
     private val sdkPreferences = SDKPreferences(context as Application)
     private val userPreferences = UserPreferences(context as Application)
     private val syncPreferences = SyncPreferences(context as Application)
-    private var timeStartedAt: Long = 0L
 
     private val isBackgroundWorker =
         workerParameters.inputData.getBoolean(IS_BACKGROUND_WORKER, false)
@@ -63,12 +62,11 @@ class FirstTimeChatroomSyncWorker(
      * Fetches all chatrooms
      */
     private suspend fun getChatrooms(realm: Realm): Result {
-        timeStartedAt = System.currentTimeMillis()
         val queries = HashMap<String, Any?>()
         // Set query parameters for request
         queries[SyncUtil.PAGE_KEY] = page
         queries[SyncUtil.PAGE_SIZE_KEY] = SyncUtil.CHATROOM_PAGE_SIZE
-        queries[SyncUtil.CHATROOM_TYPES_KEY] = SyncUtil.CHATROOM_TYPE_LIST
+        queries[SyncUtil.CHATROOM_TYPES_KEY] = SyncUtil.GROUP_CHATROOMS_TYPE_LIST
         queries[SyncUtil.MIN_TIMESTAMP_KEY] = 0
 
         /*
@@ -86,7 +84,7 @@ class FirstTimeChatroomSyncWorker(
         var data: _SyncChatroomResponse_? = null
         when (val response = api.syncChatrooms(queries)) {
             is NetworkResponse.Error -> {
-                Log.e(SyncUtil.TAG, "first time chatroom failed: ${response.body.errorMessage}")
+                Log.e(SyncUtil.TAG, "first time group chatroom failed: ${response.body.errorMessage}")
                 // The api call failed with some error, retry again or return failure according to the condition
                 if (runAttemptCount <= MAX_RETRY_COUNT) {
                     Result.retry()

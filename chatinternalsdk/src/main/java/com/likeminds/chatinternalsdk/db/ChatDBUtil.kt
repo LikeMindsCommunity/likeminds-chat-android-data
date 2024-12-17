@@ -388,7 +388,7 @@ object ChatDBUtil {
     }
 
     /**
-     * to update chatroom's [conversationSyncMinTimestamp]
+     * to update chatroom's [newMinTimestamp]
      *
      * @param chatroomId: id of chatroom to be updated
      * @param newMinTimestamp: value of [conversationSyncMinTimestamp]
@@ -400,6 +400,16 @@ object ChatDBUtil {
         write { realm ->
             val chatroomRO = getChatroom(realm, chatroomId)
             chatroomRO?.conversationSyncMinTimestamp = newMinTimestamp
+        }
+    }
+
+    fun doesDMChatroomExists(): Boolean {
+        Realm.getDefaultInstance().use { realm ->
+            val count = realm.where(ChatroomRO::class.java)
+                .equalTo(DbKey.TYPE, TYPE_DIRECT_MESSAGE)
+                .findAll()
+                .count()
+            return count >= 0
         }
     }
 }

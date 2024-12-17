@@ -91,7 +91,7 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
      * @return Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? -
      * Worker result
      */
-    fun syncChatrooms(
+    fun loadGroupChatrooms(
         context: Context
     ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
         //validates the client request

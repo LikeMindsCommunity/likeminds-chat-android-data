@@ -1,6 +1,11 @@
 package com.likeminds.likemindschat.dm
 
+import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.work.WorkInfo
+import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.dm.model.*
+import com.likeminds.chatinternalsdk.sync.SyncSDK
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
@@ -332,6 +337,20 @@ class DMClient @Inject constructor() : BaseClient() {
     private fun validateCreateDMChatroomRequest(createDMChatroomRequest: CreateDMChatroomRequest) {
         if (createDMChatroomRequest.uuid.isEmpty()) {
             RequestUtils.throwException("uuid")
+        }
+    }
+
+    fun loadDMChatrooms(
+        context: Context
+    ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+        //validates the client request
+        RequestUtils.validate()
+
+        val doesDMChatroomExists = ChatDBUtil.doesDMChatroomExists()
+        return if (!doesDMChatroomExists) {
+            SyncSDK.startFirstTimeDMFeedSync(context)
+        } else {
+
         }
     }
 
