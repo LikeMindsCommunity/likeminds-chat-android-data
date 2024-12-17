@@ -1,5 +1,7 @@
 package com.likeminds.chatinternalsdk.di.modules
 
+import android.content.Context
+import com.chuckerteam.chucker.api.*
 import com.likeminds.chatinternalsdk.BuildConfig
 import com.likeminds.chatinternalsdk.utils.retrofit.CommonHeaderInterceptor
 import com.likeminds.chatinternalsdk.utils.retrofit.TokenAuthenticator
@@ -28,7 +30,7 @@ class NetworkModule {
         commonHeaderInterceptor: CommonHeaderInterceptor,
         tokenAuthenticator: TokenAuthenticator,
         dispatcher: Dispatcher,
-//        chuckerInterceptor: ChuckerInterceptor
+        chuckerInterceptor: ChuckerInterceptor
     ): OkHttpClient {
         //create okhttp client
         val clientBuilder = OkHttpClient.Builder()
@@ -47,7 +49,7 @@ class NetworkModule {
             clientBuilder.addInterceptor(loggingInterceptor)
         }
         clientBuilder.addInterceptor(commonHeaderInterceptor)
-//        clientBuilder.addInterceptor(chuckerInterceptor)
+        clientBuilder.addInterceptor(chuckerInterceptor)
 
         return clientBuilder.build()
     }
@@ -71,13 +73,13 @@ class NetworkModule {
         return dispatcher
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideChuckInterceptor(context: Context): ChuckerInterceptor {
-//        val collector = ChuckerCollector(context, true, RetentionManager.Period.ONE_WEEK)
-//        return ChuckerInterceptor.Builder(context)
-//            .collector(collector)
-//            .alwaysReadResponseBody(false)
-//            .build()
-//    }
+    @Provides
+    @Singleton
+    fun provideChuckInterceptor(context: Context): ChuckerInterceptor {
+        val collector = ChuckerCollector(context, true, RetentionManager.Period.ONE_WEEK)
+        return ChuckerInterceptor.Builder(context)
+            .collector(collector)
+            .alwaysReadResponseBody(false)
+            .build()
+    }
 }
