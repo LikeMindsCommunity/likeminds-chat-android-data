@@ -409,7 +409,10 @@ object ChatDBUtil {
                 .equalTo(DbKey.TYPE, TYPE_DIRECT_MESSAGE)
                 .findAll()
                 .count()
-            return count >= 0
+
+            Log.d("PUI", "dm chatrooms count: $count")
+
+            return count > 0
         }
     }
 }

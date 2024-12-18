@@ -88,6 +88,7 @@ class ReopenDMChatroomSyncWorker(context: Context, workerParameters: WorkerParam
 
             data.chatrooms.isEmpty() -> {
                 // The response contains no more data. Max timestamp is stored for further api calls
+                Log.d("PUI", "reopen -> chatrooms are empty, setting maxtimestamp: $maxTimestamp")
                 syncPreferences.setTimestampForSyncDM(maxTimestamp)
                 Result.success()
             }

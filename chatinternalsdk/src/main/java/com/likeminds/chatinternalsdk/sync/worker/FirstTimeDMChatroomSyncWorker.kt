@@ -69,12 +69,12 @@ class FirstTimeDMChatroomSyncWorker(
         * For blocker worker -> Current timestamp is used as Max timestamp and stored in prefs
         * For background worker -> Timestamp is fetched from prefs and is used as Max timestamp
         * */
-        if (isBackgroundWorker) {
-            queries[SyncUtil.MAX_TIMESTAMP_KEY] = syncPreferences.getTimestampForSyncDM()
+        maxTimestamp = if (isBackgroundWorker) {
+            syncPreferences.getTimestampForSyncDM()
         } else {
-            maxTimestamp = System.currentTimeMillis() / 1000
-            queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
+            System.currentTimeMillis() / 1000
         }
+        queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
 
         var data: _SyncChatroomResponse_? = null
         when (val response = api.syncChatrooms(queries)) {
@@ -110,6 +110,7 @@ class FirstTimeDMChatroomSyncWorker(
 
             data.chatrooms.isEmpty() -> {
                 // The response contains no more data.
+                Log.d("PUI", "first time -> chatrooms are empty, setting maxtimestamp: $maxTimestamp")
                 syncPreferences.setTimestampForSyncDM(maxTimestamp)
                 Result.success()
             }
@@ -126,6 +127,7 @@ class FirstTimeDMChatroomSyncWorker(
                     page++
                     getDMChatrooms(realm)
                 }
+                Log.d("PUI", "first time -> else, setting maxtimestamp: $maxTimestamp")
                 syncPreferences.setTimestampForSyncDM(maxTimestamp)
                 Result.success()
             }
