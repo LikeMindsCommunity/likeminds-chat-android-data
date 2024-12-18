@@ -152,13 +152,23 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get chatrooms for home feed
-    fun observeLiveHomeFeed(context: Context) {
-        homeFeedClient.observeLiveHomeFeed(context)
+    fun observeLiveGroupChatroom(context: Context) {
+        homeFeedClient.observeLiveGroupChatroom(context)
     }
 
     // Exposed function to remove home feed listener
-    fun removeLiveHomeFeedListener() {
-        homeFeedClient.removeLiveHomeFeedListener()
+    fun removeLiveGroupChatroomListener() {
+        homeFeedClient.removeLiveGroupChatroomListener()
+    }
+
+    // Exposed function to get chatrooms for dm feed
+    fun observeLiveDMChatroom(context: Context) {
+        dmClient.observeLiveDMChatrooms(context)
+    }
+
+    // Exposed function to remove dm feed listener
+    fun removeLiveDMChatroomListener() {
+        dmClient.removeLiveDMChatroomListener()
     }
 
     //function to get config details
