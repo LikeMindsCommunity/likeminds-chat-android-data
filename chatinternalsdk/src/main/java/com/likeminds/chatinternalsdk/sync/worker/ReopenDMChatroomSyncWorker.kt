@@ -17,15 +17,8 @@ import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.Realm
 import kotlinx.coroutines.runBlocking
 
-/**
- * Worker to sync home feed chatrooms when the app is reopened and DB contains first sync data
- * @param context Context object
- * @param workerParams Contains meta data and input data of this worker
- */
-class ReopenChatroomSyncWorker(
-    context: Context,
-    workerParameters: WorkerParameters
-) : Worker(context, workerParameters) {
+class ReopenDMChatroomSyncWorker(context: Context, workerParameters: WorkerParameters) :
+    Worker(context, workerParameters) {
 
     private val chatSDK = LMChatSDK.getInstance()
     private val api = chatSDK.getChatroomSyncApi()
@@ -33,42 +26,39 @@ class ReopenChatroomSyncWorker(
     private val userPreferences = UserPreferences(context as Application)
     private val syncPreferences = SyncPreferences(context as Application)
     private val maxTimestamp = System.currentTimeMillis() / 1000
-    private val minTimestamp = syncPreferences.getTimestampForSyncChatroom()
+    private val minTimestamp = syncPreferences.getTimestampForSyncDM()
 
     private var page = 1
 
     companion object {
-        const val NAME = "Reopen Chatroom Sync Worker"
+        const val NAME = "Reopen DM Chatroom Sync Worker"
     }
 
     override fun doWork(): Result {
         return measureExecution(NAME) {
             val realm = Realm.getDefaultInstance()
             val result = runBlocking {
-                getChatrooms(realm)
+                getDMChatrooms(realm)
             }
             realm.close()
             return@measureExecution result
         }
     }
 
-    /**
-     * Fetches all chatrooms
-     */
-    private suspend fun getChatrooms(realm: Realm): Result {
+    private suspend fun getDMChatrooms(realm: Realm): Result {
         val queries = HashMap<String, Any?>()
         // Set query parameters for request
         queries[SyncUtil.PAGE_KEY] = page
         queries[SyncUtil.PAGE_SIZE_KEY] = SyncUtil.CHATROOM_PAGE_SIZE
         queries[SyncUtil.MIN_TIMESTAMP_KEY] = minTimestamp
         queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
-        queries[SyncUtil.CHATROOM_TYPES_KEY] = SyncUtil.GROUP_CHATROOMS_TYPE_LIST
+        queries[SyncUtil.CHATROOM_TYPES_KEY] = SyncUtil.DM_CHATROOMS_TYPE_LIST
 
         var data: _SyncChatroomResponse_? = null
         when (val response = api.syncChatrooms(queries)) {
             is NetworkResponse.Error -> {
                 // The api call failed with some error, retry again or return failure according to the condition
-                Log.e(SyncUtil.TAG, "reopen group chatroom failed: ${response.body.errorMessage}")
+                Log.e(SyncUtil.TAG, "reopen dm chatroom failed: ${response.body.errorMessage}")
                 if (runAttemptCount <= MAX_RETRY_COUNT) {
                     Result.retry()
                 } else {
@@ -98,7 +88,7 @@ class ReopenChatroomSyncWorker(
 
             data.chatrooms.isEmpty() -> {
                 // The response contains no more data. Max timestamp is stored for further api calls
-                syncPreferences.setTimestampForSyncChatroom(maxTimestamp)
+                syncPreferences.setTimestampForSyncDM(maxTimestamp)
                 Result.success()
             }
 
@@ -110,7 +100,7 @@ class ReopenChatroomSyncWorker(
                     data
                 )
                 page++
-                getChatrooms(realm)
+                getDMChatrooms(realm)
             }
         }
     }

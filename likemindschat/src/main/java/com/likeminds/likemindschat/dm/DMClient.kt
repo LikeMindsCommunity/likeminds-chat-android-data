@@ -340,6 +340,12 @@ class DMClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     * @param context - Context required to run workers
+     * @return Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? -
+     * Worker result
+     */
     fun loadDMChatrooms(
         context: Context
     ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
@@ -350,7 +356,7 @@ class DMClient @Inject constructor() : BaseClient() {
         return if (!doesDMChatroomExists) {
             SyncSDK.startFirstTimeDMFeedSync(context)
         } else {
-
+            SyncSDK.startReopenSyncForDMFeed(context)
         }
     }
 
