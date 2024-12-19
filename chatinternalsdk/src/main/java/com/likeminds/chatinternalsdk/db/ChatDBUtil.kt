@@ -319,7 +319,6 @@ object ChatDBUtil {
         }
 
         chatroomRO.totalAllResponseCount = count
-
         chatroomRO.relationshipNeeded = false
     }
 
@@ -382,8 +381,25 @@ object ChatDBUtil {
     ) {
         write { realm ->
             val chatroomRO = getChatroom(realm, chatroomId)
-
+            Log.d(
+                "PUI", """
+                updateIsConversationStoreForChatroom called
+                chatroomId: $chatroomId
+                chatroomName: ${chatroomRO?.header}
+                chatroomTitle: ${chatroomRO?.title}
+                isConversationStored: $isConversationStored
+            """.trimIndent()
+            )
             chatroomRO?.isConversationStored = isConversationStored
+            Log.d(
+                "PUI", """
+                post update
+                chatroomId: $chatroomId
+                chatroomName: ${chatroomRO?.header}
+                chatroomTitle: ${chatroomRO?.title}
+                chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            """.trimIndent()
+            )
         }
     }
 
@@ -409,9 +425,6 @@ object ChatDBUtil {
                 .equalTo(DbKey.TYPE, TYPE_DIRECT_MESSAGE)
                 .findAll()
                 .count()
-
-            Log.d("PUI", "dm chatrooms count: $count")
-
             return count > 0
         }
     }

@@ -2,6 +2,7 @@ package com.likeminds.chatinternalsdk.sync.worker
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
@@ -111,9 +112,12 @@ class DatabaseSyncWorker(
                     }
 
                     syncType == SYNC_CHATROOM && chatroomId.isNotEmpty() -> {
-
                         val chatroomRO = ChatDBUtil.getChatroom(realmInstance, chatroomId)
                         if (chatroomRO != null) {
+                            Log.d(
+                                "PUI",
+                                "database sync worker after get: ${chatroomRO.isConversationStored}"
+                            )
                             val communityRO = ChatDBUtil.getCommunity(
                                 realmInstance,
                                 chatroomRO.communityId
@@ -154,14 +158,27 @@ class DatabaseSyncWorker(
                                     .findAll()
                                     .deleteAllFromRealm()
                             }
+                            Log.d(
+                                "PUI",
+                                "database sync worker before setting: ${chatroomRO.isConversationStored}"
+                            )
+                            chatroomRO.isConversationStored = true
+                            Log.d(
+                                "PUI",
+                                "database sync worker after setting: ${chatroomRO.isConversationStored}"
+                            )
 
                             ChatDBUtil.updateRelationshipsOfChatroom(
                                 chatroomRO,
                                 conversations,
                                 userPreferences.getClientUUID()
                             )
-                        }
 
+                            Log.d(
+                                "PUI",
+                                "database sync worker after updaterelation called: ${chatroomRO.isConversationStored}"
+                            )
+                        }
                     }
                 }
             }

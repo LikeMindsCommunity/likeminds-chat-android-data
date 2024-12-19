@@ -1,5 +1,6 @@
 package com.likeminds.chatinternalsdk.sync.util
 
+import android.util.Log
 import com.likeminds.chatinternalsdk.conversation.model._ConversationState_
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
@@ -376,6 +377,7 @@ object SyncUtil {
                     realmWrite.insertOrUpdate(chatroomWithUserRO)
                 }
 
+                Log.d("PUI", "saveConversationResponse: calling convertChatroom")
                 val chatroomRO = ROConverter.convertChatroom(
                     realmWrite,
                     chatroom,
@@ -384,6 +386,7 @@ object SyncUtil {
                     chatRequestByRO = chatRequestedByRO,
                     chatroomWithUserRO = chatroomWithUserRO
                 ) ?: return@write
+                Log.d("PUI", "saveConversationResponse: ${chatroomRO.isConversationStored}")
                 chatroomRO.relationshipNeeded = true
                 realmWrite.insertOrUpdate(chatroomRO)
 
