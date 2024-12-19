@@ -48,6 +48,7 @@ object ChatDBUtil {
             Log.e(LMChatSDK.LOG_TAG, "write error", e)
             false
         } finally {
+            realm.refresh()
             ONGOING_WRITE_TRANSACTION.decrementAndGet()
         }
     }
@@ -60,19 +61,20 @@ object ChatDBUtil {
      **/
     fun write(block: (realm: Realm) -> Unit): Boolean {
         ONGOING_WRITE_TRANSACTION.incrementAndGet()
-        Realm.getDefaultInstance().use { realm ->
-            return try {
-                realm.executeTransaction {
-                    block(it)
-                }
-                true
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e(LMChatSDK.LOG_TAG, "write async error", e)
-                false
-            } finally {
-                ONGOING_WRITE_TRANSACTION.decrementAndGet()
+        val realm = Realm.getDefaultInstance()
+        return try {
+            realm.executeTransaction {
+                block(it)
             }
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e(LMChatSDK.LOG_TAG, "write async error", e)
+            false
+        } finally {
+            ONGOING_WRITE_TRANSACTION.decrementAndGet()
+            realm.refresh()
+            realm.close()
         }
     }
 
@@ -401,6 +403,20 @@ object ChatDBUtil {
             """.trimIndent()
             )
         }
+
+        Realm.getDefaultInstance().use { realm ->
+            val chatroomRO = getChatroom(realm, chatroomId)
+            Log.d(
+                "PUI", """
+                chatroom after updating
+                chatroomId: $chatroomId
+                chatroomName: ${chatroomRO?.header}
+                chatroomTitle: ${chatroomRO?.title}
+                chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            """.trimIndent()
+            )
+        }
+
     }
 
     /**

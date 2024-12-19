@@ -1,6 +1,7 @@
 package com.likeminds.chatinternalsdk.chatroom
 
 import android.os.Build
+import android.util.Log
 import com.likeminds.chatinternalsdk.chatroom.api.ChatroomNetworkApi
 import com.likeminds.chatinternalsdk.chatroom.model.*
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
@@ -130,6 +131,18 @@ class ChatroomReceiver @Inject constructor(
                 }
             }
         })
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = getChatroom(realm, chatroomId)
+        Log.d(
+            "PUI", """
+            updateChatroomFollowStatus called
+            chatroom.id: ${chatroomRO?.id}
+            chatroom.header:${chatroomRO?.header}
+            chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            chatroom.totalAllResponse:${chatroomRO?.totalAllResponseCount}
+        """.trimIndent()
+        )
+        realm.close()
     }
 
     fun updateChatroomMuteStatus(chatroomId: String, value: Boolean) {
@@ -138,6 +151,18 @@ class ChatroomReceiver @Inject constructor(
                 chatroomRO.muteStatus = value
             }
         })
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = getChatroom(realm, chatroomId)
+        Log.d(
+            "PUI", """
+            updateChatroomMuteStatus called
+            chatroom.id: ${chatroomRO?.id}
+            chatroom.header:${chatroomRO?.header}
+            chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            chatroom.totalAllResponse:${chatroomRO?.totalAllResponseCount}
+        """.trimIndent()
+        )
+        realm.close()
     }
 
     fun updateSecretChatroomLeaveStatus(chatroomId: String) {
@@ -147,6 +172,18 @@ class ChatroomReceiver @Inject constructor(
                 chatroomRO.secretChatRoomLeft = true
             }
         })
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = getChatroom(realm, chatroomId)
+        Log.d(
+            "PUI", """
+            updateSecretChatroomLeaveStatus called
+            chatroom.id: ${chatroomRO?.id}
+            chatroom.header:${chatroomRO?.header}
+            chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            chatroom.totalAllResponse:${chatroomRO?.totalAllResponseCount}
+        """.trimIndent()
+        )
+        realm.close()
     }
 
     fun updateChatroomTitle(chatroomId: String, updatedTitle: String) {
@@ -156,6 +193,18 @@ class ChatroomReceiver @Inject constructor(
                 chatRoom.isEdited = true
             }
         })
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = getChatroom(realm, chatroomId)
+        Log.d(
+            "PUI", """
+            updateChatroomTitle called
+            chatroom.id: ${chatroomRO?.id}
+            chatroom.header:${chatroomRO?.header}
+            chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            chatroom.totalAllResponse:${chatroomRO?.totalAllResponseCount}
+        """.trimIndent()
+        )
+        realm.close()
     }
 
     fun updateChatroomTopic(chatroomId: String, topicId: String) {
@@ -168,6 +217,18 @@ class ChatroomReceiver @Inject constructor(
                 }
             }
         })
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = getChatroom(realm, chatroomId)
+        Log.d(
+            "PUI", """
+            updateChatroomTopic called
+            chatroom.id: ${chatroomRO?.id}
+            chatroom.header:${chatroomRO?.header}
+            chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            chatroom.totalAllResponse:${chatroomRO?.totalAllResponseCount}
+        """.trimIndent()
+        )
+        realm.close()
     }
 
     fun updateChatroomReaction(
@@ -200,6 +261,18 @@ class ChatroomReceiver @Inject constructor(
                 }
             }
         })
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = getChatroom(realm, chatroomId)
+        Log.d(
+            "PUI", """
+            updateChatroomReaction called
+            chatroom.id: ${chatroomRO?.id}
+            chatroom.header:${chatroomRO?.header}
+            chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            chatroom.totalAllResponse:${chatroomRO?.totalAllResponseCount}
+        """.trimIndent()
+        )
+        realm.close()
     }
 
     fun removeChatroomReaction(chatroomId: String) {
@@ -221,6 +294,18 @@ class ChatroomReceiver @Inject constructor(
                 }
             }
         })
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = getChatroom(realm, chatroomId)
+        Log.d(
+            "PUI", """
+            removeChatroomReaction called
+            chatroom.id: ${chatroomRO?.id}
+            chatroom.header:${chatroomRO?.header}
+            chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            chatroom.totalAllResponse:${chatroomRO?.totalAllResponseCount}
+        """.trimIndent()
+        )
+        realm.close()
     }
 
     fun updateLastSeenAndDraft(chatroomId: String, draft: String?) {
@@ -239,6 +324,18 @@ class ChatroomReceiver @Inject constructor(
                 }
             }
         })
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = getChatroom(realm, chatroomId)
+        Log.d(
+            "PUI", """
+            updateLastSeenAndDraft called
+            chatroom.id: ${chatroomRO?.id}
+            chatroom.header:${chatroomRO?.header}
+            chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            chatroom.totalAllResponse:${chatroomRO?.totalAllResponseCount}
+        """.trimIndent()
+        )
+        realm.close()
     }
 
     // updates the chat request state of the DM chatroom
@@ -253,6 +350,18 @@ class ChatroomReceiver @Inject constructor(
                 chatroomRO.chatRequestedById = chatRequestedById
             }
         })
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = getChatroom(realm, chatroomId)
+        Log.d(
+            "PUI", """
+            updateChatRequestState called
+            chatroom.id: ${chatroomRO?.id}
+            chatroom.header:${chatroomRO?.header}
+            chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            chatroom.totalAllResponse:${chatroomRO?.totalAllResponseCount}
+        """.trimIndent()
+        )
+        realm.close()
     }
 
     fun observeDMChatrooms(realm: Realm): Observable<CollectionChange<RealmResults<ChatroomRO>>>? {
@@ -306,5 +415,17 @@ class ChatroomReceiver @Inject constructor(
                 realm.insertOrUpdate(chatroomRO)
             }
         }
+        val realm = Realm.getDefaultInstance()
+        val chatroomRO = getChatroom(realm, chatroom.id)
+        Log.d(
+            "PUI", """
+            updateChatRequestState called
+            chatroom.id: ${chatroomRO?.id}
+            chatroom.header:${chatroomRO?.header}
+            chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
+            chatroom.totalAllResponse:${chatroomRO?.totalAllResponseCount}
+        """.trimIndent()
+        )
+        realm.close()
     }
 }

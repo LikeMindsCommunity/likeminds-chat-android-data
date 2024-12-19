@@ -38,6 +38,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         validateGetChatroomRequest(getChatroomRequest)
 
         val realm = Realm.getDefaultInstance()
+        realm.refresh()
         val chatroomRO = chatroomDB.getChatroom(realm, getChatroomRequest.chatroomId)
 
         Log.d(
@@ -47,6 +48,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             chatroomRO.id: ${chatroomRO?.id}
             chatroomRO.header: ${chatroomRO?.header}
             chatroomRO.title: ${chatroomRO?.title}
+            chatroomRO.totalAllResponse:${chatroomRO?.totalAllResponseCount}
             chatroomRO.isConversationStored: ${chatroomRO?.isConversationStored}
         """.trimIndent()
         )
@@ -60,6 +62,7 @@ class ChatroomClient @Inject constructor() : BaseClient() {
             chatroom.id: ${chatroom?.id}
             chatroom.header: ${chatroom?.header}
             chatroom.title: ${chatroom?.title}
+             chatroom.totalAllResponse:${chatroom?.totalAllResponseCount}
             chatroom.isConversationStored: ${chatroom?.isConversationStored}
         """.trimIndent()
         )
