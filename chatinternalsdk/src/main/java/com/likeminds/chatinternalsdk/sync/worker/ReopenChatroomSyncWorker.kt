@@ -38,7 +38,6 @@ class ReopenChatroomSyncWorker(
     private var page = 1
 
     companion object {
-
         const val NAME = "Reopen Chatroom Sync Worker"
     }
 
@@ -63,13 +62,13 @@ class ReopenChatroomSyncWorker(
         queries[SyncUtil.PAGE_SIZE_KEY] = SyncUtil.CHATROOM_PAGE_SIZE
         queries[SyncUtil.MIN_TIMESTAMP_KEY] = minTimestamp
         queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
-        queries[SyncUtil.CHATROOM_TYPES_KEY] = SyncUtil.CHATROOM_TYPE_LIST
+        queries[SyncUtil.CHATROOM_TYPES_KEY] = SyncUtil.GROUP_CHATROOMS_TYPE_LIST
 
         var data: _SyncChatroomResponse_? = null
         when (val response = api.syncChatrooms(queries)) {
             is NetworkResponse.Error -> {
                 // The api call failed with some error, retry again or return failure according to the condition
-                Log.e(SyncUtil.TAG, "reopen chatroom failed: ${response.body.errorMessage}")
+                Log.e(SyncUtil.TAG, "reopen group chatroom failed: ${response.body.errorMessage}")
                 if (runAttemptCount <= MAX_RETRY_COUNT) {
                     Result.retry()
                 } else {

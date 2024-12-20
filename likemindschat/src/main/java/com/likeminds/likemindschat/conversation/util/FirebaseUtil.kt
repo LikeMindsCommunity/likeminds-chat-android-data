@@ -2,7 +2,7 @@ package com.likeminds.likemindschat.conversation.util
 
 import android.util.Log
 import com.google.firebase.database.*
-import com.likeminds.likemindschat.chatroom.model.ChatroomFirebaseEntity
+import com.likeminds.likemindschat.chatroom.model.ConversationEntity
 import com.likeminds.likemindschat.conversation.model.LiveConversationResponse
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -19,7 +19,7 @@ object FirebaseUtil {
                     trySendBlocking(
                         LiveConversationResponse.ChildAdded(
                             snapshot.getValue(
-                                ChatroomFirebaseEntity::class.java
+                                ConversationEntity::class.java
                             )
                         )
                     )
@@ -30,7 +30,7 @@ object FirebaseUtil {
                     trySendBlocking(
                         LiveConversationResponse.ChildChanged(
                             snapshot.getValue(
-                                ChatroomFirebaseEntity::class.java
+                                ConversationEntity::class.java
                             )
                         )
                     )
@@ -41,7 +41,7 @@ object FirebaseUtil {
                     trySendBlocking(
                         LiveConversationResponse.ChildRemoved(
                             snapshot.getValue(
-                                ChatroomFirebaseEntity::class.java
+                                ConversationEntity::class.java
                             )
                         )
                     )
@@ -52,7 +52,7 @@ object FirebaseUtil {
                     trySendBlocking(
                         LiveConversationResponse.ChildMoved(
                             snapshot.getValue(
-                                ChatroomFirebaseEntity::class.java
+                                ConversationEntity::class.java
                             )
                         )
                     )
