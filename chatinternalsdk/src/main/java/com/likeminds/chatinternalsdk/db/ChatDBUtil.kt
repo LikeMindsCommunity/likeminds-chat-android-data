@@ -383,40 +383,8 @@ object ChatDBUtil {
     ) {
         write { realm ->
             val chatroomRO = getChatroom(realm, chatroomId)
-            Log.d(
-                "PUI", """
-                updateIsConversationStoreForChatroom called
-                chatroomId: $chatroomId
-                chatroomName: ${chatroomRO?.header}
-                chatroomTitle: ${chatroomRO?.title}
-                isConversationStored: $isConversationStored
-            """.trimIndent()
-            )
             chatroomRO?.isConversationStored = isConversationStored
-            Log.d(
-                "PUI", """
-                post update
-                chatroomId: $chatroomId
-                chatroomName: ${chatroomRO?.header}
-                chatroomTitle: ${chatroomRO?.title}
-                chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
-            """.trimIndent()
-            )
         }
-
-        Realm.getDefaultInstance().use { realm ->
-            val chatroomRO = getChatroom(realm, chatroomId)
-            Log.d(
-                "PUI", """
-                chatroom after updating
-                chatroomId: $chatroomId
-                chatroomName: ${chatroomRO?.header}
-                chatroomTitle: ${chatroomRO?.title}
-                chatroom.isConversationStored: ${chatroomRO?.isConversationStored}
-            """.trimIndent()
-            )
-        }
-
     }
 
     /**

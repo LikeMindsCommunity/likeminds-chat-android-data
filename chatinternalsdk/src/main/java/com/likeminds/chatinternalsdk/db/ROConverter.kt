@@ -1,6 +1,5 @@
 package com.likeminds.chatinternalsdk.db
 
-import android.util.Log
 import com.likeminds.chatinternalsdk.chatroom.model._Chatroom_
 import com.likeminds.chatinternalsdk.community.model._Community_
 import com.likeminds.chatinternalsdk.community.model._Member_
@@ -58,16 +57,6 @@ object ROConverter {
         val communityId = chatroom.communityId ?: ""
 
         val savedChatroom = ChatDBUtil.getChatroom(realm, chatroomId)
-
-        Log.d(
-            "PUI", """
-            convert Chatroom called for chatroom id: $chatroomId
-            savedChatroom present: ${savedChatroom != null}
-            savedChatroom.isConversationStored: ${savedChatroom?.isConversationStored}
-            savedChatroom.conversationSyncMinTimestamp: ${savedChatroom?.conversationSyncMinTimestamp}
-        """.trimIndent()
-        )
-
         val reactionsRO = convertReactionsMeta(realm, communityId, reactions)
 
         return ChatroomRO.build(chatroomId, communityId, chatroom.title) {

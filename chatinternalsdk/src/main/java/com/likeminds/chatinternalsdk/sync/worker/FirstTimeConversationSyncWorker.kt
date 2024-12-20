@@ -132,7 +132,6 @@ class FirstTimeConversationSyncWorker(
                 * The response contains no more data.
                 * Stores loaded conversations to DB.
                 * */
-                Log.d("PUI", "first time conversation sync worker -> conversations are empty")
                 SyncUtil.saveConversationResponses(chatroomId, communityId, loggedInUUID, dataList)
                 ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
                 ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
@@ -149,7 +148,6 @@ class FirstTimeConversationSyncWorker(
                         loggedInUUID,
                         dataList
                     )
-                    Log.d("PUI", "first time conversation sync worker -> else:!isBackgroundWorker")
                     ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
                     ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
                     Result.success()
@@ -159,7 +157,6 @@ class FirstTimeConversationSyncWorker(
                     * Each page of conversation is added in dataList.
                     * This dataList is stored in DB once 5 page of conversations are loaded or empty response is found.
                     * */
-                    Log.d("PUI", "first time conversation sync worker -> else:isBackgroundWorker")
                     if (page % 5 != 1) {
                         dataList.add(data)
                         page++

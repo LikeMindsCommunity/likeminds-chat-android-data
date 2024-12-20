@@ -377,7 +377,6 @@ object SyncUtil {
                     realmWrite.insertOrUpdate(chatroomWithUserRO)
                 }
 
-                Log.d("PUI", "saveConversationResponse: calling convertChatroom")
                 val chatroomRO = ROConverter.convertChatroom(
                     realmWrite,
                     chatroom,
@@ -386,7 +385,6 @@ object SyncUtil {
                     chatRequestByRO = chatRequestedByRO,
                     chatroomWithUserRO = chatroomWithUserRO
                 ) ?: return@write
-                Log.d("PUI", "saveConversationResponse: ${chatroomRO.isConversationStored}")
                 chatroomRO.relationshipNeeded = true
                 realmWrite.insertOrUpdate(chatroomRO)
 

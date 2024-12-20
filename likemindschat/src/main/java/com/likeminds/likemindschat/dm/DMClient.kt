@@ -372,9 +372,6 @@ class DMClient @Inject constructor() : BaseClient() {
         val doesDMChatroomExists = ChatDBUtil.doesDMChatroomExists()
         val syncTimestamp = syncPreferences.getTimestampForSyncDM()
 
-        Log.d("PUI", "doesDMChatroomExists: $doesDMChatroomExists")
-        Log.d("PUI", "syncTimestamp: $syncTimestamp")
-
         return if (!doesDMChatroomExists && syncTimestamp == 0L) {
             SyncSDK.startFirstTimeDMFeedSync(context)
         } else {
