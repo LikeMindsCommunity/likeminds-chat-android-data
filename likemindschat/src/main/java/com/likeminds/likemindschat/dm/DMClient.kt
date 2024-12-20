@@ -358,6 +358,8 @@ class DMClient @Inject constructor() : BaseClient() {
     }
 
     /**
+     * Loads all DM Chatrooms in Local DB
+     *
      * @throws IllegalArgumentException - when LMChatClient is not instantiated
      * @param context - Context required to run workers
      * @return Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? -
@@ -400,6 +402,11 @@ class DMClient @Inject constructor() : BaseClient() {
     }
 
 
+    /**
+     * observes dm chatroom, in real time
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     */
     fun observeLiveDMChatrooms(context: Context) {
         RequestUtils.validate()
 
@@ -447,6 +454,9 @@ class DMClient @Inject constructor() : BaseClient() {
         databaseReference?.addValueEventListener(valueChangeListener)
     }
 
+    /**
+     * remove real time listener for dm feed
+     */
     fun removeLiveDMChatroomListener() {
         if (this::valueChangeListener.isInitialized) {
             databaseReference?.removeEventListener(valueChangeListener)

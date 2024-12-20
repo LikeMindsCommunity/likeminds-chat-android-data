@@ -49,6 +49,7 @@ object ChatDBUtil {
             false
         } finally {
             realm.refresh()
+            realm.close()
             ONGOING_WRITE_TRANSACTION.decrementAndGet()
         }
     }
@@ -403,6 +404,10 @@ object ChatDBUtil {
         }
     }
 
+    /**
+     * To check whether DM chatroom exists or not
+     * @return whether DM chatroom exists or not
+     */
     fun doesDMChatroomExists(): Boolean {
         Realm.getDefaultInstance().use { realm ->
             val count = realm.where(ChatroomRO::class.java)
