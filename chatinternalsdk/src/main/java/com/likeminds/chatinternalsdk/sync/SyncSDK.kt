@@ -6,7 +6,9 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.work.*
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.sync.SyncType.Companion.SYNC_CHATROOM
+import com.likeminds.chatinternalsdk.sync.SyncType.Companion.SYNC_FIRST_TIME_DM_FEED
 import com.likeminds.chatinternalsdk.sync.SyncType.Companion.SYNC_FIRST_TIME_HOME_FEED
+import com.likeminds.chatinternalsdk.sync.SyncType.Companion.SYNC_REOPEN_DM_FEED
 import com.likeminds.chatinternalsdk.sync.SyncType.Companion.SYNC_REOPEN_HOME_FEED
 import com.likeminds.chatinternalsdk.sync.worker.*
 import java.util.concurrent.TimeUnit
@@ -324,6 +326,102 @@ object SyncSDK {
                 TimeUnit.MILLISECONDS
             )
             .addTag(LiveConversationSyncWorker.NAME)
+            .build()
+    }
+
+    /**
+     * Sync DM Steps
+     * 1. Fetch and save for page = 1 for dm feed sync
+     * 2. Run a database sync worker to make relationships for responses till now
+     * 3. Fetch and save for page = 2 till empty response for dm feed sync
+     * 4. Run a database sync worker to make relationships for responses till now
+     *
+     * @return Pair -> first: live data of blockerWork, second: live data of background worker
+     */
+    fun startFirstTimeDMFeedSync(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+        //check if sync is already running
+        if (ongoingSyncTypes.contains(SYNC_FIRST_TIME_DM_FEED)) {
+            return null
+        }
+
+        //add sync type to ongoing sync types
+        ongoingSyncTypes.add(SYNC_FIRST_TIME_DM_FEED)
+
+        //create first time dm worker for blocker worker
+        val blockerWorker = WorkManager.getInstance(context)
+            .beginWith(firstTimeSyncDMFeed(false))
+            .then(syncDatabase(SYNC_FIRST_TIME_DM_FEED, false))
+
+        //create background work for first time dm feed
+        val backgroundWork = blockerWorker.then(firstTimeSyncDMFeed(true))
+            .then(syncDatabase(SYNC_FIRST_TIME_DM_FEED, false))
+
+        //enqueue the work
+        backgroundWork.enqueue()
+
+        //check if first time dm feed is empty
+        val doesDMChatroomExists = ChatDBUtil.doesDMChatroomExists()
+
+        //return the work info
+        return if (!doesDMChatroomExists) {
+            Pair(blockerWorker.workInfosLiveData, null)
+        } else {
+            Pair(null, backgroundWork.workInfosLiveData)
+        }
+    }
+
+    /**
+     * DM feed sync steps
+     * 1. Fetch and save for page = 1 till empty response for dm feed sync
+     * 2. Run a database sync worker to make relationships for responses till now
+     *
+     * @return live data of worker
+     */
+    fun startReopenSyncForDMFeed(context: Context): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+        //check if sync is already running
+        if (ongoingSyncTypes.contains(SYNC_REOPEN_DM_FEED)) {
+            return null
+        }
+
+        //add sync type to ongoing sync types
+        ongoingSyncTypes.add(SYNC_REOPEN_DM_FEED)
+
+        //create reopen dm feed worker
+        val worker = WorkManager.getInstance(context)
+            .beginWith(reopenSyncDMFeed())
+            .then(syncDatabase(SYNC_REOPEN_DM_FEED, false))
+
+        //enqueue the work
+        worker.enqueue()
+
+        //return the work info
+        return Pair(worker.workInfosLiveData, null)
+    }
+
+    //return first dm feed sync worker
+    private fun firstTimeSyncDMFeed(isBackgroundWorker: Boolean): OneTimeWorkRequest {
+        return OneTimeWorkRequestBuilder<FirstTimeDMChatroomSyncWorker>()
+            .setInputData(workDataOf(FirstTimeDMChatroomSyncWorker.IS_BACKGROUND_WORKER to isBackgroundWorker))
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                WorkRequest.MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS
+            )
+            .setConstraints(networkConstraint)
+            .addTag(FirstTimeDMChatroomSyncWorker.NAME)
+            .build()
+    }
+
+    //return reopen dm feed sync worker
+    private fun reopenSyncDMFeed(): OneTimeWorkRequest {
+        return OneTimeWorkRequestBuilder<ReopenDMChatroomSyncWorker>()
+            .setBackoffCriteria(
+                BackoffPolicy.LINEAR,
+                WorkRequest.MIN_BACKOFF_MILLIS,
+                TimeUnit.MILLISECONDS
+            )
+            .setConstraints(networkConstraint)
+            .addTag(ReopenDMChatroomSyncWorker.NAME)
             .build()
     }
 }

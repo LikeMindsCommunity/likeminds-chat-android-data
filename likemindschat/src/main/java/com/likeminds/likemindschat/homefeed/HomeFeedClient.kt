@@ -7,13 +7,14 @@ import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.*
 import com.likeminds.chatinternalsdk.LMChatSDK
+import com.likeminds.chatinternalsdk.chatroom.model.TYPE_ANNOUNCEMENT
+import com.likeminds.chatinternalsdk.chatroom.model.TYPE_NORMAL
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.sync.SyncSDK
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.homefeed.model.ConfigResponse
-import com.likeminds.likemindschat.homefeed.model.GetExploreTabCountResponse
+import com.likeminds.likemindschat.homefeed.model.*
 import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
@@ -34,6 +35,10 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
 
     private val homeFeedDB by lazy {
         chatSDK.getHomeFeedDb()
+    }
+
+    private val sdkPreferences by lazy {
+        chatSDK.getSDKPreferences()
     }
 
     private lateinit var valueChangeListener: ValueEventListener
@@ -91,7 +96,7 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
      * @return Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? -
      * Worker result
      */
-    fun syncChatrooms(
+    fun loadGroupChatrooms(
         context: Context
     ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
         //validates the client request
@@ -141,10 +146,10 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
      *
      * @throws IllegalArgumentException - when LMChatClient is not instantiated
      */
-    fun observeLiveHomeFeed(context: Context) {
+    fun observeLiveGroupChatroom(context: Context) {
         RequestUtils.validate()
 
-        val communityId = chatSDK.sdkPreferences.getCommunityId() ?: ""
+        val communityId = sdkPreferences.getCommunityId() ?: ""
         val firebaseApp = FirebaseApp.getInstance("lm-secondary")
         databaseReference = FirebaseDatabase.getInstance(firebaseApp).reference
             .child("community")
@@ -152,17 +157,32 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
 
         valueChangeListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                //check whether db is empty or not
-                val isFirstTime = ChatDBUtil.isEmpty()
+                val data = snapshot.getValue(ChatroomEntity::class.java)
 
-                /**
-                 * if empty start first time chatroom worker else reopen
-                 */
-                if (isFirstTime) {
-                    SyncSDK.startFirstHomeFeedSync(context)
+                val chatroomId = data?.chatroomId ?: return
+
+                val realm = Realm.getDefaultInstance()
+                val chatroomRO = ChatDBUtil.getChatroom(realm, chatroomId)
+
+                if (chatroomRO != null) {
+                    val isGroupChatroom =
+                        chatroomRO.type == TYPE_NORMAL || chatroomRO.type == TYPE_ANNOUNCEMENT
+                    if (isGroupChatroom) {
+                        SyncSDK.startReopenSyncForHomeFeed(context)
+                    }
                 } else {
-                    SyncSDK.startReopenSyncForHomeFeed(context)
+                    //check whether db is empty or not
+                    val isFirstTime = ChatDBUtil.isEmpty()
+                    /**
+                     * if empty start first time chatroom worker else reopen
+                     */
+                    if (isFirstTime) {
+                        SyncSDK.startFirstHomeFeedSync(context)
+                    } else {
+                        SyncSDK.startReopenSyncForHomeFeed(context)
+                    }
                 }
+                realm.close()
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -176,7 +196,7 @@ class HomeFeedClient @Inject constructor() : BaseClient() {
     /**
      * Removes the live home feed observer
      */
-    fun removeLiveHomeFeedListener() {
+    fun removeLiveGroupChatroomListener() {
         if (this::valueChangeListener.isInitialized) {
             databaseReference?.removeEventListener(valueChangeListener)
         }

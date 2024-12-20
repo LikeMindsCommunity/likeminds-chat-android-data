@@ -48,6 +48,8 @@ object ChatDBUtil {
             Log.e(LMChatSDK.LOG_TAG, "write error", e)
             false
         } finally {
+            realm.refresh()
+            realm.close()
             ONGOING_WRITE_TRANSACTION.decrementAndGet()
         }
     }
@@ -60,19 +62,20 @@ object ChatDBUtil {
      **/
     fun write(block: (realm: Realm) -> Unit): Boolean {
         ONGOING_WRITE_TRANSACTION.incrementAndGet()
-        Realm.getDefaultInstance().use { realm ->
-            return try {
-                realm.executeTransaction {
-                    block(it)
-                }
-                true
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e(LMChatSDK.LOG_TAG, "write async error", e)
-                false
-            } finally {
-                ONGOING_WRITE_TRANSACTION.decrementAndGet()
+        val realm = Realm.getDefaultInstance()
+        return try {
+            realm.executeTransaction {
+                block(it)
             }
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.e(LMChatSDK.LOG_TAG, "write async error", e)
+            false
+        } finally {
+            ONGOING_WRITE_TRANSACTION.decrementAndGet()
+            realm.refresh()
+            realm.close()
         }
     }
 
@@ -319,7 +322,6 @@ object ChatDBUtil {
         }
 
         chatroomRO.totalAllResponseCount = count
-
         chatroomRO.relationshipNeeded = false
     }
 
@@ -382,13 +384,12 @@ object ChatDBUtil {
     ) {
         write { realm ->
             val chatroomRO = getChatroom(realm, chatroomId)
-
             chatroomRO?.isConversationStored = isConversationStored
         }
     }
 
     /**
-     * to update chatroom's [conversationSyncMinTimestamp]
+     * to update chatroom's [newMinTimestamp]
      *
      * @param chatroomId: id of chatroom to be updated
      * @param newMinTimestamp: value of [conversationSyncMinTimestamp]
@@ -400,6 +401,20 @@ object ChatDBUtil {
         write { realm ->
             val chatroomRO = getChatroom(realm, chatroomId)
             chatroomRO?.conversationSyncMinTimestamp = newMinTimestamp
+        }
+    }
+
+    /**
+     * To check whether DM chatroom exists or not
+     * @return whether DM chatroom exists or not
+     */
+    fun doesDMChatroomExists(): Boolean {
+        Realm.getDefaultInstance().use { realm ->
+            val count = realm.where(ChatroomRO::class.java)
+                .equalTo(DbKey.TYPE, TYPE_DIRECT_MESSAGE)
+                .findAll()
+                .count()
+            return count > 0
         }
     }
 }
