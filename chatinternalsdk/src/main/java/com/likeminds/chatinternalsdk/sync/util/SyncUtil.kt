@@ -1,5 +1,6 @@
 package com.likeminds.chatinternalsdk.sync.util
 
+import android.util.Log
 import com.likeminds.chatinternalsdk.conversation.model._ConversationState_
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
@@ -16,7 +17,8 @@ object SyncUtil {
     //Query Value
     const val CHATROOM_PAGE_SIZE = 50
     const val CONVERSATION_PAGE_SIZE = 500
-    val CHATROOM_TYPE_LIST = listOf(0, 7, 10)
+    val GROUP_CHATROOMS_TYPE_LIST = listOf(0, 7)
+    val DM_CHATROOMS_TYPE_LIST = listOf(10)
 
     //Query Key
     const val PAGE_KEY = "page"
