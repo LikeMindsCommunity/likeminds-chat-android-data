@@ -2,7 +2,7 @@ package com.likeminds.likemindschat.chatroom.model
 
 import com.google.firebase.database.PropertyName
 
-class ChatroomFirebaseEntity {
+class ConversationEntity {
     @PropertyName("answer_id")
     lateinit var answerId: String
 }

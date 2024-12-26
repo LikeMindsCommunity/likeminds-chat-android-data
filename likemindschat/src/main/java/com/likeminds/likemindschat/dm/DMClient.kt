@@ -1,11 +1,22 @@
 package com.likeminds.likemindschat.dm
 
+import android.content.Context
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.work.WorkInfo
+import com.google.firebase.FirebaseApp
+import com.google.firebase.database.*
+import com.likeminds.chatinternalsdk.LMChatSDK
+import com.likeminds.chatinternalsdk.chatroom.model.TYPE_DIRECT_MESSAGE
+import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.dm.model.*
+import com.likeminds.chatinternalsdk.sync.SyncSDK
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.chatroom.model.ChatRequestState
 import com.likeminds.likemindschat.dm.model.*
+import com.likeminds.likemindschat.homefeed.model.ChatroomEntity
 import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
@@ -36,6 +47,17 @@ class DMClient @Inject constructor() : BaseClient() {
     private val conversationDB by lazy {
         chatSDK.getConversationDB()
     }
+
+    private val syncPreferences by lazy {
+        chatSDK.getSyncPreference()
+    }
+
+    private val sdkPreferences by lazy {
+        chatSDK.getSDKPreferences()
+    }
+
+    private lateinit var valueChangeListener: ValueEventListener
+    private var databaseReference: DatabaseReference? = null
 
     /**
      * Converts client request model to internal model and calls the api
@@ -336,6 +358,30 @@ class DMClient @Inject constructor() : BaseClient() {
     }
 
     /**
+     * Loads all DM Chatrooms in Local DB
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     * @param context - Context required to run workers
+     * @return Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? -
+     * Worker result
+     */
+    fun loadDMChatrooms(
+        context: Context
+    ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+        //validates the client request
+        RequestUtils.validate()
+
+        val doesDMChatroomExists = ChatDBUtil.doesDMChatroomExists()
+        val syncTimestamp = syncPreferences.getTimestampForSyncDM()
+
+        return if (!doesDMChatroomExists && syncTimestamp == 0L) {
+            SyncSDK.startFirstTimeDMFeedSync(context)
+        } else {
+            SyncSDK.startReopenSyncForDMFeed(context)
+        }
+    }
+
+    /**
      * runs the query for observing dm chatrooms and returns the data in listener
      * @param listener: [HomeChatroomListener] to get object of the dm chatrooms as per requirements
      *
@@ -352,6 +398,68 @@ class DMClient @Inject constructor() : BaseClient() {
             listener.clear()
         }?.doOnTerminate {
             listener.clear()
+        }
+    }
+
+
+    /**
+     * observes dm chatroom, in real time
+     *
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     */
+    fun observeLiveDMChatrooms(context: Context) {
+        RequestUtils.validate()
+
+        val communityId = sdkPreferences.getCommunityId() ?: ""
+        val firebaseApp = FirebaseApp.getInstance("lm-secondary")
+        databaseReference = FirebaseDatabase.getInstance(firebaseApp).reference
+            .child("community")
+            .child(communityId)
+
+        valueChangeListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val data = snapshot.getValue(ChatroomEntity::class.java)
+
+                val chatroomId = data?.chatroomId ?: return
+
+                val realm = Realm.getDefaultInstance()
+                val chatroomRO = ChatDBUtil.getChatroom(realm, chatroomId)
+
+                if (chatroomRO != null) {
+                    val isDMChatroom =
+                        chatroomRO.type == TYPE_DIRECT_MESSAGE
+
+                    if (isDMChatroom) {
+                        SyncSDK.startReopenSyncForDMFeed(context)
+                    }
+                } else {
+                    //check whether db is empty or not
+                    val doesDMChatroomExists = ChatDBUtil.doesDMChatroomExists()
+                    val syncTimestamp = syncPreferences.getTimestampForSyncDM()
+
+                    if (!doesDMChatroomExists && syncTimestamp == 0L) {
+                        SyncSDK.startFirstTimeDMFeedSync(context)
+                    } else {
+                        SyncSDK.startReopenSyncForDMFeed(context)
+                    }
+                }
+                realm.close()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d(LMChatSDK.LOG_TAG, "cancelled: ${error.message}")
+            }
+        }
+
+        databaseReference?.addValueEventListener(valueChangeListener)
+    }
+
+    /**
+     * remove real time listener for dm feed
+     */
+    fun removeLiveDMChatroomListener() {
+        if (this::valueChangeListener.isInitialized) {
+            databaseReference?.removeEventListener(valueChangeListener)
         }
     }
 }

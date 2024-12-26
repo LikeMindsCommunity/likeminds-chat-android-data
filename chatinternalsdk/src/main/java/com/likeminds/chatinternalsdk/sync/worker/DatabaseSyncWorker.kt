@@ -10,7 +10,9 @@ import com.likeminds.chatinternalsdk.db.util.DbKey
 import com.likeminds.chatinternalsdk.db.util.toRealmList
 import com.likeminds.chatinternalsdk.sync.SyncSDK
 import com.likeminds.chatinternalsdk.sync.SyncType.Companion.SYNC_CHATROOM
+import com.likeminds.chatinternalsdk.sync.SyncType.Companion.SYNC_FIRST_TIME_DM_FEED
 import com.likeminds.chatinternalsdk.sync.SyncType.Companion.SYNC_FIRST_TIME_HOME_FEED
+import com.likeminds.chatinternalsdk.sync.SyncType.Companion.SYNC_REOPEN_DM_FEED
 import com.likeminds.chatinternalsdk.sync.SyncType.Companion.SYNC_REOPEN_HOME_FEED
 import com.likeminds.chatinternalsdk.user.util.UserPreferences
 import com.likeminds.chatinternalsdk.utils.measureExecution
@@ -60,7 +62,8 @@ class DatabaseSyncWorker(
                     }
 
                 when {
-                    syncType == SYNC_FIRST_TIME_HOME_FEED || syncType == SYNC_REOPEN_HOME_FEED -> {
+                    syncType == SYNC_FIRST_TIME_HOME_FEED || syncType == SYNC_REOPEN_HOME_FEED ||
+                            syncType == SYNC_FIRST_TIME_DM_FEED || syncType == SYNC_REOPEN_DM_FEED -> {
                         //Add inverse relationships to communities
                         val communities = realmInstance.where(CommunityRO::class.java)
                             .equalTo(DbKey.RELATIONSHIP_NEEDED, true)
@@ -108,7 +111,6 @@ class DatabaseSyncWorker(
                     }
 
                     syncType == SYNC_CHATROOM && chatroomId.isNotEmpty() -> {
-
                         val chatroomRO = ChatDBUtil.getChatroom(realmInstance, chatroomId)
                         if (chatroomRO != null) {
                             val communityRO = ChatDBUtil.getCommunity(
@@ -151,14 +153,13 @@ class DatabaseSyncWorker(
                                     .findAll()
                                     .deleteAllFromRealm()
                             }
-
+                            chatroomRO.isConversationStored = true
                             ChatDBUtil.updateRelationshipsOfChatroom(
                                 chatroomRO,
                                 conversations,
                                 userPreferences.getClientUUID()
                             )
                         }
-
                     }
                 }
             }

@@ -19,6 +19,8 @@ annotation class SyncType {
         const val SYNC_FIRST_TIME_HOME_FEED = "first_time_home_feed"
         const val SYNC_CHATROOM = "chatroom"
         const val SYNC_REOPEN_HOME_FEED = "reopen_home_feed"
+        const val SYNC_FIRST_TIME_DM_FEED = "first_time_dm_feed"
+        const val SYNC_REOPEN_DM_FEED = "reopen_dm_feed"
     }
 
 }
