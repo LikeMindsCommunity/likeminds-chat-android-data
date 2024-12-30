@@ -125,6 +125,10 @@ class ConversationDbImpl @Inject constructor(
         conversationReceiver.savePostedConversation(savePostedConversationRequest)
     }
 
+    override fun isConversationWithinLimit(conversationWithinLimitRequest: _ConversationWithinLimitRequest_): Boolean {
+        return conversationReceiver.isConversationWithinLimit(conversationWithinLimitRequest)
+    }
+
     override fun saveNewConversation(
         realm: Realm,
         conversation: _Conversation_
