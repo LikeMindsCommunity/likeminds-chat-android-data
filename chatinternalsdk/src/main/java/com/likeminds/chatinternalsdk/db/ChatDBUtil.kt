@@ -48,8 +48,6 @@ object ChatDBUtil {
             Log.e(LMChatSDK.LOG_TAG, "write error", e)
             false
         } finally {
-            realm.refresh()
-            realm.close()
             ONGOING_WRITE_TRANSACTION.decrementAndGet()
         }
     }
@@ -62,20 +60,19 @@ object ChatDBUtil {
      **/
     fun write(block: (realm: Realm) -> Unit): Boolean {
         ONGOING_WRITE_TRANSACTION.incrementAndGet()
-        val realm = Realm.getDefaultInstance()
-        return try {
-            realm.executeTransaction {
-                block(it)
+        Realm.getDefaultInstance().use { realm ->
+            return try {
+                realm.executeTransaction {
+                    block(it)
+                }
+                true
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e(LMChatSDK.LOG_TAG, "write async error", e)
+                false
+            } finally {
+                ONGOING_WRITE_TRANSACTION.decrementAndGet()
             }
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e(LMChatSDK.LOG_TAG, "write async error", e)
-            false
-        } finally {
-            ONGOING_WRITE_TRANSACTION.decrementAndGet()
-            realm.refresh()
-            realm.close()
         }
     }
 
