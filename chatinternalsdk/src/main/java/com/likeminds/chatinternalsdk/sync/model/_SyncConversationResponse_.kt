@@ -24,6 +24,8 @@ data class _SyncConversationResponse_(
     val conversationReactionMeta: Map<String, List<_ReactionMeta_>>,
     @SerializedName("conv_attachments_meta")
     val conversationAttachmentsMeta: Map<String, List<_Attachment_>>,
+    @SerializedName("conversation_meta")
+    val conversationMeta: Map<String, _Conversation_>,
     @SerializedName("conv_polls_meta")
     val conversationPollMeta: Map<String, List<_Poll_>>,
     @SerializedName("widgets")

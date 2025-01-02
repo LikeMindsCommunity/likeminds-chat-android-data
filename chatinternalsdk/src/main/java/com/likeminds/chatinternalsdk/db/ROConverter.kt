@@ -134,7 +134,7 @@ object ROConverter {
         realm: Realm,
         conversation: _Conversation_?,
         member: MemberRO? = null,
-        loggedInMember: UserRO?
+        loggedInMember: UserRO? = null
     ): ConversationRO? {
         /**
          * Conversation is invalid without chatroomId, conversationId, Member object
@@ -256,6 +256,8 @@ object ROConverter {
         creator: MemberRO?,
         polls: List<_Poll_>?,
         attachments: List<_Attachment_>?,
+        replyConversation: _Conversation_? = null,
+        replyCreator: _Member_? = null,
         reactions: List<_ReactionMeta_>? = null,
         loggedInUUID: String? = null,
         deletedByMemberRO: MemberRO? = null,
@@ -293,8 +295,13 @@ object ROConverter {
         )
 
         //get replied conversation
-        val replyConversation = if (conversation.replyConversationId != null) {
-            savedAnswer?.replyConversation ?: ChatDBUtil.getConversation(
+        val finalReplyConversation = if (conversation.replyConversationId != null) {
+            convertConversation(
+                realm,
+                replyConversation,
+                convertMember(replyCreator, communityId)
+            ) ?: savedAnswer?.replyConversation
+            ?: ChatDBUtil.getConversation(
                 realm,
                 conversation.replyConversationId
             )
@@ -332,7 +339,7 @@ object ROConverter {
 
             replyChatRoomId = conversation.replyChatroomId
             replyConversationId = conversation.replyConversationId
-            this.replyConversation = replyConversation
+            this.replyConversation = finalReplyConversation
 
             deletedBy = conversation.deletedBy
             this.deletedByMember = deletedByMemberRO
