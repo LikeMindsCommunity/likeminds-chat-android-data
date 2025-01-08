@@ -1,8 +1,8 @@
 ext.versions = [:]
 def versions = [:]
-versions.compile_sdk = 34
+versions.compile_sdk = 35
 versions.min_sdk = 21
-versions.target_sdk = 34
+versions.target_sdk = 35
 versions.sdk_version_major = '2'
 versions.sdk_version_minor = '7'
 versions.sdk_version_patch = '0'
