@@ -466,7 +466,7 @@ object SyncUtil {
                     // get reply conversation and its creator from conversation_meta & user_meta
                     val replyConversationCreator = if (conversation.replyConversationId != null) {
                         Pair(
-                            data.conversationMeta[conversation.replyConversationId],
+                            data.conversationMeta?.get(conversation.replyConversationId),
                             data.userMeta[conversation.memberId]
                         )
                     } else {

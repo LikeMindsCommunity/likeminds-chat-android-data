@@ -257,7 +257,7 @@ object ROConverter {
         polls: List<_Poll_>?,
         attachments: List<_Attachment_>?,
         replyConversation: _Conversation_? = null,
-        replyCreator: _Member_? = null,
+        replyConversationCreator: _Member_? = null,
         reactions: List<_ReactionMeta_>? = null,
         loggedInUUID: String? = null,
         deletedByMemberRO: MemberRO? = null,
@@ -297,9 +297,9 @@ object ROConverter {
         //get replied conversation
         val finalReplyConversation = if (conversation.replyConversationId != null) {
             convertConversation(
-                realm,
-                replyConversation,
-                convertMember(replyCreator, communityId)
+                realm = realm,
+                conversation = replyConversation,
+                member = convertMember(replyConversationCreator, communityId)
             ) ?: savedAnswer?.replyConversation
             ?: ChatDBUtil.getConversation(
                 realm,
