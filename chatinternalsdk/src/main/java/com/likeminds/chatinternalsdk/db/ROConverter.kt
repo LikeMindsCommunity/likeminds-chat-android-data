@@ -134,7 +134,7 @@ object ROConverter {
         realm: Realm,
         conversation: _Conversation_?,
         member: MemberRO? = null,
-        loggedInMember: UserRO? = null
+        loggedInMember: UserRO? = null,
     ): ConversationRO? {
         /**
          * Conversation is invalid without chatroomId, conversationId, Member object
@@ -296,14 +296,16 @@ object ROConverter {
 
         //get replied conversation
         val finalReplyConversation = if (conversation.replyConversationId != null) {
-            convertConversation(
-                realm = realm,
-                conversation = replyConversation,
-                member = convertMember(replyConversationCreator, communityId)
-            ) ?: savedAnswer?.replyConversation
-            ?: ChatDBUtil.getConversation(
+            savedAnswer?.replyConversation ?: ChatDBUtil.getConversation(
                 realm,
                 conversation.replyConversationId
+            ) ?: convertConversation(
+                realm = realm,
+                conversation = replyConversation,
+                member = convertMember(
+                    replyConversationCreator,
+                    communityId
+                )
             )
         } else {
             null
