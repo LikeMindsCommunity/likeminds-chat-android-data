@@ -1,6 +1,5 @@
 package com.likeminds.chatinternalsdk.sync.util
 
-import android.util.Log
 import com.likeminds.chatinternalsdk.conversation.model._ConversationState_
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
@@ -270,6 +269,18 @@ object SyncUtil {
                     val lastSeenConversationWidgetRO =
                         ROConverter.convertWidgetRO(lastSeenConversationWidget)
 
+                    // get reply conversation for the last seen conversation and its creator from conversation_meta & user_meta
+                    val lastSeenConversationReplyId = lastSeenConversation?.replyConversationId
+                    val lastSeenConversationReplyCreatorId = lastSeenConversation?.memberId
+                    val lastSeenConversationReplyCreator =
+                        if (lastSeenConversationReplyId != null && lastSeenConversationReplyCreatorId != null) {
+                            Pair(
+                                data.conversationMeta[lastSeenConversationReplyId],
+                                data.userMeta[lastSeenConversationReplyCreatorId]
+                            )
+                        } else {
+                            Pair(null, null)
+                        }
 
                     val lastSeenConversationRO = ROConverter.convertConversation(
                         realm,
@@ -277,6 +288,8 @@ object SyncUtil {
                         lastSeenConversationCreatorRO,
                         lastSeenConversationPolls,
                         lastSeenConversationAttachments,
+                        lastSeenConversationReplyCreator.first,
+                        lastSeenConversationReplyCreator.second,
                         loggedInUUID = loggedInUUID,
                         deletedByMemberRO = lastSeenConversationDeletedByMemberRO,
                         widget = lastSeenConversationWidgetRO
@@ -449,14 +462,28 @@ object SyncUtil {
                     val widget = data.widgets[widgetId]
                     val widgetRO = ROConverter.convertWidgetRO(widget)
 
+                    // get reply conversation and its creator from conversation_meta & user_meta
+                    val replyConversationCreator = if (conversation.replyConversationId != null) {
+                        val replyConversation =
+                            data.conversationMeta?.get(conversation.replyConversationId)
+                        Pair(
+                            replyConversation,
+                            data.userMeta[replyConversation?.memberId]
+                        )
+                    } else {
+                        Pair(null, null)
+                    }
+
                     val conversationRO =
                         ROConverter.convertConversation(
-                            realmWrite,
-                            conversation,
-                            creatorRO,
-                            conversationPolls,
-                            conversationAttachment,
-                            reactions,
+                            realm = realmWrite,
+                            conversation = conversation,
+                            creator = creatorRO,
+                            polls = conversationPolls,
+                            attachments = conversationAttachment,
+                            replyConversation = replyConversationCreator.first,
+                            replyConversationCreator = replyConversationCreator.second,
+                            reactions = reactions,
                             loggedInUUID = loggedInUUID,
                             deletedByMemberRO = deletedByMemberRO,
                             widget = widgetRO
