@@ -1,6 +1,5 @@
 package com.likeminds.chatinternalsdk.sync.util
 
-import android.util.Log
 import com.likeminds.chatinternalsdk.conversation.model._ConversationState_
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
@@ -465,31 +464,26 @@ object SyncUtil {
 
                     // get reply conversation and its creator from conversation_meta & user_meta
                     val replyConversationCreator = if (conversation.replyConversationId != null) {
+                        val replyConversation =
+                            data.conversationMeta?.get(conversation.replyConversationId)
                         Pair(
-                            data.conversationMeta?.get(conversation.replyConversationId),
-                            data.userMeta[conversation.memberId]
+                            replyConversation,
+                            data.userMeta[replyConversation?.memberId]
                         )
                     } else {
                         Pair(null, null)
                     }
 
-                    if (conversation.answer == "This") {
-                        Log.d(
-                            "PUI",
-                            "saveConversationResponses: ${replyConversationCreator.first?.answer}"
-                        )
-                    }
-
                     val conversationRO =
                         ROConverter.convertConversation(
-                            realmWrite,
-                            conversation,
-                            creatorRO,
-                            conversationPolls,
-                            conversationAttachment,
-                            replyConversationCreator.first,
-                            replyConversationCreator.second,
-                            reactions,
+                            realm = realmWrite,
+                            conversation = conversation,
+                            creator = creatorRO,
+                            polls = conversationPolls,
+                            attachments = conversationAttachment,
+                            replyConversation = replyConversationCreator.first,
+                            replyConversationCreator = replyConversationCreator.second,
+                            reactions = reactions,
                             loggedInUUID = loggedInUUID,
                             deletedByMemberRO = deletedByMemberRO,
                             widget = widgetRO
