@@ -4,6 +4,7 @@ import com.likeminds.chatinternalsdk.ChatTokenManager
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
 import com.likeminds.chatinternalsdk.sdk.model._InitiateUserRequest_
+import com.likeminds.chatinternalsdk.user.model._EditProfileRequest_
 import com.likeminds.chatinternalsdk.user.model._LogoutRequest_
 import com.likeminds.chatinternalsdk.user.model._RegisterDeviceRequest_
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
@@ -13,7 +14,16 @@ import com.likeminds.likemindschat.community.model.GetMemberRequest
 import com.likeminds.likemindschat.community.model.GetMemberResponse
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
-import com.likeminds.likemindschat.user.model.*
+import com.likeminds.likemindschat.user.model.EditProfileRequest
+import com.likeminds.likemindschat.user.model.GetLoggedInUserResponse
+import com.likeminds.likemindschat.user.model.InitiateUserRequest
+import com.likeminds.likemindschat.user.model.InitiateUserResponse
+import com.likeminds.likemindschat.user.model.LogoutRequest
+import com.likeminds.likemindschat.user.model.MemberStateResponse
+import com.likeminds.likemindschat.user.model.RegisterDeviceRequest
+import com.likeminds.likemindschat.user.model.SetTokensRequest
+import com.likeminds.likemindschat.user.model.ValidateUserRequest
+import com.likeminds.likemindschat.user.model.ValidateUserResponse
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
 import javax.inject.Inject
@@ -538,6 +548,36 @@ class UserClient @Inject constructor() : BaseClient() {
                 errorMessage = "Tokens not found!",
                 data = null
             )
+        }
+    }
+
+    /**
+     * Converts client request model to internal model and calls the api to edit member profile
+     * @param editProfileRequest - client request model to edit profile
+     * @throws IllegalArgumentException - when LMFeedClient is not instantiated or required properties not provided
+     * @return LMResponse<Nothing> - Base LM response
+     */
+    suspend fun editProfile(editProfileRequest: EditProfileRequest): LMResponse<Nothing> {
+        // validates the client request
+        RequestUtils.validate()
+
+        //build internal request model
+        val request = _EditProfileRequest_.Builder()
+            .name(editProfileRequest.name)
+            .imageUrl(editProfileRequest.imageUrl)
+            .build()
+
+        return when (val response = userApi.editProfile(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                LMResponse(success = response.body.success)
+            }
         }
     }
 }

@@ -1,6 +1,9 @@
 package com.likeminds.chatinternalsdk.user.api
 
-import com.likeminds.chatinternalsdk.user.model.*
+import com.likeminds.chatinternalsdk.user.model._EditProfileRequest_
+import com.likeminds.chatinternalsdk.user.model._LogoutRequest_
+import com.likeminds.chatinternalsdk.user.model._MemberStateResponse_
+import com.likeminds.chatinternalsdk.user.model._RegisterDeviceRequest_
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 
@@ -16,4 +19,7 @@ interface UserApi {
 
     //api to get the member state
     suspend fun getMemberState(): NetworkResponse<APIResponse<_MemberStateResponse_>>
+
+    //api to edit member profile
+    suspend fun editProfile(request: _EditProfileRequest_): NetworkResponse<APIResponse<Nothing>>
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
+import com.likeminds.likemindschat.user.model.EditProfileRequest
 import com.likeminds.likemindschat.user.model.InitiateUserRequest
 import com.likeminds.samplechatapp.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +34,15 @@ class MainActivity : AppCompatActivity() {
                     .isGuest(false)
                     .build()
             )
+
+            if (initiateResponse.data != null) {
+                client.editProfile(
+                    EditProfileRequest.Builder()
+                        .name("Hey")
+                        .imageUrl("https://www.google.com")
+                        .build()
+                )
+            }
 
             Log.d(
                 TAG, """
