@@ -35,15 +35,6 @@ class MainActivity : AppCompatActivity() {
                     .build()
             )
 
-            if (initiateResponse.data != null) {
-                client.editProfile(
-                    EditProfileRequest.Builder()
-                        .name("Hey")
-                        .imageUrl("https://www.google.com")
-                        .build()
-                )
-            }
-
             Log.d(
                 TAG, """
                 initiateResponse: ${initiateResponse.data?.user?.id}
