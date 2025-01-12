@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.likeminds.likemindschat.LMChatClient
-import com.likeminds.likemindschat.user.model.EditProfileRequest
 import com.likeminds.likemindschat.user.model.InitiateUserRequest
 import com.likeminds.samplechatapp.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
