@@ -22,7 +22,7 @@ class UserApiImpl @Inject constructor(private val userReceiver: UserReceiver) : 
         return userReceiver.getMemberState()
     }
 
-    override suspend fun editProfile(request: _EditProfileRequest_): NetworkResponse<APIResponse<Nothing>> {
-        return userReceiver.editProfile(request)
+    override suspend fun editUserProfile(request: _EditUserProfileRequest_): NetworkResponse<APIResponse<Nothing>> {
+        return userReceiver.editUserProfile(request)
     }
 }

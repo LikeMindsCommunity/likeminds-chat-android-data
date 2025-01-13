@@ -493,7 +493,7 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to edit user profile
-    suspend fun editProfile(editProfileRequest: EditProfileRequest): LMResponse<Nothing> {
-        return userClient.editProfile(editProfileRequest)
+    suspend fun editUserProfile(editUserProfileRequest: EditUserProfileRequest): LMResponse<Nothing> {
+        return userClient.editUserProfile(editUserProfileRequest)
     }
 }

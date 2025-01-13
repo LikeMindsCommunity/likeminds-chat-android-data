@@ -1,16 +1,9 @@
 package com.likeminds.chatinternalsdk.user.api
 
-import com.likeminds.chatinternalsdk.user.model._EditProfileRequest_
-import com.likeminds.chatinternalsdk.user.model._LogoutRequest_
-import com.likeminds.chatinternalsdk.user.model._MemberStateResponse_
-import com.likeminds.chatinternalsdk.user.model._RegisterDeviceRequest_
+import com.likeminds.chatinternalsdk.user.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
-import retrofit2.http.PUT
+import retrofit2.http.*
 
 interface UserNetworkApi {
 
@@ -30,5 +23,5 @@ interface UserNetworkApi {
     suspend fun getMemberState(): NetworkResponse<APIResponse<_MemberStateResponse_>>
 
     @PUT("community/member/profile")
-    suspend fun editProfile(@Body request: _EditProfileRequest_): NetworkResponse<APIResponse<Nothing>>
+    suspend fun editUserProfile(@Body request: _EditUserProfileRequest_): NetworkResponse<APIResponse<Nothing>>
 }

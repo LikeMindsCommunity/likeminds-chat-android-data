@@ -1,6 +1,6 @@
-package com.likeminds.chatinternalsdk.user.model
+package com.likeminds.likemindschat.user.model
 
-class _EditProfileRequest_ private constructor(
+class EditUserProfileRequest private constructor(
     val name: String?,
     val imageUrl: String?
 ) {
@@ -16,7 +16,7 @@ class _EditProfileRequest_ private constructor(
             this.imageUrl = imageUrl
         }
 
-        fun build() = _EditProfileRequest_(name, imageUrl)
+        fun build() = EditUserProfileRequest(name, imageUrl)
     }
 
     fun toBuilder(): Builder {
