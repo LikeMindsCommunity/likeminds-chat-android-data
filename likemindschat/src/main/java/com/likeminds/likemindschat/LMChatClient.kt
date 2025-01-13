@@ -491,4 +491,9 @@ class LMChatClient private constructor() {
     suspend fun getChannelInvites(getChannelInviteRequest: GetChannelInviteRequest): LMResponse<GetChannelInviteResponse> {
         return chatroomClient.getChannelInvites(getChannelInviteRequest)
     }
+
+    // Exposed function to edit user profile
+    suspend fun editUserProfile(editUserProfileRequest: EditUserProfileRequest): LMResponse<Nothing> {
+        return userClient.editUserProfile(editUserProfileRequest)
+    }
 }

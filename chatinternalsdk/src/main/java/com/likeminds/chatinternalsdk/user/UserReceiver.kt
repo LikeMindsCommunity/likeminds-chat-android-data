@@ -33,6 +33,10 @@ class UserReceiver @Inject constructor(private val userNetworkApi: UserNetworkAp
         return userNetworkApi.getMemberState()
     }
 
+    suspend fun editUserProfile(request: _EditUserProfileRequest_): NetworkResponse<APIResponse<Nothing>> {
+        return userNetworkApi.editUserProfile(request)
+    }
+
     /*
         Db Functions
      */
