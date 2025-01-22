@@ -132,11 +132,18 @@ class LMChatClient private constructor() {
         return homeFeedClient.getExploreTabCount()
     }
 
-    // Exposed function to start chatroom sync
-    fun syncChatrooms(
+    // Exposed function to start group chatroom sync
+    fun loadGroupChatrooms(
         context: Context,
     ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
-        return homeFeedClient.syncChatrooms(context)
+        return homeFeedClient.loadGroupChatrooms(context)
+    }
+
+    // Exposed function to start dm chatroom sync
+    fun loadDMChatrooms(
+        context: Context
+    ): Pair<LiveData<MutableList<WorkInfo>>?, LiveData<MutableList<WorkInfo>>?>? {
+        return dmClient.loadDMChatrooms(context)
     }
 
     // Exposed function to get chatrooms for home feed
@@ -145,13 +152,23 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get chatrooms for home feed
-    fun observeLiveHomeFeed(context: Context) {
-        homeFeedClient.observeLiveHomeFeed(context)
+    fun observeLiveGroupChatroom(context: Context) {
+        homeFeedClient.observeLiveGroupChatroom(context)
     }
 
     // Exposed function to remove home feed listener
-    fun removeLiveHomeFeedListener() {
-        homeFeedClient.removeLiveHomeFeedListener()
+    fun removeLiveGroupChatroomListener() {
+        homeFeedClient.removeLiveGroupChatroomListener()
+    }
+
+    // Exposed function to get chatrooms for dm feed
+    fun observeLiveDMChatroom(context: Context) {
+        dmClient.observeLiveDMChatrooms(context)
+    }
+
+    // Exposed function to remove dm feed listener
+    fun removeLiveDMChatroomListener() {
+        dmClient.removeLiveDMChatroomListener()
     }
 
     //function to get config details
@@ -392,6 +409,11 @@ class LMChatClient private constructor() {
         conversationClient.savePostedConversation(savePostedConversationRequest)
     }
 
+    // Exposed function to find whether the conversation is within the limit of the provided conversation
+    fun isConversationWithinLimit(conversationWithinLimitRequest: ConversationWithinLimitRequest): Boolean {
+        return conversationClient.isConversationWithinLimit(conversationWithinLimitRequest)
+    }
+
     // Exposed function to get content download settings
     suspend fun getContentDownloadSettings(): LMResponse<GetContentDownloadSettingsResponse> {
         return communityClient.getContentDownloadSettings()
@@ -460,5 +482,10 @@ class LMChatClient private constructor() {
     // Exposed function to get secret channel invites
     suspend fun getChannelInvites(getChannelInviteRequest: GetChannelInviteRequest): LMResponse<GetChannelInviteResponse> {
         return chatroomClient.getChannelInvites(getChannelInviteRequest)
+    }
+
+    // Exposed function to edit user profile
+    suspend fun editUserProfile(editUserProfileRequest: EditUserProfileRequest): LMResponse<Nothing> {
+        return userClient.editUserProfile(editUserProfileRequest)
     }
 }

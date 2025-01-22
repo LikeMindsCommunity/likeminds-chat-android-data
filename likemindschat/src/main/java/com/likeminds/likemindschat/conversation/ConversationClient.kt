@@ -131,6 +131,45 @@ class ConversationClient @Inject constructor() : BaseClient() {
     }
 
     /**
+     * Converts client request model to internal model and calls the api
+     * @param postConversationRequest - client request model to post a conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<String> - Base LM response[String] -> the uuid of the worker
+     */
+    fun createConversation(
+        context: Context,
+        postConversationRequest: PostConversationRequest
+    ): LMResponse<String> {
+        // validates the client request
+        RequestUtils.validate()
+        validatePostConversationRequest(postConversationRequest)
+
+        // create input data
+        val inputJson = Gson().toJson(postConversationRequest)
+        val metadata = if (postConversationRequest.metadata == null) {
+            null
+        } else {
+            postConversationRequest.metadata.toString()
+        }
+
+        // create conversation worker
+        val createConversationWorker = CreateConversationWorker.getInstance(inputJson, metadata)
+
+        // enqueue worker
+        val work = WorkManager.getInstance(context)
+            .beginWith(createConversationWorker)
+        work.enqueue()
+
+        // return success
+        return LMResponse(
+            success = true,
+            errorMessage = null,
+            data = createConversationWorker.id.toString()
+        )
+    }
+
+
+    /**
      * Converts client request model to internal model and stores the posted conversation in DB
      * @param savePostedConversationRequest - client request model to store a posted conversation
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
@@ -146,6 +185,42 @@ class ConversationClient @Inject constructor() : BaseClient() {
             .isFromNotification(savePostedConversationRequest.isFromNotification)
             .build()
         conversationDB.savePostedConversation(request)
+    }
+
+    /**
+     * Converts client request model to internal model and find whether the conversation is within the limit of the provided conversation
+     * @param conversationWithinLimitRequest - client request model to find whether the conversation is within the limit of the provided conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
+    fun isConversationWithinLimit(conversationWithinLimitRequest: ConversationWithinLimitRequest): Boolean {
+        // validates the client request
+        RequestUtils.validate()
+        validateConversationWithinLimitRequest(conversationWithinLimitRequest)
+
+        val request = _ConversationWithinLimitRequest_.Builder()
+            .chatroomId(conversationWithinLimitRequest.chatroomId)
+            .conversationKey(ModelConverter.createConversation(conversationWithinLimitRequest.conversationKey))
+            .targetConversationId(conversationWithinLimitRequest.targetConversationId)
+            .limit(conversationWithinLimitRequest.limit)
+            .build()
+
+        return conversationDB.isConversationWithinLimit(request)
+    }
+
+    /**
+     * validates [conversationWithinLimitRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateConversationWithinLimitRequest(conversationWithinLimitRequest: ConversationWithinLimitRequest) {
+        if (conversationWithinLimitRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+        if (conversationWithinLimitRequest.conversationKey.id.isNullOrEmpty()) {
+            RequestUtils.throwException("conversation")
+        }
+        if (conversationWithinLimitRequest.targetConversationId.isEmpty()) {
+            RequestUtils.throwException("targetConversationId")
+        }
     }
 
     /**

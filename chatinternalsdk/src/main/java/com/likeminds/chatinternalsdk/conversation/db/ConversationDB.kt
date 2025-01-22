@@ -79,6 +79,9 @@ interface ConversationDB {
     //query to get save posted conversation
     fun savePostedConversation(savePostedConversationRequest: _SavePostedConversationRequest_)
 
+    //query to check whether the conversation is within the limit of the target conversation
+    fun isConversationWithinLimit(conversationWithinLimitRequest: _ConversationWithinLimitRequest_): Boolean
+
     //query to get save new conversation
     fun saveNewConversation(
         realm: Realm,

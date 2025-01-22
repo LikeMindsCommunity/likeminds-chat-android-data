@@ -134,7 +134,7 @@ object ROConverter {
         realm: Realm,
         conversation: _Conversation_?,
         member: MemberRO? = null,
-        loggedInMember: UserRO?
+        loggedInMember: UserRO? = null,
     ): ConversationRO? {
         /**
          * Conversation is invalid without chatroomId, conversationId, Member object
@@ -257,6 +257,8 @@ object ROConverter {
         creator: MemberRO?,
         polls: List<_Poll_>?,
         attachments: List<_Attachment_>?,
+        replyConversation: _Conversation_? = null,
+        replyConversationCreator: _Member_? = null,
         reactions: List<_ReactionMeta_>? = null,
         loggedInUUID: String? = null,
         deletedByMemberRO: MemberRO? = null,
@@ -294,10 +296,17 @@ object ROConverter {
         )
 
         //get replied conversation
-        val replyConversation = if (conversation.replyConversationId != null) {
+        val finalReplyConversation = if (conversation.replyConversationId != null) {
             savedAnswer?.replyConversation ?: ChatDBUtil.getConversation(
                 realm,
                 conversation.replyConversationId
+            ) ?: convertConversation(
+                realm = realm,
+                conversation = replyConversation,
+                member = convertMember(
+                    replyConversationCreator,
+                    communityId
+                )
             )
         } else {
             null
@@ -333,7 +342,7 @@ object ROConverter {
 
             replyChatRoomId = conversation.replyChatroomId
             replyConversationId = conversation.replyConversationId
-            this.replyConversation = replyConversation
+            this.replyConversation = finalReplyConversation
 
             deletedBy = conversation.deletedBy
             this.deletedByMember = deletedByMemberRO
@@ -751,7 +760,7 @@ object ROConverter {
         communityId: String?,
         reactions: List<_ReactionMeta_>?,
     ): RealmList<ReactionRO> {
-        return reactions.orEmpty().reversed().mapNotNull { reaction ->
+        return reactions.orEmpty().asReversed().mapNotNull { reaction ->
             convertReactionMeta(realm, reaction, communityId)
         }.toRealmList()
     }
@@ -786,7 +795,7 @@ object ROConverter {
         communityId: String?,
         reactions: List<_Reaction_>?
     ): RealmList<ReactionRO> {
-        return reactions.orEmpty().reversed().mapNotNull { reaction ->
+        return reactions.orEmpty().asReversed().mapNotNull { reaction ->
             convertReaction(realm, reaction, communityId)
         }.toRealmList()
     }

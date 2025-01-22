@@ -14,6 +14,7 @@ class SyncPreferences @Inject constructor(
 
         const val SYNC_PREFS = "sync_prefs"
         const val TIMESTAMP_FOR_SYNC_CHATROOM = "timestamp_for_sync_chatroom"
+        const val TIMESTAMP_FOR_SYNC_DM = "timestamp_for_sync_dm"
         const val TIMESTAMP_FOR_SYNC_CONVERSATION = "timestamp_for_sync_conversation"
     }
 
@@ -31,5 +32,13 @@ class SyncPreferences @Inject constructor(
 
     fun getTimestampForSyncConversation(): Long {
         return getPreference(TIMESTAMP_FOR_SYNC_CONVERSATION, 0L)
+    }
+
+    fun setTimestampForSyncDM(time: Long) {
+        putPreference(TIMESTAMP_FOR_SYNC_DM, time)
+    }
+
+    fun getTimestampForSyncDM(): Long {
+        return getPreference(TIMESTAMP_FOR_SYNC_DM, 0L)
     }
 }

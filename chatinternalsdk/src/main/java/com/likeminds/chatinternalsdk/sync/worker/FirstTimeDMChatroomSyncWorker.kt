@@ -17,19 +17,19 @@ import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.Realm
 import kotlinx.coroutines.runBlocking
 
-class FirstTimeChatroomSyncWorker(
+class FirstTimeDMChatroomSyncWorker(
     context: Context,
-    workerParameters: WorkerParameters
-) : Worker(context, workerParameters) {
+    workerParams: WorkerParameters
+) : Worker(context, workerParams) {
 
     private val chatSDK = LMChatSDK.getInstance()
     private val api = chatSDK.getChatroomSyncApi()
     private val sdkPreferences = SDKPreferences(context as Application)
     private val userPreferences = UserPreferences(context as Application)
     private val syncPreferences = SyncPreferences(context as Application)
-
     private val isBackgroundWorker =
-        workerParameters.inputData.getBoolean(IS_BACKGROUND_WORKER, false)
+        workerParams.inputData.getBoolean(IS_BACKGROUND_WORKER, false)
+    private var maxTimestamp: Long = 0L
 
     /*
     * page = 1 -> Shows blocker while loading data.
@@ -42,49 +42,44 @@ class FirstTimeChatroomSyncWorker(
     }
 
     companion object {
-
-        const val NAME = "First time Chatroom Sync Worker"
+        const val NAME = "First Time DM Chatroom Sync Worker"
         const val IS_BACKGROUND_WORKER = "is_background_worker"
     }
 
     override fun doWork(): Result {
-        return measureExecution("$NAME, worker params: isBackgroundSync: $isBackgroundWorker") {
+        return measureExecution("$NAME, worker params -> isBackgroundSync: $isBackgroundWorker") {
             val realm = Realm.getDefaultInstance()
             val result = runBlocking {
-                getChatrooms(realm)
+                getDMChatrooms(realm)
             }
             realm.close()
             return@measureExecution result
         }
     }
 
-    /**
-     * Fetches all chatrooms
-     */
-    private suspend fun getChatrooms(realm: Realm): Result {
+    private suspend fun getDMChatrooms(realm: Realm): Result {
         val queries = HashMap<String, Any?>()
         // Set query parameters for request
         queries[SyncUtil.PAGE_KEY] = page
         queries[SyncUtil.PAGE_SIZE_KEY] = SyncUtil.CHATROOM_PAGE_SIZE
-        queries[SyncUtil.CHATROOM_TYPES_KEY] = SyncUtil.GROUP_CHATROOMS_TYPE_LIST
+        queries[SyncUtil.CHATROOM_TYPES_KEY] = SyncUtil.DM_CHATROOMS_TYPE_LIST
         queries[SyncUtil.MIN_TIMESTAMP_KEY] = 0
 
         /*
         * For blocker worker -> Current timestamp is used as Max timestamp and stored in prefs
         * For background worker -> Timestamp is fetched from prefs and is used as Max timestamp
         * */
-        if (isBackgroundWorker) {
-            queries[SyncUtil.MAX_TIMESTAMP_KEY] = syncPreferences.getTimestampForSyncChatroom()
+        maxTimestamp = if (isBackgroundWorker) {
+            syncPreferences.getTimestampForSyncDM()
         } else {
-            val maxTimestamp = System.currentTimeMillis() / 1000
-            queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
-            syncPreferences.setTimestampForSyncChatroom(maxTimestamp)
+            System.currentTimeMillis() / 1000
         }
+        queries[SyncUtil.MAX_TIMESTAMP_KEY] = maxTimestamp
 
         var data: _SyncChatroomResponse_? = null
         when (val response = api.syncChatrooms(queries)) {
             is NetworkResponse.Error -> {
-                Log.e(SyncUtil.TAG, "first time group chatroom failed: ${response.body.errorMessage}")
+                Log.e(SyncUtil.TAG, "first time dm chatroom failed: ${response.body.errorMessage}")
                 // The api call failed with some error, retry again or return failure according to the condition
                 if (runAttemptCount <= MAX_RETRY_COUNT) {
                     Result.retry()
@@ -115,13 +110,11 @@ class FirstTimeChatroomSyncWorker(
 
             data.chatrooms.isEmpty() -> {
                 // The response contains no more data.
+                syncPreferences.setTimestampForSyncDM(maxTimestamp)
                 Result.success()
             }
 
             else -> {
-                //create app config
-                SyncUtil.saveAppConfig(sdkPreferences.getCommunityId() ?: "")
-
                 // Dumps the chatroom data to db
                 SyncUtil.saveChatroomResponse(
                     sdkPreferences.getCommunityId() ?: "",
@@ -131,8 +124,9 @@ class FirstTimeChatroomSyncWorker(
                 // Chatroom data for next page is called in background
                 if (isBackgroundWorker) {
                     page++
-                    getChatrooms(realm)
+                    getDMChatrooms(realm)
                 }
+                syncPreferences.setTimestampForSyncDM(maxTimestamp)
                 Result.success()
             }
         }

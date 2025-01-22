@@ -21,4 +21,7 @@ interface UserNetworkApi {
 
     @GET("community/member/state")
     suspend fun getMemberState(): NetworkResponse<APIResponse<_MemberStateResponse_>>
+
+    @PUT("community/member/profile")
+    suspend fun editUserProfile(@Body request: _EditUserProfileRequest_): NetworkResponse<APIResponse<Nothing>>
 }

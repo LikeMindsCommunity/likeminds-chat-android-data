@@ -60,7 +60,7 @@ class FirstTimeConversationSyncWorker(
     }
 
     override fun doWork(): Result {
-        return measureExecution("$NAME, isBackgroundWorker: $isBackgroundWorker") {
+        return measureExecution("$NAME, chatroom id: $chatroomId, isBackgroundWorker: $isBackgroundWorker") {
             val result = runBlocking {
                 getConversations()
             }
@@ -134,7 +134,7 @@ class FirstTimeConversationSyncWorker(
                 * */
                 SyncUtil.saveConversationResponses(chatroomId, communityId, loggedInUUID, dataList)
                 ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
-                ChatDBUtil.updateChatroomMinTimestamp(chatroomId,System.currentTimeMillis())
+                ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
                 Result.success()
             }
 
@@ -149,7 +149,7 @@ class FirstTimeConversationSyncWorker(
                         dataList
                     )
                     ChatDBUtil.updateIsConversationStoreForChatroom(chatroomId, true)
-                    ChatDBUtil.updateChatroomMinTimestamp(chatroomId,System.currentTimeMillis())
+                    ChatDBUtil.updateChatroomMinTimestamp(chatroomId, System.currentTimeMillis())
                     Result.success()
                 } else {
                     /*
