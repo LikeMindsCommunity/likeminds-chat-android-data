@@ -8,13 +8,45 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.JsonParser
 import com.likeminds.chatinternalsdk.LMChatSDK
-import com.likeminds.chatinternalsdk.conversation.model.*
+import com.likeminds.chatinternalsdk.conversation.model._ConversationWithinLimitRequest_
+import com.likeminds.chatinternalsdk.conversation.model._DeleteConversationsRequest_
+import com.likeminds.chatinternalsdk.conversation.model._DeleteReactionRequest_
+import com.likeminds.chatinternalsdk.conversation.model._EditConversationRequest_
+import com.likeminds.chatinternalsdk.conversation.model._PostConversationRequest_
+import com.likeminds.chatinternalsdk.conversation.model._PutReactionRequest_
+import com.likeminds.chatinternalsdk.conversation.model._SavePostedConversationRequest_
 import com.likeminds.chatinternalsdk.db.models.ConversationRO
 import com.likeminds.chatinternalsdk.sync.SyncSDK
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.conversation.model.*
+import com.likeminds.likemindschat.conversation.model.Conversation
+import com.likeminds.likemindschat.conversation.model.ConversationWithinLimitRequest
+import com.likeminds.likemindschat.conversation.model.DeleteConversationPermanentlyRequest
+import com.likeminds.likemindschat.conversation.model.DeleteConversationsRequest
+import com.likeminds.likemindschat.conversation.model.DeleteConversationsResponse
+import com.likeminds.likemindschat.conversation.model.DeleteReactionRequest
+import com.likeminds.likemindschat.conversation.model.EditConversationRequest
+import com.likeminds.likemindschat.conversation.model.EditConversationResponse
+import com.likeminds.likemindschat.conversation.model.GetConversationCountType
+import com.likeminds.likemindschat.conversation.model.GetConversationRequest
+import com.likeminds.likemindschat.conversation.model.GetConversationResponse
+import com.likeminds.likemindschat.conversation.model.GetConversationType
+import com.likeminds.likemindschat.conversation.model.GetConversationsCountRequest
+import com.likeminds.likemindschat.conversation.model.GetConversationsCountResponse
+import com.likeminds.likemindschat.conversation.model.GetConversationsRequest
+import com.likeminds.likemindschat.conversation.model.GetConversationsResponse
+import com.likeminds.likemindschat.conversation.model.LiveConversationResponse
+import com.likeminds.likemindschat.conversation.model.LoadConversationType
+import com.likeminds.likemindschat.conversation.model.ObserveConversationsRequest
+import com.likeminds.likemindschat.conversation.model.PostConversationRequest
+import com.likeminds.likemindschat.conversation.model.PostConversationResponse
+import com.likeminds.likemindschat.conversation.model.PutReactionRequest
+import com.likeminds.likemindschat.conversation.model.SaveConversationRequest
+import com.likeminds.likemindschat.conversation.model.SavePostedConversationRequest
+import com.likeminds.likemindschat.conversation.model.UpdateConversationRequest
+import com.likeminds.likemindschat.conversation.model.UpdateConversationWorkerUUIDRequest
+import com.likeminds.likemindschat.conversation.model.UpdateTemporaryConversationRequest
 import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
@@ -129,45 +161,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("text or attachments or metadata")
         }
     }
-
-    /**
-     * Converts client request model to internal model and calls the api
-     * @param postConversationRequest - client request model to post a conversation
-     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
-     * @return LMResponse<String> - Base LM response[String] -> the uuid of the worker
-     */
-    fun createConversation(
-        context: Context,
-        postConversationRequest: PostConversationRequest
-    ): LMResponse<String> {
-        // validates the client request
-        RequestUtils.validate()
-        validatePostConversationRequest(postConversationRequest)
-
-        // create input data
-        val inputJson = Gson().toJson(postConversationRequest)
-        val metadata = if (postConversationRequest.metadata == null) {
-            null
-        } else {
-            postConversationRequest.metadata.toString()
-        }
-
-        // create conversation worker
-        val createConversationWorker = CreateConversationWorker.getInstance(inputJson, metadata)
-
-        // enqueue worker
-        val work = WorkManager.getInstance(context)
-            .beginWith(createConversationWorker)
-        work.enqueue()
-
-        // return success
-        return LMResponse(
-            success = true,
-            errorMessage = null,
-            data = createConversationWorker.id.toString()
-        )
-    }
-
 
     /**
      * Converts client request model to internal model and stores the posted conversation in DB
