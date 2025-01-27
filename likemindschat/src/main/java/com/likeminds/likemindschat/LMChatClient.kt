@@ -488,4 +488,9 @@ class LMChatClient private constructor() {
     suspend fun editUserProfile(editUserProfileRequest: EditUserProfileRequest): LMResponse<Nothing> {
         return userClient.editUserProfile(editUserProfileRequest)
     }
+
+    // Exposed function to get list of AI chatbots
+    suspend fun getAIChatbots(getAIChatbotsRequest: GetAIChatbotsRequest): LMResponse<GetAIChatbotsResponse> {
+        return communityClient.getAIChatbots(getAIChatbotsRequest)
+    }
 }

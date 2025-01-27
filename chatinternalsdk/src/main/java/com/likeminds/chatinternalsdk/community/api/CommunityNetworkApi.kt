@@ -26,4 +26,7 @@ interface CommunityNetworkApi {
 
     @GET("community/configurations")
     suspend fun getCommunityConfiguration(): NetworkResponse<APIResponse<_GetCommunityConfiguration_>>
+
+    @GET("community/chatbot")
+    suspend fun getAIChatbots(@QueryMap queries: HashMap<String, Any>): NetworkResponse<APIResponse<_GetAIChatbotsResponse_>>
 }

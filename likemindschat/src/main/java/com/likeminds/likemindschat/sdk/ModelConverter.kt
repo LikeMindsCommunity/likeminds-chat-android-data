@@ -1468,6 +1468,29 @@ object ModelConverter {
         }
     }
 
+    // converts APIResponse<_GetAIChatbotsResponse_> to LMResponse<GetAIChatbotsResponse> model
+    fun convertGetAIChatbotsResponse(apiResponse: APIResponse<_GetAIChatbotsResponse_>): LMResponse<GetAIChatbotsResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetAIChatbots(apiResponse.data)
+        )
+    }
+
+    // converts internal _GetAIChatbotsResponse_ to client GetAIChatbotsResponse
+    private fun convertGetAIChatbots(_getAIChatbotsResponse_: _GetAIChatbotsResponse_?): GetAIChatbotsResponse? {
+        if (_getAIChatbotsResponse_ == null) {
+            return null
+        }
+
+        return GetAIChatbotsResponse(
+            _getAIChatbotsResponse_.page,
+            _getAIChatbotsResponse_.totalPages,
+            _getAIChatbotsResponse_.totalChatbots,
+            convertMembers(_getAIChatbotsResponse_.users)
+        )
+    }
+
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
