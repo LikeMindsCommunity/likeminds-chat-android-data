@@ -68,4 +68,12 @@ class ChatroomDBImpl @Inject constructor(
     override fun saveChatroom(chatroom: _Chatroom_) {
         return chatroomReceiver.saveChatroom(chatroom)
     }
+
+    override fun getJoinedChatroomsCount(realm: Realm): Pair<Int, Int> {
+        return chatroomReceiver.getJoinedChatroomsCount(realm)
+    }
+
+    override fun getUnreadConversationsCount(realm: Realm): Long {
+        return chatroomReceiver.getUnreadConversationsCount(realm)
+    }
 }

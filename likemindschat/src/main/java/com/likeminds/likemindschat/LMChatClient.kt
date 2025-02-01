@@ -493,4 +493,14 @@ class LMChatClient private constructor() {
     suspend fun getAIChatbots(getAIChatbotsRequest: GetAIChatbotsRequest): LMResponse<GetAIChatbotsResponse> {
         return communityClient.getAIChatbots(getAIChatbotsRequest)
     }
+
+    // Exposed function to get the count of joined chatrooms
+    fun getJoinedChatroomsCount(): LMResponse<GetJoinedChatroomCountResponse> {
+        return chatroomClient.getJoinedChatroomsCount()
+    }
+
+    // Exposed function to get the count of unread conversations
+    fun getUnreadConversationsCount(): Long {
+        return chatroomClient.getUnreadConversationsCount()
+    }
 }

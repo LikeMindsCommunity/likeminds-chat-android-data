@@ -307,4 +307,28 @@ class ChatroomReceiver @Inject constructor(
             }
         }
     }
+
+    fun getJoinedChatroomsCount(realm: Realm): Pair<Int, Int> {
+        val joinedGroupChatrooms = realm.where(ChatroomRO::class.java)
+            .equalTo(DbKey.FOLLOW_STATUS, true)
+            .beginGroup()
+            .equalTo(DbKey.TYPE, TYPE_NORMAL)
+            .or()
+            .equalTo(DbKey.TYPE, TYPE_ANNOUNCEMENT)
+            .endGroup()
+            .count()
+
+        val joinedDMChatrooms = realm.where(ChatroomRO::class.java)
+            .equalTo(DbKey.FOLLOW_STATUS, true)
+            .equalTo(DbKey.TYPE, TYPE_DIRECT_MESSAGE)
+            .count()
+
+        return Pair(joinedGroupChatrooms.toInt(), joinedDMChatrooms.toInt())
+    }
+
+    fun getUnreadConversationsCount(realm: Realm): Long {
+        return realm.where(ChatroomRO::class.java)
+            .sum(DbKey.UNSEEN_COUNT)
+            .toLong()
+    }
 }
