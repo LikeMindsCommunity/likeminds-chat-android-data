@@ -417,6 +417,11 @@ class LMChatClient private constructor() {
         conversationClient.savePostedConversation(savePostedConversationRequest)
     }
 
+    // Exposed function to find whether the conversation is within the limit of the provided conversation
+    fun isConversationWithinLimit(conversationWithinLimitRequest: ConversationWithinLimitRequest): Boolean {
+        return conversationClient.isConversationWithinLimit(conversationWithinLimitRequest)
+    }
+
     // Exposed function to get content download settings
     suspend fun getContentDownloadSettings(): LMResponse<GetContentDownloadSettingsResponse> {
         return communityClient.getContentDownloadSettings()
@@ -485,5 +490,10 @@ class LMChatClient private constructor() {
     // Exposed function to get secret channel invites
     suspend fun getChannelInvites(getChannelInviteRequest: GetChannelInviteRequest): LMResponse<GetChannelInviteResponse> {
         return chatroomClient.getChannelInvites(getChannelInviteRequest)
+    }
+
+    // Exposed function to edit user profile
+    suspend fun editUserProfile(editUserProfileRequest: EditUserProfileRequest): LMResponse<Nothing> {
+        return userClient.editUserProfile(editUserProfileRequest)
     }
 }

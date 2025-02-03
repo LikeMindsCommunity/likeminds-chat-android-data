@@ -169,6 +169,42 @@ class ConversationClient @Inject constructor() : BaseClient() {
     }
 
     /**
+     * Converts client request model to internal model and find whether the conversation is within the limit of the provided conversation
+     * @param conversationWithinLimitRequest - client request model to find whether the conversation is within the limit of the provided conversation
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
+    fun isConversationWithinLimit(conversationWithinLimitRequest: ConversationWithinLimitRequest): Boolean {
+        // validates the client request
+        RequestUtils.validate()
+        validateConversationWithinLimitRequest(conversationWithinLimitRequest)
+
+        val request = _ConversationWithinLimitRequest_.Builder()
+            .chatroomId(conversationWithinLimitRequest.chatroomId)
+            .conversationKey(ModelConverter.createConversation(conversationWithinLimitRequest.conversationKey))
+            .targetConversationId(conversationWithinLimitRequest.targetConversationId)
+            .limit(conversationWithinLimitRequest.limit)
+            .build()
+
+        return conversationDB.isConversationWithinLimit(request)
+    }
+
+    /**
+     * validates [conversationWithinLimitRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateConversationWithinLimitRequest(conversationWithinLimitRequest: ConversationWithinLimitRequest) {
+        if (conversationWithinLimitRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+        if (conversationWithinLimitRequest.conversationKey.id.isNullOrEmpty()) {
+            RequestUtils.throwException("conversation")
+        }
+        if (conversationWithinLimitRequest.targetConversationId.isEmpty()) {
+            RequestUtils.throwException("targetConversationId")
+        }
+    }
+
+    /**
      * runs the query for observing new conversations and returns the data in listener
      * @param observeConversationsRequest: [ObserveConversationsRequest] request for observing new conversation
      *

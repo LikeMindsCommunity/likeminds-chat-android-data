@@ -346,6 +346,23 @@ class ConversationReceiver @Inject constructor(
         })
     }
 
+    fun isConversationWithinLimit(conversationWithinLimitRequest: _ConversationWithinLimitRequest_): Boolean {
+        val realm = Realm.getDefaultInstance()
+        val conversationKeyCreatedEpoch =
+            conversationWithinLimitRequest.conversationKey.createdEpoch ?: 0L
+
+        return realm.where(ConversationRO::class.java)
+            .equalTo(DbKey.CHATROOM_ID, conversationWithinLimitRequest.chatroomId)
+            .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING, DbKey.ID, Sort.DESCENDING)
+            .lessThanOrEqualTo(DbKey.CREATED_EPOCH, conversationKeyCreatedEpoch)
+            .notEqualTo(DbKey.ID, conversationWithinLimitRequest.conversationKey.id)
+            .limit(conversationWithinLimitRequest.limit.toLong())
+            .findAll()
+            .where()
+            .equalTo(DbKey.ID, conversationWithinLimitRequest.targetConversationId)
+            .findFirst() != null
+    }
+
     fun saveNewConversation(
         realm: Realm,
         conversation: _Conversation_
