@@ -73,7 +73,7 @@ class ChatroomDBImpl @Inject constructor(
         return chatroomReceiver.getJoinedChatroomsCount(realm)
     }
 
-    override fun getUnreadConversationsCount(realm: Realm): Long {
+    override fun getUnreadConversationsCount(realm: Realm): Pair<Long, Long> {
         return chatroomReceiver.getUnreadConversationsCount(realm)
     }
 }

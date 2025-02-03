@@ -319,16 +319,34 @@ class ChatroomReceiver @Inject constructor(
             .count()
 
         val joinedDMChatrooms = realm.where(ChatroomRO::class.java)
-            .equalTo(DbKey.FOLLOW_STATUS, true)
             .equalTo(DbKey.TYPE, TYPE_DIRECT_MESSAGE)
+            .beginGroup()
+            .equalTo(DbKey.MEMBER_OBJECT_UUID, userPreferences.getClientUUID())
+            .or()
+            .equalTo(DbKey.CHATROOM_WITH_USER_ID, userPreferences.getLMMemberId())
+            .endGroup()
             .count()
 
         return Pair(joinedGroupChatrooms.toInt(), joinedDMChatrooms.toInt())
     }
 
-    fun getUnreadConversationsCount(realm: Realm): Long {
-        return realm.where(ChatroomRO::class.java)
+    fun getUnreadConversationsCount(realm: Realm): Pair<Long, Long> {
+        val unreadGroupChatroomConversations = realm.where(ChatroomRO::class.java)
+            .equalTo(DbKey.FOLLOW_STATUS, true)
+            .beginGroup()
+            .equalTo(DbKey.TYPE, TYPE_NORMAL)
+            .or()
+            .equalTo(DbKey.TYPE, TYPE_ANNOUNCEMENT)
+            .endGroup()
             .sum(DbKey.UNSEEN_COUNT)
             .toLong()
+
+        val unreadDMChatroomConversations = realm.where(ChatroomRO::class.java)
+            .equalTo(DbKey.TYPE, TYPE_DIRECT_MESSAGE)
+            .equalTo(DbKey.FOLLOW_STATUS, true)
+            .sum(DbKey.UNSEEN_COUNT)
+            .toLong()
+
+        return Pair(unreadGroupChatroomConversations, unreadDMChatroomConversations)
     }
 }

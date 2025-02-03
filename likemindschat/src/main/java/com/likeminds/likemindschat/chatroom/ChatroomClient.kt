@@ -599,16 +599,27 @@ class ChatroomClient @Inject constructor() : BaseClient() {
     /**
      * Returns the unread conversations count in local DB
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
-     * @return Long
+     * @return LMResponse<GetUnreadConversationsCountResponse> - GetUnreadConversationsCountResponse model
      */
-    fun getUnreadConversationsCount(): Long {
+    fun getUnreadConversationsCount(): LMResponse<GetUnreadConversationsCountResponse> {
         // validates the client request
         RequestUtils.validate()
 
         // get the count from local DB
         val realm = Realm.getDefaultInstance()
+        val unreadConversationCount = chatroomDB.getUnreadConversationsCount(realm)
+
+        val getUnreadConversationsCountResponse = GetUnreadConversationsCountResponse(
+            unreadConversationCount.first,
+            unreadConversationCount.second
+        )
+
         realm.close()
 
-        return chatroomDB.getUnreadConversationsCount(realm)
+        return LMResponse(
+            true,
+            null,
+            getUnreadConversationsCountResponse
+        )
     }
 }

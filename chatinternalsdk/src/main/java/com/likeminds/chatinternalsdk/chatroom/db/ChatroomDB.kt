@@ -53,5 +53,5 @@ interface ChatroomDB {
     fun getJoinedChatroomsCount(realm: Realm): Pair<Int, Int>
 
     //query to get count of unread conversations
-    fun getUnreadConversationsCount(realm: Realm): Long
+    fun getUnreadConversationsCount(realm: Realm): Pair<Long, Long>
 }

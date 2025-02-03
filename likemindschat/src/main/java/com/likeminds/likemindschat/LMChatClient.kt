@@ -500,7 +500,7 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get the count of unread conversations
-    fun getUnreadConversationsCount(): Long {
+    fun getUnreadConversationsCount(): LMResponse<GetUnreadConversationsCountResponse> {
         return chatroomClient.getUnreadConversationsCount()
     }
 }
