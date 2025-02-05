@@ -15,7 +15,6 @@ class PostConversationRequest private constructor(
     val triggerBot: Boolean,
     val attachments: List<Attachment>?
 ) {
-
     class Builder {
 
         private var chatroomId: String = ""

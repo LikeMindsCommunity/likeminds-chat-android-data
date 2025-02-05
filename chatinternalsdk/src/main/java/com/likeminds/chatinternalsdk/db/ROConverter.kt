@@ -179,7 +179,7 @@ object ROConverter {
         )
         val pollsList = convertPolls(realm, conversation.polls as? MutableList<_Poll_>, communityId)
 
-        val widgetRO = convertWidgetRO(conversation._widget_)
+        val widgetRO = convertWidgetRO(conversation.widget)
 
         //Clear embedded object list if already present else calling insertToRealmOrUpdate will duplicate it
         savedAnswer?.reactions?.deleteAllFromRealm()
@@ -211,7 +211,7 @@ object ROConverter {
             deletedBy = conversation.deletedBy
             attachmentCount = conversation.attachmentCount
             attachmentsUploaded = conversation.attachmentUploaded
-            uploadWorkerUUID = savedAnswer?.uploadWorkerUUID ?: conversation.uploadWorkerUUID
+            workerUUID = savedAnswer?.workerUUID ?: conversation.workerUUID
             localSavedEpoch = conversation.localCreatedEpoch ?: 0L
             temporaryId =
                 if (memberRO.sdkClientInfoRO?.uuid == loggedInMember?.sdkClientInfoRO?.uuid) {
@@ -235,6 +235,7 @@ object ROConverter {
             replyChatRoomId = conversation.replyChatroomId
             this.widgetRO = widgetRO
             widgetId = conversation.widgetId
+            attachmentsUploadedEpoch = conversation.attachmentsUploadedEpoch
         }
     }
 
@@ -347,7 +348,7 @@ object ROConverter {
             this.deletedByMember = deletedByMemberRO
             attachmentCount = conversation.attachmentCount
             attachmentsUploaded = conversation.attachmentUploaded
-            uploadWorkerUUID = savedAnswer?.uploadWorkerUUID
+            workerUUID = savedAnswer?.workerUUID
             this.attachments = updatedAttachments
             this.link = linkRO
 
@@ -507,8 +508,8 @@ object ROConverter {
             this.attachments = conversation.attachments
             attachmentCount = conversation.attachmentCount
             attachmentsUploaded = conversation.attachmentsUploaded
-            uploadWorkerUUID =
-                conversation.uploadWorkerUUID // to maintain the upload worker uuid in case of retry upload
+            workerUUID =
+                conversation.workerUUID // to maintain the upload worker uuid in case of retry upload
         }
     }
 
@@ -574,7 +575,7 @@ object ROConverter {
             deletedBy = conversation.deletedBy
             this.deletedByMember = deletedByMember
             attachmentsUploaded = conversation.attachmentUploaded
-            uploadWorkerUUID = savedAnswer?.uploadWorkerUUID
+            workerUUID = savedAnswer?.workerUUID
             this.createdEpoch = createdEpoch
             this.chatroomId = chatroomId
             this.communityId = communityId

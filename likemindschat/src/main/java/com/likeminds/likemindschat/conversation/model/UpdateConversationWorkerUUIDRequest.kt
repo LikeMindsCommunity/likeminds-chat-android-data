@@ -1,6 +1,6 @@
 package com.likeminds.likemindschat.conversation.model
 
-class UpdateConversationUploadWorkerUUIDRequest private constructor(
+class UpdateConversationWorkerUUIDRequest private constructor(
     val conversationId: String,
     val uuid: String
 ) {
@@ -11,7 +11,7 @@ class UpdateConversationUploadWorkerUUIDRequest private constructor(
         fun conversationId(conversationId: String) = apply { this.conversationId = conversationId }
         fun uuid(uuid: String) = apply { this.uuid = uuid }
 
-        fun build() = UpdateConversationUploadWorkerUUIDRequest(conversationId, uuid)
+        fun build() = UpdateConversationWorkerUUIDRequest(conversationId, uuid)
     }
 
     fun toBuilder(): Builder {

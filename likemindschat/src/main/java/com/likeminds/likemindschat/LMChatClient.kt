@@ -341,10 +341,10 @@ class LMChatClient private constructor() {
         conversationClient.saveTemporaryConversation(saveConversationRequest)
     }
 
-    // Exposed function to update conversation upload worker uuid
-    fun updateConversationUploadWorkerUUID(updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest) {
-        conversationClient.updateConversationUploadWorkerUUID(
-            updateConversationUploadWorkerUUIDRequest
+    // Exposed function to update conversation worker uuid
+    fun updateConversationWorkerUUID(updateConversationWorkerUUIDRequest: UpdateConversationWorkerUUIDRequest) {
+        conversationClient.updateConversationWorkerUUID(
+            updateConversationWorkerUUIDRequest
         )
     }
 
@@ -367,14 +367,6 @@ class LMChatClient private constructor() {
     // Exposed function to post conversation
     suspend fun postConversation(postConversationRequest: PostConversationRequest): LMResponse<PostConversationResponse> {
         return conversationClient.postConversation(postConversationRequest)
-    }
-
-    // Exposed function to create conversation
-    fun createConversation(
-        context: Context,
-        postConversationRequest: PostConversationRequest
-    ): LMResponse<String> {
-        return conversationClient.createConversation(context, postConversationRequest)
     }
 
     // Exposed function to edit conversation
@@ -495,5 +487,20 @@ class LMChatClient private constructor() {
     // Exposed function to edit user profile
     suspend fun editUserProfile(editUserProfileRequest: EditUserProfileRequest): LMResponse<Nothing> {
         return userClient.editUserProfile(editUserProfileRequest)
+    }
+
+    // Exposed function to get list of AI chatbots
+    suspend fun getAIChatbots(getAIChatbotsRequest: GetAIChatbotsRequest): LMResponse<GetAIChatbotsResponse> {
+        return communityClient.getAIChatbots(getAIChatbotsRequest)
+    }
+
+    // Exposed function to get the count of joined chatrooms
+    fun getJoinedChatroomsCount(): LMResponse<GetJoinedChatroomCountResponse> {
+        return chatroomClient.getJoinedChatroomsCount()
+    }
+
+    // Exposed function to get the count of unread conversations
+    fun getUnreadConversationsCount(): LMResponse<GetUnreadConversationsCountResponse> {
+        return chatroomClient.getUnreadConversationsCount()
     }
 }

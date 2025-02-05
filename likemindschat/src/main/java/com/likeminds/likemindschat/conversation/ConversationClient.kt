@@ -4,21 +4,50 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
-import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.likeminds.chatinternalsdk.LMChatSDK
-import com.likeminds.chatinternalsdk.conversation.model.*
+import com.likeminds.chatinternalsdk.conversation.model._ConversationWithinLimitRequest_
+import com.likeminds.chatinternalsdk.conversation.model._DeleteConversationsRequest_
+import com.likeminds.chatinternalsdk.conversation.model._DeleteReactionRequest_
+import com.likeminds.chatinternalsdk.conversation.model._EditConversationRequest_
+import com.likeminds.chatinternalsdk.conversation.model._PostConversationRequest_
+import com.likeminds.chatinternalsdk.conversation.model._PutReactionRequest_
+import com.likeminds.chatinternalsdk.conversation.model._SavePostedConversationRequest_
 import com.likeminds.chatinternalsdk.db.models.ConversationRO
 import com.likeminds.chatinternalsdk.sync.SyncSDK
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.conversation.model.*
+import com.likeminds.likemindschat.conversation.model.Conversation
+import com.likeminds.likemindschat.conversation.model.ConversationWithinLimitRequest
+import com.likeminds.likemindschat.conversation.model.DeleteConversationPermanentlyRequest
+import com.likeminds.likemindschat.conversation.model.DeleteConversationsRequest
+import com.likeminds.likemindschat.conversation.model.DeleteConversationsResponse
+import com.likeminds.likemindschat.conversation.model.DeleteReactionRequest
+import com.likeminds.likemindschat.conversation.model.EditConversationRequest
+import com.likeminds.likemindschat.conversation.model.EditConversationResponse
+import com.likeminds.likemindschat.conversation.model.GetConversationCountType
+import com.likeminds.likemindschat.conversation.model.GetConversationRequest
+import com.likeminds.likemindschat.conversation.model.GetConversationResponse
+import com.likeminds.likemindschat.conversation.model.GetConversationType
+import com.likeminds.likemindschat.conversation.model.GetConversationsCountRequest
+import com.likeminds.likemindschat.conversation.model.GetConversationsCountResponse
+import com.likeminds.likemindschat.conversation.model.GetConversationsRequest
+import com.likeminds.likemindschat.conversation.model.GetConversationsResponse
+import com.likeminds.likemindschat.conversation.model.LiveConversationResponse
+import com.likeminds.likemindschat.conversation.model.LoadConversationType
+import com.likeminds.likemindschat.conversation.model.ObserveConversationsRequest
+import com.likeminds.likemindschat.conversation.model.PostConversationRequest
+import com.likeminds.likemindschat.conversation.model.PostConversationResponse
+import com.likeminds.likemindschat.conversation.model.PutReactionRequest
+import com.likeminds.likemindschat.conversation.model.SaveConversationRequest
+import com.likeminds.likemindschat.conversation.model.SavePostedConversationRequest
+import com.likeminds.likemindschat.conversation.model.UpdateConversationRequest
+import com.likeminds.likemindschat.conversation.model.UpdateConversationWorkerUUIDRequest
+import com.likeminds.likemindschat.conversation.model.UpdateTemporaryConversationRequest
 import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
-import com.likeminds.likemindschat.conversation.worker.CreateConversationWorker
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -89,6 +118,28 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
             is NetworkResponse.Success -> {
                 val body = response.body
+                val data = body.data
+                val conversation = data?.conversation
+
+                if (conversation != null) {
+                    //Get widget from widgetMap and add it to updatedConversation
+                    val widgetId = conversation.widgetId
+                    val widget = data.widgets[widgetId]
+
+                    //update conversation with widget
+                    val updatedConversation = conversation.toBuilder()
+                        .widget(widget)
+                        .build()
+
+                    //create save conversation request
+                    val saveConversationRequest = _SavePostedConversationRequest_.Builder()
+                        .conversation(updatedConversation)
+                        .isFromNotification(false)
+                        .build()
+
+                    //save conversation to db
+                    conversationDB.savePostedConversation(saveConversationRequest)
+                }
 
                 ModelConverter.convertPostConversationAPIResponse(body)
             }
@@ -110,45 +161,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("text or attachments or metadata")
         }
     }
-
-    /**
-     * Converts client request model to internal model and calls the api
-     * @param postConversationRequest - client request model to post a conversation
-     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
-     * @return LMResponse<String> - Base LM response[String] -> the uuid of the worker
-     */
-    fun createConversation(
-        context: Context,
-        postConversationRequest: PostConversationRequest
-    ): LMResponse<String> {
-        // validates the client request
-        RequestUtils.validate()
-        validatePostConversationRequest(postConversationRequest)
-
-        // create input data
-        val inputJson = Gson().toJson(postConversationRequest)
-        val metadata = if (postConversationRequest.metadata == null) {
-            null
-        } else {
-            postConversationRequest.metadata.toString()
-        }
-
-        // create conversation worker
-        val createConversationWorker = CreateConversationWorker.getInstance(inputJson, metadata)
-
-        // enqueue worker
-        val work = WorkManager.getInstance(context)
-            .beginWith(createConversationWorker)
-        work.enqueue()
-
-        // return success
-        return LMResponse(
-            success = true,
-            errorMessage = null,
-            data = createConversationWorker.id.toString()
-        )
-    }
-
 
     /**
      * Converts client request model to internal model and stores the posted conversation in DB
@@ -749,31 +761,31 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
     /**
      * update conversation uuid in local db
-     * @param updateConversationUploadWorkerUUIDRequest - client request model to update conversation upload worker
+     * @param updateConversationWorkerUUIDRequest - client request model to update conversation worker uuid
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
      * */
-    fun updateConversationUploadWorkerUUID(updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest) {
+    fun updateConversationWorkerUUID(updateConversationWorkerUUIDRequest: UpdateConversationWorkerUUIDRequest) {
         // validates the client request
         RequestUtils.validate()
-        validateUpdateConversationUploadWorkerUUIDRequest(updateConversationUploadWorkerUUIDRequest)
+        validateUpdateConversationWorkerUUIDRequest(updateConversationWorkerUUIDRequest)
 
-        conversationDB.updateConversationUploadWorkerUUID(
-            updateConversationUploadWorkerUUIDRequest.conversationId,
-            updateConversationUploadWorkerUUIDRequest.uuid
+        conversationDB.updateConversationWorkerUUID(
+            updateConversationWorkerUUIDRequest.conversationId,
+            updateConversationWorkerUUIDRequest.uuid
         )
     }
 
     /**
-     * validates [updateConversationUploadWorkerUUIDRequest]
+     * validates [updateConversationWorkerUUIDRequest]
      * @throws IllegalArgumentException - when required properties not provided
      */
-    private fun validateUpdateConversationUploadWorkerUUIDRequest(
-        updateConversationUploadWorkerUUIDRequest: UpdateConversationUploadWorkerUUIDRequest,
+    private fun validateUpdateConversationWorkerUUIDRequest(
+        updateConversationWorkerUUIDRequest: UpdateConversationWorkerUUIDRequest,
     ) {
-        if (updateConversationUploadWorkerUUIDRequest.conversationId.isEmpty()) {
+        if (updateConversationWorkerUUIDRequest.conversationId.isEmpty()) {
             RequestUtils.throwException("conversationId")
         }
-        if (updateConversationUploadWorkerUUIDRequest.uuid.isEmpty()) {
+        if (updateConversationWorkerUUIDRequest.uuid.isEmpty()) {
             RequestUtils.throwException("uuid")
         }
     }
