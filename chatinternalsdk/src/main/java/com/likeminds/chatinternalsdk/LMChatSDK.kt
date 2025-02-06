@@ -1,7 +1,6 @@
 package com.likeminds.chatinternalsdk
 
 import android.app.Application
-import android.util.Log
 import com.google.gson.Gson
 import com.likeminds.chatinternalsdk.chatroom.api.ChatroomApi
 import com.likeminds.chatinternalsdk.chatroom.api.ChatroomApiImpl
@@ -156,35 +155,14 @@ class LMChatSDK {
         lmChatInternalCallback: LMChatInternalCallback?
     ) {
         initSDKComponent(sdkSharedResources)
-        initRealmAndMigrateAsync()
+        initRealm()
         this.lmChatInternalCallback = lmChatInternalCallback
     }
 
-    private fun initRealmAndMigrateAsync() {
+    private fun initRealm() {
         Realm.init(application)
 
         Realm.setDefaultConfiguration(getNewDbConfig())
-
-        migrateDbAsync { }
-    }
-
-    private fun migrateDbAsync(cb: (Boolean) -> Unit) {
-        val config = Realm.getDefaultConfiguration()
-        if (config == null) {
-            cb(false)
-            return
-        }
-        Realm.getInstanceAsync(config, object : Realm.Callback() {
-            override fun onSuccess(realm: Realm) {
-                cb(true)
-            }
-
-            override fun onError(exception: Throwable) {
-                super.onError(exception)
-                Log.e(LOG_TAG, "migration occurred with", exception)
-                cb(false)
-            }
-        })
     }
 
     private fun getNewDbConfig(): RealmConfiguration {
