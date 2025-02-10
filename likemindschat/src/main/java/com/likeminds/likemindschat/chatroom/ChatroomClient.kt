@@ -537,6 +537,12 @@ class ChatroomClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param getChannelInviteRequest - client request model to get the channel invites
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<GetChannelInviteResponse> - GetChannelInviteResponse model for getChannelInviteRequest
+     */
     suspend fun getChannelInvites(getChannelInviteRequest: GetChannelInviteRequest): LMResponse<GetChannelInviteResponse> {
         // validates the client request
         RequestUtils.validate()
@@ -561,5 +567,59 @@ class ChatroomClient @Inject constructor() : BaseClient() {
                 ModelConverter.convertGetChannelInvitesResponse(response.body)
             }
         }
+    }
+
+    /**
+     * Returns the count of chatrooms user has joined from local DB
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<GetJoinedChatroomCountResponse> - GetJoinedChatroomCountResponse model
+     */
+    fun getJoinedChatroomsCount(): LMResponse<GetJoinedChatroomCountResponse> {
+        // validates the client request
+        RequestUtils.validate()
+
+        // get the count from local DB
+        val realm = Realm.getDefaultInstance()
+        val joinedChatroomCount = chatroomDB.getJoinedChatroomsCount(realm)
+
+        val getJoinedChatroomCountResponse = GetJoinedChatroomCountResponse(
+            joinedChatroomCount.first,
+            joinedChatroomCount.second
+        )
+
+        realm.close()
+
+        return LMResponse(
+            true,
+            null,
+            getJoinedChatroomCountResponse
+        )
+    }
+
+    /**
+     * Returns the unread conversations count in local DB
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<GetUnreadConversationsCountResponse> - GetUnreadConversationsCountResponse model
+     */
+    fun getUnreadConversationsCount(): LMResponse<GetUnreadConversationsCountResponse> {
+        // validates the client request
+        RequestUtils.validate()
+
+        // get the count from local DB
+        val realm = Realm.getDefaultInstance()
+        val unreadConversationCount = chatroomDB.getUnreadConversationsCount(realm)
+
+        val getUnreadConversationsCountResponse = GetUnreadConversationsCountResponse(
+            unreadConversationCount.first,
+            unreadConversationCount.second
+        )
+
+        realm.close()
+
+        return LMResponse(
+            true,
+            null,
+            getUnreadConversationsCountResponse
+        )
     }
 }

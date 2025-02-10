@@ -48,4 +48,10 @@ interface ChatroomDB {
 
     //query to save the chatroom to local db
     fun saveChatroom(chatroom: _Chatroom_)
+
+    //query to get the joined chatrooms count
+    fun getJoinedChatroomsCount(realm: Realm): Pair<Int, Int>
+
+    //query to get count of unread conversations
+    fun getUnreadConversationsCount(realm: Realm): Pair<Int, Int>
 }

@@ -52,6 +52,7 @@ object DbKey {
     const val TYPE = "type"
     const val POLL_TYPE_TEXT = "pollTypeText"
     const val UPLOAD_WORKER_UUID = "uploadWorkerUUID"
+    const val WORKER_UUID = "workerUUID"
     const val ATTACHMENTS_UPLOADED = "attachmentsUploaded"
     const val ATTACHMENTS_COUNT = "attachmentCount"
     const val HAS_BEEN_NAMED = "hasBeenNamed"

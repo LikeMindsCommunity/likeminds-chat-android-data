@@ -237,4 +237,33 @@ class CommunityClient @Inject constructor() : BaseClient() {
             }
         }
     }
+
+    /**
+     * Calls the api to get list of AI chatbots
+     * @param getAIChatbotsRequest -  client request model to get AI chatbots
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated
+     * @return GetAIChatbotsResponse - GetAIChatbotsResponse model for getAIChatbotsResponse
+     */
+    suspend fun getAIChatbots(getAIChatbotsRequest: GetAIChatbotsRequest): LMResponse<GetAIChatbotsResponse> {
+        // validates the client request
+        RequestUtils.validate()
+
+        val request = _GetAIChatbotsRequest_.Builder()
+            .page(getAIChatbotsRequest.page)
+            .pageSize(getAIChatbotsRequest.pageSize)
+            .build()
+
+        return when (val response = communityApi.getAIChatbots(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                ModelConverter.convertGetAIChatbotsResponse(response.body)
+            }
+        }
+    }
 }

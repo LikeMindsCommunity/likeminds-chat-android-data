@@ -423,10 +423,10 @@ class ConversationReceiver @Inject constructor(
         })
     }
 
-    fun updateConversationUploadWorkerUUID(conversationId: String, uuid: String) {
+    fun updateConversationWorkerUUID(conversationId: String, uuid: String) {
         ChatDBUtil.writeAsync({
             ChatDBUtil.getConversation(it, conversationId)?.let { conversation ->
-                conversation.uploadWorkerUUID = uuid
+                conversation.workerUUID = uuid
             }
         })
     }

@@ -92,7 +92,7 @@ object ModelConverter {
             .uuid(_user_.uuid)
             .roles(_user_.roles?.map { role ->
                 role.getUserRole()
-            } ?:  emptyList())
+            } ?: emptyList())
             .build()
     }
 
@@ -820,7 +820,7 @@ object ModelConverter {
             .createdEpoch(_conversation_.createdEpoch)
             .attachmentCount(_conversation_.attachmentCount)
             .attachmentUploaded(_conversation_.attachmentUploaded)
-            .uploadWorkerUUID(_conversation_.uploadWorkerUUID)
+            .workerUUID(_conversation_.workerUUID)
             .temporaryId(_conversation_.temporaryId)
             .localCreatedEpoch(_conversation_.localCreatedEpoch)
             .reactions(convertReactions(_conversation_.reactions))
@@ -1468,6 +1468,29 @@ object ModelConverter {
         }
     }
 
+    // converts APIResponse<_GetAIChatbotsResponse_> to LMResponse<GetAIChatbotsResponse> model
+    fun convertGetAIChatbotsResponse(apiResponse: APIResponse<_GetAIChatbotsResponse_>): LMResponse<GetAIChatbotsResponse> {
+        return LMResponse(
+            apiResponse.success,
+            apiResponse.errorMessage,
+            convertGetAIChatbots(apiResponse.data)
+        )
+    }
+
+    // converts internal _GetAIChatbotsResponse_ to client GetAIChatbotsResponse
+    private fun convertGetAIChatbots(_getAIChatbotsResponse_: _GetAIChatbotsResponse_?): GetAIChatbotsResponse? {
+        if (_getAIChatbotsResponse_ == null) {
+            return null
+        }
+
+        return GetAIChatbotsResponse(
+            _getAIChatbotsResponse_.page,
+            _getAIChatbotsResponse_.totalPages,
+            _getAIChatbotsResponse_.totalChatbots,
+            convertMembers(_getAIChatbotsResponse_.users)
+        )
+    }
+
     /**--------------------------------
      * Client Model -> Internal Model
     --------------------------------*/
@@ -1507,7 +1530,7 @@ object ModelConverter {
             .createdEpoch(conversation.createdEpoch)
             .attachmentCount(conversation.attachmentCount)
             .attachmentUploaded(conversation.attachmentUploaded)
-            .uploadWorkerUUID(conversation.uploadWorkerUUID)
+            .workerUUID(conversation.workerUUID)
             .temporaryId(conversation.temporaryId)
             .localCreatedEpoch(conversation.localCreatedEpoch)
             .reactions(createReactions(conversation.reactions))
@@ -1529,6 +1552,7 @@ object ModelConverter {
             .lastUpdated(conversation.lastUpdated)
             .widgetId(conversation.widgetId)
             .widget(createWidget(conversation.widget))
+            .attachmentsUploadedEpoch(conversation.attachmentsUploadedEpoch)
             .build()
     }
 
@@ -1930,7 +1954,7 @@ object ModelConverter {
             .deletedBy(lastConversationRO.deletedBy)
             .attachmentCount(lastConversationRO.attachmentCount)
             .attachmentUploaded(lastConversationRO.attachmentsUploaded)
-            .uploadWorkerUUID(lastConversationRO.uploadWorkerUUID)
+            .workerUUID(lastConversationRO.workerUUID)
             .createdEpoch(lastConversationRO.createdEpoch)
             .chatroomId(lastConversationRO.chatroomId)
             .communityId(lastConversationRO.communityId)
@@ -1970,7 +1994,7 @@ object ModelConverter {
             .deletedBy(conversationRO.deletedBy)
             .attachmentCount(conversationRO.attachmentCount)
             .attachmentUploaded(conversationRO.attachmentsUploaded)
-            .uploadWorkerUUID(conversationRO.uploadWorkerUUID)
+            .workerUUID(conversationRO.workerUUID)
             .temporaryId(conversationRO.temporaryId)
             .reactions(convertReactionsRO(conversationRO.reactions.toList()))
             .isAnonymous(conversationRO.isAnonymous)
@@ -1990,6 +2014,7 @@ object ModelConverter {
             .widgetId(conversationRO.widgetId)
             .widget(convertWidgetRO(conversationRO.widgetRO))
             .localCreatedEpoch(conversationRO.localSavedEpoch)
+            .attachmentsUploadedEpoch(conversationRO.attachmentsUploadedEpoch)
             .build()
     }
 
