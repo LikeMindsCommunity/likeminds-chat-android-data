@@ -50,6 +50,7 @@ import com.likeminds.chatinternalsdk.user.db.UserDbImpl
 import com.likeminds.chatinternalsdk.user.util.UserPreferences
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import kotlinx.coroutines.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -163,6 +164,14 @@ class LMChatSDK {
         Realm.init(application)
 
         Realm.setDefaultConfiguration(getNewDbConfig())
+
+        migrate()
+    }
+
+    private fun migrate() {
+        CoroutineScope(Dispatchers.IO).launch {
+            Realm.getDefaultInstance()
+        }
     }
 
     private fun getNewDbConfig(): RealmConfiguration {
