@@ -32,6 +32,8 @@ import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.UserClient
 import com.likeminds.likemindschat.user.model.*
 import io.reactivex.Observable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -78,12 +80,19 @@ class LMChatClient private constructor() {
             this.lmChatSDKCallback = lmChatSDKCallback
         }
 
-        fun build(): LMChatClient {
-            lmChatClientInstance = LMChatClient()
-            val sdkApplication = LikeMindsChatApplication.getInstance()
-            sdkApplication.initChatSDKApplication(application, lmChatSDKCallback)
-            sdkApplication.likeMindsChatComponent?.inject(lmChatClientInstance!!)
-            return lmChatClientInstance!!
+        suspend fun build(): LMChatClient {
+            return withContext(Dispatchers.IO) { // Runs in the background thread
+                if (lmChatClientInstance == null) {
+                    lmChatClientInstance = LMChatClient()
+                    val sdkApplication = LikeMindsChatApplication.getInstance()
+                    sdkApplication.initChatSDKApplication(
+                        application,
+                        lmChatSDKCallback
+                    ) // Background task
+                    sdkApplication.likeMindsChatComponent?.inject(lmChatClientInstance!!)
+                }
+                lmChatClientInstance!!
+            }
         }
     }
 
