@@ -3,10 +3,16 @@ package com.likeminds.likemindschat.helper
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.helper.model._DecodeUrlRequest_
 import com.likeminds.chatinternalsdk.helper.model._GetTaggingListRequest_
+import com.likeminds.chatinternalsdk.helper.model._PushLogsRequest_
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.helper.model.*
+import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
+import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
+import com.likeminds.likemindschat.helper.model.GetDBEmptyResponse
+import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
+import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
+import com.likeminds.likemindschat.helper.model.PushLogsRequest
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -45,6 +51,7 @@ class HelperClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
                 ModelConverter.convertDecodeUrlAPIResponse(response.body)
             }
@@ -88,6 +95,7 @@ class HelperClient @Inject constructor() : BaseClient() {
                     errorMessage = response.body.errorMessage
                 )
             }
+
             is NetworkResponse.Success -> {
                 ModelConverter.convertGetTaggingListAPIResponse(response.body)
             }
@@ -118,5 +126,47 @@ class HelperClient @Inject constructor() : BaseClient() {
             null,
             GetDBEmptyResponse(ChatDBUtil.isEmpty())
         )
+    }
+
+    /**
+     * Converts client request model to internal model and calls the api
+     * @param pushLogsRequest - client request model to push logs
+     * @throws IllegalArgumentException - when LMFeedClient is not instantiated or required properties not provided
+     * @return LMResponse<Nothing> - PushLogsResponse for [pushLogsRequest]
+     */
+    suspend fun pushLogs(pushLogsRequest: PushLogsRequest): LMResponse<Nothing> {
+        // validates the client request
+        RequestUtils.validate()
+        validatePushLogsRequest(pushLogsRequest)
+
+        val request = _PushLogsRequest_.Builder()
+            .logs(ModelConverter.createLogs(pushLogsRequest.logs))
+            .build()
+
+        //call api and process the response accordingly
+        return when (val response = helperApi.pushLogs(request)) {
+            is NetworkResponse.Error -> {
+                LMResponse(
+                    success = response.body.success,
+                    errorMessage = response.body.errorMessage
+                )
+            }
+
+            is NetworkResponse.Success -> {
+                LMResponse(
+                    success = response.body.success
+                )
+            }
+        }
+    }
+
+    /**
+     * validates [pushLogsRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validatePushLogsRequest(pushLogsRequest: PushLogsRequest) {
+        if (pushLogsRequest.logs.isEmpty()) {
+            RequestUtils.throwException("logs")
+        }
     }
 }

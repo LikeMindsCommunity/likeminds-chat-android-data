@@ -36,4 +36,8 @@ class HelperReceiver @Inject constructor(
 
         return helperNetworkApi.getTaggingList(queries)
     }
+
+    suspend fun pushLogs(request: _PushLogsRequest_): NetworkResponse<APIResponse<Nothing>> {
+        return helperNetworkApi.pushLogs(request)
+    }
 }

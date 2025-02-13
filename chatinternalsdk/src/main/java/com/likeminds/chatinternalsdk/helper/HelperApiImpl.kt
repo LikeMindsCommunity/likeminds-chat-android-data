@@ -20,4 +20,8 @@ class HelperApiImpl @Inject constructor(
     ): NetworkResponse<APIResponse<_GetTaggingListResponse_>> {
         return helperReceiver.getTaggingList(request)
     }
+
+    override suspend fun pushLogs(request: _PushLogsRequest_): NetworkResponse<APIResponse<Nothing>> {
+        return helperReceiver.pushLogs(request)
+    }
 }
