@@ -44,7 +44,7 @@ open class ConversationRO(
     var deletedByMember: MemberRO? = null,
     var widgetId: String? = null,
     var widgetRO: WidgetRO? = null,
-    var attachmentsUploadedEpoch: Long? =null,
+    var attachmentsUploadedEpoch: Long? = null,
 
     @LinkingObjects("conversations")
     val community: RealmResults<CommunityRO>? = null,

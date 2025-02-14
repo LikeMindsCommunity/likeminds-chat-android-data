@@ -29,4 +29,8 @@ class CommunityApiImpl @Inject constructor(
     override suspend fun getCommunityConfiguration(): NetworkResponse<APIResponse<_GetCommunityConfiguration_>> {
         return communityReceiver.getCommunityConfiguration()
     }
+
+    override suspend fun getAIChatbots(request: _GetAIChatbotsRequest_): NetworkResponse<APIResponse<_GetAIChatbotsResponse_>> {
+        return communityReceiver.getAIChatbots(request)
+    }
 }
