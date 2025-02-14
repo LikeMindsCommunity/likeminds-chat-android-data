@@ -1,4 +1,4 @@
-package com.likeminds.chatinternalsdk.helper
+package com.likeminds.chatinternalsdk.helper.api
 
 import com.likeminds.chatinternalsdk.helper.model._DecodeUrlRequest_
 import com.likeminds.chatinternalsdk.helper.model._DecodeUrlResponse_

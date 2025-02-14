@@ -1,10 +1,17 @@
 package com.likeminds.chatinternalsdk.helper.model
 
+import com.google.gson.annotations.SerializedName
+
 class _LMDeviceDetails_ private constructor(
+    @SerializedName("version_os")
     val versionOS: String,
+    @SerializedName("device_name")
     val deviceName: String,
+    @SerializedName("screen_height")
     val screenHeight: Int,
+    @SerializedName("screen_width")
     val screenWidth: Int,
+    @SerializedName("wifi")
     val wifi: Boolean
 ) {
     class Builder {

@@ -1,7 +1,11 @@
 package com.likeminds.chatinternalsdk.helper.model
 
+import com.google.gson.annotations.SerializedName
+
 class _LMStackTrace_ private constructor(
+    @SerializedName("exception")
     val exception: String,
+    @SerializedName("trace")
     val trace: String
 ) {
     class Builder {

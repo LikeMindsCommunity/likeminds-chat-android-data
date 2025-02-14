@@ -1,32 +1,19 @@
 package com.likeminds.chatinternalsdk.helper.model
 
-import com.google.gson.annotations.SerializedName
-
-class _LMLog_ private constructor(
-    @SerializedName("timestamp")
+class _InsertLogRequest_ private constructor(
     val timestamp: Long,
-    @SerializedName("device_meta")
-    val deviceMeta: _LMDeviceDetails_,
-    @SerializedName("stack_trace")
     val stackTrace: _LMStackTrace_,
-    @SerializedName("sdk_meta")
     val sdkMeta: _LMSDKMeta_?,
-    @SerializedName("severity")
     val severity: String?
 ) {
     class Builder {
         private var timestamp: Long = 0L
-        private var deviceMeta: _LMDeviceDetails_ = _LMDeviceDetails_.Builder().build()
         private var stackTrace: _LMStackTrace_ = _LMStackTrace_.Builder().build()
         private var sdkMeta: _LMSDKMeta_? = null
         private var severity: String? = null
 
         fun timestamp(timestamp: Long) = apply {
             this.timestamp = timestamp
-        }
-
-        fun deviceMeta(deviceMeta: _LMDeviceDetails_) = apply {
-            this.deviceMeta = deviceMeta
         }
 
         fun stackTrace(stackTrace: _LMStackTrace_) = apply {
@@ -41,9 +28,8 @@ class _LMLog_ private constructor(
             this.severity = severity
         }
 
-        fun build() = _LMLog_(
+        fun build() = _InsertLogRequest_(
             timestamp,
-            deviceMeta,
             stackTrace,
             sdkMeta,
             severity
@@ -52,7 +38,6 @@ class _LMLog_ private constructor(
 
     fun toBuilder(): Builder {
         return Builder().timestamp(timestamp)
-            .deviceMeta(deviceMeta)
             .stackTrace(stackTrace)
             .sdkMeta(sdkMeta)
             .severity(severity)

@@ -71,11 +71,14 @@ import com.likeminds.likemindschat.dm.model.CreateDMChatroomResponse
 import com.likeminds.likemindschat.dm.model.SendDMRequest
 import com.likeminds.likemindschat.dm.model.SendDMResponse
 import com.likeminds.likemindschat.helper.HelperClient
+import com.likeminds.likemindschat.helper.model.ClearLogsRequest
 import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
 import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
 import com.likeminds.likemindschat.helper.model.GetDBEmptyResponse
+import com.likeminds.likemindschat.helper.model.GetLogsResponse
 import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
 import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
+import com.likeminds.likemindschat.helper.model.InsertLogRequest
 import com.likeminds.likemindschat.helper.model.PushLogsRequest
 import com.likeminds.likemindschat.homefeed.HomeFeedClient
 import com.likeminds.likemindschat.homefeed.model.ConfigResponse
@@ -574,5 +577,20 @@ class LMChatClient private constructor() {
     // Exposed function to push logs
     suspend fun pushLogs(pushLogsRequest: PushLogsRequest): LMResponse<Nothing> {
         return helperClient.pushLogs(pushLogsRequest)
+    }
+
+    // Exposed function to insert log in local db
+    fun insertLog(insertLogRequest: InsertLogRequest) {
+        helperClient.insertLog(insertLogRequest)
+    }
+
+    // Exposed function to get logs from local db
+    fun getLogs(): LMResponse<GetLogsResponse> {
+        return helperClient.getLogs()
+    }
+
+    // Exposed function to clear logs in local db
+    fun clearLogs(clearLogsRequest: ClearLogsRequest) {
+        helperClient.clearLogs(clearLogsRequest)
     }
 }

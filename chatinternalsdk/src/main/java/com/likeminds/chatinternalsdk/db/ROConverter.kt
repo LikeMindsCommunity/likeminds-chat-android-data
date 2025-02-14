@@ -6,6 +6,8 @@ import com.likeminds.chatinternalsdk.community.model._Member_
 import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.models.*
 import com.likeminds.chatinternalsdk.db.util.toRealmList
+import com.likeminds.chatinternalsdk.helper.model._LMSDKMeta_
+import com.likeminds.chatinternalsdk.helper.model._LMStackTrace_
 import com.likeminds.chatinternalsdk.poll.model._Poll_
 import com.likeminds.chatinternalsdk.sync.model._ReactionMeta_
 import com.likeminds.chatinternalsdk.user.model._SDKClientInfo_
@@ -855,6 +857,42 @@ object ROConverter {
             metadata = widget.metadata.toString()
             createdAt = widget.createdAt
             updatedAt = widget.updatedAt
+        }
+    }
+
+    fun convertLog(
+        timestamp: Long,
+        stackTraceRO: LMStackTraceRO,
+        sdkMetaRO: LMSDKMetaRO?,
+        severity: String?
+    ): LMLogRO {
+        return LMLogRO.build {
+            this.timestamp = timestamp
+            stackTrace = stackTraceRO
+            sdkMeta = sdkMetaRO
+            this.severity = severity
+        }
+    }
+
+    /**
+     * convert [_LMStackTrace_] to [LMStackTraceRO]
+     * @param stackTrace: Object of stackTrace to be converted
+     * */
+    fun convertStackTrace(stackTrace: _LMStackTrace_): LMStackTraceRO {
+        return LMStackTraceRO.build(stackTrace.exception, stackTrace.trace) {}
+    }
+
+    /**
+     * convert [_LMSDKMeta_] to [LMSDKMetaRO]
+     * @param sdkMeta: Object of sdkMeta to be converted
+     * */
+    fun convertSDKMeta(sdkMeta: _LMSDKMeta_?): LMSDKMetaRO? {
+        if (sdkMeta == null) {
+            return null
+        }
+        return LMSDKMetaRO.build {
+            dataLayerVersion = sdkMeta.dataLayerVersion
+            coreVersion = sdkMeta.coreVersion
         }
     }
 }

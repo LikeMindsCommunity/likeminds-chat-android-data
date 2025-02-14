@@ -1,7 +1,11 @@
 package com.likeminds.chatinternalsdk.helper.model
 
+import com.google.gson.annotations.SerializedName
+
 class _LMSDKMeta_ private constructor(
+    @SerializedName("data_layer_version")
     val dataLayerVersion: String?,
+    @SerializedName("core_version")
     val coreVersion: String?
 ) {
     class Builder {

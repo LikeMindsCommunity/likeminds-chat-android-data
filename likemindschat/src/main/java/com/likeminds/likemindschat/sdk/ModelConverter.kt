@@ -33,6 +33,9 @@ import com.likeminds.chatinternalsdk.db.models.AttachmentRO
 import com.likeminds.chatinternalsdk.db.models.ChatroomRO
 import com.likeminds.chatinternalsdk.db.models.CommunityRO
 import com.likeminds.chatinternalsdk.db.models.ConversationRO
+import com.likeminds.chatinternalsdk.db.models.LMLogRO
+import com.likeminds.chatinternalsdk.db.models.LMSDKMetaRO
+import com.likeminds.chatinternalsdk.db.models.LMStackTraceRO
 import com.likeminds.chatinternalsdk.db.models.LastConversationRO
 import com.likeminds.chatinternalsdk.db.models.LinkRO
 import com.likeminds.chatinternalsdk.db.models.MemberRO
@@ -121,6 +124,7 @@ import com.likeminds.likemindschat.dm.model.CreateDMChatroomResponse
 import com.likeminds.likemindschat.dm.model.SendDMResponse
 import com.likeminds.likemindschat.dm.model.UserDMLimit
 import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
+import com.likeminds.likemindschat.helper.model.GetLogsResponse
 import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
 import com.likeminds.likemindschat.helper.model.GroupTag
 import com.likeminds.likemindschat.helper.model.LMDeviceDetails
@@ -1883,7 +1887,7 @@ object ModelConverter {
     }
 
     //convert client stack trace model to internal stack trace model
-    private fun createStackTrace(stackTrace: LMStackTrace): _LMStackTrace_ {
+    fun createStackTrace(stackTrace: LMStackTrace): _LMStackTrace_ {
         return _LMStackTrace_.Builder()
             .trace(stackTrace.trace)
             .exception(stackTrace.exception)
@@ -1891,7 +1895,7 @@ object ModelConverter {
     }
 
     //convert client sdk meta model to internal sdk meta model
-    private fun createSDKMeta(sdkMeta: LMSDKMeta?): _LMSDKMeta_? {
+    fun createSDKMeta(sdkMeta: LMSDKMeta?): _LMSDKMeta_? {
         if (sdkMeta == null) {
             return null
         }
@@ -2272,7 +2276,7 @@ object ModelConverter {
     }
 
     //convert WidgetRO model to client widget model
-    fun convertWidgetRO(widgetRO: WidgetRO?): Widget? {
+    private fun convertWidgetRO(widgetRO: WidgetRO?): Widget? {
         if (widgetRO == null) return null
         return Widget.Builder()
             .id(widgetRO.id)
@@ -2281,6 +2285,46 @@ object ModelConverter {
             .metadata(JSONObject(widgetRO.metadata.toString()))
             .createdAt(widgetRO.createdAt)
             .updatedAt(widgetRO.updatedAt)
+            .build()
+    }
+
+    fun convertGetLogsResponse(logsRO: List<LMLogRO>): GetLogsResponse {
+        return GetLogsResponse(
+            logsRO.map { log ->
+                convertLog(log)
+            }
+        )
+    }
+
+    //convert LMLogRO model to client log model
+    private fun convertLog(log: LMLogRO): LMLog {
+        return LMLog.Builder()
+            .timestamp(log.timestamp)
+            .sdkMeta(convertSDKMeta(log.sdkMeta))
+            .stackTrace(convertStackTrace(log.stackTrace))
+            .deviceMeta(LMDeviceDetails.Builder().build())
+            .build()
+    }
+
+    //convert LMSDKMetaRO model to client sdkMeta model
+    private fun convertSDKMeta(sdkMetaRO: LMSDKMetaRO?): LMSDKMeta? {
+        if (sdkMetaRO == null) {
+            return null
+        }
+        return LMSDKMeta.Builder()
+            .coreVersion(sdkMetaRO.coreVersion)
+            .dataLayerVersion(sdkMetaRO.dataLayerVersion)
+            .build()
+    }
+
+    //convert LMStackTraceRO model to client stack trace model
+    private fun convertStackTrace(stackTraRO: LMStackTraceRO?): LMStackTrace {
+        if (stackTraRO == null) {
+            return LMStackTrace.Builder().build()
+        }
+        return LMStackTrace.Builder()
+            .trace(stackTraRO.trace)
+            .exception(stackTraRO.exception)
             .build()
     }
 }

@@ -1,8 +1,10 @@
-package com.likeminds.chatinternalsdk.helper
+package com.likeminds.chatinternalsdk.helper.api
 
 import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
+import io.realm.Realm
+import io.realm.RealmResults
 import javax.inject.Inject
 
 class HelperReceiver @Inject constructor(
@@ -39,5 +41,43 @@ class HelperReceiver @Inject constructor(
 
     suspend fun pushLogs(request: _PushLogsRequest_): NetworkResponse<APIResponse<Nothing>> {
         return helperNetworkApi.pushLogs(request)
+    }
+
+    fun insertLog(insertLogRequest: _InsertLogRequest_) {
+        ChatDBUtil.write { realm ->
+
+            val stackTrace = ROConverter.convertStackTrace(insertLogRequest.stackTrace)
+            realm.insertOrUpdate(stackTrace)
+
+            val sdkMeta = ROConverter.convertSDKMeta(insertLogRequest.sdkMeta)
+
+            if (sdkMeta != null) {
+                realm.insertOrUpdate(sdkMeta)
+            }
+
+            realm.insertOrUpdate(
+                ROConverter.convertLog(
+                    insertLogRequest.timestamp,
+                    stackTrace,
+                    sdkMeta,
+                    insertLogRequest.severity
+                )
+            )
+        }
+    }
+
+    fun getLogs(realm: Realm): RealmResults<LMLogRO> {
+        return realm.where(LMLogRO::class.java)
+            .findAll()
+    }
+
+    fun clearLogs(clearLogsRequest: _ClearLogsRequest_) {
+        ChatDBUtil.write { realm ->
+            val logs = realm.where(LMLogRO::class.java)
+                .lessThan(DbKey.TIMESTAMP, clearLogsRequest.timestamp)
+                .findAll()
+
+            logs.deleteAllFromRealm()
+        }
     }
 }

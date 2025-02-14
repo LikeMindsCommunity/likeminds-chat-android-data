@@ -1,4 +1,4 @@
-package com.likeminds.chatinternalsdk.helper
+package com.likeminds.chatinternalsdk.helper.api
 
 import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
