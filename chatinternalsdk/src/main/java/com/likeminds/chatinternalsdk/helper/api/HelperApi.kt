@@ -1,10 +1,6 @@
 package com.likeminds.chatinternalsdk.helper.api
 
-import com.likeminds.chatinternalsdk.helper.model._DecodeUrlRequest_
-import com.likeminds.chatinternalsdk.helper.model._DecodeUrlResponse_
-import com.likeminds.chatinternalsdk.helper.model._GetTaggingListRequest_
-import com.likeminds.chatinternalsdk.helper.model._GetTaggingListResponse_
-import com.likeminds.chatinternalsdk.helper.model._PushLogsRequest_
+import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 

@@ -862,14 +862,17 @@ object ROConverter {
 
     fun convertLog(
         timestamp: Long,
-        stackTraceRO: LMStackTraceRO,
-        sdkMetaRO: LMSDKMetaRO?,
+        stackTrace: _LMStackTrace_,
+        sdkMetaRO: _LMSDKMeta_?,
         severity: String?
     ): LMLogRO {
+        val stackTraceRO = convertStackTrace(stackTrace)
+        val sdkMeta = convertSDKMeta(sdkMetaRO)
+
         return LMLogRO.build {
             this.timestamp = timestamp
-            stackTrace = stackTraceRO
-            sdkMeta = sdkMetaRO
+            this.stackTrace = stackTraceRO
+            this.sdkMeta = sdkMeta
             this.severity = severity
         }
     }
@@ -878,7 +881,7 @@ object ROConverter {
      * convert [_LMStackTrace_] to [LMStackTraceRO]
      * @param stackTrace: Object of stackTrace to be converted
      * */
-    fun convertStackTrace(stackTrace: _LMStackTrace_): LMStackTraceRO {
+    private fun convertStackTrace(stackTrace: _LMStackTrace_): LMStackTraceRO {
         return LMStackTraceRO.build(stackTrace.exception, stackTrace.trace) {}
     }
 
@@ -886,7 +889,7 @@ object ROConverter {
      * convert [_LMSDKMeta_] to [LMSDKMetaRO]
      * @param sdkMeta: Object of sdkMeta to be converted
      * */
-    fun convertSDKMeta(sdkMeta: _LMSDKMeta_?): LMSDKMetaRO? {
+    private fun convertSDKMeta(sdkMeta: _LMSDKMeta_?): LMSDKMetaRO? {
         if (sdkMeta == null) {
             return null
         }

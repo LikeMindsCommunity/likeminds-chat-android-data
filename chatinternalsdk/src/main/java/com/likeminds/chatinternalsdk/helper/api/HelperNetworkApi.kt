@@ -1,15 +1,9 @@
 package com.likeminds.chatinternalsdk.helper.api
 
-import com.likeminds.chatinternalsdk.helper.model._DecodeUrlResponse_
-import com.likeminds.chatinternalsdk.helper.model._GetTaggingListResponse_
-import com.likeminds.chatinternalsdk.helper.model._PushLogsRequest_
+import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
-import retrofit2.http.QueryMap
+import retrofit2.http.*
 
 interface HelperNetworkApi {
 

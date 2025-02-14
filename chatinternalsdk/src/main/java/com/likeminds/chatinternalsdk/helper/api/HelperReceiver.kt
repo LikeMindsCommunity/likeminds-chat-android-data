@@ -1,5 +1,9 @@
 package com.likeminds.chatinternalsdk.helper.api
 
+import com.likeminds.chatinternalsdk.db.ChatDBUtil
+import com.likeminds.chatinternalsdk.db.ROConverter
+import com.likeminds.chatinternalsdk.db.models.LMLogRO
+import com.likeminds.chatinternalsdk.db.util.DbKey
 import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
@@ -46,20 +50,11 @@ class HelperReceiver @Inject constructor(
     fun insertLog(insertLogRequest: _InsertLogRequest_) {
         ChatDBUtil.write { realm ->
 
-            val stackTrace = ROConverter.convertStackTrace(insertLogRequest.stackTrace)
-            realm.insertOrUpdate(stackTrace)
-
-            val sdkMeta = ROConverter.convertSDKMeta(insertLogRequest.sdkMeta)
-
-            if (sdkMeta != null) {
-                realm.insertOrUpdate(sdkMeta)
-            }
-
             realm.insertOrUpdate(
                 ROConverter.convertLog(
                     insertLogRequest.timestamp,
-                    stackTrace,
-                    sdkMeta,
+                    insertLogRequest.stackTrace,
+                    insertLogRequest.sdkMeta,
                     insertLogRequest.severity
                 )
             )

@@ -1,23 +1,11 @@
 package com.likeminds.likemindschat.helper
 
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
-import com.likeminds.chatinternalsdk.helper.model._ClearLogsRequest_
-import com.likeminds.chatinternalsdk.helper.model._DecodeUrlRequest_
-import com.likeminds.chatinternalsdk.helper.model._GetTaggingListRequest_
-import com.likeminds.chatinternalsdk.helper.model._InsertLogRequest_
-import com.likeminds.chatinternalsdk.helper.model._PushLogsRequest_
+import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.helper.model.ClearLogsRequest
-import com.likeminds.likemindschat.helper.model.DecodeUrlRequest
-import com.likeminds.likemindschat.helper.model.DecodeUrlResponse
-import com.likeminds.likemindschat.helper.model.GetDBEmptyResponse
-import com.likeminds.likemindschat.helper.model.GetLogsResponse
-import com.likeminds.likemindschat.helper.model.GetTaggingListRequest
-import com.likeminds.likemindschat.helper.model.GetTaggingListResponse
-import com.likeminds.likemindschat.helper.model.InsertLogRequest
-import com.likeminds.likemindschat.helper.model.PushLogsRequest
+import com.likeminds.likemindschat.helper.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
