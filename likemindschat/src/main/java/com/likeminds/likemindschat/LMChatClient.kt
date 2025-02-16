@@ -75,9 +75,14 @@ class LMChatClient private constructor() {
 
     class Builder(val application: Application) {
         private var lmChatSDKCallback: LMChatSDKCallback? = null
+        private var initiateLoggerRequest: LMChatInitiateLoggerRequest? = null
 
         fun lmChatSDKCallback(lmChatSDKCallback: LMChatSDKCallback?) = apply {
             this.lmChatSDKCallback = lmChatSDKCallback
+        }
+
+        fun initiateLoggerRequest(initiateLoggerRequest: LMChatInitiateLoggerRequest?) = apply {
+            this.initiateLoggerRequest = initiateLoggerRequest
         }
 
         suspend fun build(): LMChatClient {
@@ -87,7 +92,8 @@ class LMChatClient private constructor() {
                     val sdkApplication = LikeMindsChatApplication.getInstance()
                     sdkApplication.initChatSDKApplication(
                         application,
-                        lmChatSDKCallback
+                        lmChatSDKCallback,
+                        initiateLoggerRequest
                     ) // Background task
                     sdkApplication.likeMindsChatComponent?.inject(lmChatClientInstance!!)
                 }

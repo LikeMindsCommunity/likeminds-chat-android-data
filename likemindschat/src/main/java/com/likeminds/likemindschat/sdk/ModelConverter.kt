@@ -1807,6 +1807,21 @@ object ModelConverter {
             .build()
     }
 
+    //convert client LMSeverity to internal _LMSeverity_
+    fun convertSeverity(severity: LMSeverity): _LMSeverity_ {
+        return when (severity) {
+            LMSeverity.INFO -> _LMSeverity_.INFO
+            LMSeverity.DEBUG -> _LMSeverity_.DEBUG
+            LMSeverity.NOTICE -> _LMSeverity_.NOTICE
+            LMSeverity.WARNING -> _LMSeverity_.WARNING
+            LMSeverity.ERROR -> _LMSeverity_.ERROR
+            LMSeverity.CRITICAL -> _LMSeverity_.CRITICAL
+            LMSeverity.ALERT -> _LMSeverity_.ALERT
+            LMSeverity.EMERGENCY -> _LMSeverity_.EMERGENCY
+            LMSeverity.DEFAULT -> _LMSeverity_.DEFAULT
+        }
+    }
+
     /**--------------------------------
      * Db Model -> Client Response Model
     --------------------------------*/

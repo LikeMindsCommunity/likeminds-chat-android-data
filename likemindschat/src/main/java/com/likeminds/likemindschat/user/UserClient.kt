@@ -10,9 +10,10 @@ import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.community.model.GetMemberRequest
 import com.likeminds.likemindschat.community.model.GetMemberResponse
+import com.likeminds.likemindschat.helper.LMChatLogger
+import com.likeminds.likemindschat.helper.model.LMSeverity
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
-import com.likeminds.likemindschat.user.model.EditUserProfileRequest
 import com.likeminds.likemindschat.user.model.*
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
@@ -66,6 +67,12 @@ class UserClient @Inject constructor() : BaseClient() {
             .userName(initiateUserRequest.userName)
             .isGuest(initiateUserRequest.isGuest)
             .build()
+
+        LMChatLogger.getInstance()?.handleException(
+            "External Data",
+            "1",
+            LMSeverity.NOTICE
+        )
 
         // calls api and processes the response accordingly
         return when (val response = sdkApi.initiateUser(request.apiKey!!, request)) {

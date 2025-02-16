@@ -1,6 +1,6 @@
-package com.likeminds.likemindschat.helper.model
+package com.likeminds.chatinternalsdk.helper.model
 
-enum class LMSeverity(val severityName: String, val severityLevel: Int) {
+enum class _LMSeverity_(val severityName: String, val severityLevel: Int) {
     INFO("info", 0),
     DEBUG("debug", 1),
     NOTICE("notice", 2),
