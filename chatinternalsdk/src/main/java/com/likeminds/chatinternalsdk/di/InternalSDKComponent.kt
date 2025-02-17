@@ -22,7 +22,8 @@ import javax.inject.Singleton
         HelperModule::class,
         SearchModule::class,
         ConversationModule::class,
-        DMModule::class
+        DMModule::class,
+        WebSocketModule::class
     ]
 )
 interface InternalSDKComponent {
