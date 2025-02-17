@@ -2,6 +2,7 @@ package com.likeminds.chatinternalsdk.di.modules
 
 import com.google.gson.Gson
 import com.likeminds.chatinternalsdk.chatroom.api.ChatroomNetworkApi
+import com.likeminds.chatinternalsdk.di.HttpAPICallQualifier
 import com.likeminds.chatinternalsdk.sync.api.chatroom.ChatroomSyncNetworkApi
 import com.likeminds.chatinternalsdk.utils.retrofit.NetworkResponseAdapterFactory
 import com.likeminds.chatinternalsdk.utils.retrofit.model.BaseUrl
@@ -18,12 +19,12 @@ class ChatroomModule {
     @Provides
     @Singleton
     fun provideChatroomModule(
-        client: OkHttpClient,
+        @HttpAPICallQualifier client: OkHttpClient,
         gson: Gson,
         baseUrl: BaseUrl
     ): ChatroomNetworkApi {
         return Retrofit.Builder()
-            .baseUrl(baseUrl.getKettleBase())
+            .baseUrl(baseUrl.getKettleBaseUrl())
             .client(client)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(NetworkResponseAdapterFactory(gson))
@@ -34,12 +35,12 @@ class ChatroomModule {
     @Provides
     @Singleton
     fun provideChatroomSyncModule(
-        client: OkHttpClient,
+        @HttpAPICallQualifier client: OkHttpClient,
         gson: Gson,
         baseUrl: BaseUrl
     ): ChatroomSyncNetworkApi {
         return Retrofit.Builder()
-            .baseUrl(baseUrl.getKettleBase())
+            .baseUrl(baseUrl.getKettleBaseUrl())
             .client(client)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(NetworkResponseAdapterFactory(gson))

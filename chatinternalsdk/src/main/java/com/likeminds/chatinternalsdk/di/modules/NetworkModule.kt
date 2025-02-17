@@ -1,6 +1,10 @@
 package com.likeminds.chatinternalsdk.di.modules
 
+import android.content.Context
+import com.chuckerteam.chucker.api.*
 import com.likeminds.chatinternalsdk.BuildConfig
+import com.likeminds.chatinternalsdk.di.HttpAPICallQualifier
+import com.likeminds.chatinternalsdk.di.WebSocketQualifier
 import com.likeminds.chatinternalsdk.utils.retrofit.CommonHeaderInterceptor
 import com.likeminds.chatinternalsdk.utils.retrofit.TokenAuthenticator
 import com.likeminds.chatinternalsdk.utils.retrofit.model.BaseUrl
@@ -23,12 +27,13 @@ class NetworkModule {
 
     @Singleton
     @Provides
+    @HttpAPICallQualifier
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
         commonHeaderInterceptor: CommonHeaderInterceptor,
         tokenAuthenticator: TokenAuthenticator,
         dispatcher: Dispatcher,
-//        chuckerInterceptor: ChuckerInterceptor
+        chuckerInterceptor: ChuckerInterceptor
     ): OkHttpClient {
         //create okhttp client
         val clientBuilder = OkHttpClient.Builder()
@@ -47,7 +52,27 @@ class NetworkModule {
             clientBuilder.addInterceptor(loggingInterceptor)
         }
         clientBuilder.addInterceptor(commonHeaderInterceptor)
-//        clientBuilder.addInterceptor(chuckerInterceptor)
+        clientBuilder.addInterceptor(chuckerInterceptor)
+
+        return clientBuilder.build()
+    }
+
+    @Provides
+    @Singleton
+    @WebSocketQualifier
+    fun provideWebSocketOkHttpClient(
+        loggingInterceptor: HttpLoggingInterceptor,
+        chuckerInterceptor: ChuckerInterceptor
+    ): OkHttpClient {
+        val clientBuilder = OkHttpClient.Builder()
+
+        //add ping-pong interval
+        clientBuilder.pingInterval(20, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
+
+        //add interceptors
+        clientBuilder.addInterceptor(loggingInterceptor)
+        clientBuilder.addInterceptor(chuckerInterceptor)
 
         return clientBuilder.build()
     }
@@ -71,13 +96,13 @@ class NetworkModule {
         return dispatcher
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideChuckInterceptor(context: Context): ChuckerInterceptor {
-//        val collector = ChuckerCollector(context, true, RetentionManager.Period.ONE_WEEK)
-//        return ChuckerInterceptor.Builder(context)
-//            .collector(collector)
-//            .alwaysReadResponseBody(false)
-//            .build()
-//    }
+    @Provides
+    @Singleton
+    fun provideChuckInterceptor(context: Context): ChuckerInterceptor {
+        val collector = ChuckerCollector(context, true, RetentionManager.Period.ONE_WEEK)
+        return ChuckerInterceptor.Builder(context)
+            .collector(collector)
+            .alwaysReadResponseBody(false)
+            .build()
+    }
 }
