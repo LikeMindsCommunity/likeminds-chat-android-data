@@ -114,6 +114,7 @@ class RealmDBMigration : RealmMigration {
 
             schema.create(LM_LOG_CLASS).apply {
                 addField("timestamp", Long::class.java, FieldAttribute.REQUIRED)
+                    .addField("severity", String::class.javaObjectType)
                 addRealmObjectField("stackTrace", stackTraceSchema)
                 addRealmObjectField("sdkMeta", sdkMetaSchema)
             }
