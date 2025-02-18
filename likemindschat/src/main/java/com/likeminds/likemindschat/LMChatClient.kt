@@ -323,6 +323,16 @@ class LMChatClient private constructor() {
         return conversationClient.observeLiveConversations(context, chatroomId)
     }
 
+    suspend fun subscribeChatroom(
+        subscribeChatroomRequest: SubscribeChatroomRequest,
+        subscribeChatroomCallback: LMChatSubscribeChatroomCallback
+    ) {
+        return conversationClient.subscribeChatroom(
+            subscribeChatroomRequest,
+            subscribeChatroomCallback
+        )
+    }
+
     //Exposed function to load conversation to db
     fun loadConversations(
         context: Context, type: LoadConversationType, chatroomId: String

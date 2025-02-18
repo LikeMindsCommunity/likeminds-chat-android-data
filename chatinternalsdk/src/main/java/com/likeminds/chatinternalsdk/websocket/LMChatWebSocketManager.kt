@@ -5,7 +5,11 @@ import com.likeminds.chatinternalsdk.BuildConfig
 import com.likeminds.chatinternalsdk.ChatTokenManager
 import com.likeminds.chatinternalsdk.di.WebSocketQualifier
 import com.likeminds.chatinternalsdk.utils.retrofit.model.BaseUrl
+import com.likeminds.chatinternalsdk.utils.websocket.BaseSubscribeCallback
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.*
+import okio.ByteString
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,6 +32,7 @@ class LMChatWebSocketManager @Inject constructor(
     private val webSocketMap: ConcurrentHashMap<String, WebSocket> = ConcurrentHashMap()
     private val isConnectedMap: ConcurrentHashMap<String, Boolean> = ConcurrentHashMap()
     private val reconnectAttemptsMap: ConcurrentHashMap<String, Int> = ConcurrentHashMap()
+    private val callbackMap: ConcurrentHashMap<String, BaseSubscribeCallback> = ConcurrentHashMap()
 
     //create request for websocket connection
     private fun getRequest(endPoint: String): Request {
@@ -46,5 +51,76 @@ class LMChatWebSocketManager @Inject constructor(
             .addHeader(X_VERSION_CODE, BuildConfig.APP_VERSION_CODE.toString())
             .addHeader(X_SDK_SOURCE, "chat")
             .build()
+    }
+
+    // Creates a WebSocketListener for a given endpoint
+    private fun getWebSocketListener(endpoint: String): WebSocketListener {
+        return object : WebSocketListener() {
+            override fun onOpen(webSocket: WebSocket, response: Response) {
+                super.onOpen(webSocket, response)
+                Log.d(TAG, "WebSocket Connected: $endpoint")
+                isConnectedMap[endpoint] = true
+
+                // Reset reconnect attempts on successful connection
+                reconnectAttemptsMap[endpoint] = 0
+                callbackMap[endpoint]?.onSocketConnectionOpen()
+            }
+
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                super.onMessage(webSocket, text)
+                Log.d(TAG, "Message received in text from $endpoint: $text")
+                callbackMap[endpoint]?.onMessageReceived(text)
+            }
+
+            override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
+                super.onMessage(webSocket, bytes)
+                Log.d(TAG, "Message received in bytes from $endpoint: $bytes")
+                callbackMap[endpoint]?.onMessageReceived(bytes)
+            }
+
+            override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+                super.onClosing(webSocket, code, reason)
+                Log.d(TAG, "WebSocket Closing: $endpoint, code: $code, reason: $reason")
+                isConnectedMap[endpoint] = false
+                callbackMap[endpoint]?.onSocketConnectionClosed()
+            }
+
+            override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
+                super.onClosed(webSocket, code, reason)
+                isConnectedMap[endpoint] = false
+                callbackMap[endpoint]?.onSocketConnectionClosed()
+            }
+
+            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                super.onFailure(webSocket, t, response)
+                isConnectedMap[endpoint] = false
+                Log.e(TAG, "WebSocket Error for $endpoint: ${t.message}", t)
+                callbackMap[endpoint]?.onError(t.message ?: "Unknown error")
+            }
+        }
+    }
+
+    // Initiates a WebSocket connection for a specific endpoint with a callback
+    suspend fun connect(endpoint: String, callback: BaseSubscribeCallback) {
+        if (isConnectedMap[endpoint] == true) {
+            Log.d(TAG, "WebSocket for $endpoint is already connected.")
+            return
+        }
+        callbackMap[endpoint] = callback
+        withContext(Dispatchers.IO) {
+            Log.d(TAG, "Connecting WebSocket for $endpoint...")
+            val request = getRequest(endpoint)
+            val webSocketListener = getWebSocketListener(endpoint)
+            val webSocket = client.newWebSocket(request, webSocketListener)
+            webSocketMap[endpoint] = webSocket
+        }
+    }
+
+    // Closes a specific WebSocket connection
+    fun close(endpoint: String) {
+        webSocketMap[endpoint]?.close(1000, "Closing WebSocket for $endpoint")
+        webSocketMap.remove(endpoint)
+        isConnectedMap[endpoint] = false
+        callbackMap.remove(endpoint)
     }
 }

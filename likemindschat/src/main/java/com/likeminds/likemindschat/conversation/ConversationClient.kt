@@ -8,51 +8,24 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.JsonParser
 import com.likeminds.chatinternalsdk.LMChatSDK
-import com.likeminds.chatinternalsdk.conversation.model._ConversationWithinLimitRequest_
-import com.likeminds.chatinternalsdk.conversation.model._DeleteConversationsRequest_
-import com.likeminds.chatinternalsdk.conversation.model._DeleteReactionRequest_
-import com.likeminds.chatinternalsdk.conversation.model._EditConversationRequest_
-import com.likeminds.chatinternalsdk.conversation.model._PostConversationRequest_
-import com.likeminds.chatinternalsdk.conversation.model._PutReactionRequest_
-import com.likeminds.chatinternalsdk.conversation.model._SavePostedConversationRequest_
+import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.models.ConversationRO
 import com.likeminds.chatinternalsdk.sync.SyncSDK
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.utils.websocket.BaseSubscribeCallback
+import com.likeminds.chatinternalsdk.websocket.WebSocketEndpoints
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.conversation.model.Conversation
-import com.likeminds.likemindschat.conversation.model.ConversationWithinLimitRequest
-import com.likeminds.likemindschat.conversation.model.DeleteConversationPermanentlyRequest
-import com.likeminds.likemindschat.conversation.model.DeleteConversationsRequest
-import com.likeminds.likemindschat.conversation.model.DeleteConversationsResponse
-import com.likeminds.likemindschat.conversation.model.DeleteReactionRequest
-import com.likeminds.likemindschat.conversation.model.EditConversationRequest
-import com.likeminds.likemindschat.conversation.model.EditConversationResponse
-import com.likeminds.likemindschat.conversation.model.GetConversationCountType
-import com.likeminds.likemindschat.conversation.model.GetConversationRequest
-import com.likeminds.likemindschat.conversation.model.GetConversationResponse
-import com.likeminds.likemindschat.conversation.model.GetConversationType
-import com.likeminds.likemindschat.conversation.model.GetConversationsCountRequest
-import com.likeminds.likemindschat.conversation.model.GetConversationsCountResponse
-import com.likeminds.likemindschat.conversation.model.GetConversationsRequest
-import com.likeminds.likemindschat.conversation.model.GetConversationsResponse
-import com.likeminds.likemindschat.conversation.model.LiveConversationResponse
-import com.likeminds.likemindschat.conversation.model.LoadConversationType
-import com.likeminds.likemindschat.conversation.model.ObserveConversationsRequest
-import com.likeminds.likemindschat.conversation.model.PostConversationRequest
-import com.likeminds.likemindschat.conversation.model.PostConversationResponse
-import com.likeminds.likemindschat.conversation.model.PutReactionRequest
-import com.likeminds.likemindschat.conversation.model.SaveConversationRequest
-import com.likeminds.likemindschat.conversation.model.SavePostedConversationRequest
-import com.likeminds.likemindschat.conversation.model.UpdateConversationRequest
-import com.likeminds.likemindschat.conversation.model.UpdateConversationWorkerUUIDRequest
-import com.likeminds.likemindschat.conversation.model.UpdateTemporaryConversationRequest
+import com.likeminds.likemindschat.chatroom.model.LMChatSubscribeChatroomCallback
+import com.likeminds.likemindschat.chatroom.model.SubscribeChatroomRequest
+import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
 import io.realm.RealmResults
+import okio.ByteString
 import javax.inject.Inject
 
 class ConversationClient @Inject constructor() : BaseClient() {
@@ -75,6 +48,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
     private val conversationDB by lazy {
         chatSDK.getConversationDB()
+    }
+
+    private val webSocketManager by lazy {
+        chatSDK.getWebSocketManager()
     }
 
     /**
@@ -1039,6 +1016,47 @@ class ConversationClient @Inject constructor() : BaseClient() {
     private fun validateDeleteReactionRequest(deleteReactionRequest: DeleteReactionRequest) {
         if (deleteReactionRequest.chatroomId.isNullOrEmpty() && deleteReactionRequest.conversationId.isNullOrEmpty()) {
             RequestUtils.throwException("conversationId")
+        }
+    }
+
+    suspend fun subscribeChatroom(
+        subscribeChatroomRequest: SubscribeChatroomRequest,
+        subscribeChatroomCallback: LMChatSubscribeChatroomCallback
+    ) {
+        // validates the client request
+        RequestUtils.validate()
+        validateSubscribeChatroomRequest(subscribeChatroomRequest)
+
+        val baseSubscribeCallbackImpl = object : BaseSubscribeCallback {
+            override fun onSocketConnectionOpen() {
+                subscribeChatroomCallback.onSocketConnectionOpen()
+            }
+
+            override fun onSocketConnectionClosed() {
+                subscribeChatroomCallback.onSocketConnectionClosed()
+            }
+
+            override fun onMessageReceived(data: String) {
+                Log.d("PUI", "message received with String: $data")
+            }
+
+            override fun onMessageReceived(data: ByteString) {
+                Log.d("PUI", "message received with byteString: $data")
+            }
+
+            override fun onError(errorMessage: String) {
+                subscribeChatroomCallback.onError(errorMessage)
+            }
+        }
+
+        val endpoint = WebSocketEndpoints.CHATROOM.value + subscribeChatroomRequest.chatroomId
+
+        webSocketManager.connect(endpoint, baseSubscribeCallbackImpl)
+    }
+
+    private fun validateSubscribeChatroomRequest(subscribeChatroomRequest: SubscribeChatroomRequest) {
+        if (subscribeChatroomRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
         }
     }
 }
