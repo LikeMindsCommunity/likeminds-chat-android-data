@@ -70,7 +70,7 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
         this.lmChatSDKCallback = lmChatSDKCallback
 
         if (initiateLoggerRequest != null) {
-            LMChatLogger.getInstance(initiateLoggerRequest)
+            LMChatLogger.initiate(initiateLoggerRequest)
         }
 
         initLikeMindsChatComponent(application)

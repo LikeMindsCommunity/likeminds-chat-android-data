@@ -9,9 +9,10 @@ import com.likeminds.likemindschat.sdk.ModelConverter
 class LMChatLogger private constructor() {
     companion object {
         private var chatLogger: LMChatLogger? = null
-        private var internalChatLogger: _LMChatLogger_? = null
+        private lateinit var internalChatLogger: _LMChatLogger_
 
-        fun getInstance(initiateLoggerRequest: LMChatInitiateLoggerRequest): LMChatLogger {
+        // initiates the [LMChatLogger] with provided request
+        fun initiate(initiateLoggerRequest: LMChatInitiateLoggerRequest): LMChatLogger {
             if (chatLogger == null) {
                 chatLogger = LMChatLogger()
 
@@ -19,19 +20,22 @@ class LMChatLogger private constructor() {
                     .shareLogsWithLM(initiateLoggerRequest.shareLogsWithLM)
                     .logLevel(ModelConverter.convertSeverity(initiateLoggerRequest.logLevel))
                     .onErrorHandler(initiateLoggerRequest.onErrorHandler)
+                    .coreVersion(initiateLoggerRequest.coreVersion)
                     .build()
 
-                internalChatLogger = _LMChatLogger_.getInstance(internalRequest)
+                internalChatLogger = _LMChatLogger_.initiate(internalRequest)
             }
 
             return chatLogger!!
         }
 
+        // returns the instance of [LMChatLogger]
         fun getInstance(): LMChatLogger? {
             return chatLogger
         }
     }
 
+    // handles the exception by calling the internal Logger
     fun handleException(
         exception: String,
         stackTrace: String,
@@ -41,10 +45,19 @@ class LMChatLogger private constructor() {
             return
         }
 
-        internalChatLogger?.handleException(
+        internalChatLogger.handleException(
             exception,
             stackTrace,
             ModelConverter.convertSeverity(severity)
         )
+    }
+
+    // flushes the logs to backend by calling the internal Logger
+    fun flushLogs() {
+        if (chatLogger == null) {
+            return
+        }
+
+        internalChatLogger.flushLogs()
     }
 }

@@ -6,6 +6,8 @@ import com.likeminds.chatinternalsdk.community.model._Member_
 import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.models.*
 import com.likeminds.chatinternalsdk.db.util.toRealmList
+import com.likeminds.chatinternalsdk.helper.model._LMDeviceDetails_
+import com.likeminds.chatinternalsdk.helper.model._LMLog_
 import com.likeminds.chatinternalsdk.helper.model._LMSDKMeta_
 import com.likeminds.chatinternalsdk.helper.model._LMStackTrace_
 import com.likeminds.chatinternalsdk.poll.model._Poll_
@@ -897,5 +899,56 @@ object ROConverter {
             dataLayerVersion = sdkMeta.dataLayerVersion
             coreVersion = sdkMeta.coreVersion
         }
+    }
+
+    /**--------------------------------
+     * Db Model -> Internal Model
+    --------------------------------*/
+
+    /**
+     * convert [LMLogRO] to [_LMLog_]
+     * @param logRO: Object of logRO to be converted
+     * */
+    fun convertLogRO(
+        logRO: LMLogRO,
+        deviceDetails: _LMDeviceDetails_
+    ): _LMLog_ {
+        return _LMLog_.Builder()
+            .sdkMeta(convertSDKMetaRO(logRO.sdkMeta))
+            .stackTrace(convertStackTraceRO(logRO.stackTrace))
+            .severity(logRO.severity)
+            .timestamp(logRO.timestamp)
+            .deviceMeta(deviceDetails)
+            .build()
+    }
+
+    /**
+     * convert [LMSDKMetaRO] to [_LMSDKMeta_]
+     * @param sdkMetaRO: Object of sdkMetaRO to be converted
+     * */
+    private fun convertSDKMetaRO(sdkMetaRO: LMSDKMetaRO?): _LMSDKMeta_? {
+        if (sdkMetaRO == null) {
+            return null
+        }
+
+        return _LMSDKMeta_.Builder()
+            .dataLayerVersion(sdkMetaRO.dataLayerVersion)
+            .coreVersion(sdkMetaRO.coreVersion)
+            .build()
+    }
+
+    /**
+     * convert [LMStackTraceRO] to [_LMStackTrace_]
+     * @param stackTraceRO: Object of stackTraceRO to be converted
+     * */
+    private fun convertStackTraceRO(stackTraceRO: LMStackTraceRO?): _LMStackTrace_ {
+        if (stackTraceRO == null) {
+            return _LMStackTrace_.Builder().build()
+        }
+
+        return _LMStackTrace_.Builder()
+            .trace(stackTraceRO.trace)
+            .exception(stackTraceRO.exception)
+            .build()
     }
 }
