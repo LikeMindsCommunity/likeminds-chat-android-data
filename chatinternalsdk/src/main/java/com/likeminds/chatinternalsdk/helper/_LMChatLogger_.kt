@@ -11,6 +11,9 @@ import com.likeminds.chatinternalsdk.db.ROConverter
 import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.Realm
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class _LMChatLogger_ private constructor(
@@ -105,7 +108,7 @@ class _LMChatLogger_ private constructor(
 
             realm.close()
 
-            suspend {
+            CoroutineScope(Dispatchers.IO).launch {
                 val helperApi = LMChatSDK.getInstance().helperApiImpl
                 val pushLogsRequest = _PushLogsRequest_.Builder()
                     .logs(logs)
