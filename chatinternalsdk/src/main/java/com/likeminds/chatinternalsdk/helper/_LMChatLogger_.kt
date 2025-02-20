@@ -77,7 +77,7 @@ class _LMChatLogger_ private constructor(
     }
 
     // flushes the logs by calling the API and clears the DB
-    suspend fun flushLogs() {
+    fun flushLogs() {
         if (chatLogger == null) {
             return
         }
