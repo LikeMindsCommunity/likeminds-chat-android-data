@@ -12,7 +12,6 @@ import com.likeminds.likemindschat.community.model.GetMemberRequest
 import com.likeminds.likemindschat.community.model.GetMemberResponse
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
-import com.likeminds.likemindschat.user.model.EditUserProfileRequest
 import com.likeminds.likemindschat.user.model.*
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm

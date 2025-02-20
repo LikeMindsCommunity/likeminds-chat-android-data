@@ -6,6 +6,10 @@ import com.likeminds.chatinternalsdk.community.model._Member_
 import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.models.*
 import com.likeminds.chatinternalsdk.db.util.toRealmList
+import com.likeminds.chatinternalsdk.helper.model._LMDeviceDetails_
+import com.likeminds.chatinternalsdk.helper.model._LMLog_
+import com.likeminds.chatinternalsdk.helper.model._LMSDKMeta_
+import com.likeminds.chatinternalsdk.helper.model._LMStackTrace_
 import com.likeminds.chatinternalsdk.poll.model._Poll_
 import com.likeminds.chatinternalsdk.sync.model._ReactionMeta_
 import com.likeminds.chatinternalsdk.user.model._SDKClientInfo_
@@ -856,5 +860,104 @@ object ROConverter {
             createdAt = widget.createdAt
             updatedAt = widget.updatedAt
         }
+    }
+
+    /**
+     * creates [LMLogRO] from provided log details
+     * @param timestamp: timestamp of the log to be converted
+     * @param stackTrace: instance of [_LMStackTrace_] of the log to be converted
+     * @param sdkMetaRO: instance of [_LMSDKMeta_] of the log to be converted
+     * @param severity: severity of the log
+     *
+     * @return [LMLogRO]
+     */
+    fun convertLog(
+        timestamp: Long,
+        stackTrace: _LMStackTrace_,
+        sdkMetaRO: _LMSDKMeta_?,
+        severity: String?
+    ): LMLogRO {
+        val stackTraceRO = convertStackTrace(stackTrace)
+        val sdkMeta = convertSDKMeta(sdkMetaRO)
+
+        return LMLogRO.build {
+            this.timestamp = timestamp
+            this.stackTrace = stackTraceRO
+            this.sdkMeta = sdkMeta
+            this.severity = severity
+        }
+    }
+
+    /**
+     * convert [_LMStackTrace_] to [LMStackTraceRO]
+     * @param stackTrace: Object of stackTrace to be converted
+     * */
+    private fun convertStackTrace(stackTrace: _LMStackTrace_): LMStackTraceRO {
+        return LMStackTraceRO.build(stackTrace.exception, stackTrace.trace) {}
+    }
+
+    /**
+     * convert [_LMSDKMeta_] to [LMSDKMetaRO]
+     * @param sdkMeta: Object of sdkMeta to be converted
+     * */
+    private fun convertSDKMeta(sdkMeta: _LMSDKMeta_?): LMSDKMetaRO? {
+        if (sdkMeta == null) {
+            return null
+        }
+        return LMSDKMetaRO.build {
+            dataLayerVersion = sdkMeta.dataLayerVersion
+            coreVersion = sdkMeta.coreVersion
+        }
+    }
+
+    /**--------------------------------
+     * Db Model -> Internal Model
+    --------------------------------*/
+
+    /**
+     * convert [LMLogRO] to [_LMLog_]
+     * @param logRO: Object of logRO to be converted
+     * */
+    fun convertLogRO(
+        logRO: LMLogRO,
+        deviceDetails: _LMDeviceDetails_
+    ): _LMLog_ {
+        return _LMLog_.Builder()
+            .sdkMeta(convertSDKMetaRO(logRO.sdkMeta))
+            .stackTrace(convertStackTraceRO(logRO.stackTrace))
+            .severity(logRO.severity)
+            .timestamp(logRO.timestamp)
+            .deviceMeta(deviceDetails)
+            .build()
+    }
+
+    /**
+     * convert [LMSDKMetaRO] to [_LMSDKMeta_]
+     * @param sdkMetaRO: Object of sdkMetaRO to be converted
+     * */
+    private fun convertSDKMetaRO(sdkMetaRO: LMSDKMetaRO?): _LMSDKMeta_? {
+        if (sdkMetaRO == null) {
+            return null
+        }
+
+        return _LMSDKMeta_.Builder()
+            .dataLayerVersion(sdkMetaRO.dataLayerVersion)
+            .coreVersion(sdkMetaRO.coreVersion)
+            .build()
+    }
+
+    /**
+     * convert [LMStackTraceRO] to [_LMStackTrace_]
+     * @param stackTraceRO: Object of stackTraceRO to be converted
+     * */
+    private fun convertStackTraceRO(stackTraceRO: LMStackTraceRO?): _LMStackTrace_ {
+        if (stackTraceRO == null) {
+            return _LMStackTrace_.Builder().build()
+        }
+
+        return _LMStackTrace_.Builder()
+            .trace(stackTraceRO.trace)
+            .exception(stackTraceRO.exception)
+            .build()
     }
 }

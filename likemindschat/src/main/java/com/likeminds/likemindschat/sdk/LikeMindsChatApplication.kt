@@ -21,6 +21,8 @@ import com.likeminds.likemindschat.di.notification.NotificationSubComponent
 import com.likeminds.likemindschat.di.poll.PollSubComponent
 import com.likeminds.likemindschat.di.search.SearchSubComponent
 import com.likeminds.likemindschat.di.user.UserSubComponent
+import com.likeminds.likemindschat.helper.LMChatLogger
+import com.likeminds.likemindschat.helper.model.LMChatInitiateLoggerRequest
 import com.likeminds.likemindschat.sdk.util.ApiKeys
 import javax.inject.Inject
 
@@ -61,10 +63,15 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
 
     fun initChatSDKApplication(
         application: Application,
-        lmChatSDKCallback: LMChatSDKCallback? = null
+        lmChatSDKCallback: LMChatSDKCallback? = null,
+        initiateLoggerRequest: LMChatInitiateLoggerRequest? = null
     ) {
         likeMindsChatApplicationInstance = this
         this.lmChatSDKCallback = lmChatSDKCallback
+
+        if (initiateLoggerRequest != null) {
+            LMChatLogger.initiate(initiateLoggerRequest)
+        }
 
         initLikeMindsChatComponent(application)
         initializeFirebase(application)

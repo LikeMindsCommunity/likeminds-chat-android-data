@@ -1,4 +1,4 @@
-package com.likeminds.chatinternalsdk.helper
+package com.likeminds.chatinternalsdk.helper.api
 
 import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
@@ -15,4 +15,9 @@ interface HelperApi {
     suspend fun getTaggingList(
         request: _GetTaggingListRequest_
     ): NetworkResponse<APIResponse<_GetTaggingListResponse_>>
+
+    //api to push logs
+    suspend fun pushLogs(
+        request: _PushLogsRequest_
+    ): NetworkResponse<APIResponse<Nothing>>
 }
