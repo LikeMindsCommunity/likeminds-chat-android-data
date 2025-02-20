@@ -51,22 +51,24 @@ class _LMChatLogger_ private constructor(
 
         val helperDB = LMChatSDK.getInstance().helperDBImpl
         if (initiateLoggerRequest.logLevel.severityLevel <= severity.severityLevel && initiateLoggerRequest.shareLogsWithLM) {
+            val dataLayerVersion = "${BuildConfig.SDK_MAJOR}.${BuildConfig.SDK_MINOR}.${BuildConfig.SDK_PATCH}"
+
+            val sdkMeta = _LMSDKMeta_.Builder()
+                    .dataLayerVersion(dataLayerVersion)
+                    .coreVersion(initiateLoggerRequest.coreVersion)
+                    .build()
+
+            val logStackTrace = _LMStackTrace_.Builder()
+                    .exception(exception)
+                    .trace(stackTrace)
+                    .build()
+
             helperDB.insertLog(
                 _InsertLogRequest_.Builder()
                     .timestamp(System.currentTimeMillis())
                     .severity(severity.severityName)
-                    .sdkMeta(
-                        _LMSDKMeta_.Builder()
-                            .dataLayerVersion("${BuildConfig.SDK_MAJOR}.${BuildConfig.SDK_MINOR}.${BuildConfig.SDK_PATCH}")
-                            .coreVersion(initiateLoggerRequest.coreVersion)
-                            .build()
-                    )
-                    .stackTrace(
-                        _LMStackTrace_.Builder()
-                            .exception(exception)
-                            .trace(stackTrace)
-                            .build()
-                    )
+                    .sdkMeta(sdkMeta)
+                    .stackTrace(logStackTrace)
                     .build()
             )
         }
@@ -75,7 +77,7 @@ class _LMChatLogger_ private constructor(
     }
 
     // flushes the logs by calling the API and clears the DB
-    fun flushLogs() {
+    suspend fun flushLogs() {
         if (chatLogger == null) {
             return
         }

@@ -2,13 +2,13 @@ package com.likeminds.likemindschat.helper.model
 
 class LMChatInitiateLoggerRequest private constructor(
     val shareLogsWithLM: Boolean,
-    val onErrorHandler: (String, String) -> Unit,
+    val onErrorHandler: (exception: String, stackTrace: String) -> Unit,
     val logLevel: LMSeverity,
     val coreVersion: String?
 ) {
     class Builder {
         private var shareLogsWithLM: Boolean = true
-        private var onErrorHandler: ((String, String) -> Unit) = { _, _ -> }
+        private var onErrorHandler: ((exception: String, stackTrace: String) -> Unit) = { _, _ -> }
         private var logLevel: LMSeverity = LMSeverity.INFO
         private var coreVersion: String? = null
 
@@ -16,7 +16,7 @@ class LMChatInitiateLoggerRequest private constructor(
             this.shareLogsWithLM = value
         }
 
-        fun onErrorHandler(handler: (String, String) -> Unit) = apply {
+        fun onErrorHandler(handler: (exception: String, stackTrace: String) -> Unit) = apply {
             this.onErrorHandler = handler
         }
 

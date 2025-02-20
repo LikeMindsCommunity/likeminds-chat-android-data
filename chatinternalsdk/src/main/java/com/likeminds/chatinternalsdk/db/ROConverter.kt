@@ -862,6 +862,15 @@ object ROConverter {
         }
     }
 
+    /**
+     * creates [LMLogRO] from provided log details
+     * @param timestamp: timestamp of the log to be converted
+     * @param stackTrace: instance of [_LMStackTrace_] of the log to be converted
+     * @param sdkMetaRO: instance of [_LMSDKMeta_] of the log to be converted
+     * @param severity: severity of the log
+     *
+     * @return [LMLogRO]
+     */
     fun convertLog(
         timestamp: Long,
         stackTrace: _LMStackTrace_,
