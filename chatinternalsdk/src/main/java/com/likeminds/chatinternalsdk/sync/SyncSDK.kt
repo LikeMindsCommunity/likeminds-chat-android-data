@@ -233,36 +233,6 @@ object SyncSDK {
         }
     }
 
-    /**
-     * Sync steps for live conversation
-     * 1. Fetch and save for page = 1 if the conversation is not created by logged in user
-     * @return Returns LiveData<State> to observe the work states
-     */
-    fun startLiveSyncConversation(
-        context: Context,
-        chatroomId: String,
-        conversationId: String
-    ): MediatorLiveData<WorkInfo.State> {
-        val work = WorkManager.getInstance(context)
-            .beginWith(liveSyncConversation(chatroomId, conversationId))
-            .then(syncDatabase(SYNC_CHATROOM, chatroomId = chatroomId))
-        work.enqueue()
-        //MediatorLiveData is a subclass of live data, it will observe the list of worker's live data
-        //and post value according to the logic
-        return MediatorLiveData<WorkInfo.State>().apply {
-            addSource(work.workInfosLiveData) { workInfoList ->
-                //Post the status of only the database sync worker as that is the last worker and
-                //we want to observe the completion of the last worker
-                val workInfo = workInfoList.firstOrNull {
-                    it.tags.contains(DatabaseSyncWorker.NAME)
-                }
-                if (workInfo != null) {
-                    value = workInfo.state
-                }
-            }
-        }
-    }
-
     //return first conversation sync worker
     private fun firstTimeSyncConversation(
         chatroomId: String,
@@ -304,28 +274,6 @@ object SyncSDK {
                 TimeUnit.MILLISECONDS
             )
             .addTag(ReopenConversationSyncWorker.NAME)
-            .build()
-    }
-
-    //return live conversation sync worker
-    private fun liveSyncConversation(
-        chatroomId: String,
-        conversationId: String
-    ): OneTimeWorkRequest {
-        return OneTimeWorkRequestBuilder<LiveConversationSyncWorker>()
-            .setInputData(
-                workDataOf(
-                    LiveConversationSyncWorker.INPUT_DATA_CHATROOM_ID to chatroomId,
-                    LiveConversationSyncWorker.INPUT_DATA_CONVERSATION_ID to conversationId
-                )
-            )
-            .setConstraints(networkConstraint)
-            .setBackoffCriteria(
-                BackoffPolicy.LINEAR,
-                WorkRequest.MIN_BACKOFF_MILLIS,
-                TimeUnit.MILLISECONDS
-            )
-            .addTag(LiveConversationSyncWorker.NAME)
             .build()
     }
 

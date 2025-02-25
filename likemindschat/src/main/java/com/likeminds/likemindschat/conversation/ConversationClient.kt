@@ -4,10 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
-import com.google.firebase.FirebaseApp
-import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.JsonParser
-import com.likeminds.chatinternalsdk.LMChatSDK
 import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.models.ConversationRO
 import com.likeminds.chatinternalsdk.sync.SyncSDK
@@ -19,7 +16,6 @@ import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.chatroom.model.LMChatSubscribeChatroomCallback
 import com.likeminds.likemindschat.chatroom.model.SubscribeChatroomRequest
 import com.likeminds.likemindschat.conversation.model.*
-import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -52,6 +48,10 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
     private val webSocketManager by lazy {
         chatSDK.getWebSocketManager()
+    }
+
+    private val gson by lazy {
+        chatSDK.getGsonObject()
     }
 
     /**
@@ -293,107 +293,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
             LoadConversationType.REOPEN -> {
                 SyncSDK.startReopenSyncForChatroom(context, chatroomId)
-            }
-        }
-    }
-
-    /**
-     * Observe live conversations
-     */
-    suspend fun observeLiveConversations(
-        context: Context,
-        chatroomId: String
-    ) {
-        val app = FirebaseApp.getInstance("lm-secondary")
-        val dataBaseReference = FirebaseDatabase.getInstance(app).reference
-            .child("collabcards")
-            .child(chatroomId)
-        dataBaseReference.keepSynced(true)
-
-        dataBaseReference.childEventListener().collect { result ->
-            when (result) {
-                is LiveConversationResponse.ChildAdded -> {
-                    val latestConversation = result.response?.answerId
-                    latestConversation?.let {
-                        // get the conversation from db
-                        val conversationRO = conversationDB.getConversation(
-                            Realm.getDefaultInstance(),
-                            latestConversation
-                        )
-
-                        if (conversationRO == null) {
-                            SyncSDK.startLiveSyncConversation(
-                                context,
-                                chatroomId,
-                                latestConversation
-                            )
-                        }
-                    }
-                }
-
-                is LiveConversationResponse.ChildChanged -> {
-                    val latestConversation = result.response?.answerId
-                    latestConversation?.let {
-                        // get the conversation from db
-                        val conversationRO = conversationDB.getConversation(
-                            Realm.getDefaultInstance(),
-                            latestConversation
-                        )
-
-                        if (conversationRO == null) {
-                            SyncSDK.startLiveSyncConversation(
-                                context,
-                                chatroomId,
-                                latestConversation
-                            )
-                        }
-                    }
-                }
-
-                is LiveConversationResponse.ChildMoved -> {
-                    val latestConversation = result.response?.answerId
-                    latestConversation?.let {
-                        // get the conversation from db
-                        val conversationRO = conversationDB.getConversation(
-                            Realm.getDefaultInstance(),
-                            latestConversation
-                        )
-
-                        if (conversationRO == null) {
-                            SyncSDK.startLiveSyncConversation(
-                                context,
-                                chatroomId,
-                                latestConversation
-                            )
-                        }
-                    }
-                }
-
-                is LiveConversationResponse.ChildRemoved -> {
-                    val latestConversation = result.response?.answerId
-                    latestConversation?.let {
-                        // get the conversation from db
-                        val conversationRO = conversationDB.getConversation(
-                            Realm.getDefaultInstance(),
-                            latestConversation
-                        )
-
-                        if (conversationRO == null) {
-                            SyncSDK.startLiveSyncConversation(
-                                context,
-                                chatroomId,
-                                latestConversation
-                            )
-                        }
-                    }
-                }
-
-                is LiveConversationResponse.OnCancelled -> {
-                    Log.e(
-                        LMChatSDK.LOG_TAG,
-                        "live conversation failed: ${result.errorMessage}"
-                    )
-                }
             }
         }
     }
@@ -1038,6 +937,41 @@ class ConversationClient @Inject constructor() : BaseClient() {
 
             override fun onMessageReceived(data: String) {
                 Log.d("PUI", "message received with String: $data")
+                try {
+                    val realtimeResponse =
+                        gson.fromJson(data, SubscribeChatroomResponse::class.java)
+                    Log.d(
+                        "PUI",
+                        "message received with SubscribeChatroomResponse: $realtimeResponse"
+                    )
+
+                    if (realtimeResponse.topicMessageType == RealtimeTopic.CONVERSATION.value) {
+                        val postConversationResponse =
+                            gson.fromJson(
+                                realtimeResponse.rawData,
+                                _PostConversationResponse_::class.java
+                            )
+                        Log.d(
+                            "PUI",
+                            "message received with PostConversationResponse: $postConversationResponse"
+                        )
+
+
+                        var conversation = postConversationResponse.conversation
+
+                        val widget = postConversationResponse.widgets[conversation.widgetId]
+
+                        conversation = conversation.toBuilder()
+                            .widget(widget)
+                            .build()
+
+                        val realm = Realm.getDefaultInstance()
+                        conversationDB.saveNewConversation(realm, conversation)
+                        realm.close()
+                    }
+                } catch (e: Exception) {
+                    Log.e("PUI", " exception while parsing SubscribeChatroomResponse", e)
+                }
             }
 
             override fun onMessageReceived(data: ByteString) {

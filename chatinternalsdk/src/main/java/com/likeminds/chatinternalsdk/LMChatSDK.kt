@@ -292,4 +292,8 @@ class LMChatSDK {
     fun getWebSocketManager(): LMChatWebSocketManager {
         return lmChatWebSocketManager
     }
+
+    fun getGsonObject(): Gson {
+        return gson
+    }
 }

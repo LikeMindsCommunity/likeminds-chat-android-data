@@ -318,11 +318,6 @@ class LMChatClient private constructor() {
         conversationClient.observeConversations(observeConversationsRequest)
     }
 
-    //Exposed function to observe live conversations
-    suspend fun observeLiveConversations(context: Context, chatroomId: String) {
-        return conversationClient.observeLiveConversations(context, chatroomId)
-    }
-
     suspend fun subscribeChatroom(
         subscribeChatroomRequest: SubscribeChatroomRequest,
         subscribeChatroomCallback: LMChatSubscribeChatroomCallback
