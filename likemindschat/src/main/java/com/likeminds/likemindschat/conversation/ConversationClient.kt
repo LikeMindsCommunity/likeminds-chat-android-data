@@ -993,4 +993,17 @@ class ConversationClient @Inject constructor() : BaseClient() {
             RequestUtils.throwException("chatroomId")
         }
     }
+
+    suspend fun unsubscribeChatroom(
+        subscribeChatroomRequest: SubscribeChatroomRequest,
+        subscribeChatroomCallback: LMChatSubscribeChatroomCallback
+    ) {
+        // validates the client request
+        RequestUtils.validate()
+        validateSubscribeChatroomRequest(subscribeChatroomRequest)
+
+        val endpoint = WebSocketEndpoints.CHATROOM.value + subscribeChatroomRequest.chatroomId
+
+        webSocketManager.close(endpoint)
+    }
 }

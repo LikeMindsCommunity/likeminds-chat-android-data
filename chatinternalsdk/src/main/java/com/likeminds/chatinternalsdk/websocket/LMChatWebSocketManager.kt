@@ -59,7 +59,7 @@ class LMChatWebSocketManager @Inject constructor(
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 super.onOpen(webSocket, response)
                 Log.d(TAG, "WebSocket Connected: $endpoint")
-                isConnectedMap[endpoint] = true
+                updateConnectionState(endpoint, true)
 
                 // Reset reconnect attempts on successful connection
                 reconnectAttemptsMap[endpoint] = 0
@@ -81,23 +81,28 @@ class LMChatWebSocketManager @Inject constructor(
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
                 super.onClosing(webSocket, code, reason)
                 Log.d(TAG, "WebSocket Closing: $endpoint, code: $code, reason: $reason")
-                isConnectedMap[endpoint] = false
+                updateConnectionState(endpoint, false)
                 callbackMap[endpoint]?.onSocketConnectionClosed()
             }
 
             override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
                 super.onClosed(webSocket, code, reason)
-                isConnectedMap[endpoint] = false
+                Log.d(TAG, "WebSocket Closed: $endpoint, code: $code, reason: $reason")
+                updateConnectionState(endpoint, false)
                 callbackMap[endpoint]?.onSocketConnectionClosed()
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 super.onFailure(webSocket, t, response)
-                isConnectedMap[endpoint] = false
+                updateConnectionState(endpoint, false)
                 Log.e(TAG, "WebSocket Error for $endpoint: ${t.message}", t)
                 callbackMap[endpoint]?.onError(t.message ?: "Unknown error")
             }
         }
+    }
+
+    private fun updateConnectionState(endpoint: String, state: Boolean) {
+        isConnectedMap[endpoint] = state
     }
 
     // Initiates a WebSocket connection for a specific endpoint with a callback
@@ -116,11 +121,12 @@ class LMChatWebSocketManager @Inject constructor(
         }
     }
 
-    // Closes a specific WebSocket connection
-    fun close(endpoint: String) {
-        webSocketMap[endpoint]?.close(1000, "Closing WebSocket for $endpoint")
-        webSocketMap.remove(endpoint)
-        isConnectedMap[endpoint] = false
-        callbackMap.remove(endpoint)
+    suspend fun close(endpoint: String) {
+        withContext(Dispatchers.IO) {
+            webSocketMap[endpoint]?.close(1000, "Closing WebSocket for")
+            webSocketMap.remove(endpoint)
+            callbackMap.remove(endpoint)
+            Log.d(TAG, "WebSocket connection closed and cleaned for $endpoint")
+        }
     }
 }

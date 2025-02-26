@@ -322,10 +322,14 @@ class LMChatClient private constructor() {
         subscribeChatroomRequest: SubscribeChatroomRequest,
         subscribeChatroomCallback: LMChatSubscribeChatroomCallback
     ) {
-        return conversationClient.subscribeChatroom(
-            subscribeChatroomRequest,
-            subscribeChatroomCallback
-        )
+        conversationClient.subscribeChatroom(subscribeChatroomRequest, subscribeChatroomCallback)
+    }
+
+    suspend fun unsubscribeChatroom(
+        subscribeChatroomRequest: SubscribeChatroomRequest,
+        subscribeChatroomCallback: LMChatSubscribeChatroomCallback
+    ) {
+        conversationClient.unsubscribeChatroom(subscribeChatroomRequest, subscribeChatroomCallback)
     }
 
     //Exposed function to load conversation to db
