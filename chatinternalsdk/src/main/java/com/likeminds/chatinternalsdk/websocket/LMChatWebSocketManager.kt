@@ -1,31 +1,44 @@
 package com.likeminds.chatinternalsdk.websocket
 
 import android.util.Log
-import com.likeminds.chatinternalsdk.BuildConfig
-import com.likeminds.chatinternalsdk.ChatTokenManager
+import com.likeminds.chatinternalsdk.*
+import com.likeminds.chatinternalsdk.LMChatSDK.Companion.LOG_TAG
 import com.likeminds.chatinternalsdk.di.WebSocketQualifier
+import com.likeminds.chatinternalsdk.sdk.util.SDKPreferences
 import com.likeminds.chatinternalsdk.utils.retrofit.model.BaseUrl
+import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.chatinternalsdk.utils.websocket.BaseSubscribeCallback
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import okhttp3.*
 import okio.ByteString
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.pow
 
 @Singleton
 class LMChatWebSocketManager @Inject constructor(
     @WebSocketQualifier private val client: OkHttpClient,
-    private val baseUrl: BaseUrl
+    private val baseUrl: BaseUrl,
+    private val sdkPreferences: SDKPreferences
 ) {
 
     companion object {
         const val TAG = "LMChatWebSocketManager"
+
+        // headers
         private const val X_PLATFORM_CODE = "x-platform-code"
         private const val X_SDK_SOURCE = "x-sdk-source"
         private const val X_VERSION_CODE = "x-version-code"
         private const val AUTH = "Authorization"
+
+        // error codes
+        private const val UNAUTHORIZED = 401
+        private const val SERVER_ERROR = 500
+        private const val BAD_GATEWAY = 502
+        private const val SERVICE_UNAVAILABLE = 503
+        private const val GATEWAY_TIMEOUT = 504
+        private const val TOO_MANY_REQUESTS = 429
     }
 
     // Maps to manage multiple WebSocket connections dynamically
@@ -33,11 +46,16 @@ class LMChatWebSocketManager @Inject constructor(
     private val isConnectedMap: ConcurrentHashMap<String, Boolean> = ConcurrentHashMap()
     private val reconnectAttemptsMap: ConcurrentHashMap<String, Int> = ConcurrentHashMap()
     private val callbackMap: ConcurrentHashMap<String, BaseSubscribeCallback> = ConcurrentHashMap()
+    private val chatTokenManager = ChatTokenManager.getInstance()
+    private var refreshJob: Job? = null
+
+    // CoroutineScope tied to WebSocketManager for structured concurrency
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     //create request for websocket connection
     private fun getRequest(endPoint: String): Request {
         // get access token
-        val accessToken = ChatTokenManager.getInstance().accessToken
+        val accessToken = chatTokenManager.accessToken
 
         // web socket url
         val url = baseUrl.getPandemoniumBaseUrl() + endPoint
@@ -47,7 +65,7 @@ class LMChatWebSocketManager @Inject constructor(
         return Request.Builder()
             .url(url)
             .addHeader(AUTH, "Bearer $accessToken")
-            .addHeader(X_PLATFORM_CODE, "android")
+            .addHeader(X_PLATFORM_CODE, "an")
             .addHeader(X_VERSION_CODE, BuildConfig.APP_VERSION_CODE.toString())
             .addHeader(X_SDK_SOURCE, "chat")
             .build()
@@ -96,7 +114,23 @@ class LMChatWebSocketManager @Inject constructor(
                 super.onFailure(webSocket, t, response)
                 updateConnectionState(endpoint, false)
                 Log.e(TAG, "WebSocket Error for $endpoint: ${t.message}", t)
-                callbackMap[endpoint]?.onError(t.message ?: "Unknown error")
+
+                when (response?.code) {
+                    UNAUTHORIZED -> {
+                        Log.e(TAG, "Unauthorized error for $endpoint. Token might be expired.")
+                        handleTokenExpiry(endpoint)
+                    }
+
+                    SERVER_ERROR, BAD_GATEWAY, SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, TOO_MANY_REQUESTS -> {
+                        Log.e(TAG, "Server error for $endpoint. Attempting reconnect.")
+                        handleReconnect(endpoint)
+                    }
+
+                    else -> {
+                        Log.e(TAG, "Unhandled error code: ${response?.code} for $endpoint")
+                        callbackMap[endpoint]?.onError(t.message ?: "Unknown error")
+                    }
+                }
             }
         }
     }
@@ -127,6 +161,68 @@ class LMChatWebSocketManager @Inject constructor(
             webSocketMap.remove(endpoint)
             callbackMap.remove(endpoint)
             Log.d(TAG, "WebSocket connection closed and cleaned for $endpoint")
+        }
+    }
+
+    private fun handleReconnect(endpoint: String) {
+        val attempt = reconnectAttemptsMap[endpoint] ?: 0
+        if (attempt >= 3) {
+            Log.d(TAG, "Max reconnect attempts reached for $endpoint")
+            return
+        }
+        val delayMillis = (1000L * 2.0.pow(attempt.toDouble())).toLong()
+        Log.d(TAG, "Reconnecting $endpoint in $delayMillis ms (attempt: $attempt)")
+        reconnectAttemptsMap[endpoint] = attempt + 1
+        coroutineScope.launch {
+            delay(delayMillis)
+            callbackMap[endpoint]?.let { connect(endpoint, it) }
+        }
+    }
+
+    private fun handleTokenExpiry(endpoint: String) {
+        if (refreshJob?.isActive == true) return // Prevent duplicate refreshes
+
+        refreshJob = coroutineScope.launch {
+            val chatSDK = LMChatSDK.getInstance()
+            val lmInternalCallback = chatSDK.lmChatInternalCallback
+            val refreshTokenNetworkApi = chatSDK.refreshTokenApiImpl
+
+            val refreshToken = chatTokenManager.refreshToken ?: sdkPreferences.getRefreshToken()
+
+            when (val refreshResponse =
+                refreshTokenNetworkApi.refreshAccessToken("Bearer $refreshToken")) {
+                is NetworkResponse.Error -> {
+                    Log.d(
+                        LOG_TAG,
+                        "access token refresh failed: ${refreshResponse.body.errorMessage}"
+                    )
+                }
+
+                is NetworkResponse.Success -> {
+                    Log.d(LOG_TAG, "access token refreshed")
+
+                    val newAccessToken = refreshResponse.body.data?.accessToken ?: ""
+                    val newRefreshToken = refreshResponse.body.data?.refreshToken ?: ""
+
+                    //update token manager
+                    chatTokenManager.updateTokens(newAccessToken, newRefreshToken)
+
+                    //update local prefs
+                    sdkPreferences.setAccessToken(newAccessToken)
+                    sdkPreferences.setRefreshToken(newRefreshToken)
+
+                    //through callback
+                    lmInternalCallback?.onAccessTokenExpiredAndRefreshed(
+                        newAccessToken,
+                        newRefreshToken
+                    )
+
+                    //reconnect callback map
+                    callbackMap[endpoint]?.let {
+                        connect(endpoint, it)
+                    }
+                }
+            }
         }
     }
 }

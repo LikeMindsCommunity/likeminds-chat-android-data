@@ -5,8 +5,7 @@ import com.chuckerteam.chucker.api.*
 import com.likeminds.chatinternalsdk.BuildConfig
 import com.likeminds.chatinternalsdk.di.HttpAPICallQualifier
 import com.likeminds.chatinternalsdk.di.WebSocketQualifier
-import com.likeminds.chatinternalsdk.utils.retrofit.CommonHeaderInterceptor
-import com.likeminds.chatinternalsdk.utils.retrofit.TokenAuthenticator
+import com.likeminds.chatinternalsdk.utils.retrofit.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.BaseUrl
 import dagger.Module
 import dagger.Provides
@@ -62,7 +61,9 @@ class NetworkModule {
     @WebSocketQualifier
     fun provideWebSocketOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
-        chuckerInterceptor: ChuckerInterceptor
+        chuckerInterceptor: ChuckerInterceptor,
+        mockResponseInterceptor: MockResponseInterceptor,
+        dispatcher: Dispatcher
     ): OkHttpClient {
         val clientBuilder = OkHttpClient.Builder()
 
@@ -73,6 +74,9 @@ class NetworkModule {
         //add interceptors
         clientBuilder.addInterceptor(loggingInterceptor)
         clientBuilder.addInterceptor(chuckerInterceptor)
+
+        //set dispatcher
+        clientBuilder.dispatcher(dispatcher)
 
         return clientBuilder.build()
     }

@@ -65,6 +65,8 @@ class UserClient @Inject constructor() : BaseClient() {
             .userName(initiateUserRequest.userName)
             .isGuest(initiateUserRequest.isGuest)
             .deviceId(initiateUserRequest.deviceId)
+            .tokenExpiryBeta(2)
+            .rtmTokenExpiryBeta(4)
             .build()
 
         // calls api and processes the response accordingly
