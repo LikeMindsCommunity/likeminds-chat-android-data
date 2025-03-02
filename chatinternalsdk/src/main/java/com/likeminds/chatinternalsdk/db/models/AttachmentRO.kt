@@ -21,7 +21,8 @@ open class AttachmentRO(
     var thumbnailLocalFilePath: String? = null,
     var metaRO: AttachmentMetaRO? = null,
     var createdAt: Long? = null,
-    var updatedAt: Long? = null
+    var updatedAt: Long? = null,
+    var isUploaded: Boolean = false
 ) : RealmObject() {
 
     private constructor(builder: Builder) : this(
@@ -41,7 +42,8 @@ open class AttachmentRO(
         builder.thumbnailLocalFilePath,
         builder.metaRO,
         builder.createdAt,
-        builder.updatedAt
+        builder.updatedAt,
+        builder.isUploaded
     )
 
     companion object {
@@ -70,6 +72,7 @@ open class AttachmentRO(
         var metaRO: AttachmentMetaRO? = null
         var createdAt: Long? = null
         var updatedAt: Long? = null
+        var isUploaded: Boolean = false
 
         fun build() = AttachmentRO(this)
     }
@@ -90,6 +93,7 @@ open class AttachmentRO(
             metaRO = this@AttachmentRO.metaRO
             createdAt = this@AttachmentRO.createdAt
             updatedAt = this@AttachmentRO.updatedAt
+            isUploaded = this@AttachmentRO.isUploaded
         }
     }
 }

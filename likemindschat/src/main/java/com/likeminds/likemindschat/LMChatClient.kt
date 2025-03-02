@@ -368,7 +368,6 @@ class LMChatClient private constructor() {
         conversationClient.updateConversation(updateConversationRequest)
     }
 
-
     // Exposed function to update conversation upload worker uuid
     fun updateTemporaryConversation(updateTemporaryConversationRequest: UpdateTemporaryConversationRequest) {
         conversationClient.updateTemporaryConversation(updateTemporaryConversationRequest)
