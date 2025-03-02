@@ -141,6 +141,8 @@ class LMChatSDK {
 
     var lmChatInternalCallback: LMChatInternalCallback? = null
 
+    var excludedConversationStates: List<Int> = emptyList()
+
     companion object {
 
         private var chatSDK: LMChatSDK? = null
@@ -158,7 +160,7 @@ class LMChatSDK {
 
     fun initialize(
         sdkSharedResources: SDKSharedResources,
-        lmChatInternalCallback: LMChatInternalCallback?
+        lmChatInternalCallback: LMChatInternalCallback?,
     ) {
         initSDKComponent(sdkSharedResources)
         initRealm()

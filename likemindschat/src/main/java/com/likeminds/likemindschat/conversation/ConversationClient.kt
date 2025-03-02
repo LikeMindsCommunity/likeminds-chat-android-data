@@ -8,45 +8,13 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.JsonParser
 import com.likeminds.chatinternalsdk.LMChatSDK
-import com.likeminds.chatinternalsdk.conversation.model._ConversationWithinLimitRequest_
-import com.likeminds.chatinternalsdk.conversation.model._DeleteConversationsRequest_
-import com.likeminds.chatinternalsdk.conversation.model._DeleteReactionRequest_
-import com.likeminds.chatinternalsdk.conversation.model._EditConversationRequest_
-import com.likeminds.chatinternalsdk.conversation.model._PostConversationRequest_
-import com.likeminds.chatinternalsdk.conversation.model._PutReactionRequest_
-import com.likeminds.chatinternalsdk.conversation.model._SavePostedConversationRequest_
+import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.models.ConversationRO
 import com.likeminds.chatinternalsdk.sync.SyncSDK
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.conversation.model.Conversation
-import com.likeminds.likemindschat.conversation.model.ConversationWithinLimitRequest
-import com.likeminds.likemindschat.conversation.model.DeleteConversationPermanentlyRequest
-import com.likeminds.likemindschat.conversation.model.DeleteConversationsRequest
-import com.likeminds.likemindschat.conversation.model.DeleteConversationsResponse
-import com.likeminds.likemindschat.conversation.model.DeleteReactionRequest
-import com.likeminds.likemindschat.conversation.model.EditConversationRequest
-import com.likeminds.likemindschat.conversation.model.EditConversationResponse
-import com.likeminds.likemindschat.conversation.model.GetConversationCountType
-import com.likeminds.likemindschat.conversation.model.GetConversationRequest
-import com.likeminds.likemindschat.conversation.model.GetConversationResponse
-import com.likeminds.likemindschat.conversation.model.GetConversationType
-import com.likeminds.likemindschat.conversation.model.GetConversationsCountRequest
-import com.likeminds.likemindschat.conversation.model.GetConversationsCountResponse
-import com.likeminds.likemindschat.conversation.model.GetConversationsRequest
-import com.likeminds.likemindschat.conversation.model.GetConversationsResponse
-import com.likeminds.likemindschat.conversation.model.LiveConversationResponse
-import com.likeminds.likemindschat.conversation.model.LoadConversationType
-import com.likeminds.likemindschat.conversation.model.ObserveConversationsRequest
-import com.likeminds.likemindschat.conversation.model.PostConversationRequest
-import com.likeminds.likemindschat.conversation.model.PostConversationResponse
-import com.likeminds.likemindschat.conversation.model.PutReactionRequest
-import com.likeminds.likemindschat.conversation.model.SaveConversationRequest
-import com.likeminds.likemindschat.conversation.model.SavePostedConversationRequest
-import com.likeminds.likemindschat.conversation.model.UpdateConversationRequest
-import com.likeminds.likemindschat.conversation.model.UpdateConversationWorkerUUIDRequest
-import com.likeminds.likemindschat.conversation.model.UpdateTemporaryConversationRequest
+import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
@@ -76,6 +44,9 @@ class ConversationClient @Inject constructor() : BaseClient() {
     private val conversationDB by lazy {
         chatSDK.getConversationDB()
     }
+
+    private val excludedConversationStates =
+        LikeMindsChatApplication.getInstance().excludedConversationStates
 
     /**
      * Converts client request model to internal model and calls the api
@@ -197,7 +168,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
             .limit(conversationWithinLimitRequest.limit)
             .build()
 
-        return conversationDB.isConversationWithinLimit(request)
+        return conversationDB.isConversationWithinLimit(request, excludedConversationStates)
     }
 
     /**
@@ -233,7 +204,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
         val chatroomId = observeConversationsRequest.chatroomId
         val listener = observeConversationsRequest.listener
 
-        val flowOfConversations = conversationDB.observeConversations(realm, chatroomId)
+        val flowOfConversations =
+            conversationDB.observeConversations(realm, chatroomId, excludedConversationStates)
 
         flowOfConversations.collect { collectionChange ->
             val insertions = getConversationFromChanges(
@@ -490,7 +462,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             chatroomId,
             limit,
             belowConversation?.id,
-            belowConversation?.createdEpoch
+            belowConversation?.createdEpoch,
+            excludedConversationStates
         )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
@@ -513,7 +486,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             chatroomId,
             limit,
             conversation?.id,
-            conversation?.createdEpoch
+            conversation?.createdEpoch,
+            excludedConversationStates
         )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
@@ -533,7 +507,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
         val conversationsRO = conversationDB.getTopConversations(
             realm,
             chatroomId,
-            limit
+            limit,
+            excludedConversationStates
         )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
@@ -550,7 +525,12 @@ class ConversationClient @Inject constructor() : BaseClient() {
         limit: Int
     ): LMResponse<GetConversationsResponse> {
         val realm = Realm.getDefaultInstance()
-        val conversationsRO = conversationDB.getBottomConversations(realm, chatroomId, limit)
+        val conversationsRO = conversationDB.getBottomConversations(
+            realm,
+            chatroomId,
+            limit,
+            excludedConversationStates
+        )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
         return LMResponse(
@@ -627,7 +607,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             realm,
             chatroomId,
             conversationId,
-            createdEpoch
+            createdEpoch,
+            excludedConversationStates
         )
         realm.close()
         val aboveConversationsCount = ModelConverter.convertGetConversationsCountResponse(count)
@@ -649,7 +630,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             realm,
             chatroomId,
             conversationId,
-            createdEpoch
+            createdEpoch,
+            excludedConversationStates
         )
         realm.close()
         val belowConversationsCount = ModelConverter.convertGetConversationsCountResponse(count)
