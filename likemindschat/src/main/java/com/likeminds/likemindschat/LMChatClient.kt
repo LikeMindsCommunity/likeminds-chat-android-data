@@ -76,6 +76,7 @@ class LMChatClient private constructor() {
     class Builder(val application: Application) {
         private var lmChatSDKCallback: LMChatSDKCallback? = null
         private var initiateLoggerRequest: LMChatInitiateLoggerRequest? = null
+        private var excludedConversationStates: List<ConversationState> = emptyList()
 
         fun lmChatSDKCallback(lmChatSDKCallback: LMChatSDKCallback?) = apply {
             this.lmChatSDKCallback = lmChatSDKCallback
@@ -85,6 +86,11 @@ class LMChatClient private constructor() {
             this.initiateLoggerRequest = initiateLoggerRequest
         }
 
+        fun excludedConversationStates(excludedConversationStates: List<ConversationState>) =
+            apply {
+                this.excludedConversationStates = excludedConversationStates
+            }
+
         suspend fun build(): LMChatClient {
             return withContext(Dispatchers.IO) { // Runs in the background thread
                 if (lmChatClientInstance == null) {
@@ -93,7 +99,8 @@ class LMChatClient private constructor() {
                     sdkApplication.initChatSDKApplication(
                         application,
                         lmChatSDKCallback,
-                        initiateLoggerRequest
+                        initiateLoggerRequest,
+                        excludedConversationStates
                     ) // Background task
                     sdkApplication.likeMindsChatComponent?.inject(lmChatClientInstance!!)
                 }
