@@ -1758,6 +1758,69 @@ object ModelConverter {
             .build()
     }
 
+    //convert list of client log model to internal log model
+    fun createLogs(logs: List<LMLog>): List<_LMLog_> {
+        return logs.map {
+            createLog(it)
+        }
+    }
+
+    //convert client log model to internal log model
+    private fun createLog(log: LMLog): _LMLog_ {
+        return _LMLog_.Builder()
+            .timestamp(log.timestamp)
+            .deviceMeta(createDeviceMeta(log.deviceMeta))
+            .stackTrace(createStackTrace(log.stackTrace))
+            .sdkMeta(createSDKMeta(log.sdkMeta))
+            .severity(log.severity?.severityName)
+            .build()
+    }
+
+    //convert client device details model to internal device detail model
+    private fun createDeviceMeta(deviceMeta: LMDeviceDetails): _LMDeviceDetails_ {
+        return _LMDeviceDetails_.Builder()
+            .versionOS(deviceMeta.versionOS)
+            .deviceName(deviceMeta.deviceName)
+            .screenHeight(deviceMeta.screenHeight)
+            .screenWidth(deviceMeta.screenWidth)
+            .wifi(deviceMeta.wifi)
+            .build()
+    }
+
+    //convert client stack trace model to internal stack trace model
+    fun createStackTrace(stackTrace: LMStackTrace): _LMStackTrace_ {
+        return _LMStackTrace_.Builder()
+            .trace(stackTrace.trace)
+            .exception(stackTrace.exception)
+            .build()
+    }
+
+    //convert client sdk meta model to internal sdk meta model
+    fun createSDKMeta(sdkMeta: LMSDKMeta?): _LMSDKMeta_? {
+        if (sdkMeta == null) {
+            return null
+        }
+
+        return _LMSDKMeta_.Builder()
+            .dataLayerVersion(sdkMeta.dataLayerVersion)
+            .coreVersion(sdkMeta.coreVersion)
+            .build()
+    }
+
+    //convert client LMSeverity to internal _LMSeverity_
+    fun convertSeverity(severity: LMSeverity): _LMSeverity_ {
+        return when (severity) {
+            LMSeverity.INFO -> _LMSeverity_.INFO
+            LMSeverity.DEBUG -> _LMSeverity_.DEBUG
+            LMSeverity.NOTICE -> _LMSeverity_.NOTICE
+            LMSeverity.WARNING -> _LMSeverity_.WARNING
+            LMSeverity.ERROR -> _LMSeverity_.ERROR
+            LMSeverity.CRITICAL -> _LMSeverity_.CRITICAL
+            LMSeverity.ALERT -> _LMSeverity_.ALERT
+            LMSeverity.EMERGENCY -> _LMSeverity_.EMERGENCY
+            LMSeverity.DEFAULT -> _LMSeverity_.DEFAULT
+        }
+    }
 
     /**--------------------------------
      * Db Model -> Client Response Model
@@ -2129,7 +2192,7 @@ object ModelConverter {
     }
 
     //convert WidgetRO model to client widget model
-    fun convertWidgetRO(widgetRO: WidgetRO?): Widget? {
+    private fun convertWidgetRO(widgetRO: WidgetRO?): Widget? {
         if (widgetRO == null) return null
         return Widget.Builder()
             .id(widgetRO.id)
@@ -2138,6 +2201,46 @@ object ModelConverter {
             .metadata(JSONObject(widgetRO.metadata.toString()))
             .createdAt(widgetRO.createdAt)
             .updatedAt(widgetRO.updatedAt)
+            .build()
+    }
+
+    fun convertGetLogsResponse(logsRO: List<LMLogRO>): GetLogsResponse {
+        return GetLogsResponse(
+            logsRO.map { log ->
+                convertLog(log)
+            }
+        )
+    }
+
+    //convert LMLogRO model to client log model
+    private fun convertLog(log: LMLogRO): LMLog {
+        return LMLog.Builder()
+            .timestamp(log.timestamp)
+            .sdkMeta(convertSDKMeta(log.sdkMeta))
+            .stackTrace(convertStackTrace(log.stackTrace))
+            .deviceMeta(LMDeviceDetails.Builder().build())
+            .build()
+    }
+
+    //convert LMSDKMetaRO model to client sdkMeta model
+    private fun convertSDKMeta(sdkMetaRO: LMSDKMetaRO?): LMSDKMeta? {
+        if (sdkMetaRO == null) {
+            return null
+        }
+        return LMSDKMeta.Builder()
+            .coreVersion(sdkMetaRO.coreVersion)
+            .dataLayerVersion(sdkMetaRO.dataLayerVersion)
+            .build()
+    }
+
+    //convert LMStackTraceRO model to client stack trace model
+    private fun convertStackTrace(stackTraRO: LMStackTraceRO?): LMStackTrace {
+        if (stackTraRO == null) {
+            return LMStackTrace.Builder().build()
+        }
+        return LMStackTrace.Builder()
+            .trace(stackTraRO.trace)
+            .exception(stackTraRO.exception)
             .build()
     }
 }

@@ -1,6 +1,8 @@
 package com.likeminds.chatinternalsdk.utils.retrofit
 
 import com.google.gson.Gson
+import com.likeminds.chatinternalsdk.helper._LMChatLogger_
+import com.likeminds.chatinternalsdk.helper.model._LMSeverity_
 import com.likeminds.chatinternalsdk.utils.retrofit.model.ErrorResponse
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import okhttp3.Request
@@ -49,6 +51,11 @@ internal class NetworkResponseCall<S : Any>(
                         else -> try {
                             errorConverter.convert(error)
                         } catch (ex: Exception) {
+                            _LMChatLogger_.getInstance()?.handleException(
+                                ex.message ?: "",
+                                ex.stackTraceToString(),
+                                _LMSeverity_.EMERGENCY
+                            )
                             null
                         }
                     }

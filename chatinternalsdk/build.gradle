@@ -36,12 +36,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "Integer", "APP_VERSION_CODE", "$versions.sdk_version_code"
             buildConfigField "java.util.Map<String,String>", "URLS_MAP", getBuildConfigMapEntry(urls)
+            buildConfigField "Integer", "SDK_MAJOR", "$versions.sdk_version_major"
+            buildConfigField "Integer", "SDK_MINOR", "$versions.sdk_version_minor"
+            buildConfigField "Integer", "SDK_PATCH", "$versions.sdk_version_patch"
         }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "Integer", "APP_VERSION_CODE", "$versions.sdk_version_code"
             buildConfigField "java.util.Map<String,String>", "URLS_MAP", getBuildConfigMapEntry(beta_urls)
+            buildConfigField "Integer", "SDK_MAJOR", "$versions.sdk_version_major"
+            buildConfigField "Integer", "SDK_MINOR", "$versions.sdk_version_minor"
+            buildConfigField "Integer", "SDK_PATCH", "$versions.sdk_version_patch"
         }
     }
     libraryVariants.all {
