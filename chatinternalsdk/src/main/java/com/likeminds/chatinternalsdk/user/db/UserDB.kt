@@ -12,5 +12,6 @@ interface UserDB {
     //get user object
     fun getUser(realm: Realm): UserRO?
 
+    //save member in local db
     fun saveMember(memberRO: MemberRO)
 }

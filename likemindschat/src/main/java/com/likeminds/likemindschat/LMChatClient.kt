@@ -324,6 +324,7 @@ class LMChatClient private constructor() {
         conversationClient.observeConversations(observeConversationsRequest)
     }
 
+    // Exposed function to subscribe to chatroom
     suspend fun subscribeChatroom(
         subscribeChatroomRequest: SubscribeChatroomRequest,
         subscribeChatroomCallback: LMChatSubscribeChatroomCallback
@@ -331,6 +332,7 @@ class LMChatClient private constructor() {
         conversationClient.subscribeChatroom(subscribeChatroomRequest, subscribeChatroomCallback)
     }
 
+    // Exposed function to unsubscribe to chatroom
     suspend fun unsubscribeChatroom(
         subscribeChatroomRequest: SubscribeChatroomRequest,
         subscribeChatroomCallback: LMChatSubscribeChatroomCallback

@@ -88,6 +88,7 @@ interface ConversationDB {
         conversation: _Conversation_
     )
 
+    // query to get save new conversation received from realtime
     fun saveRealtimeConversation(
         realm: Realm,
         communityId: String,

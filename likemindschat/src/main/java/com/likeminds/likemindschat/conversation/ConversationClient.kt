@@ -21,7 +21,6 @@ import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
 import io.realm.RealmResults
-import okio.ByteString
 import javax.inject.Inject
 
 class ConversationClient @Inject constructor() : BaseClient() {
@@ -918,6 +917,14 @@ class ConversationClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * 1. Creates object of [BaseSubscribeCallback]
+     * 2. Subscribe to "chatroom" socket for realtime messages
+     *
+     * @param subscribeChatroomRequest - client request model to subscribe to chatroom
+     * @param subscribeChatroomCallback - client callback to receive realtime messages
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
     suspend fun subscribeChatroom(
         subscribeChatroomRequest: SubscribeChatroomRequest,
         subscribeChatroomCallback: LMChatSubscribeChatroomCallback
@@ -980,10 +987,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
                 }
             }
 
-            override fun onMessageReceived(data: ByteString) {
-                Log.d("PUI", "message received with byteString: $data")
-            }
-
             override fun onError(errorMessage: String) {
                 subscribeChatroomCallback.onError(errorMessage)
             }
@@ -994,12 +997,23 @@ class ConversationClient @Inject constructor() : BaseClient() {
         webSocketManager.connect(endpoint, baseSubscribeCallbackImpl)
     }
 
+    /**
+     * validates [subscribeChatroomRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateSubscribeChatroomRequest(subscribeChatroomRequest: SubscribeChatroomRequest) {
         if (subscribeChatroomRequest.chatroomId.isEmpty()) {
             RequestUtils.throwException("chatroomId")
         }
     }
 
+    /**
+     * Unsubscribe to "chatroom" socket for realtime messages
+     *
+     * @param subscribeChatroomRequest - client request model to unsubscribe from chatroom
+     * @param subscribeChatroomCallback - client callback to receive realtime messages
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
     suspend fun unsubscribeChatroom(
         subscribeChatroomRequest: SubscribeChatroomRequest,
         subscribeChatroomCallback: LMChatSubscribeChatroomCallback

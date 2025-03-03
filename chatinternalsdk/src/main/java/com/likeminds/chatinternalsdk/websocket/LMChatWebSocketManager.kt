@@ -12,7 +12,6 @@ import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.chatinternalsdk.utils.websocket.BaseSubscribeCallback
 import kotlinx.coroutines.*
 import okhttp3.*
-import okio.ByteString
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -62,6 +61,9 @@ class LMChatWebSocketManager @Inject constructor(
         setupNetworkCallback()
     }
 
+    /**
+     * Sets up a network callback to monitor network connectivity.
+     */
     private fun setupNetworkCallback() {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -88,7 +90,9 @@ class LMChatWebSocketManager @Inject constructor(
             })
     }
 
-    //create request for websocket connection
+    /**
+     * create request for websocket connection
+     */
     private fun getRequest(endPoint: String): Request {
         // get access token
         val accessToken = chatTokenManager.accessToken
@@ -96,8 +100,7 @@ class LMChatWebSocketManager @Inject constructor(
         // web socket url
         val url = baseUrl.getPandemoniumBaseUrl() + endPoint
 
-        Log.d(TAG, "url: $url")
-
+        // build request
         return Request.Builder()
             .url(url)
             .addHeader(AUTH, "Bearer $accessToken")
@@ -107,7 +110,9 @@ class LMChatWebSocketManager @Inject constructor(
             .build()
     }
 
-    // Creates a WebSocketListener for a given endpoint
+    /**
+     *  Creates a WebSocketListener for a given endpoint
+     */
     private fun getWebSocketListener(endpoint: String): WebSocketListener {
         return object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -124,12 +129,6 @@ class LMChatWebSocketManager @Inject constructor(
                 super.onMessage(webSocket, text)
                 Log.d(TAG, "Message received in text from $endpoint: $text")
                 callbackMap[endpoint]?.onMessageReceived(text)
-            }
-
-            override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-                super.onMessage(webSocket, bytes)
-                Log.d(TAG, "Message received in bytes from $endpoint: $bytes")
-                callbackMap[endpoint]?.onMessageReceived(bytes)
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
@@ -171,11 +170,16 @@ class LMChatWebSocketManager @Inject constructor(
         }
     }
 
+    /**
+     * Updates the connection state for a given endpoint.
+     */
     private fun updateConnectionState(endpoint: String, state: Boolean) {
         isConnectedMap[endpoint] = state
     }
 
-    // Initiates a WebSocket connection for a specific endpoint with a callback
+    /**
+     * Initiates a WebSocket connection for a specific endpoint with a callback
+     */
     suspend fun connect(endpoint: String, callback: BaseSubscribeCallback) {
         if (!isNetworkAvailable) {
             Log.d(TAG, "Network unavailable. Delaying WebSocket connection for $endpoint")
@@ -197,6 +201,9 @@ class LMChatWebSocketManager @Inject constructor(
         }
     }
 
+    /**
+     * Closes the WebSocket connection for a specific endpoint.
+     */
     suspend fun close(endpoint: String, storeCallback: Boolean = false) {
         withContext(Dispatchers.IO) {
             webSocketMap[endpoint]?.close(1000, "Closing WebSocket for")
@@ -208,6 +215,9 @@ class LMChatWebSocketManager @Inject constructor(
         }
     }
 
+    /**
+     * Handles reconnection attempts for a specific endpoint.
+     */
     private fun handleReconnect(endpoint: String) {
         val attempt = reconnectAttemptsMap[endpoint] ?: 0
         if (attempt >= 3) {
@@ -223,6 +233,9 @@ class LMChatWebSocketManager @Inject constructor(
         }
     }
 
+    /**
+     * Handles token expiry and initiates a refresh attempt.
+     */
     private fun handleTokenExpiry(endpoint: String) {
         if (refreshJob?.isActive == true) return // Prevent duplicate refreshes
 
@@ -270,6 +283,9 @@ class LMChatWebSocketManager @Inject constructor(
         }
     }
 
+    /**
+     * Closes all WebSocket connections and clears the stored endpoints.
+     */
     private suspend fun closeAllPreservingEndpoints() {
         withContext(Dispatchers.IO) {
             storedEndpoints.clear()
@@ -278,6 +294,9 @@ class LMChatWebSocketManager @Inject constructor(
         }
     }
 
+    /**
+     * Reconnects to all stored WebSocket connections.
+     */
     private suspend fun reconnectAll() {
         withContext(Dispatchers.IO) {
             storedEndpoints.forEach { endpoint ->
@@ -289,6 +308,9 @@ class LMChatWebSocketManager @Inject constructor(
         }
     }
 
+    /**
+     * Closes all WebSocket connections.
+     */
     suspend fun closeAll() {
         withContext(Dispatchers.IO) {
             webSocketMap.keys.forEach { close(it) }
