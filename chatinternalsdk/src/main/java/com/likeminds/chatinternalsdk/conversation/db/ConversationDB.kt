@@ -19,7 +19,8 @@ interface ConversationDB {
         chatroomId: String,
         limit: Int,
         keyId: String?,
-        keyTimestamp: Long?
+        keyTimestamp: Long?,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO>
 
     //query to get conversations above a particular conversation
@@ -28,21 +29,24 @@ interface ConversationDB {
         chatroomId: String,
         limit: Int,
         keyId: String?,
-        keyTimestamp: Long?
+        keyTimestamp: Long?,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO>
 
     //query to get top most conversations
     fun getTopConversations(
         realm: Realm,
         chatroomId: String,
-        limit: Int
+        limit: Int,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO>
 
     //query to get bottom most conversations
     fun getBottomConversations(
         realm: Realm,
         chatroomId: String,
-        limit: Int
+        limit: Int,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO>
 
     // query to get count of conversations above
@@ -50,7 +54,8 @@ interface ConversationDB {
         realm: Realm,
         chatroomId: String,
         keyId: String,
-        keyTimestamp: Long
+        keyTimestamp: Long,
+        excludedConversationStates: List<Int>
     ): Int
 
     // query to get count of conversations below
@@ -58,13 +63,15 @@ interface ConversationDB {
         realm: Realm,
         chatroomId: String,
         keyId: String,
-        keyTimestamp: Long
+        keyTimestamp: Long,
+        excludedConversationStates: List<Int>
     ): Int
 
     //query to get observe conversations
     fun observeConversations(
         realm: Realm,
-        chatroomId: String
+        chatroomId: String,
+        excludedConversationStates: List<Int>
     ): Flow<CollectionChange<RealmResults<ConversationRO>>>
 
     // query to delete a conversation permanently
@@ -80,11 +87,21 @@ interface ConversationDB {
     fun savePostedConversation(savePostedConversationRequest: _SavePostedConversationRequest_)
 
     //query to check whether the conversation is within the limit of the target conversation
-    fun isConversationWithinLimit(conversationWithinLimitRequest: _ConversationWithinLimitRequest_): Boolean
+    fun isConversationWithinLimit(
+        conversationWithinLimitRequest: _ConversationWithinLimitRequest_,
+        excludedConversationStates: List<Int>
+    ): Boolean
 
     //query to get save new conversation
     fun saveNewConversation(
         realm: Realm,
+        conversation: _Conversation_
+    )
+
+    // query to get save new conversation received from realtime
+    fun saveRealtimeConversation(
+        realm: Realm,
+        communityId: String,
         conversation: _Conversation_
     )
 

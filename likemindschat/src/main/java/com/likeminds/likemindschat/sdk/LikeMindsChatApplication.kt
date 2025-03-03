@@ -8,6 +8,7 @@ import com.likeminds.chatinternalsdk.LMChatInternalCallback
 import com.likeminds.chatinternalsdk.LMChatSDK
 import com.likeminds.chatinternalsdk.di.SDKSharedResources
 import com.likeminds.likemindschat.LMChatSDKCallback
+import com.likeminds.likemindschat.conversation.model.ConversationState
 import com.likeminds.likemindschat.di.DaggerLikeMindsChatComponent
 import com.likeminds.likemindschat.di.LikeMindsChatComponent
 import com.likeminds.likemindschat.di.chatroom.ChatroomSubComponent
@@ -47,6 +48,8 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
     private var dmSubComponent: DMSubComponent? = null
     private var lmChatSDKCallback: LMChatSDKCallback? = null
 
+    var excludedConversationStates: List<Int> = emptyList()
+
     companion object {
 
         private var likeMindsChatApplicationInstance: LikeMindsChatApplication? = null
@@ -64,7 +67,8 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
     fun initChatSDKApplication(
         application: Application,
         lmChatSDKCallback: LMChatSDKCallback? = null,
-        initiateLoggerRequest: LMChatInitiateLoggerRequest? = null
+        initiateLoggerRequest: LMChatInitiateLoggerRequest? = null,
+        excludedConversationStates: List<ConversationState> = emptyList()
     ) {
         likeMindsChatApplicationInstance = this
         this.lmChatSDKCallback = lmChatSDKCallback
@@ -75,6 +79,12 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
 
         initLikeMindsChatComponent(application)
         initializeFirebase(application)
+
+        //convert to int value of the states
+        this.excludedConversationStates = excludedConversationStates.map {
+            it.value
+        }
+
         chatSDK.initialize(sdkSharedResources, this)
     }
 

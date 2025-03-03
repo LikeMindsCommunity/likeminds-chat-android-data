@@ -1,6 +1,7 @@
 package com.likeminds.chatinternalsdk.user
 
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
+import com.likeminds.chatinternalsdk.db.models.MemberRO
 import com.likeminds.chatinternalsdk.db.models.UserRO
 import com.likeminds.chatinternalsdk.user.api.UserNetworkApi
 import com.likeminds.chatinternalsdk.user.model.*
@@ -48,5 +49,11 @@ class UserReceiver @Inject constructor(private val userNetworkApi: UserNetworkAp
 
     fun getUser(realm: Realm): UserRO? {
         return realm.where(UserRO::class.java).findFirst()
+    }
+
+    fun saveMember(memberRO: MemberRO) {
+        ChatDBUtil.writeAsync({ realmWrite ->
+            realmWrite.insertOrUpdate(memberRO)
+        })
     }
 }

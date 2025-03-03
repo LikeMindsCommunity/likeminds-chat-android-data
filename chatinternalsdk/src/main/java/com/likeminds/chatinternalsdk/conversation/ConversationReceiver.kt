@@ -1,6 +1,7 @@
 package com.likeminds.chatinternalsdk.conversation
 
 import android.os.Build
+import android.util.Log
 import com.likeminds.chatinternalsdk.conversation.api.ConversationNetworkApi
 import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
@@ -64,10 +65,16 @@ class ConversationReceiver @Inject constructor(
         chatroomId: String,
         limit: Int,
         keyId: String?,
-        keyTimestamp: Long?
+        keyTimestamp: Long?,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO> {
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            //filter out the state present in [filterConversationState]
+            .beginGroup()
+            .not()
+            .`in`(DbKey.STATE, excludedConversationStates.toTypedArray())
+            .endGroup()
             .greaterThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp ?: 0L)
             .notEqualTo(DbKey.ID, keyId ?: "")
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
@@ -80,12 +87,18 @@ class ConversationReceiver @Inject constructor(
         chatroomId: String,
         limit: Int,
         keyId: String?,
-        keyTimestamp: Long?
+        keyTimestamp: Long?,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO> {
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             .lessThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp ?: 0L)
             .notEqualTo(DbKey.ID, keyId ?: "")
+            //filter out the state present in [filterConversationState]
+            .beginGroup()
+            .not()
+            .`in`(DbKey.STATE, excludedConversationStates.toTypedArray())
+            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING, DbKey.ID, Sort.DESCENDING)
             .limit(limit.toLong())
             .findAll()
@@ -98,12 +111,18 @@ class ConversationReceiver @Inject constructor(
         realm: Realm,
         chatroomId: String,
         keyId: String,
-        keyTimestamp: Long
+        keyTimestamp: Long,
+        excludedConversationStates: List<Int>
     ): Int {
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             .lessThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp)
             .notEqualTo(DbKey.ID, keyId)
+            //filter out the state present in [filterConversationState]
+            .beginGroup()
+            .not()
+            .`in`(DbKey.STATE, excludedConversationStates.toTypedArray())
+            .endGroup()
             .count()
             .toInt()
     }
@@ -112,12 +131,18 @@ class ConversationReceiver @Inject constructor(
         realm: Realm,
         chatroomId: String,
         keyId: String,
-        keyTimestamp: Long
+        keyTimestamp: Long,
+        excludedConversationStates: List<Int>
     ): Int {
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             .greaterThanOrEqualTo(DbKey.CREATED_EPOCH, keyTimestamp)
             .notEqualTo(DbKey.ID, keyId)
+            //filter out the state present in [filterConversationState]
+            .beginGroup()
+            .not()
+            .`in`(DbKey.STATE, excludedConversationStates.toTypedArray())
+            .endGroup()
             .count()
             .toInt()
     }
@@ -125,10 +150,16 @@ class ConversationReceiver @Inject constructor(
     fun getTopConversations(
         realm: Realm,
         chatroomId: String,
-        limit: Int
+        limit: Int,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO> {
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            //filter out the state present in [filterConversationState]
+            .beginGroup()
+            .not()
+            .`in`(DbKey.STATE, excludedConversationStates.toTypedArray())
+            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.ASCENDING, DbKey.ID, Sort.ASCENDING)
             .limit(limit.toLong())
             .findAll()
@@ -137,10 +168,16 @@ class ConversationReceiver @Inject constructor(
     fun getBottomConversations(
         realm: Realm,
         chatroomId: String,
-        limit: Int
+        limit: Int,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO> {
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            //filter out the state present in [filterConversationState]
+            .beginGroup()
+            .not()
+            .`in`(DbKey.STATE, excludedConversationStates.toTypedArray())
+            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING, DbKey.ID, Sort.DESCENDING)
             .limit(limit.toLong())
             .findAll()
@@ -151,10 +188,16 @@ class ConversationReceiver @Inject constructor(
 
     fun observeConversations(
         realm: Realm,
-        chatroomId: String
+        chatroomId: String,
+        excludedConversationStates: List<Int>
     ): Flow<CollectionChange<RealmResults<ConversationRO>>> {
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
+            //filter out the state present in [filterConversationState]
+            .beginGroup()
+            .not()
+            .`in`(DbKey.STATE, excludedConversationStates.toTypedArray())
+            .endGroup()
             .findAllAsync()
             .toChangesetFlow()
             .filter {
@@ -316,13 +359,21 @@ class ConversationReceiver @Inject constructor(
         })
     }
 
-    fun isConversationWithinLimit(conversationWithinLimitRequest: _ConversationWithinLimitRequest_): Boolean {
+    fun isConversationWithinLimit(
+        conversationWithinLimitRequest: _ConversationWithinLimitRequest_,
+        excludedConversationStates: List<Int>
+    ): Boolean {
         val realm = Realm.getDefaultInstance()
         val conversationKeyCreatedEpoch =
             conversationWithinLimitRequest.conversationKey.createdEpoch ?: 0L
 
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, conversationWithinLimitRequest.chatroomId)
+            //filter out the state present in [filterConversationState]
+            .beginGroup()
+            .not()
+            .`in`(DbKey.STATE, excludedConversationStates.toTypedArray())
+            .endGroup()
             .sort(DbKey.CREATED_EPOCH, Sort.DESCENDING, DbKey.ID, Sort.DESCENDING)
             .lessThanOrEqualTo(DbKey.CREATED_EPOCH, conversationKeyCreatedEpoch)
             .notEqualTo(DbKey.ID, conversationWithinLimitRequest.conversationKey.id)
@@ -331,6 +382,73 @@ class ConversationReceiver @Inject constructor(
             .where()
             .equalTo(DbKey.ID, conversationWithinLimitRequest.targetConversationId)
             .findFirst() != null
+    }
+
+    /**
+     * Save conversation received from realtime sockets to DB
+     * Perform all the necessary operations after that
+     */
+    fun saveRealtimeConversation(
+        realm: Realm,
+        communityId: String,
+        conversation: _Conversation_
+    ) {
+        ChatDBUtil.write(realm) { realmInstance ->
+            //insert or update creator of conversation
+            val conversationCreator = conversation.member
+            val conversationCreatorRO =
+                ROConverter.convertMember(conversationCreator, communityId) ?: return@write
+
+            realmInstance.insertOrUpdate(conversationCreatorRO)
+
+            //get logged in member
+            val userRO = realmInstance.where(UserRO::class.java).findFirst()
+
+            val conversationRO =
+                ROConverter.convertConversation(
+                    realmInstance,
+                    conversation,
+                    member = conversationCreatorRO,
+                    loggedInMember = userRO
+                ) ?: return@write
+
+            ChatDBUtil.getChatroom(realmInstance, conversation.chatroomId)?.let { chatroomRO ->
+                if (!chatroomRO.conversations.contains(conversationRO)) {
+                    chatroomRO.conversations.add(conversationRO)
+                }
+                //Make the chatroom followed, if it is not already followed
+                if (chatroomRO.followStatus != true) {
+                    chatroomRO.followStatus = true
+                }
+
+                //Save this conversation as the last conversation
+                if (conversationRO.createdEpoch > (chatroomRO.lastConversationRO?.createdEpoch
+                        ?: 0)
+                ) {
+                    val lastConversation = chatroomRO.conversations.last(null)
+                    val lastConversationRO =
+                        ROConverter.convertConversationToLastConversation(lastConversation)
+                            ?: return@write
+                    chatroomRO.lastConversationRO = realmInstance.copyToRealm(lastConversationRO)
+
+                }
+                if (conversationRO.createdEpoch > (chatroomRO.lastSeenConversation?.createdEpoch
+                        ?: 0L)
+                ) {
+                    chatroomRO.lastSeenConversation = chatroomRO.conversations
+                        .last(null)
+                }
+                //Update the chatroom timestamp for sorting of chatrooms
+                if ((conversationRO.state == STATE_NORMAL || conversationRO.state == STATE_FOLLOWED || conversationRO.state == STATE_POLL) && conversationRO.createdEpoch > (chatroomRO.updatedAt
+                        ?: 0)
+                ) {
+                    chatroomRO.updatedAt = conversationRO.createdEpoch
+                }
+                //Update the total response count of this chatroom
+                chatroomRO.totalResponseCount += 1
+                chatroomRO.totalAllResponseCount += 1
+            }
+        }
     }
 
     fun saveNewConversation(

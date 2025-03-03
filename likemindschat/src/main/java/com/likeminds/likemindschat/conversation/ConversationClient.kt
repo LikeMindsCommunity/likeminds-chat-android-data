@@ -4,50 +4,18 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
-import com.google.firebase.FirebaseApp
-import com.google.firebase.database.FirebaseDatabase
 import com.google.gson.JsonParser
-import com.likeminds.chatinternalsdk.LMChatSDK
-import com.likeminds.chatinternalsdk.conversation.model._ConversationWithinLimitRequest_
-import com.likeminds.chatinternalsdk.conversation.model._DeleteConversationsRequest_
-import com.likeminds.chatinternalsdk.conversation.model._DeleteReactionRequest_
-import com.likeminds.chatinternalsdk.conversation.model._EditConversationRequest_
-import com.likeminds.chatinternalsdk.conversation.model._PostConversationRequest_
-import com.likeminds.chatinternalsdk.conversation.model._PutReactionRequest_
-import com.likeminds.chatinternalsdk.conversation.model._SavePostedConversationRequest_
+import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.models.ConversationRO
 import com.likeminds.chatinternalsdk.sync.SyncSDK
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.utils.websocket.BaseSubscribeCallback
+import com.likeminds.chatinternalsdk.websocket.WebSocketEndpoints
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.conversation.model.Conversation
-import com.likeminds.likemindschat.conversation.model.ConversationWithinLimitRequest
-import com.likeminds.likemindschat.conversation.model.DeleteConversationPermanentlyRequest
-import com.likeminds.likemindschat.conversation.model.DeleteConversationsRequest
-import com.likeminds.likemindschat.conversation.model.DeleteConversationsResponse
-import com.likeminds.likemindschat.conversation.model.DeleteReactionRequest
-import com.likeminds.likemindschat.conversation.model.EditConversationRequest
-import com.likeminds.likemindschat.conversation.model.EditConversationResponse
-import com.likeminds.likemindschat.conversation.model.GetConversationCountType
-import com.likeminds.likemindschat.conversation.model.GetConversationRequest
-import com.likeminds.likemindschat.conversation.model.GetConversationResponse
-import com.likeminds.likemindschat.conversation.model.GetConversationType
-import com.likeminds.likemindschat.conversation.model.GetConversationsCountRequest
-import com.likeminds.likemindschat.conversation.model.GetConversationsCountResponse
-import com.likeminds.likemindschat.conversation.model.GetConversationsRequest
-import com.likeminds.likemindschat.conversation.model.GetConversationsResponse
-import com.likeminds.likemindschat.conversation.model.LiveConversationResponse
-import com.likeminds.likemindschat.conversation.model.LoadConversationType
-import com.likeminds.likemindschat.conversation.model.ObserveConversationsRequest
-import com.likeminds.likemindschat.conversation.model.PostConversationRequest
-import com.likeminds.likemindschat.conversation.model.PostConversationResponse
-import com.likeminds.likemindschat.conversation.model.PutReactionRequest
-import com.likeminds.likemindschat.conversation.model.SaveConversationRequest
-import com.likeminds.likemindschat.conversation.model.SavePostedConversationRequest
-import com.likeminds.likemindschat.conversation.model.UpdateConversationRequest
-import com.likeminds.likemindschat.conversation.model.UpdateConversationWorkerUUIDRequest
-import com.likeminds.likemindschat.conversation.model.UpdateTemporaryConversationRequest
-import com.likeminds.likemindschat.conversation.util.FirebaseUtil.childEventListener
+import com.likeminds.likemindschat.chatroom.model.LMChatSubscribeChatroomCallback
+import com.likeminds.likemindschat.chatroom.model.SubscribeChatroomRequest
+import com.likeminds.likemindschat.conversation.model.*
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -76,6 +44,17 @@ class ConversationClient @Inject constructor() : BaseClient() {
     private val conversationDB by lazy {
         chatSDK.getConversationDB()
     }
+
+    private val webSocketManager by lazy {
+        chatSDK.getWebSocketManager()
+    }
+
+    private val gson by lazy {
+        chatSDK.getGsonObject()
+    }
+
+    private val excludedConversationStates =
+        LikeMindsChatApplication.getInstance().excludedConversationStates
 
     /**
      * Converts client request model to internal model and calls the api
@@ -197,7 +176,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
             .limit(conversationWithinLimitRequest.limit)
             .build()
 
-        return conversationDB.isConversationWithinLimit(request)
+        return conversationDB.isConversationWithinLimit(request, excludedConversationStates)
     }
 
     /**
@@ -233,7 +212,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
         val chatroomId = observeConversationsRequest.chatroomId
         val listener = observeConversationsRequest.listener
 
-        val flowOfConversations = conversationDB.observeConversations(realm, chatroomId)
+        val flowOfConversations =
+            conversationDB.observeConversations(realm, chatroomId, excludedConversationStates)
 
         flowOfConversations.collect { collectionChange ->
             val insertions = getConversationFromChanges(
@@ -321,107 +301,6 @@ class ConversationClient @Inject constructor() : BaseClient() {
     }
 
     /**
-     * Observe live conversations
-     */
-    suspend fun observeLiveConversations(
-        context: Context,
-        chatroomId: String
-    ) {
-        val app = FirebaseApp.getInstance("lm-secondary")
-        val dataBaseReference = FirebaseDatabase.getInstance(app).reference
-            .child("collabcards")
-            .child(chatroomId)
-        dataBaseReference.keepSynced(true)
-
-        dataBaseReference.childEventListener().collect { result ->
-            when (result) {
-                is LiveConversationResponse.ChildAdded -> {
-                    val latestConversation = result.response?.answerId
-                    latestConversation?.let {
-                        // get the conversation from db
-                        val conversationRO = conversationDB.getConversation(
-                            Realm.getDefaultInstance(),
-                            latestConversation
-                        )
-
-                        if (conversationRO == null) {
-                            SyncSDK.startLiveSyncConversation(
-                                context,
-                                chatroomId,
-                                latestConversation
-                            )
-                        }
-                    }
-                }
-
-                is LiveConversationResponse.ChildChanged -> {
-                    val latestConversation = result.response?.answerId
-                    latestConversation?.let {
-                        // get the conversation from db
-                        val conversationRO = conversationDB.getConversation(
-                            Realm.getDefaultInstance(),
-                            latestConversation
-                        )
-
-                        if (conversationRO == null) {
-                            SyncSDK.startLiveSyncConversation(
-                                context,
-                                chatroomId,
-                                latestConversation
-                            )
-                        }
-                    }
-                }
-
-                is LiveConversationResponse.ChildMoved -> {
-                    val latestConversation = result.response?.answerId
-                    latestConversation?.let {
-                        // get the conversation from db
-                        val conversationRO = conversationDB.getConversation(
-                            Realm.getDefaultInstance(),
-                            latestConversation
-                        )
-
-                        if (conversationRO == null) {
-                            SyncSDK.startLiveSyncConversation(
-                                context,
-                                chatroomId,
-                                latestConversation
-                            )
-                        }
-                    }
-                }
-
-                is LiveConversationResponse.ChildRemoved -> {
-                    val latestConversation = result.response?.answerId
-                    latestConversation?.let {
-                        // get the conversation from db
-                        val conversationRO = conversationDB.getConversation(
-                            Realm.getDefaultInstance(),
-                            latestConversation
-                        )
-
-                        if (conversationRO == null) {
-                            SyncSDK.startLiveSyncConversation(
-                                context,
-                                chatroomId,
-                                latestConversation
-                            )
-                        }
-                    }
-                }
-
-                is LiveConversationResponse.OnCancelled -> {
-                    Log.e(
-                        LMChatSDK.LOG_TAG,
-                        "live conversation failed: ${result.errorMessage}"
-                    )
-                }
-            }
-        }
-    }
-
-    /**
      * runs the query and returns the conversations as per situations
      * @param getConversationsRequest - client request model to get conversations
      *
@@ -490,7 +369,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             chatroomId,
             limit,
             belowConversation?.id,
-            belowConversation?.createdEpoch
+            belowConversation?.createdEpoch,
+            excludedConversationStates
         )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
@@ -513,7 +393,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             chatroomId,
             limit,
             conversation?.id,
-            conversation?.createdEpoch
+            conversation?.createdEpoch,
+            excludedConversationStates
         )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
@@ -533,7 +414,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
         val conversationsRO = conversationDB.getTopConversations(
             realm,
             chatroomId,
-            limit
+            limit,
+            excludedConversationStates
         )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
@@ -550,7 +432,12 @@ class ConversationClient @Inject constructor() : BaseClient() {
         limit: Int
     ): LMResponse<GetConversationsResponse> {
         val realm = Realm.getDefaultInstance()
-        val conversationsRO = conversationDB.getBottomConversations(realm, chatroomId, limit)
+        val conversationsRO = conversationDB.getBottomConversations(
+            realm,
+            chatroomId,
+            limit,
+            excludedConversationStates
+        )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
         return LMResponse(
@@ -627,7 +514,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             realm,
             chatroomId,
             conversationId,
-            createdEpoch
+            createdEpoch,
+            excludedConversationStates
         )
         realm.close()
         val aboveConversationsCount = ModelConverter.convertGetConversationsCountResponse(count)
@@ -649,7 +537,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             realm,
             chatroomId,
             conversationId,
-            createdEpoch
+            createdEpoch,
+            excludedConversationStates
         )
         realm.close()
         val belowConversationsCount = ModelConverter.convertGetConversationsCountResponse(count)
@@ -1040,5 +929,115 @@ class ConversationClient @Inject constructor() : BaseClient() {
         if (deleteReactionRequest.chatroomId.isNullOrEmpty() && deleteReactionRequest.conversationId.isNullOrEmpty()) {
             RequestUtils.throwException("conversationId")
         }
+    }
+
+    /**
+     * 1. Creates object of [BaseSubscribeCallback]
+     * 2. Subscribe to "chatroom" socket for realtime messages
+     *
+     * @param subscribeChatroomRequest - client request model to subscribe to chatroom
+     * @param subscribeChatroomCallback - client callback to receive realtime messages
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
+    suspend fun subscribeChatroom(
+        subscribeChatroomRequest: SubscribeChatroomRequest,
+        subscribeChatroomCallback: LMChatSubscribeChatroomCallback
+    ) {
+        // validates the client request
+        RequestUtils.validate()
+        validateSubscribeChatroomRequest(subscribeChatroomRequest)
+
+        val baseSubscribeCallbackImpl = object : BaseSubscribeCallback {
+            override fun onSocketConnectionOpen() {
+                subscribeChatroomCallback.onSocketConnectionOpen()
+            }
+
+            override fun onSocketConnectionClosed() {
+                subscribeChatroomCallback.onSocketConnectionClosed()
+            }
+
+            override fun onMessageReceived(data: String) {
+                Log.d("PUI", "message received with String: $data")
+                try {
+                    val realtimeResponse =
+                        gson.fromJson(data, SubscribeChatroomResponse::class.java)
+                    Log.d(
+                        "PUI",
+                        "message received with SubscribeChatroomResponse: $realtimeResponse"
+                    )
+
+                    if (realtimeResponse.topicMessageType == RealtimeTopic.CONVERSATION.value) {
+                        val postConversationResponse =
+                            gson.fromJson(
+                                realtimeResponse.rawData,
+                                _PostConversationResponse_::class.java
+                            )
+                        Log.d(
+                            "PUI",
+                            "message received with PostConversationResponse: $postConversationResponse"
+                        )
+
+
+                        var conversation = postConversationResponse.conversation
+
+                        val widget = postConversationResponse.widgets[conversation.widgetId]
+
+                        conversation = conversation.toBuilder()
+                            .widget(widget)
+                            .build()
+
+                        val realm = Realm.getDefaultInstance()
+
+                        conversationDB.saveRealtimeConversation(
+                            realm,
+                            sdkPreferences.getCommunityId() ?: "",
+                            conversation
+                        )
+
+                        realm.close()
+                    }
+                } catch (e: Exception) {
+                    Log.e("PUI", " exception while parsing SubscribeChatroomResponse", e)
+                }
+            }
+
+            override fun onError(errorMessage: String) {
+                subscribeChatroomCallback.onError(errorMessage)
+            }
+        }
+
+        val endpoint = WebSocketEndpoints.CHATROOM.value + subscribeChatroomRequest.chatroomId
+
+        webSocketManager.connect(endpoint, baseSubscribeCallbackImpl)
+    }
+
+    /**
+     * validates [subscribeChatroomRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateSubscribeChatroomRequest(subscribeChatroomRequest: SubscribeChatroomRequest) {
+        if (subscribeChatroomRequest.chatroomId.isEmpty()) {
+            RequestUtils.throwException("chatroomId")
+        }
+    }
+
+    /**
+     * Unsubscribe to "chatroom" socket for realtime messages
+     *
+     * @param subscribeChatroomRequest - client request model to unsubscribe from chatroom
+     * @param subscribeChatroomCallback - client callback to receive realtime messages
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     */
+    suspend fun unsubscribeChatroom(
+        subscribeChatroomRequest: SubscribeChatroomRequest,
+        subscribeChatroomCallback: LMChatSubscribeChatroomCallback
+    ) {
+        // validates the client request
+        RequestUtils.validate()
+        validateSubscribeChatroomRequest(subscribeChatroomRequest)
+
+        val endpoint = WebSocketEndpoints.CHATROOM.value + subscribeChatroomRequest.chatroomId
+
+        webSocketManager.close(endpoint)
     }
 }
