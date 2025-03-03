@@ -107,7 +107,6 @@ class RealmDBMigration : RealmMigration {
         if (olderVersion == 6L) {
             schema[ATTACHMENT_CLASS]!!.apply {
                 addField("isUploaded", Boolean::class.java, FieldAttribute.REQUIRED)
-                removeField("chatroomId")
             }
 
             val sdkMetaSchema = schema.create(LM_SDK_META_CLASS)
