@@ -7,8 +7,7 @@ import com.likeminds.chatinternalsdk.*
 import com.likeminds.chatinternalsdk.LMChatSDK.Companion.LOG_TAG
 import com.likeminds.chatinternalsdk.di.WebSocketQualifier
 import com.likeminds.chatinternalsdk.sdk.util.SDKPreferences
-import com.likeminds.chatinternalsdk.utils.retrofit.model.BaseUrl
-import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
+import com.likeminds.chatinternalsdk.utils.retrofit.model.*
 import com.likeminds.chatinternalsdk.utils.websocket.BaseSubscribeCallback
 import kotlinx.coroutines.*
 import okhttp3.*
@@ -27,20 +26,6 @@ class LMChatWebSocketManager @Inject constructor(
 
     companion object {
         const val TAG = "LMChatWebSocketManager"
-
-        // headers
-        private const val X_PLATFORM_CODE = "x-platform-code"
-        private const val X_SDK_SOURCE = "x-sdk-source"
-        private const val X_VERSION_CODE = "x-version-code"
-        private const val AUTH = "Authorization"
-
-        // error codes
-        private const val UNAUTHORIZED = 401
-        private const val SERVER_ERROR = 500
-        private const val BAD_GATEWAY = 502
-        private const val SERVICE_UNAVAILABLE = 503
-        private const val GATEWAY_TIMEOUT = 504
-        private const val TOO_MANY_REQUESTS = 429
     }
 
 
@@ -103,10 +88,13 @@ class LMChatWebSocketManager @Inject constructor(
         // build request
         return Request.Builder()
             .url(url)
-            .addHeader(AUTH, "Bearer $accessToken")
-            .addHeader(X_PLATFORM_CODE, "an")
-            .addHeader(X_VERSION_CODE, BuildConfig.APP_VERSION_CODE.toString())
-            .addHeader(X_SDK_SOURCE, "chat")
+            .addHeader(NetworkConstants.AUTH, "Bearer $accessToken")
+            .addHeader(NetworkConstants.X_PLATFORM_CODE, "an")
+            .addHeader(
+                NetworkConstants.X_VERSION_CODE,
+                BuildConfig.APP_VERSION_CODE.toString()
+            )
+            .addHeader(NetworkConstants.X_SDK_SOURCE, "chat")
             .build()
     }
 
@@ -150,13 +138,21 @@ class LMChatWebSocketManager @Inject constructor(
                 updateConnectionState(endpoint, false)
                 Log.e(TAG, "WebSocket Error for $endpoint: ${t.message}", t)
 
+                val retryErrorCodes = listOf(
+                    NetworkConstants.SERVER_ERROR,
+                    NetworkConstants.BAD_GATEWAY,
+                    NetworkConstants.SERVICE_UNAVAILABLE,
+                    NetworkConstants.GATEWAY_TIMEOUT,
+                    NetworkConstants.TOO_MANY_REQUESTS
+                )
+
                 when (response?.code) {
-                    UNAUTHORIZED -> {
+                    NetworkConstants.UNAUTHORIZED -> {
                         Log.e(TAG, "Unauthorized error for $endpoint. Token might be expired.")
                         handleTokenExpiry(endpoint)
                     }
 
-                    SERVER_ERROR, BAD_GATEWAY, SERVICE_UNAVAILABLE, GATEWAY_TIMEOUT, TOO_MANY_REQUESTS -> {
+                    in retryErrorCodes -> {
                         Log.e(TAG, "Server error for $endpoint. Attempting reconnect.")
                         handleReconnect(endpoint)
                     }

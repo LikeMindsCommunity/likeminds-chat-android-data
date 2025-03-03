@@ -10,6 +10,6 @@ interface RefreshTokenNetworkApi {
 
     @POST("user/refresh")
     suspend fun refreshAccessToken(
-        @Header("Authorization") refreshToken: String,
+        @Header("Authorization") refreshToken: String
     ): NetworkResponse<APIResponse<_RefreshTokenResponse_>>
 }

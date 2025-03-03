@@ -333,6 +333,10 @@ class ConversationReceiver @Inject constructor(
             .findFirst() != null
     }
 
+    /**
+     * Save conversation received from realtime sockets to DB
+     * Perform all the necessary operations after that
+     */
     fun saveRealtimeConversation(
         realm: Realm,
         communityId: String,
