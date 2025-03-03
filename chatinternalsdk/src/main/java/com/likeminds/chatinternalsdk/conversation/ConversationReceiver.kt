@@ -171,12 +171,6 @@ class ConversationReceiver @Inject constructor(
         limit: Int,
         excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO> {
-
-        Log.d(
-            "PUI",
-            "excludeConversationStates received in getBottomConversations() : ${excludedConversationStates.map { it }}}"
-        )
-
         return realm.where(ConversationRO::class.java)
             .equalTo(DbKey.CHATROOM_ID, chatroomId)
             //filter out the state present in [filterConversationState]

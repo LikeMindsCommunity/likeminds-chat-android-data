@@ -141,8 +141,6 @@ class LMChatSDK {
 
     var lmChatInternalCallback: LMChatInternalCallback? = null
 
-    var excludedConversationStates: List<Int> = emptyList()
-
     companion object {
 
         private var chatSDK: LMChatSDK? = null

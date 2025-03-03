@@ -2,7 +2,6 @@ package com.likeminds.likemindschat.sdk
 
 import android.app.Application
 import android.util.Base64
-import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.likeminds.chatinternalsdk.LMChatInternalCallback
@@ -80,11 +79,6 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
 
         initLikeMindsChatComponent(application)
         initializeFirebase(application)
-
-        Log.d(
-            "PUI",
-            "excludeConversationStates received in LikeMindsChatApplication: ${excludedConversationStates.map { it.value }}"
-        )
 
         //convert to int value of the states
         this.excludedConversationStates = excludedConversationStates.map {
