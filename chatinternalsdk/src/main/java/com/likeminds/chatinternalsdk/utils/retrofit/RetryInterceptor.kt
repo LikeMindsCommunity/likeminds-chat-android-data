@@ -12,6 +12,7 @@ class RetryInterceptor @Inject constructor() : Interceptor {
         return process(chain, 0)
     }
 
+    // intercepts the request and processes it as per the response code
     private fun process(chain: Interceptor.Chain, attempt: Int): Response {
         var response: Response? = null
         try {
@@ -29,6 +30,7 @@ class RetryInterceptor @Inject constructor() : Interceptor {
         }
     }
 
+    // processes the request with a delay
     private fun delayedAttempt(
         chain: Interceptor.Chain,
         response: Response?,
