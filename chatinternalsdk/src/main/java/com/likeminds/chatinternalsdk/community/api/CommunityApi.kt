@@ -22,4 +22,7 @@ interface CommunityApi {
 
     //api to get all community configuration
     suspend fun getCommunityConfiguration(): NetworkResponse<APIResponse<_GetCommunityConfiguration_>>
+
+    //api to get ai chatbots
+    suspend fun getAIChatbots(request: _GetAIChatbotsRequest_): NetworkResponse<APIResponse<_GetAIChatbotsResponse_>>
 }

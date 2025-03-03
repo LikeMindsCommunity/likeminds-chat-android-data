@@ -87,6 +87,13 @@ class CommunityReceiver @Inject constructor(private val communityNetworkApi: Com
         return communityNetworkApi.getCommunityConfiguration()
     }
 
+    suspend fun getAIChatbots(request: _GetAIChatbotsRequest_): NetworkResponse<APIResponse<_GetAIChatbotsResponse_>> {
+        val queries = HashMap<String, Any>()
+        queries[PAGE] = request.page
+        queries[PAGE_SIZE] = request.pageSize
+        return communityNetworkApi.getAIChatbots(queries)
+    }
+
     /**
      * DB Functions
      */
