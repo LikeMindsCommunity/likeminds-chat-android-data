@@ -1,5 +1,7 @@
 package com.likeminds.chatinternalsdk.websocket
 
+import android.content.Context
+import android.net.*
 import android.util.Log
 import com.likeminds.chatinternalsdk.*
 import com.likeminds.chatinternalsdk.LMChatSDK.Companion.LOG_TAG
@@ -18,6 +20,7 @@ import kotlin.math.pow
 
 @Singleton
 class LMChatWebSocketManager @Inject constructor(
+    private val context: Context,
     @WebSocketQualifier private val client: OkHttpClient,
     private val baseUrl: BaseUrl,
     private val sdkPreferences: SDKPreferences
@@ -41,16 +44,49 @@ class LMChatWebSocketManager @Inject constructor(
         private const val TOO_MANY_REQUESTS = 429
     }
 
+
     // Maps to manage multiple WebSocket connections dynamically
     private val webSocketMap: ConcurrentHashMap<String, WebSocket> = ConcurrentHashMap()
     private val isConnectedMap: ConcurrentHashMap<String, Boolean> = ConcurrentHashMap()
     private val reconnectAttemptsMap: ConcurrentHashMap<String, Int> = ConcurrentHashMap()
     private val callbackMap: ConcurrentHashMap<String, BaseSubscribeCallback> = ConcurrentHashMap()
     private val chatTokenManager = ChatTokenManager.getInstance()
+    private val storedEndpoints: MutableSet<String> = mutableSetOf()
     private var refreshJob: Job? = null
+    private var isNetworkAvailable = true
 
     // CoroutineScope tied to WebSocketManager for structured concurrency
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    init {
+        setupNetworkCallback()
+    }
+
+    private fun setupNetworkCallback() {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkRequest = NetworkRequest.Builder().build()
+
+        connectivityManager.registerNetworkCallback(
+            networkRequest,
+            object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    Log.d(TAG, "Network available. Reconnecting WebSockets...")
+                    isNetworkAvailable = true
+                    coroutineScope.launch {
+                        reconnectAll()
+                    }
+                }
+
+                override fun onLost(network: Network) {
+                    Log.d(TAG, "Network lost. Closing all WebSockets...")
+                    isNetworkAvailable = false
+                    coroutineScope.launch {
+                        closeAllPreservingEndpoints()
+                    }
+                }
+            })
+    }
 
     //create request for websocket connection
     private fun getRequest(endPoint: String): Request {
@@ -141,10 +177,16 @@ class LMChatWebSocketManager @Inject constructor(
 
     // Initiates a WebSocket connection for a specific endpoint with a callback
     suspend fun connect(endpoint: String, callback: BaseSubscribeCallback) {
+        if (!isNetworkAvailable) {
+            Log.d(TAG, "Network unavailable. Delaying WebSocket connection for $endpoint")
+            return
+        }
+
         if (isConnectedMap[endpoint] == true) {
             Log.d(TAG, "WebSocket for $endpoint is already connected.")
             return
         }
+
         callbackMap[endpoint] = callback
         withContext(Dispatchers.IO) {
             Log.d(TAG, "Connecting WebSocket for $endpoint...")
@@ -155,11 +197,13 @@ class LMChatWebSocketManager @Inject constructor(
         }
     }
 
-    suspend fun close(endpoint: String) {
+    suspend fun close(endpoint: String, storeCallback: Boolean = false) {
         withContext(Dispatchers.IO) {
             webSocketMap[endpoint]?.close(1000, "Closing WebSocket for")
             webSocketMap.remove(endpoint)
-            callbackMap.remove(endpoint)
+            if (!storeCallback) {
+                callbackMap.remove(endpoint)
+            }
             Log.d(TAG, "WebSocket connection closed and cleaned for $endpoint")
         }
     }
@@ -223,6 +267,31 @@ class LMChatWebSocketManager @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun closeAllPreservingEndpoints() {
+        withContext(Dispatchers.IO) {
+            storedEndpoints.clear()
+            storedEndpoints.addAll(webSocketMap.keys)
+            webSocketMap.keys.forEach { close(it, true) }
+        }
+    }
+
+    private suspend fun reconnectAll() {
+        withContext(Dispatchers.IO) {
+            storedEndpoints.forEach { endpoint ->
+                Log.d(TAG, "Reconnecting WebSocket for $endpoint")
+                callbackMap[endpoint]?.let {
+                    connect(endpoint, it)
+                }
+            }
+        }
+    }
+
+    suspend fun closeAll() {
+        withContext(Dispatchers.IO) {
+            webSocketMap.keys.forEach { close(it) }
         }
     }
 }
