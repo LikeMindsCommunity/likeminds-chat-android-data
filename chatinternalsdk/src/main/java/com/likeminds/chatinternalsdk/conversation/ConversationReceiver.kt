@@ -333,6 +333,73 @@ class ConversationReceiver @Inject constructor(
             .findFirst() != null
     }
 
+    /**
+     * Save conversation received from realtime sockets to DB
+     * Perform all the necessary operations after that
+     */
+    fun saveRealtimeConversation(
+        realm: Realm,
+        communityId: String,
+        conversation: _Conversation_
+    ) {
+        ChatDBUtil.write(realm) { realmInstance ->
+            //insert or update creator of conversation
+            val conversationCreator = conversation.member
+            val conversationCreatorRO =
+                ROConverter.convertMember(conversationCreator, communityId) ?: return@write
+
+            realmInstance.insertOrUpdate(conversationCreatorRO)
+
+            //get logged in member
+            val userRO = realmInstance.where(UserRO::class.java).findFirst()
+
+            val conversationRO =
+                ROConverter.convertConversation(
+                    realmInstance,
+                    conversation,
+                    member = conversationCreatorRO,
+                    loggedInMember = userRO
+                ) ?: return@write
+
+            ChatDBUtil.getChatroom(realmInstance, conversation.chatroomId)?.let { chatroomRO ->
+                if (!chatroomRO.conversations.contains(conversationRO)) {
+                    chatroomRO.conversations.add(conversationRO)
+                }
+                //Make the chatroom followed, if it is not already followed
+                if (chatroomRO.followStatus != true) {
+                    chatroomRO.followStatus = true
+                }
+
+                //Save this conversation as the last conversation
+                if (conversationRO.createdEpoch > (chatroomRO.lastConversationRO?.createdEpoch
+                        ?: 0)
+                ) {
+                    val lastConversation = chatroomRO.conversations.last(null)
+                    val lastConversationRO =
+                        ROConverter.convertConversationToLastConversation(lastConversation)
+                            ?: return@write
+                    chatroomRO.lastConversationRO = realmInstance.copyToRealm(lastConversationRO)
+
+                }
+                if (conversationRO.createdEpoch > (chatroomRO.lastSeenConversation?.createdEpoch
+                        ?: 0L)
+                ) {
+                    chatroomRO.lastSeenConversation = chatroomRO.conversations
+                        .last(null)
+                }
+                //Update the chatroom timestamp for sorting of chatrooms
+                if ((conversationRO.state == STATE_NORMAL || conversationRO.state == STATE_FOLLOWED || conversationRO.state == STATE_POLL) && conversationRO.createdEpoch > (chatroomRO.updatedAt
+                        ?: 0)
+                ) {
+                    chatroomRO.updatedAt = conversationRO.createdEpoch
+                }
+                //Update the total response count of this chatroom
+                chatroomRO.totalResponseCount += 1
+                chatroomRO.totalAllResponseCount += 1
+            }
+        }
+    }
+
     fun saveNewConversation(
         realm: Realm,
         conversation: _Conversation_

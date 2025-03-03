@@ -2,19 +2,19 @@ ext.keys = [:]
 
 def keys = [:]
 keys.BASE_URL = "KETTLE_BASE_URL"
-keys.SENTRY_DSN = "SENTRY_DSN"
+keys.BASE_WEB_SOCKET_URL = "BASE_WEB_SOCKET_URL"
 ext.keys = keys
 
 ext.urls = [:]
 def urls = [:]
 urls."$keys.BASE_URL" = "\"https://auth.likeminds.community/\""
-urls."$keys.SENTRY_DSN" = "\"https://5802d81a53354c2593a6683813e26f78@o613148.ingest.sentry.io/5748758\""
+urls."$keys.BASE_WEB_SOCKET_URL" = "\"wss://auth-ws.likeminds.community/\""
 ext.urls = urls
 
 ext.beta_urls = [:]
 def beta_urls = [:]
 beta_urls."$keys.BASE_URL" = "\"https://betaauth.likeminds.community/\""
-beta_urls."$keys.SENTRY_DSN" = "\"https://5802d81a53354c2593a6683813e26f78@o613148.ingest.sentry.io/5748758\""
+beta_urls."$keys.BASE_WEB_SOCKET_URL" = "\"wss://betaauth-ws.likeminds.community/\""
 ext.beta_urls = beta_urls
 
 dependencies {
@@ -48,6 +48,6 @@ dependencies {
     androidTestImplementation deps.testing.espresso
 
     //chucker
-//    debugImplementation deps.chucker.main
-//    releaseImplementation deps.chucker.main
+    debugImplementation deps.chucker.main
+    releaseImplementation deps.chucker.main
 }
