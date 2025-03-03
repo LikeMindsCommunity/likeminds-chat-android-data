@@ -966,7 +966,13 @@ class ConversationClient @Inject constructor() : BaseClient() {
                             .build()
 
                         val realm = Realm.getDefaultInstance()
-                        conversationDB.saveNewConversation(realm, conversation)
+
+                        conversationDB.saveRealtimeConversation(
+                            realm,
+                            sdkPreferences.getCommunityId() ?: "",
+                            conversation
+                        )
+
                         realm.close()
                     }
                 } catch (e: Exception) {

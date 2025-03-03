@@ -88,6 +88,12 @@ interface ConversationDB {
         conversation: _Conversation_
     )
 
+    fun saveRealtimeConversation(
+        realm: Realm,
+        communityId: String,
+        conversation: _Conversation_
+    )
+
     //query to update temporary conversation
     fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long)
 
