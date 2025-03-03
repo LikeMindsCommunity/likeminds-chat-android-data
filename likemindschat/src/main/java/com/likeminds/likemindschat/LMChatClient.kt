@@ -386,7 +386,6 @@ class LMChatClient private constructor() {
         conversationClient.updateConversation(updateConversationRequest)
     }
 
-
     // Exposed function to update conversation upload worker uuid
     fun updateTemporaryConversation(updateTemporaryConversationRequest: UpdateTemporaryConversationRequest) {
         conversationClient.updateTemporaryConversation(updateTemporaryConversationRequest)
@@ -533,8 +532,8 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get the count of unread conversations
-    fun getUnreadConversationsCount(): LMResponse<GetUnreadConversationsCountResponse> {
-        return chatroomClient.getUnreadConversationsCount()
+    suspend fun getUnreadConversationsCount(context: Context): LMResponse<GetUnreadConversationsCountResponse> {
+        return chatroomClient.getUnreadConversationsCount(context)
     }
 
     // Exposed function to push logs

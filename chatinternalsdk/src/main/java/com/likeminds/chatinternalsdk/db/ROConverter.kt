@@ -651,6 +651,7 @@ object ROConverter {
             metaRO = convertAttachmentMeta(attachment.meta)
             createdAt = attachment.createdAt
             updatedAt = attachment.updatedAt
+            isUploaded = attachment.isUploaded ?: true
         }
     }
 
@@ -702,6 +703,7 @@ object ROConverter {
             metaRO = convertAttachmentMeta(attachment.metaRO)
             createdAt = attachment.createdAt
             updatedAt = attachment.updatedAt
+            isUploaded = attachment.isUploaded
         }
     }
 
