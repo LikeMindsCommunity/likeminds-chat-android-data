@@ -404,13 +404,13 @@ object ROConverter {
     }
 
     /**
-     * convert [UserRO] to [MemberRO] and save it [MemberRO] table
+     * convert [UserRO] to [MemberRO]
      * @param userRO: object of [UserRO]
      * @param communityId: id of community
      *
      * @return [MemberRO]: object created
      */
-    private fun convertUserToMember(userRO: UserRO?, communityId: String?): MemberRO? {
+    fun convertUserToMember(userRO: UserRO?, communityId: String?): MemberRO? {
         if (userRO == null) return null
         val uuid = userRO.sdkClientInfoRO?.uuid ?: ""
         val uid = "$uuid#$communityId"
@@ -424,9 +424,6 @@ object ROConverter {
             sdkClientInfoRO = userRO.sdkClientInfoRO
             roles = userRO.roles
         }
-        ChatDBUtil.writeAsync({
-            it.insertOrUpdate(memberRO)
-        })
 
         return memberRO
     }
