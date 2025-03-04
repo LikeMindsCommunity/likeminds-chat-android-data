@@ -19,8 +19,10 @@ import com.likeminds.chatinternalsdk.db.util.DbCompactOnLaunchCallback
 import com.likeminds.chatinternalsdk.di.*
 import com.likeminds.chatinternalsdk.dm.DMApi
 import com.likeminds.chatinternalsdk.dm.DMApiImpl
-import com.likeminds.chatinternalsdk.helper.HelperApi
-import com.likeminds.chatinternalsdk.helper.HelperApiImpl
+import com.likeminds.chatinternalsdk.helper.api.HelperApi
+import com.likeminds.chatinternalsdk.helper.api.HelperApiImpl
+import com.likeminds.chatinternalsdk.helper.db.HelperDB
+import com.likeminds.chatinternalsdk.helper.db.HelperDBImpl
 import com.likeminds.chatinternalsdk.homefeed.api.HomeFeedApi
 import com.likeminds.chatinternalsdk.homefeed.api.HomeFeedApiImpl
 import com.likeminds.chatinternalsdk.homefeed.db.HomeFeedDB
@@ -134,6 +136,9 @@ class LMChatSDK {
     @Inject
     lateinit var syncPreferences: SyncPreferences
 
+    @Inject
+    lateinit var helperDBImpl: HelperDBImpl
+
     var lmChatInternalCallback: LMChatInternalCallback? = null
 
     companion object {
@@ -153,7 +158,7 @@ class LMChatSDK {
 
     fun initialize(
         sdkSharedResources: SDKSharedResources,
-        lmChatInternalCallback: LMChatInternalCallback?
+        lmChatInternalCallback: LMChatInternalCallback?,
     ) {
         initSDKComponent(sdkSharedResources)
         initRealm()
@@ -283,5 +288,9 @@ class LMChatSDK {
 
     fun getDMApi(): DMApi {
         return dmApi
+    }
+
+    fun getHelperDB(): HelperDB {
+        return helperDBImpl
     }
 }

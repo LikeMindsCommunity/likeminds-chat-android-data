@@ -1,4 +1,4 @@
-package com.likeminds.chatinternalsdk.helper
+package com.likeminds.chatinternalsdk.helper.api
 
 import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
@@ -19,5 +19,9 @@ class HelperApiImpl @Inject constructor(
         request: _GetTaggingListRequest_
     ): NetworkResponse<APIResponse<_GetTaggingListResponse_>> {
         return helperReceiver.getTaggingList(request)
+    }
+
+    override suspend fun pushLogs(request: _PushLogsRequest_): NetworkResponse<APIResponse<Nothing>> {
+        return helperReceiver.pushLogs(request)
     }
 }

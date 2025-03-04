@@ -75,10 +75,21 @@ class LMChatClient private constructor() {
 
     class Builder(val application: Application) {
         private var lmChatSDKCallback: LMChatSDKCallback? = null
+        private var initiateLoggerRequest: LMChatInitiateLoggerRequest? = null
+        private var excludedConversationStates: List<ConversationState> = emptyList()
 
         fun lmChatSDKCallback(lmChatSDKCallback: LMChatSDKCallback?) = apply {
             this.lmChatSDKCallback = lmChatSDKCallback
         }
+
+        fun initiateLoggerRequest(initiateLoggerRequest: LMChatInitiateLoggerRequest?) = apply {
+            this.initiateLoggerRequest = initiateLoggerRequest
+        }
+
+        fun excludedConversationStates(excludedConversationStates: List<ConversationState>) =
+            apply {
+                this.excludedConversationStates = excludedConversationStates
+            }
 
         suspend fun build(): LMChatClient {
             return withContext(Dispatchers.IO) { // Runs in the background thread
@@ -87,7 +98,9 @@ class LMChatClient private constructor() {
                     val sdkApplication = LikeMindsChatApplication.getInstance()
                     sdkApplication.initChatSDKApplication(
                         application,
-                        lmChatSDKCallback
+                        lmChatSDKCallback,
+                        initiateLoggerRequest,
+                        excludedConversationStates
                     ) // Background task
                     sdkApplication.likeMindsChatComponent?.inject(lmChatClientInstance!!)
                 }
@@ -362,7 +375,6 @@ class LMChatClient private constructor() {
         conversationClient.updateConversation(updateConversationRequest)
     }
 
-
     // Exposed function to update conversation upload worker uuid
     fun updateTemporaryConversation(updateTemporaryConversationRequest: UpdateTemporaryConversationRequest) {
         conversationClient.updateTemporaryConversation(updateTemporaryConversationRequest)
@@ -509,7 +521,27 @@ class LMChatClient private constructor() {
     }
 
     // Exposed function to get the count of unread conversations
-    fun getUnreadConversationsCount(): LMResponse<GetUnreadConversationsCountResponse> {
-        return chatroomClient.getUnreadConversationsCount()
+    suspend fun getUnreadConversationsCount(context: Context): LMResponse<GetUnreadConversationsCountResponse> {
+        return chatroomClient.getUnreadConversationsCount(context)
+    }
+
+    // Exposed function to push logs
+    suspend fun pushLogs(pushLogsRequest: PushLogsRequest): LMResponse<Nothing> {
+        return helperClient.pushLogs(pushLogsRequest)
+    }
+
+    // Exposed function to insert log in local db
+    fun insertLog(insertLogRequest: InsertLogRequest) {
+        helperClient.insertLog(insertLogRequest)
+    }
+
+    // Exposed function to get logs from local db
+    fun getLogs(): LMResponse<GetLogsResponse> {
+        return helperClient.getLogs()
+    }
+
+    // Exposed function to clear logs in local db
+    fun clearLogs(clearLogsRequest: ClearLogsRequest) {
+        helperClient.clearLogs(clearLogsRequest)
     }
 }

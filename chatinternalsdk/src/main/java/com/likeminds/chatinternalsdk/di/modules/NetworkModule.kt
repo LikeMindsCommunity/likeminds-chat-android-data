@@ -2,6 +2,7 @@ package com.likeminds.chatinternalsdk.di.modules
 
 import com.likeminds.chatinternalsdk.BuildConfig
 import com.likeminds.chatinternalsdk.utils.retrofit.CommonHeaderInterceptor
+import com.likeminds.chatinternalsdk.utils.retrofit.RetryInterceptor
 import com.likeminds.chatinternalsdk.utils.retrofit.TokenAuthenticator
 import com.likeminds.chatinternalsdk.utils.retrofit.model.BaseUrl
 import dagger.Module
@@ -28,6 +29,7 @@ class NetworkModule {
         commonHeaderInterceptor: CommonHeaderInterceptor,
         tokenAuthenticator: TokenAuthenticator,
         dispatcher: Dispatcher,
+        retryInterceptor: RetryInterceptor,
 //        chuckerInterceptor: ChuckerInterceptor
     ): OkHttpClient {
         //create okhttp client
@@ -47,6 +49,7 @@ class NetworkModule {
             clientBuilder.addInterceptor(loggingInterceptor)
         }
         clientBuilder.addInterceptor(commonHeaderInterceptor)
+        clientBuilder.addInterceptor(retryInterceptor)
 //        clientBuilder.addInterceptor(chuckerInterceptor)
 
         return clientBuilder.build()

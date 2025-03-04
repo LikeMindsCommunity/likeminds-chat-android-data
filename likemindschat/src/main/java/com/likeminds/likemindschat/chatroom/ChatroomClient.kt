@@ -1,6 +1,9 @@
 package com.likeminds.likemindschat.chatroom
 
+import android.content.Context
 import com.likeminds.chatinternalsdk.chatroom.model.*
+import com.likeminds.chatinternalsdk.db.ChatDBUtil
+import com.likeminds.chatinternalsdk.sync.SyncSDK
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
@@ -9,6 +12,11 @@ import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ChatroomClient @Inject constructor() : BaseClient() {
@@ -23,6 +31,14 @@ class ChatroomClient @Inject constructor() : BaseClient() {
 
     private val chatroomDB by lazy {
         chatSDK.getChatroomDb()
+    }
+
+    private val sdkPreferences by lazy {
+        chatSDK.getSDKPreferences()
+    }
+
+    private val syncPreferences by lazy {
+        chatSDK.getSyncPreference()
     }
 
     /**
@@ -601,25 +617,59 @@ class ChatroomClient @Inject constructor() : BaseClient() {
      * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
      * @return LMResponse<GetUnreadConversationsCountResponse> - GetUnreadConversationsCountResponse model
      */
-    fun getUnreadConversationsCount(): LMResponse<GetUnreadConversationsCountResponse> {
+    suspend fun getUnreadConversationsCount(context: Context): LMResponse<GetUnreadConversationsCountResponse> {
         // validates the client request
         RequestUtils.validate()
 
-        // get the count from local DB
-        val realm = Realm.getDefaultInstance()
-        val unreadConversationCount = chatroomDB.getUnreadConversationsCount(realm)
+        if (sdkPreferences.getAccessToken().isNullOrEmpty()) {
+            return LMResponse(
+                true,
+                null,
+                GetUnreadConversationsCountResponse(0, 0)
+            )
+        }
 
-        val getUnreadConversationsCountResponse = GetUnreadConversationsCountResponse(
-            unreadConversationCount.first,
-            unreadConversationCount.second
-        )
+        return withContext(Dispatchers.IO) {
+            // start the group chatroom sync to get updated group chatroom unread conversations count
+            //check whether db is empty or not
+            val isFirstTime = ChatDBUtil.isEmpty()
+            /**
+             * if empty start first time chatroom worker else reopen
+             */
+            if (isFirstTime) {
+                SyncSDK.startFirstHomeFeedSync(context)
+            } else {
+                SyncSDK.startReopenSyncForHomeFeed(context)
+            }
 
-        realm.close()
+            // start the DM sync to get updated dm unread conversations count
+            val doesDMChatroomExists = ChatDBUtil.doesDMChatroomExists()
+            val syncTimestamp = syncPreferences.getTimestampForSyncDM()
+            if (!doesDMChatroomExists && syncTimestamp == 0L) {
+                SyncSDK.startFirstTimeDMFeedSync(context)
+            } else {
+                SyncSDK.startReopenSyncForDMFeed(context)
+            }
 
-        return LMResponse(
-            true,
-            null,
-            getUnreadConversationsCountResponse
-        )
+            // adding delay to provide time to sync APIs to update the DB
+            delay(500)
+
+            // get the count from local DB
+            val realm = Realm.getDefaultInstance()
+            val unreadConversationCount = chatroomDB.getUnreadConversationsCount(realm)
+
+            val getUnreadConversationsCountResponse = GetUnreadConversationsCountResponse(
+                unreadConversationCount.first,
+                unreadConversationCount.second
+            )
+
+            realm.close()
+
+            LMResponse(
+                true,
+                null,
+                getUnreadConversationsCountResponse
+            )
+        }
     }
 }

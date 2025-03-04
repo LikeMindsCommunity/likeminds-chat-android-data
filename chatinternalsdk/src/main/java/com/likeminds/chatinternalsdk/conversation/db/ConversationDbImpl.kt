@@ -23,14 +23,16 @@ class ConversationDbImpl @Inject constructor(
         chatroomId: String,
         limit: Int,
         keyId: String?,
-        keyTimestamp: Long?
+        keyTimestamp: Long?,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO> {
         return conversationReceiver.getConversationsBelow(
             realm,
             chatroomId,
             limit,
             keyId,
-            keyTimestamp
+            keyTimestamp,
+            excludedConversationStates
         )
     }
 
@@ -39,14 +41,16 @@ class ConversationDbImpl @Inject constructor(
         chatroomId: String,
         limit: Int,
         keyId: String?,
-        keyTimestamp: Long?
+        keyTimestamp: Long?,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO> {
         return conversationReceiver.getConversationsAbove(
             realm,
             chatroomId,
             limit,
             keyId,
-            keyTimestamp
+            keyTimestamp,
+            excludedConversationStates
         )
     }
 
@@ -54,13 +58,15 @@ class ConversationDbImpl @Inject constructor(
         realm: Realm,
         chatroomId: String,
         keyId: String,
-        keyTimestamp: Long
+        keyTimestamp: Long,
+        excludedConversationStates: List<Int>
     ): Int {
         return conversationReceiver.getConversationsAboveCount(
             realm,
             chatroomId,
             keyId,
-            keyTimestamp
+            keyTimestamp,
+            excludedConversationStates
         )
     }
 
@@ -68,45 +74,52 @@ class ConversationDbImpl @Inject constructor(
         realm: Realm,
         chatroomId: String,
         keyId: String,
-        keyTimestamp: Long
+        keyTimestamp: Long,
+        excludedConversationStates: List<Int>
     ): Int {
         return conversationReceiver.getConversationsBelowCount(
             realm,
             chatroomId,
             keyId,
-            keyTimestamp
+            keyTimestamp,
+            excludedConversationStates
         )
     }
 
     override fun getTopConversations(
         realm: Realm,
         chatroomId: String,
-        limit: Int
+        limit: Int,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO> {
         return conversationReceiver.getTopConversations(
             realm,
             chatroomId,
-            limit
+            limit,
+            excludedConversationStates
         )
     }
 
     override fun getBottomConversations(
         realm: Realm,
         chatroomId: String,
-        limit: Int
+        limit: Int,
+        excludedConversationStates: List<Int>
     ): RealmResults<ConversationRO> {
         return conversationReceiver.getBottomConversations(
             realm,
             chatroomId,
-            limit
+            limit,
+            excludedConversationStates
         )
     }
 
     override fun observeConversations(
         realm: Realm,
-        chatroomId: String
+        chatroomId: String,
+        excludedConversationStates: List<Int>
     ): Flow<CollectionChange<RealmResults<ConversationRO>>> {
-        return conversationReceiver.observeConversations(realm, chatroomId)
+        return conversationReceiver.observeConversations(realm, chatroomId, excludedConversationStates)
     }
 
     override fun deleteConversationPermanently(conversationId: String, chatroomId: String) {
@@ -125,8 +138,11 @@ class ConversationDbImpl @Inject constructor(
         conversationReceiver.savePostedConversation(savePostedConversationRequest)
     }
 
-    override fun isConversationWithinLimit(conversationWithinLimitRequest: _ConversationWithinLimitRequest_): Boolean {
-        return conversationReceiver.isConversationWithinLimit(conversationWithinLimitRequest)
+    override fun isConversationWithinLimit(
+        conversationWithinLimitRequest: _ConversationWithinLimitRequest_,
+        excludedConversationStates: List<Int>
+    ): Boolean {
+        return conversationReceiver.isConversationWithinLimit(conversationWithinLimitRequest, excludedConversationStates)
     }
 
     override fun saveNewConversation(

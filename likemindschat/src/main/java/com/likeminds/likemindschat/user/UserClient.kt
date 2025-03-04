@@ -12,7 +12,6 @@ import com.likeminds.likemindschat.community.model.GetMemberRequest
 import com.likeminds.likemindschat.community.model.GetMemberResponse
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
-import com.likeminds.likemindschat.user.model.EditUserProfileRequest
 import com.likeminds.likemindschat.user.model.*
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
@@ -65,6 +64,7 @@ class UserClient @Inject constructor() : BaseClient() {
             .apiKey(initiateUserRequest.apiKey)
             .userName(initiateUserRequest.userName)
             .isGuest(initiateUserRequest.isGuest)
+            .deviceId(initiateUserRequest.deviceId)
             .build()
 
         // calls api and processes the response accordingly
@@ -127,7 +127,7 @@ class UserClient @Inject constructor() : BaseClient() {
                     val lmMemberId = user?.id ?: ""
                     val clientUUID = user?.sdkClientInfo?.uuid ?: ""
                     val userRO = ROConverter.convertUser(user)
-
+                    val memberRO = ROConverter.convertUserToMember(userRO, communityId)
 
                     sdkPreferences.setCommunityId(communityId)
                     userPreferences.setLMUUID(lmUUID)
@@ -137,6 +137,10 @@ class UserClient @Inject constructor() : BaseClient() {
                     userRO?.let {
                         userDb.saveUser(it)
                     }
+                    memberRO?.let {
+                        userDb.saveMember(it)
+                    }
+
                     ModelConverter.convertInitiateUserAPIResponse(body)
                 }
             }
@@ -427,7 +431,7 @@ class UserClient @Inject constructor() : BaseClient() {
                     val lmMemberId = user?.id ?: ""
                     val clientUUID = user?.sdkClientInfo?.uuid ?: ""
                     val userRO = ROConverter.convertUser(user)
-
+                    val memberRO = ROConverter.convertUserToMember(userRO, communityId)
 
                     sdkPreferences.setCommunityId(communityId)
                     userPreferences.setLMUUID(lmUUID)
@@ -436,6 +440,9 @@ class UserClient @Inject constructor() : BaseClient() {
 
                     userRO?.let {
                         userDb.saveUser(it)
+                    }
+                    memberRO?.let {
+                        userDb.saveMember(it)
                     }
 
                     ModelConverter.convertValidateUserAPIResponse(body)

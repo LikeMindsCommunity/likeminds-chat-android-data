@@ -7,6 +7,8 @@ import com.likeminds.chatinternalsdk.conversation.model.*
 import com.likeminds.chatinternalsdk.db.models.*
 import com.likeminds.chatinternalsdk.db.util.DbKey
 import com.likeminds.chatinternalsdk.db.util.toRealmList
+import com.likeminds.chatinternalsdk.helper._LMChatLogger_
+import com.likeminds.chatinternalsdk.helper.model._LMSeverity_
 import io.realm.*
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -44,6 +46,11 @@ object ChatDBUtil {
             }
             true
         } catch (e: Exception) {
+            _LMChatLogger_.getInstance()?.handleException(
+                e.message ?: "",
+                e.stackTraceToString(),
+                _LMSeverity_.EMERGENCY
+            )
             e.printStackTrace()
             Log.e(LMChatSDK.LOG_TAG, "write error", e)
             false
@@ -67,6 +74,11 @@ object ChatDBUtil {
                 }
                 true
             } catch (e: Exception) {
+                _LMChatLogger_.getInstance()?.handleException(
+                    e.message ?: "",
+                    e.stackTraceToString(),
+                    _LMSeverity_.EMERGENCY
+                )
                 e.printStackTrace()
                 Log.e(LMChatSDK.LOG_TAG, "write async error", e)
                 false

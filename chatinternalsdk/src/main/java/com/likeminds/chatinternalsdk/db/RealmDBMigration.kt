@@ -13,7 +13,11 @@ class RealmDBMigration : RealmMigration {
         private const val WIDGET_CLASS = "WidgetRO"
         private const val CONVERSATION_CLASS = "ConversationRO"
         private const val LAST_CONVERSATION_CLASS = "LastConversationRO"
+        private const val ATTACHMENT_CLASS = "AttachmentRO"
         private const val USER_CLASS = "UserRO"
+        private const val LM_LOG_CLASS = "LMLogRO"
+        private const val LM_SDK_META_CLASS = "LMSDKMetaRO"
+        private const val LM_STACK_TRACE_CLASS = "LMStackTraceRO"
     }
 
     override fun migrate(realm: DynamicRealm, oldVersion: Long, newVersion: Long) {
@@ -99,6 +103,32 @@ class RealmDBMigration : RealmMigration {
 
             olderVersion++
         }
+
+        if (olderVersion == 6L) {
+            schema[ATTACHMENT_CLASS]!!.apply {
+                addField("isUploaded", Boolean::class.java, FieldAttribute.REQUIRED)
+            }
+
+            val sdkMetaSchema = schema.create(LM_SDK_META_CLASS)
+                .addField("dataLayerVersion", String::class.javaObjectType)
+                .addField("coreVersion", String::class.javaObjectType)
+
+            val stackTraceSchema = schema.create(LM_STACK_TRACE_CLASS)
+                .addField("exception", String::class.java, FieldAttribute.REQUIRED)
+                .addField("trace", String::class.java, FieldAttribute.REQUIRED)
+
+            schema.create(LM_LOG_CLASS).apply {
+                addField("timestamp", Long::class.java, FieldAttribute.REQUIRED)
+                    .addField("severity", String::class.javaObjectType)
+                addRealmObjectField("stackTrace", stackTraceSchema)
+                addRealmObjectField("sdkMeta", sdkMetaSchema)
+            }
+
+            sdkMetaSchema.isEmbedded = true
+            stackTraceSchema.isEmbedded = true
+
+            olderVersion++
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -111,4 +141,4 @@ class RealmDBMigration : RealmMigration {
 }
 
 const val DB_SCHEMA_NAME = "likeminds-chat-sdk"
-const val DB_SCHEMA_VERSION = 6L
+const val DB_SCHEMA_VERSION = 7L
