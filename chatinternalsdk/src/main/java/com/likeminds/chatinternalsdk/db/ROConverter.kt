@@ -404,7 +404,7 @@ object ROConverter {
     }
 
     /**
-     * convert [UserRO] to [MemberRO] and save it [MemberRO] table
+     * convert [UserRO] to [MemberRO]
      * @param userRO: object of [UserRO]
      * @param communityId: id of community
      *

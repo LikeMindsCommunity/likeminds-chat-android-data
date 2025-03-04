@@ -51,9 +51,9 @@ class UserReceiver @Inject constructor(private val userNetworkApi: UserNetworkAp
         return realm.where(UserRO::class.java).findFirst()
     }
 
-    fun saveMember(memberRO: MemberRO) {
+    fun saveMember(member: MemberRO) {
         ChatDBUtil.writeAsync({ realmWrite ->
-            realmWrite.insertOrUpdate(memberRO)
+            realmWrite.insertOrUpdate(member)
         })
     }
 }

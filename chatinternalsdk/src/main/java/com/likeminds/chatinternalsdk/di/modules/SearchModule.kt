@@ -1,7 +1,6 @@
 package com.likeminds.chatinternalsdk.di.modules
 
 import com.google.gson.Gson
-import com.likeminds.chatinternalsdk.di.HttpAPICallQualifier
 import com.likeminds.chatinternalsdk.search.SearchNetworkApi
 import com.likeminds.chatinternalsdk.utils.retrofit.NetworkResponseAdapterFactory
 import com.likeminds.chatinternalsdk.utils.retrofit.model.BaseUrl
@@ -18,12 +17,12 @@ class SearchModule {
     @Provides
     @Singleton
     fun provideSearchModule(
-        @HttpAPICallQualifier client: OkHttpClient,
+        client: OkHttpClient,
         gson: Gson,
         baseUrl: BaseUrl
     ): SearchNetworkApi {
         return Retrofit.Builder()
-            .baseUrl(baseUrl.getKettleBaseUrl())
+            .baseUrl(baseUrl.getKettleBase())
             .client(client)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(NetworkResponseAdapterFactory(gson))
