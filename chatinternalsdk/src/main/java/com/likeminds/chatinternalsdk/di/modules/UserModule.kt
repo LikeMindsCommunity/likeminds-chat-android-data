@@ -1,7 +1,6 @@
 package com.likeminds.chatinternalsdk.di.modules
 
 import com.google.gson.Gson
-import com.likeminds.chatinternalsdk.di.HttpAPICallQualifier
 import com.likeminds.chatinternalsdk.user.api.UserNetworkApi
 import com.likeminds.chatinternalsdk.utils.retrofit.NetworkResponseAdapterFactory
 import com.likeminds.chatinternalsdk.utils.retrofit.model.BaseUrl
@@ -18,12 +17,12 @@ class UserModule {
     @Provides
     @Singleton
     fun provideUserModule(
-        @HttpAPICallQualifier client: OkHttpClient,
+        client: OkHttpClient,
         gson: Gson,
         baseUrl: BaseUrl
     ): UserNetworkApi {
         return Retrofit.Builder()
-            .baseUrl(baseUrl.getKettleBaseUrl())
+            .baseUrl(baseUrl.getKettleBase())
             .client(client)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(NetworkResponseAdapterFactory(gson))

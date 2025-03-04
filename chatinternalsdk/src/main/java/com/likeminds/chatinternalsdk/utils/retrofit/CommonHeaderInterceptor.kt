@@ -3,7 +3,6 @@ package com.likeminds.chatinternalsdk.utils.retrofit
 import com.likeminds.chatinternalsdk.BuildConfig
 import com.likeminds.chatinternalsdk.ChatTokenManager
 import com.likeminds.chatinternalsdk.sdk.util.SDKPreferences
-import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkConstants
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
@@ -26,14 +25,18 @@ class CommonHeaderInterceptor @Inject constructor(
         }
 
         if (!accessToken.isNullOrEmpty() && !url.contains("user/refresh", false)) {
-            requestBuilder.addHeader(NetworkConstants.AUTH, "Bearer $accessToken")
+            requestBuilder.addHeader(AUTH, "Bearer $accessToken")
         }
-        requestBuilder.addHeader(NetworkConstants.X_PLATFORM_CODE, "an")
-        requestBuilder.addHeader(NetworkConstants.X_SDK_SOURCE, "chat")
-        requestBuilder.addHeader(
-            NetworkConstants.X_VERSION_CODE,
-            BuildConfig.APP_VERSION_CODE.toString()
-        )
+        requestBuilder.addHeader(X_PLATFORM_CODE, "an")
+        requestBuilder.addHeader(X_SDK_SOURCE, "chat")
+        requestBuilder.addHeader(X_VERSION_CODE, BuildConfig.APP_VERSION_CODE.toString())
         return chain.proceed(requestBuilder.build())
+    }
+
+    companion object {
+        private const val X_PLATFORM_CODE = "x-platform-code"
+        private const val X_SDK_SOURCE = "x-sdk-source"
+        private const val X_VERSION_CODE = "x-version-code"
+        private const val AUTH = "Authorization"
     }
 }

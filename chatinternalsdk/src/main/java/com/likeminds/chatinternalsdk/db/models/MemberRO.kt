@@ -55,7 +55,7 @@ open class MemberRO(
         var name: String = ""
         var id: String = ""
         var imageUrl: String = ""
-        var state: Int = 4
+        var state: Int = 0
         var customIntroText: String? = null
         var customClickText: String? = null
         var customTitle: String? = null

@@ -64,7 +64,6 @@ class UserClient @Inject constructor() : BaseClient() {
             .apiKey(initiateUserRequest.apiKey)
             .userName(initiateUserRequest.userName)
             .isGuest(initiateUserRequest.isGuest)
-            .deviceId(initiateUserRequest.deviceId)
             .build()
 
         // calls api and processes the response accordingly
@@ -127,7 +126,7 @@ class UserClient @Inject constructor() : BaseClient() {
                     val lmMemberId = user?.id ?: ""
                     val clientUUID = user?.sdkClientInfo?.uuid ?: ""
                     val userRO = ROConverter.convertUser(user)
-                    val memberRO = ROConverter.convertUserToMember(userRO, communityId)
+
 
                     sdkPreferences.setCommunityId(communityId)
                     userPreferences.setLMUUID(lmUUID)
@@ -136,10 +135,6 @@ class UserClient @Inject constructor() : BaseClient() {
 
                     userRO?.let {
                         userDb.saveUser(it)
-                    }
-
-                    memberRO?.let {
-                        userDb.saveMember(it)
                     }
                     ModelConverter.convertInitiateUserAPIResponse(body)
                 }
@@ -431,7 +426,7 @@ class UserClient @Inject constructor() : BaseClient() {
                     val lmMemberId = user?.id ?: ""
                     val clientUUID = user?.sdkClientInfo?.uuid ?: ""
                     val userRO = ROConverter.convertUser(user)
-                    val memberRO = ROConverter.convertUserToMember(userRO, communityId)
+
 
                     sdkPreferences.setCommunityId(communityId)
                     userPreferences.setLMUUID(lmUUID)
@@ -440,10 +435,6 @@ class UserClient @Inject constructor() : BaseClient() {
 
                     userRO?.let {
                         userDb.saveUser(it)
-                    }
-
-                    memberRO?.let {
-                        userDb.saveMember(it)
                     }
 
                     ModelConverter.convertValidateUserAPIResponse(body)

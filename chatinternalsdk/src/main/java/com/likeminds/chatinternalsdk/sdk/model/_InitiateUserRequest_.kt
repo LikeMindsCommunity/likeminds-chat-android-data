@@ -14,9 +14,7 @@ class _InitiateUserRequest_ private constructor(
     @SerializedName("token_expiry_beta")
     val tokenExpiryBeta: Int?,
     @SerializedName("rtm_token_expiry_beta")
-    val rtmTokenExpiryBeta: Int?,
-    @SerializedName("device_id")
-    val deviceId: String?
+    val rtmTokenExpiryBeta: Int?
 ) {
     class Builder {
         private var apiKey: String? = null
@@ -25,7 +23,6 @@ class _InitiateUserRequest_ private constructor(
         private var isGuest: Boolean? = null
         private var tokenExpiryBeta: Int? = null
         private var rtmTokenExpiryBeta: Int? = null
-        private var deviceId: String? = null
 
         fun apiKey(apiKey: String?) = apply { this.apiKey = apiKey }
         fun userName(userName: String?) = apply { this.userName = userName }
@@ -37,16 +34,13 @@ class _InitiateUserRequest_ private constructor(
         fun rtmTokenExpiryBeta(rtmTokenExpiryBeta: Int?) =
             apply { this.rtmTokenExpiryBeta = rtmTokenExpiryBeta }
 
-        fun deviceId(deviceId: String?) = apply { this.deviceId = deviceId }
-
         fun build() = _InitiateUserRequest_(
             apiKey,
             userName,
             userId,
             isGuest,
             tokenExpiryBeta,
-            rtmTokenExpiryBeta,
-            deviceId
+            rtmTokenExpiryBeta
         )
     }
 
@@ -57,6 +51,5 @@ class _InitiateUserRequest_ private constructor(
             .userName(userName)
             .tokenExpiryBeta(tokenExpiryBeta)
             .rtmTokenExpiryBeta(rtmTokenExpiryBeta)
-            .deviceId(deviceId)
     }
 }

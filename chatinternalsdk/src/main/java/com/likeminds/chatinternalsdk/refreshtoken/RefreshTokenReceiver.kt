@@ -1,5 +1,6 @@
 package com.likeminds.chatinternalsdk.refreshtoken
 
+import com.likeminds.chatinternalsdk.refreshtoken.model._RefreshTokenRequest_
 import com.likeminds.chatinternalsdk.refreshtoken.model._RefreshTokenResponse_
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse

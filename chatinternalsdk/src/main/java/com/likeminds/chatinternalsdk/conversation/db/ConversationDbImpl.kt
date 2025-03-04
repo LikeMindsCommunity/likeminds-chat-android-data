@@ -152,14 +152,6 @@ class ConversationDbImpl @Inject constructor(
         conversationReceiver.saveNewConversation(realm, conversation)
     }
 
-    override fun saveRealtimeConversation(
-        realm: Realm,
-        communityId: String,
-        conversation: _Conversation_
-    ) {
-        conversationReceiver.saveRealtimeConversation(realm, communityId, conversation)
-    }
-
     override fun updateTemporaryConversation(conversationId: String, localSavedEpoch: Long) {
         conversationReceiver.updateTemporaryConversation(conversationId, localSavedEpoch)
     }

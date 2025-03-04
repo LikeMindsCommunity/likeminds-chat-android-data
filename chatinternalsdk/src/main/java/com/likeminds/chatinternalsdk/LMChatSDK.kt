@@ -50,7 +50,6 @@ import com.likeminds.chatinternalsdk.user.api.UserApiImpl
 import com.likeminds.chatinternalsdk.user.db.UserDB
 import com.likeminds.chatinternalsdk.user.db.UserDbImpl
 import com.likeminds.chatinternalsdk.user.util.UserPreferences
-import com.likeminds.chatinternalsdk.websocket.LMChatWebSocketManager
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.coroutines.*
@@ -139,9 +138,6 @@ class LMChatSDK {
 
     @Inject
     lateinit var helperDBImpl: HelperDBImpl
-
-    @Inject
-    lateinit var lmChatWebSocketManager: LMChatWebSocketManager
 
     var lmChatInternalCallback: LMChatInternalCallback? = null
 
@@ -296,13 +292,5 @@ class LMChatSDK {
 
     fun getHelperDB(): HelperDB {
         return helperDBImpl
-    }
-
-    fun getWebSocketManager(): LMChatWebSocketManager {
-        return lmChatWebSocketManager
-    }
-
-    fun getGsonObject(): Gson {
-        return gson
     }
 }
