@@ -15,7 +15,8 @@ class Attachment private constructor(
     val thumbnailLocalFilePath: String?,
     val meta: AttachmentMeta?,
     val createdAt: Long?,
-    val updatedAt: Long?
+    val updatedAt: Long?,
+    val isUploaded: Boolean
 ) {
     class Builder {
         private var id: String? = null
@@ -33,26 +34,71 @@ class Attachment private constructor(
         private var meta: AttachmentMeta? = null
         private var createdAt: Long? = null
         private var updatedAt: Long? = null
+        private var isUploaded: Boolean = false
 
-        fun id(id: String?) = apply { this.id = id }
-        fun name(name: String?) = apply { this.name = name }
-        fun url(url: String) = apply { this.url = url }
-        fun type(type: String) = apply { this.type = type }
-        fun index(index: Int?) = apply { this.index = index }
-        fun width(width: Int?) = apply { this.width = width }
-        fun height(height: Int?) = apply { this.height = height }
-        fun awsFolderPath(awsFolderPath: String?) = apply { this.awsFolderPath = awsFolderPath }
-        fun localFilePath(localFilePath: String?) = apply { this.localFilePath = localFilePath }
-        fun thumbnailUrl(thumbnailUrl: String?) = apply { this.thumbnailUrl = thumbnailUrl }
-        fun thumbnailAWSFolderPath(thumbnailAWSFolderPath: String?) =
-            apply { this.thumbnailAWSFolderPath = thumbnailAWSFolderPath }
+        fun id(id: String?) = apply {
+            this.id = id
+        }
 
-        fun thumbnailLocalFilePath(thumbnailLocalFilePath: String?) =
-            apply { this.thumbnailLocalFilePath = thumbnailLocalFilePath }
+        fun name(name: String?) = apply {
+            this.name = name
+        }
 
-        fun meta(meta: AttachmentMeta?) = apply { this.meta = meta }
-        fun createdAt(createdAt: Long?) = apply { this.createdAt = createdAt }
-        fun updatedAt(updatedAt: Long?) = apply { this.updatedAt = updatedAt }
+        fun url(url: String) = apply {
+            this.url = url
+        }
+
+        fun type(type: String) = apply {
+            this.type = type
+        }
+
+        fun index(index: Int?) = apply {
+            this.index = index
+        }
+
+        fun width(width: Int?) = apply {
+            this.width = width
+        }
+
+        fun height(height: Int?) = apply {
+            this.height = height
+        }
+
+        fun awsFolderPath(awsFolderPath: String?) = apply {
+            this.awsFolderPath = awsFolderPath
+        }
+
+        fun localFilePath(localFilePath: String?) = apply {
+            this.localFilePath = localFilePath
+        }
+
+        fun thumbnailUrl(thumbnailUrl: String?) = apply {
+            this.thumbnailUrl = thumbnailUrl
+        }
+
+        fun thumbnailAWSFolderPath(thumbnailAWSFolderPath: String?) = apply {
+            this.thumbnailAWSFolderPath = thumbnailAWSFolderPath
+        }
+
+        fun thumbnailLocalFilePath(thumbnailLocalFilePath: String?) = apply {
+            this.thumbnailLocalFilePath = thumbnailLocalFilePath
+        }
+
+        fun meta(meta: AttachmentMeta?) = apply {
+            this.meta = meta
+        }
+
+        fun createdAt(createdAt: Long?) = apply {
+            this.createdAt = createdAt
+        }
+
+        fun updatedAt(updatedAt: Long?) = apply {
+            this.updatedAt = updatedAt
+        }
+
+        fun isUploaded(isUploaded: Boolean) = apply {
+            this.isUploaded = isUploaded
+        }
 
         fun build() = Attachment(
             id,
@@ -69,7 +115,8 @@ class Attachment private constructor(
             thumbnailLocalFilePath,
             meta,
             createdAt,
-            updatedAt
+            updatedAt,
+            isUploaded
         )
     }
 
@@ -89,6 +136,7 @@ class Attachment private constructor(
             .meta(meta)
             .createdAt(createdAt)
             .updatedAt(updatedAt)
+            .isUploaded(isUploaded)
     }
 
     override fun toString(): String {
@@ -121,6 +169,8 @@ class Attachment private constructor(
             append(createdAt)
             append(", updatedAt=")
             append(updatedAt)
+            append(", isUploaded=")
+            append(isUploaded)
             append(")")
         }
     }

@@ -1,7 +1,7 @@
 package com.likeminds.chatinternalsdk.di.modules
 
 import com.google.gson.Gson
-import com.likeminds.chatinternalsdk.helper.HelperNetworkApi
+import com.likeminds.chatinternalsdk.helper.api.HelperNetworkApi
 import com.likeminds.chatinternalsdk.utils.retrofit.NetworkResponseAdapterFactory
 import com.likeminds.chatinternalsdk.utils.retrofit.model.BaseUrl
 import dagger.Module

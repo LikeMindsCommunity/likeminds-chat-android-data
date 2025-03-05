@@ -45,6 +45,9 @@ class ConversationClient @Inject constructor() : BaseClient() {
         chatSDK.getConversationDB()
     }
 
+    private val excludedConversationStates =
+        LikeMindsChatApplication.getInstance().excludedConversationStates
+
     /**
      * Converts client request model to internal model and calls the api
      * @param postConversationRequest - client request model to post a conversation
@@ -165,7 +168,7 @@ class ConversationClient @Inject constructor() : BaseClient() {
             .limit(conversationWithinLimitRequest.limit)
             .build()
 
-        return conversationDB.isConversationWithinLimit(request)
+        return conversationDB.isConversationWithinLimit(request, excludedConversationStates)
     }
 
     /**
@@ -201,7 +204,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
         val chatroomId = observeConversationsRequest.chatroomId
         val listener = observeConversationsRequest.listener
 
-        val flowOfConversations = conversationDB.observeConversations(realm, chatroomId)
+        val flowOfConversations =
+            conversationDB.observeConversations(realm, chatroomId, excludedConversationStates)
 
         flowOfConversations.collect { collectionChange ->
             val insertions = getConversationFromChanges(
@@ -458,7 +462,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             chatroomId,
             limit,
             belowConversation?.id,
-            belowConversation?.createdEpoch
+            belowConversation?.createdEpoch,
+            excludedConversationStates
         )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
@@ -481,7 +486,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             chatroomId,
             limit,
             conversation?.id,
-            conversation?.createdEpoch
+            conversation?.createdEpoch,
+            excludedConversationStates
         )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
@@ -501,7 +507,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
         val conversationsRO = conversationDB.getTopConversations(
             realm,
             chatroomId,
-            limit
+            limit,
+            excludedConversationStates
         )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
@@ -518,7 +525,12 @@ class ConversationClient @Inject constructor() : BaseClient() {
         limit: Int
     ): LMResponse<GetConversationsResponse> {
         val realm = Realm.getDefaultInstance()
-        val conversationsRO = conversationDB.getBottomConversations(realm, chatroomId, limit)
+        val conversationsRO = conversationDB.getBottomConversations(
+            realm,
+            chatroomId,
+            limit,
+            excludedConversationStates
+        )
         val conversations = ModelConverter.convertGetConversationsResponse(conversationsRO)
         realm.close()
         return LMResponse(
@@ -595,7 +607,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             realm,
             chatroomId,
             conversationId,
-            createdEpoch
+            createdEpoch,
+            excludedConversationStates
         )
         realm.close()
         val aboveConversationsCount = ModelConverter.convertGetConversationsCountResponse(count)
@@ -617,7 +630,8 @@ class ConversationClient @Inject constructor() : BaseClient() {
             realm,
             chatroomId,
             conversationId,
-            createdEpoch
+            createdEpoch,
+            excludedConversationStates
         )
         realm.close()
         val belowConversationsCount = ModelConverter.convertGetConversationsCountResponse(count)
