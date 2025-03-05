@@ -13,6 +13,7 @@ class RealmDBMigration : RealmMigration {
         private const val WIDGET_CLASS = "WidgetRO"
         private const val CONVERSATION_CLASS = "ConversationRO"
         private const val LAST_CONVERSATION_CLASS = "LastConversationRO"
+        private const val ATTACHMENT_CLASS = "AttachmentRO"
         private const val USER_CLASS = "UserRO"
         private const val LM_LOG_CLASS = "LMLogRO"
         private const val LM_SDK_META_CLASS = "LMSDKMetaRO"
@@ -104,6 +105,10 @@ class RealmDBMigration : RealmMigration {
         }
 
         if (olderVersion == 6L) {
+            schema[ATTACHMENT_CLASS]!!.apply {
+                addField("isUploaded", Boolean::class.java, FieldAttribute.REQUIRED)
+            }
+
             val sdkMetaSchema = schema.create(LM_SDK_META_CLASS)
                 .addField("dataLayerVersion", String::class.javaObjectType)
                 .addField("coreVersion", String::class.javaObjectType)

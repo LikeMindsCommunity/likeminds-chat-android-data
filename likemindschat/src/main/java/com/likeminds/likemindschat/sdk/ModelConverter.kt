@@ -874,6 +874,7 @@ object ModelConverter {
             .meta(convertAttachmentMeta(_attachment_.meta))
             .createdAt(_attachment_.createdAt)
             .updatedAt(_attachment_.updatedAt)
+            .isUploaded(_attachment_.isUploaded ?: true)
             .build()
     }
 
@@ -1703,7 +1704,7 @@ object ModelConverter {
     }
 
     // creates internal Attachment model from client model
-    private fun createAttachment(attachment: Attachment): _Attachment_ {
+    fun createAttachment(attachment: Attachment): _Attachment_ {
         return _Attachment_.Builder()
             .id(attachment.id)
             .name(attachment.name)
@@ -1720,11 +1721,12 @@ object ModelConverter {
             .meta(createAttachmentMeta(attachment.meta))
             .createdAt(attachment.createdAt)
             .updatedAt(attachment.updatedAt)
+            .isUploaded(attachment.isUploaded)
             .build()
     }
 
     // creates internal AttachmentMeta model from client model
-    fun createAttachmentMeta(attachmentMeta: AttachmentMeta?): _AttachmentMeta_? {
+    private fun createAttachmentMeta(attachmentMeta: AttachmentMeta?): _AttachmentMeta_? {
         if (attachmentMeta == null) return null
         return _AttachmentMeta_.Builder()
             .numberOfPage(attachmentMeta.numberOfPage)
@@ -2130,6 +2132,7 @@ object ModelConverter {
             .meta(convertAttachmentMetaRO(attachmentRO.metaRO))
             .createdAt(attachmentRO.createdAt)
             .updatedAt(attachmentRO.updatedAt)
+            .isUploaded(attachmentRO.isUploaded)
             .build()
     }
 

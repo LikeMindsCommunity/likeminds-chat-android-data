@@ -138,21 +138,13 @@ class LMChatWebSocketManager @Inject constructor(
                 updateConnectionState(endpoint, false)
                 Log.e(TAG, "WebSocket Error for $endpoint: ${t.message}", t)
 
-                val retryErrorCodes = listOf(
-                    NetworkConstants.SERVER_ERROR,
-                    NetworkConstants.BAD_GATEWAY,
-                    NetworkConstants.SERVICE_UNAVAILABLE,
-                    NetworkConstants.GATEWAY_TIMEOUT,
-                    NetworkConstants.TOO_MANY_REQUESTS
-                )
-
                 when (response?.code) {
                     NetworkConstants.UNAUTHORIZED -> {
                         Log.e(TAG, "Unauthorized error for $endpoint. Token might be expired.")
                         handleTokenExpiry(endpoint)
                     }
 
-                    in retryErrorCodes -> {
+                    in NetworkConstants.retryErrorCodes -> {
                         Log.e(TAG, "Server error for $endpoint. Attempting reconnect.")
                         handleReconnect(endpoint)
                     }

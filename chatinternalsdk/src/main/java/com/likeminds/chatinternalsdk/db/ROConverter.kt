@@ -404,7 +404,7 @@ object ROConverter {
     }
 
     /**
-     * convert [UserRO] to [MemberRO] and save it [MemberRO] table
+     * convert [UserRO] to [MemberRO]
      * @param userRO: object of [UserRO]
      * @param communityId: id of community
      *
@@ -651,6 +651,7 @@ object ROConverter {
             metaRO = convertAttachmentMeta(attachment.meta)
             createdAt = attachment.createdAt
             updatedAt = attachment.updatedAt
+            isUploaded = attachment.isUploaded ?: true
         }
     }
 
@@ -702,6 +703,7 @@ object ROConverter {
             metaRO = convertAttachmentMeta(attachment.metaRO)
             createdAt = attachment.createdAt
             updatedAt = attachment.updatedAt
+            isUploaded = attachment.isUploaded
         }
     }
 

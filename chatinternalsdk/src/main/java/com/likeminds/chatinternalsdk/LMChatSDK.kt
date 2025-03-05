@@ -162,7 +162,7 @@ class LMChatSDK {
 
     fun initialize(
         sdkSharedResources: SDKSharedResources,
-        lmChatInternalCallback: LMChatInternalCallback?
+        lmChatInternalCallback: LMChatInternalCallback?,
     ) {
         initSDKComponent(sdkSharedResources)
         initRealm()
