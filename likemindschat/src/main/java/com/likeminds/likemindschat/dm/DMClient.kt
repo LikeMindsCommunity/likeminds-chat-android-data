@@ -99,6 +99,8 @@ class DMClient @Inject constructor() : BaseClient() {
             .chatroomId(sendDMRequest.chatroomId)
             .chatRequestState(sendDMRequest.chatRequestState.value ?: 0)
             .text(sendDMRequest.text)
+            .metadata(sendDMRequest.metadata)
+            .temporaryId(sendDMRequest.temporaryId)
             .build()
 
         // calls api and processes the response accordingly
