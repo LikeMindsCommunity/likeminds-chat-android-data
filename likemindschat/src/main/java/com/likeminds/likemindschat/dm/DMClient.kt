@@ -468,11 +468,17 @@ class DMClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * Returns existing dm chatroom if exists
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<Chatroom> - Chatroom model
+     */
     fun getExistingDMChatroom(getExistingDMChatroomRequest: GetExistingDMChatroomRequest): LMResponse<Chatroom> {
         //validates the client request
         RequestUtils.validate()
         validateGetExistingDMChatroomRequest(getExistingDMChatroomRequest)
 
+        // if logged in user uuid is shared in request, return error
         val loggedInUserUUID = userPreferences.getClientUUID()
         if (loggedInUserUUID == getExistingDMChatroomRequest.userUUID) {
             return LMResponse(
@@ -483,9 +489,11 @@ class DMClient @Inject constructor() : BaseClient() {
 
 
         val realm = Realm.getDefaultInstance()
+        // call query
         val dmChatroomRO =
             chatroomDB.getExistingDMChatroom(realm, getExistingDMChatroomRequest.userUUID)
 
+        // convert to chatroom model
         val dmChatroom = ModelConverter.convertChatroomRO(dmChatroomRO)
         realm.close()
 
@@ -499,6 +507,10 @@ class DMClient @Inject constructor() : BaseClient() {
         }
     }
 
+    /**
+     * validates [GetExistingDMChatroomRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
     private fun validateGetExistingDMChatroomRequest(getExistingDMChatroomRequest: GetExistingDMChatroomRequest) {
         if (getExistingDMChatroomRequest.userUUID.isEmpty()) {
             RequestUtils.throwException("userUUID")
