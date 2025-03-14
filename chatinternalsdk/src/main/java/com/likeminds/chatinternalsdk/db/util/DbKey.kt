@@ -32,6 +32,7 @@ object DbKey {
 
     const val CHATROOM_EXPIRY_TIME = "chatroomExpiryTime"
     const val CHATROOM_WITH_USER_ID = "chatroomWithUserId"
+    const val CHATROOM_WITH_USER_OBJECT_UUID = "chatroomWithUser.uuid"
     const val FOLLOW_STATUS = "followStatus"
 
     const val CONVERSATIONS_LIMIT = 200L

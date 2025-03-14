@@ -544,4 +544,9 @@ class LMChatClient private constructor() {
     fun clearLogs(clearLogsRequest: ClearLogsRequest) {
         helperClient.clearLogs(clearLogsRequest)
     }
+
+    //Exposed function to get existing dm chatroom
+    fun getExistingDMChatroom(getExistingDMChatroomRequest: GetExistingDMChatroomRequest): LMResponse<Chatroom> {
+        return dmClient.getExistingDMChatroom(getExistingDMChatroomRequest)
+    }
 }

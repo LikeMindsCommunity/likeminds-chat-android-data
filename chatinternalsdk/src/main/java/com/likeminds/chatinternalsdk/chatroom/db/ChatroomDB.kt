@@ -54,4 +54,6 @@ interface ChatroomDB {
 
     //query to get count of unread conversations
     fun getUnreadConversationsCount(realm: Realm): Pair<Int, Int>
+
+    fun getExistingDMChatroom(realm: Realm, userUUID: String): ChatroomRO?
 }
