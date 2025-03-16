@@ -76,8 +76,4 @@ class ChatroomDBImpl @Inject constructor(
     override fun getUnreadConversationsCount(realm: Realm): Pair<Int, Int> {
         return chatroomReceiver.getUnreadConversationsCount(realm)
     }
-
-    override fun getExistingDMChatroom(realm: Realm, userUUID: String): ChatroomRO? {
-        return chatroomReceiver.getExistingDMChatroom(realm, userUUID)
-    }
 }
