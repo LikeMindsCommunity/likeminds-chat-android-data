@@ -50,6 +50,7 @@ import com.likeminds.chatinternalsdk.user.api.UserApiImpl
 import com.likeminds.chatinternalsdk.user.db.UserDB
 import com.likeminds.chatinternalsdk.user.db.UserDbImpl
 import com.likeminds.chatinternalsdk.user.util.UserPreferences
+import dagger.Lazy
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.coroutines.*
@@ -68,76 +69,76 @@ class LMChatSDK {
     lateinit var gson: Gson
 
     @Inject
-    lateinit var sdkApiImpl: SDKApiImpl
+    lateinit var sdkApiImpl: Lazy<SDKApiImpl>
 
     @Inject
-    lateinit var refreshTokenApiImpl: RefreshTokenApiImpl
+    lateinit var refreshTokenApiImpl: Lazy<RefreshTokenApiImpl>
 
     @Inject
-    lateinit var userApiImpl: UserApiImpl
+    lateinit var userApiImpl: Lazy<UserApiImpl>
 
     @Inject
-    lateinit var userDbImpl: UserDbImpl
+    lateinit var userDbImpl: Lazy<UserDbImpl>
 
     @Inject
-    lateinit var communityApiImpl: CommunityApiImpl
+    lateinit var communityApiImpl: Lazy<CommunityApiImpl>
 
     @Inject
-    lateinit var communityDBImpl: CommunityDBImpl
+    lateinit var communityDBImpl: Lazy<CommunityDBImpl>
 
     @Inject
-    lateinit var homeFeedApi: HomeFeedApiImpl
+    lateinit var homeFeedApi: Lazy<HomeFeedApiImpl>
 
     @Inject
-    lateinit var homeFeedDB: HomeFeedDBImpl
+    lateinit var homeFeedDB: Lazy<HomeFeedDBImpl>
 
     @Inject
-    lateinit var chatroomApiImpl: ChatroomApiImpl
+    lateinit var chatroomApiImpl: Lazy<ChatroomApiImpl>
 
     @Inject
-    lateinit var chatroomDbImpl: ChatroomDBImpl
+    lateinit var chatroomDbImpl: Lazy<ChatroomDBImpl>
 
     @Inject
-    lateinit var moderationApiImpl: ModerationApiImpl
+    lateinit var moderationApiImpl: Lazy<ModerationApiImpl>
 
     @Inject
-    lateinit var pollApiImpl: PollApiImpl
+    lateinit var pollApiImpl: Lazy<PollApiImpl>
 
     @Inject
-    lateinit var helperApiImpl: HelperApiImpl
+    lateinit var helperApiImpl: Lazy<HelperApiImpl>
 
     @Inject
-    lateinit var searchApiImpl: SearchApiImpl
+    lateinit var searchApiImpl: Lazy<SearchApiImpl>
 
     @Inject
-    lateinit var chatroomSyncApiImpl: ChatroomSyncApiImpl
+    lateinit var chatroomSyncApiImpl: Lazy<ChatroomSyncApiImpl>
 
     @Inject
-    lateinit var conversationSyncApiImpl: ConversationSyncApiImpl
+    lateinit var conversationSyncApiImpl: Lazy<ConversationSyncApiImpl>
 
     @Inject
-    lateinit var conversationApiImpl: ConversationApiImpl
+    lateinit var conversationApiImpl: Lazy<ConversationApiImpl>
 
     @Inject
-    lateinit var conversationDBImpl: ConversationDbImpl
+    lateinit var conversationDBImpl: Lazy<ConversationDbImpl>
 
     @Inject
-    lateinit var notificationDBImpl: NotificationDBImpl
+    lateinit var notificationDBImpl: Lazy<NotificationDBImpl>
 
     @Inject
-    lateinit var dmApi: DMApiImpl
+    lateinit var dmApi: Lazy<DMApiImpl>
 
     @Inject
-    lateinit var sdkPreferences: SDKPreferences
+    lateinit var sdkPreferences: Lazy<SDKPreferences>
 
     @Inject
-    lateinit var userPreferences: UserPreferences
+    lateinit var userPreferences: Lazy<UserPreferences>
 
     @Inject
-    lateinit var syncPreferences: SyncPreferences
+    lateinit var syncPreferences: Lazy<SyncPreferences>
 
     @Inject
-    lateinit var helperDBImpl: HelperDBImpl
+    lateinit var helperDBImpl: Lazy<HelperDBImpl>
 
     var lmChatInternalCallback: LMChatInternalCallback? = null
 
@@ -199,98 +200,98 @@ class LMChatSDK {
     }
 
     fun getSDKPreferences(): SDKPreferences {
-        return sdkPreferences
+        return sdkPreferences.get()
     }
 
     fun getUserPreference(): UserPreferences {
-        return userPreferences
+        return userPreferences.get()
     }
 
     fun getSyncPreference(): SyncPreferences {
-        return syncPreferences
+        return syncPreferences.get()
     }
 
     fun getSDKApi(): SDKApi {
-        return sdkApiImpl
+        return sdkApiImpl.get()
     }
 
     fun getRefreshTokenApi(): RefreshTokenApi {
-        return refreshTokenApiImpl
+        return refreshTokenApiImpl.get()
     }
 
     fun getUserApi(): UserApi {
-        return userApiImpl
+        return userApiImpl.get()
     }
 
     fun getUserDb(): UserDB {
-        return userDbImpl
+        return userDbImpl.get()
     }
 
     fun getCommunityApi(): CommunityApi {
-        return communityApiImpl
+        return communityApiImpl.get()
     }
 
     fun getCommunityDB(): CommunityDB {
-        return communityDBImpl
+        return communityDBImpl.get()
     }
 
     fun getHomeFeedApi(): HomeFeedApi {
-        return homeFeedApi
+        return homeFeedApi.get()
     }
 
     fun getHomeFeedDb(): HomeFeedDB {
-        return homeFeedDB
+        return homeFeedDB.get()
     }
 
     fun getChatroomApi(): ChatroomApi {
-        return chatroomApiImpl
+        return chatroomApiImpl.get()
     }
 
     fun getChatroomDb(): ChatroomDB {
-        return chatroomDbImpl
+        return chatroomDbImpl.get()
     }
 
     fun getModerationApi(): ModerationApi {
-        return moderationApiImpl
+        return moderationApiImpl.get()
     }
 
     fun getPollApi(): PollApi {
-        return pollApiImpl
+        return pollApiImpl.get()
     }
 
     fun getHelperApi(): HelperApi {
-        return helperApiImpl
+        return helperApiImpl.get()
     }
 
     fun getSearchApi(): SearchApi {
-        return searchApiImpl
+        return searchApiImpl.get()
     }
 
     fun getChatroomSyncApi(): ChatroomSyncApi {
-        return chatroomSyncApiImpl
+        return chatroomSyncApiImpl.get()
     }
 
     fun getConversationSyncApi(): ConversationSyncApi {
-        return conversationSyncApiImpl
+        return conversationSyncApiImpl.get()
     }
 
     fun getConversationApi(): ConversationApi {
-        return conversationApiImpl
+        return conversationApiImpl.get()
     }
 
     fun getConversationDB(): ConversationDB {
-        return conversationDBImpl
+        return conversationDBImpl.get()
     }
 
     fun getNotificationDB(): NotificationDB {
-        return notificationDBImpl
+        return notificationDBImpl.get()
     }
 
     fun getDMApi(): DMApi {
-        return dmApi
+        return dmApi.get()
     }
 
     fun getHelperDB(): HelperDB {
-        return helperDBImpl
+        return helperDBImpl.get()
     }
 }

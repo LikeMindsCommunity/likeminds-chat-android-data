@@ -2,8 +2,8 @@ package com.likeminds.likemindschat.notification
 
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsResponse
 import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsRequest
+import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsResponse
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils

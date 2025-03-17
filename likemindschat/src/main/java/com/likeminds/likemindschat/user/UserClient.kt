@@ -332,7 +332,7 @@ class UserClient @Inject constructor() : BaseClient() {
         validateGetMemberRequest(getMemberRequest)
 
         val realm = Realm.getDefaultInstance()
-        val communityId = chatSDK.sdkPreferences.getCommunityId() ?: ""
+        val communityId = sdkPreferences.getCommunityId() ?: ""
         val memberRO = ChatDBUtil.getMember(
             realm,
             communityId,
