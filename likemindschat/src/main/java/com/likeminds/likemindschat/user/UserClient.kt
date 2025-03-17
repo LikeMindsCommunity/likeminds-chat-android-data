@@ -1,5 +1,6 @@
 package com.likeminds.likemindschat.user
 
+import android.util.Log
 import com.likeminds.chatinternalsdk.ChatTokenManager
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class UserClient @Inject constructor() : BaseClient() {
 
     override fun attachDagger() {
+        Log.d("PUI","UserClient attach dagger is called")
         LikeMindsChatApplication.getInstance().userComponent()?.inject(this)
     }
 
@@ -332,7 +334,7 @@ class UserClient @Inject constructor() : BaseClient() {
         validateGetMemberRequest(getMemberRequest)
 
         val realm = Realm.getDefaultInstance()
-        val communityId = chatSDK.sdkPreferences.getCommunityId() ?: ""
+        val communityId = sdkPreferences.getCommunityId() ?: ""
         val memberRO = ChatDBUtil.getMember(
             realm,
             communityId,

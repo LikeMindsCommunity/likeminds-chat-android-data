@@ -1,6 +1,7 @@
 package com.likeminds.likemindschat.chatroom
 
 import android.content.Context
+import android.util.Log
 import com.likeminds.chatinternalsdk.chatroom.model.*
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.sync.SyncSDK
@@ -12,16 +13,13 @@ import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class ChatroomClient @Inject constructor() : BaseClient() {
 
     override fun attachDagger() {
+        Log.d("PUI","ChatroomClient attach dagger is called")
         LikeMindsChatApplication.getInstance().chatroomComponent()?.inject(this)
     }
 

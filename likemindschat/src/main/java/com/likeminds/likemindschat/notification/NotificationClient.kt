@@ -1,9 +1,10 @@
 package com.likeminds.likemindschat.notification
 
+import android.util.Log
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
-import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsResponse
 import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsRequest
+import com.likeminds.likemindschat.notification.model.GetUnreadChatroomsResponse
 import com.likeminds.likemindschat.sdk.LikeMindsChatApplication
 import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
@@ -13,6 +14,7 @@ import javax.inject.Inject
 class NotificationClient @Inject constructor() : BaseClient() {
 
     override fun attachDagger() {
+        Log.d("PUI","NotificationClient attach dagger is called")
         LikeMindsChatApplication.getInstance().notificationSubComponent()?.inject(this)
     }
 
