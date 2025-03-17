@@ -2,7 +2,6 @@ package com.likeminds.likemindschat.sdk
 
 import android.app.Application
 import android.util.Base64
-import android.util.Log
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.likeminds.chatinternalsdk.LMChatInternalCallback
@@ -58,7 +57,6 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
         @JvmStatic
         fun getInstance(): LikeMindsChatApplication {
             if (likeMindsChatApplicationInstance == null) {
-                Log.d("PUI","likeMindsChatApplicationInstance instance created")
                 likeMindsChatApplicationInstance = LikeMindsChatApplication()
             }
 
@@ -72,12 +70,10 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
         initiateLoggerRequest: LMChatInitiateLoggerRequest? = null,
         excludedConversationStates: List<ConversationState> = emptyList()
     ) {
-        Log.d("PUI","likeMindsChatApplicationInstance -> initChatSDKApplication called")
         likeMindsChatApplicationInstance = this
         this.lmChatSDKCallback = lmChatSDKCallback
 
         if (initiateLoggerRequest != null) {
-            Log.d("PUI","likeMindsChatApplicationInstance -> logger started")
             LMChatLogger.initiate(initiateLoggerRequest)
         }
 
@@ -94,7 +90,6 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
 
     private fun initLikeMindsChatComponent(application: Application) {
         if (likeMindsChatComponent == null) {
-            Log.d("PUI","initLikeMindsChatComponent called and likeMindsChatComponent is created")
             likeMindsChatComponent = DaggerLikeMindsChatComponent.builder()
                 .application(application)
                 .build()
@@ -124,7 +119,6 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
 
     fun userComponent(): UserSubComponent? {
         if (userSubComponent == null) {
-            Log.d("PUI","userSubComponent is created")
             userSubComponent = likeMindsChatComponent?.userComponent()?.create()
         }
         return userSubComponent
@@ -139,7 +133,6 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
 
     fun chatroomComponent(): ChatroomSubComponent? {
         if (chatroomSubComponent == null) {
-            Log.d("PUI","chatroomSubComponent is created")
             chatroomSubComponent = likeMindsChatComponent?.chatroomSubComponent()?.create()
         }
         return chatroomSubComponent
@@ -175,7 +168,6 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
 
     fun conversationComponent(): ConversationSubComponent? {
         if (conversationSubComponent == null) {
-            Log.d("PUI","conversationSubComponent is created")
             conversationSubComponent = likeMindsChatComponent?.conversationSubComponent()?.create()
         }
         return conversationSubComponent
@@ -183,7 +175,6 @@ internal class LikeMindsChatApplication private constructor() : LMChatInternalCa
 
     fun notificationSubComponent(): NotificationSubComponent? {
         if (notificationSubComponent == null) {
-            Log.d("PUI","notificationSubComponent is created")
             notificationSubComponent = likeMindsChatComponent?.notificationSubComponent()?.create()
         }
         return notificationSubComponent

@@ -26,7 +26,6 @@ import javax.inject.Inject
 class ConversationClient @Inject constructor() : BaseClient() {
 
     override fun attachDagger() {
-        Log.d("PUI","ConversationClient attach dagger is called")
         LikeMindsChatApplication.getInstance().conversationComponent()?.inject(this)
     }
 

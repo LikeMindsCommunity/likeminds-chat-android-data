@@ -2,7 +2,6 @@ package com.likeminds.likemindschat
 
 import android.app.Application
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
@@ -79,25 +78,20 @@ class LMChatClient private constructor() {
         private var excludedConversationStates: List<ConversationState> = emptyList()
 
         fun lmChatSDKCallback(lmChatSDKCallback: LMChatSDKCallback?) = apply {
-            Log.d("PUI","lmChatSDKCallback set")
             this.lmChatSDKCallback = lmChatSDKCallback
         }
 
         fun initiateLoggerRequest(initiateLoggerRequest: LMChatInitiateLoggerRequest?) = apply {
-            Log.d("PUI","logger set")
             this.initiateLoggerRequest = initiateLoggerRequest
         }
 
         fun excludedConversationStates(excludedConversationStates: List<ConversationState>) =
             apply {
-                Log.d("PUI","excludedConversationStates set")
                 this.excludedConversationStates = excludedConversationStates
             }
 
         fun build(): LMChatClient {
-            Log.d("PUI","lm chat client build called")
             if (lmChatClientInstance == null) {
-                Log.d("PUI","lm chat client instance created")
                 lmChatClientInstance = LMChatClient()
                 val sdkApplication = LikeMindsChatApplication.getInstance()
                 sdkApplication.initChatSDKApplication(
