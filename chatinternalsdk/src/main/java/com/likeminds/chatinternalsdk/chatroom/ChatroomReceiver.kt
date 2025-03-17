@@ -2,17 +2,37 @@ package com.likeminds.chatinternalsdk.chatroom
 
 import android.os.Build
 import com.likeminds.chatinternalsdk.chatroom.api.ChatroomNetworkApi
-import com.likeminds.chatinternalsdk.chatroom.model.*
+import com.likeminds.chatinternalsdk.chatroom.model.TYPE_ANNOUNCEMENT
+import com.likeminds.chatinternalsdk.chatroom.model.TYPE_DIRECT_MESSAGE
+import com.likeminds.chatinternalsdk.chatroom.model.TYPE_NORMAL
+import com.likeminds.chatinternalsdk.chatroom.model._Chatroom_
+import com.likeminds.chatinternalsdk.chatroom.model._EditChatroomTitleRequest_
+import com.likeminds.chatinternalsdk.chatroom.model._FollowChatroomRequest_
+import com.likeminds.chatinternalsdk.chatroom.model._GetChannelInviteRequest_
+import com.likeminds.chatinternalsdk.chatroom.model._GetChannelInviteResponse_
+import com.likeminds.chatinternalsdk.chatroom.model._GetChatroomActionsRequest_
+import com.likeminds.chatinternalsdk.chatroom.model._GetChatroomActionsResponse_
+import com.likeminds.chatinternalsdk.chatroom.model._GetParticipantsRequest_
+import com.likeminds.chatinternalsdk.chatroom.model._GetParticipantsResponse_
+import com.likeminds.chatinternalsdk.chatroom.model._LeaveSecretChatroomRequest_
+import com.likeminds.chatinternalsdk.chatroom.model._MarkReadChatroomRequest_
+import com.likeminds.chatinternalsdk.chatroom.model._MuteChatroomRequest_
+import com.likeminds.chatinternalsdk.chatroom.model._SetChatroomTopicRequest_
+import com.likeminds.chatinternalsdk.chatroom.model._UpdateChannelInviteRequest_
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
 import com.likeminds.chatinternalsdk.db.ROConverter
-import com.likeminds.chatinternalsdk.db.models.*
+import com.likeminds.chatinternalsdk.db.models.ChatroomRO
+import com.likeminds.chatinternalsdk.db.models.ReactionRO
+import com.likeminds.chatinternalsdk.db.models.UserRO
 import com.likeminds.chatinternalsdk.db.util.DbKey
 import com.likeminds.chatinternalsdk.sdk.util.SDKPreferences
 import com.likeminds.chatinternalsdk.user.util.UserPreferences
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import io.reactivex.Observable
-import io.realm.*
+import io.realm.Realm
+import io.realm.RealmResults
+import io.realm.Sort
 import io.realm.rx.CollectionChange
 import javax.inject.Inject
 
@@ -352,16 +372,5 @@ class ChatroomReceiver @Inject constructor(
             .toInt()
 
         return Pair(unreadGroupChatroomConversations, unreadDMChatroomConversations)
-    }
-
-    fun getExistingDMChatroom(realm: Realm, userUUID: String): ChatroomRO? {
-        return realm.where(ChatroomRO::class.java)
-            .equalTo(DbKey.TYPE, TYPE_DIRECT_MESSAGE)
-            .beginGroup()
-            .equalTo(DbKey.MEMBER_OBJECT_UUID, userUUID)
-            .or()
-            .equalTo(DbKey.CHATROOM_WITH_USER_OBJECT_UUID, userUUID)
-            .endGroup()
-            .findFirst()
     }
 }
