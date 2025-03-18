@@ -15,6 +15,7 @@ import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.base.BaseClient
 import com.likeminds.likemindschat.chatroom.model.ChatRequestState
+import com.likeminds.likemindschat.chatroom.model.Chatroom
 import com.likeminds.likemindschat.dm.model.*
 import com.likeminds.likemindschat.homefeed.model.ChatroomEntity
 import com.likeminds.likemindschat.homefeed.util.HomeChatroomListener
@@ -54,6 +55,10 @@ class DMClient @Inject constructor() : BaseClient() {
 
     private val sdkPreferences by lazy {
         chatSDK.getSDKPreferences()
+    }
+
+    private val userPreferences by lazy {
+        chatSDK.getUserPreference()
     }
 
     private lateinit var valueChangeListener: ValueEventListener
@@ -462,6 +467,55 @@ class DMClient @Inject constructor() : BaseClient() {
     fun removeLiveDMChatroomListener() {
         if (this::valueChangeListener.isInitialized) {
             databaseReference?.removeEventListener(valueChangeListener)
+        }
+    }
+
+    /**
+     * Returns existing dm chatroom if exists
+     * @throws IllegalArgumentException - when LMChatClient is not instantiated or required properties not provided
+     * @return LMResponse<Chatroom> - Chatroom model
+     */
+    fun getExistingDMChatroom(getExistingDMChatroomRequest: GetExistingDMChatroomRequest): LMResponse<Chatroom> {
+        //validates the client request
+        RequestUtils.validate()
+        validateGetExistingDMChatroomRequest(getExistingDMChatroomRequest)
+
+        // if logged in user uuid is shared in request, return error
+        val loggedInUserUUID = userPreferences.getClientUUID()
+        if (loggedInUserUUID == getExistingDMChatroomRequest.userUUID) {
+            return LMResponse(
+                success = false,
+                errorMessage = "You can't create a DM with yourself."
+            )
+        }
+
+
+        val realm = Realm.getDefaultInstance()
+        // call query
+        val dmChatroomRO =
+            chatroomDB.getExistingDMChatroom(realm, getExistingDMChatroomRequest.userUUID)
+
+        // convert to chatroom model
+        val dmChatroom = ModelConverter.convertChatroomRO(dmChatroomRO)
+        realm.close()
+
+        return if (dmChatroom != null) {
+            LMResponse(success = true, data = dmChatroom)
+        } else {
+            LMResponse(
+                success = false,
+                errorMessage = "DM Chatroom with this user doesn't exist. Please create one."
+            )
+        }
+    }
+
+    /**
+     * validates [GetExistingDMChatroomRequest]
+     * @throws IllegalArgumentException - when required properties not provided
+     */
+    private fun validateGetExistingDMChatroomRequest(getExistingDMChatroomRequest: GetExistingDMChatroomRequest) {
+        if (getExistingDMChatroomRequest.userUUID.isEmpty()) {
+            RequestUtils.throwException("userUUID")
         }
     }
 }

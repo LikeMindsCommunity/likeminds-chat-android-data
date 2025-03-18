@@ -25,7 +25,7 @@ class TokenAuthenticator @Inject constructor(
         val chatTokenManager = ChatTokenManager.getInstance()
         val chatSDK = LMChatSDK.getInstance()
         val lmInternalCallback = chatSDK.lmChatInternalCallback
-        val refreshTokenNetworkApi = chatSDK.refreshTokenApiImpl
+        val refreshTokenNetworkApi = chatSDK.getRefreshTokenApi()
 
         return if (code == 401) {
             if (!endPoint.contains("user/refresh", false)) {

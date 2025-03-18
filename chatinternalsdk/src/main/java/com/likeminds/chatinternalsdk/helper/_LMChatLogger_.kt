@@ -11,9 +11,7 @@ import com.likeminds.chatinternalsdk.db.ROConverter
 import com.likeminds.chatinternalsdk.helper.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.NetworkResponse
 import io.realm.Realm
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 
 class _LMChatLogger_ private constructor(
@@ -49,7 +47,7 @@ class _LMChatLogger_ private constructor(
             return
         }
 
-        val helperDB = LMChatSDK.getInstance().helperDBImpl
+        val helperDB = LMChatSDK.getInstance().getHelperDB()
         if (initiateLoggerRequest.logLevel.severityLevel <= severity.severityLevel && initiateLoggerRequest.shareLogsWithLM) {
             val dataLayerVersion = "${BuildConfig.SDK_MAJOR}.${BuildConfig.SDK_MINOR}.${BuildConfig.SDK_PATCH}"
 
@@ -85,7 +83,7 @@ class _LMChatLogger_ private constructor(
         val clearLogTimestamp = System.currentTimeMillis()
 
         val chatSDK = LMChatSDK.getInstance()
-        val helperDB = chatSDK.helperDBImpl
+        val helperDB = chatSDK.getHelperDB()
         val application = chatSDK.application
 
         val realm = Realm.getDefaultInstance()
@@ -111,7 +109,7 @@ class _LMChatLogger_ private constructor(
             realm.close()
 
             CoroutineScope(Dispatchers.IO).launch {
-                val helperApi = LMChatSDK.getInstance().helperApiImpl
+                val helperApi = LMChatSDK.getInstance().getHelperApi()
                 val pushLogsRequest = _PushLogsRequest_.Builder()
                     .logs(logs)
                     .build()
