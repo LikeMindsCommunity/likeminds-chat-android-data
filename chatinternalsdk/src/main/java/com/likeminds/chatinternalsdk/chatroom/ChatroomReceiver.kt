@@ -373,4 +373,15 @@ class ChatroomReceiver @Inject constructor(
 
         return Pair(unreadGroupChatroomConversations, unreadDMChatroomConversations)
     }
+
+    fun getExistingDMChatroom(realm: Realm, userUUID: String): ChatroomRO? {
+        return realm.where(ChatroomRO::class.java)
+            .equalTo(DbKey.TYPE, TYPE_DIRECT_MESSAGE)
+            .beginGroup()
+            .equalTo(DbKey.MEMBER_OBJECT_UUID, userUUID)
+            .or()
+            .equalTo(DbKey.CHATROOM_WITH_USER_OBJECT_UUID, userUUID)
+            .endGroup()
+            .findFirst()
+    }
 }
