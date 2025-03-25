@@ -7,5 +7,6 @@ enum class ConfigurationType(val value: String) {
     PROFILE_METADATA("profile_metadata"),
     NSFW_FILTERING("nsfw_filtering"),
     WIDGET_METADATA("widgets_metadata"),
-    GUEST_FLOW_METADATA("guest_flow_metadata")
+    GUEST_FLOW_METADATA("guest_flow_metadata"),
+    REPLY_PRIVATELY("reply_privately")
 }

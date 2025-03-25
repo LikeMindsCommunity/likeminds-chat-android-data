@@ -1352,15 +1352,23 @@ object ModelConverter {
     }
 
     // converts internal widget model to client widget model
-    fun convertWidget(_widget_: _Widget_): Widget {
-        return Widget.Builder()
+    private fun convertWidget(_widget_: _Widget_): Widget {
+        val builder = Widget.Builder()
             .id(_widget_.id)
             .parentEntityId(_widget_.parentEntityId)
             .parentEntityType(_widget_.parentEntityType)
-            .metadata(JSONObject(_widget_.metadata.toString()))
             .createdAt(_widget_.createdAt)
             .updatedAt(_widget_.updatedAt)
-            .build()
+
+        if (_widget_.metadata?.isJsonNull == false) {
+            builder.metadata(JSONObject(_widget_.metadata?.asJsonObject.toString()))
+        }
+
+        if (_widget_.lmMeta?.isJsonNull == false) {
+            builder.metadata(JSONObject(_widget_.lmMeta?.asJsonObject.toString()))
+        }
+
+        return builder.build()
     }
 
     // converts APIResponse<_GetCommunityConfiguration_> to LMResponse<GetCommunityConfiguration> model
@@ -1749,15 +1757,24 @@ object ModelConverter {
     //convert client widget model to internal widget model
     private fun createWidget(widget: Widget?): _Widget_? {
         if (widget == null) return null
-        val metadataString = widget.metadata.toString()
-        return _Widget_.Builder()
+        val builder = _Widget_.Builder()
             .id(widget.id)
             .parentEntityId(widget.parentEntityId)
             .parentEntityType(widget.parentEntityType)
-            .metadata(JsonParser.parseString(metadataString).asJsonObject)
             .createdAt(widget.createdAt)
             .updatedAt(widget.updatedAt)
-            .build()
+
+        if (widget.metadata != null) {
+            val metadataString = widget.metadata.toString()
+            builder.metadata(JsonParser.parseString(metadataString).asJsonObject)
+        }
+
+        if (widget.lmMeta != null) {
+            val lmMetaString = widget.lmMeta.toString()
+            builder.lmMeta(JsonParser.parseString(lmMetaString).asJsonObject)
+        }
+
+        return builder.build()
     }
 
     //convert list of client log model to internal log model
@@ -2197,14 +2214,22 @@ object ModelConverter {
     //convert WidgetRO model to client widget model
     private fun convertWidgetRO(widgetRO: WidgetRO?): Widget? {
         if (widgetRO == null) return null
-        return Widget.Builder()
+        val builder = Widget.Builder()
             .id(widgetRO.id)
             .parentEntityType(widgetRO.parentEntityType)
             .parentEntityId(widgetRO.parentEntityId)
-            .metadata(JSONObject(widgetRO.metadata.toString()))
             .createdAt(widgetRO.createdAt)
             .updatedAt(widgetRO.updatedAt)
-            .build()
+
+        if (widgetRO.metadata != null) {
+            builder.metadata(JSONObject(widgetRO.metadata.toString()))
+        }
+
+        if (widgetRO.lmMeta != null) {
+            builder.lmMeta(JSONObject(widgetRO.lmMeta.toString()))
+        }
+
+        return builder.build()
     }
 
     fun convertGetLogsResponse(logsRO: List<LMLogRO>): GetLogsResponse {

@@ -855,7 +855,13 @@ object ROConverter {
         return WidgetRO.build(widget.id) {
             parentEntityId = widget.parentEntityId
             parentEntityType = widget.parentEntityType
-            metadata = widget.metadata.toString()
+            if (widget.metadata?.isJsonNull == false) {
+                metadata = widget.metadata.asJsonObject.toString()
+            }
+
+            if (widget.lmMeta?.isJsonNull == false) {
+                lmMeta = widget.lmMeta.asJsonObject.toString()
+            }
             createdAt = widget.createdAt
             updatedAt = widget.updatedAt
         }
