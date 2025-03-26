@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.*
+import com.google.gson.JsonParser
 import com.likeminds.chatinternalsdk.LMChatSDK
 import com.likeminds.chatinternalsdk.chatroom.model.TYPE_DIRECT_MESSAGE
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
@@ -99,12 +100,19 @@ class DMClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validateSendDMRequest(sendDMRequest)
 
+        val updatedMetadata = if (sendDMRequest.metadata != null) {
+            val metadataString = sendDMRequest.metadata.toString()
+            JsonParser.parseString(metadataString).asJsonObject
+        } else {
+            null
+        }
+
         // builds internal request model
         val request = _SendDMRequest_.Builder()
             .chatroomId(sendDMRequest.chatroomId)
             .chatRequestState(sendDMRequest.chatRequestState.value ?: 0)
             .text(sendDMRequest.text)
-            .metadata(sendDMRequest.metadata)
+            .metadata(updatedMetadata)
             .temporaryId(sendDMRequest.temporaryId)
             .build()
 
@@ -140,9 +148,20 @@ class DMClient @Inject constructor() : BaseClient() {
                 )
 
                 // save the conversation in DB
-                val conversation = body.data?.conversation
-                conversation?.let { finalConversation ->
-                    conversationDB.saveNewConversation(realm, finalConversation)
+                val data = body.data
+                data?.let { finalData ->
+                    val conversation = finalData.conversation
+
+                    //Get widget from widgetMap and add it to updatedConversation
+                    val widgetId = conversation.widgetId
+                    val widget = data.widgets[widgetId]
+
+                    //update conversation with widget
+                    val updatedConversation = conversation.toBuilder()
+                        .widget(widget)
+                        .build()
+
+                    conversationDB.saveNewConversation(realm, updatedConversation)
                 }
 
                 realm.close()

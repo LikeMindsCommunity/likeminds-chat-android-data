@@ -1,7 +1,7 @@
 package com.likeminds.chatinternalsdk.dm.model
 
+import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
-import org.json.JSONObject
 
 class _SendDMRequest_ private constructor(
     @SerializedName("chatroom_id")
@@ -11,7 +11,7 @@ class _SendDMRequest_ private constructor(
     @SerializedName("text")
     val text: String?,
     @SerializedName("metadata")
-    val metadata: JSONObject?,
+    val metadata: JsonObject?,
     @SerializedName("temporary_id")
     val temporaryId: String?
 ) {
@@ -19,7 +19,7 @@ class _SendDMRequest_ private constructor(
         private var chatroomId: String = ""
         private var chatRequestState: Int = 0
         private var text: String? = null
-        private var metadata: JSONObject? = null
+        private var metadata: JsonObject? = null
         private var temporaryId: String? = null
 
         fun chatroomId(chatroomId: String) = apply {
@@ -34,7 +34,7 @@ class _SendDMRequest_ private constructor(
             this.text = text
         }
 
-        fun metadata(metadata: JSONObject?) = apply {
+        fun metadata(metadata: JsonObject?) = apply {
             this.metadata = metadata
         }
 
