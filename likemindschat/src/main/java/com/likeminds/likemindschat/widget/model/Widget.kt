@@ -7,7 +7,7 @@ class Widget private constructor(
     val parentEntityId: String,
     val parentEntityType: String,
     val metadata: JSONObject?,
-    val lmMeta: JSONObject?,
+    val lmMeta: LMMeta?,
     val createdAt: Long,
     val updatedAt: Long
 ) {
@@ -16,7 +16,7 @@ class Widget private constructor(
         private var parentEntityId: String = ""
         private var parentEntityType: String = ""
         private var metadata: JSONObject? = null
-        private var lmMeta: JSONObject? = null
+        private var lmMeta: LMMeta? = null
         private var createdAt: Long = 0L
         private var updatedAt: Long = 0L
 
@@ -36,7 +36,7 @@ class Widget private constructor(
             this.metadata = metadata
         }
 
-        fun lmMeta(lmMeta: JSONObject?) = apply {
+        fun lmMeta(lmMeta: LMMeta?) = apply {
             this.lmMeta = lmMeta
         }
 

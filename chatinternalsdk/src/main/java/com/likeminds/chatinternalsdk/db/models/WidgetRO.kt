@@ -9,7 +9,7 @@ open class WidgetRO(
     var parentEntityId: String = "",
     var parentEntityType: String = "",
     var metadata: String? = null,
-    var lmMeta: String? = null,
+    var lmMeta: LMMetaRO? = null,
     var createdAt: Long = 0L,
     var updatedAt: Long = 0L
 ) : RealmObject() {
@@ -35,7 +35,7 @@ open class WidgetRO(
         var parentEntityId: String = ""
         var parentEntityType: String = ""
         var metadata: String? = null
-        var lmMeta: String? = null
+        var lmMeta: LMMetaRO? = null
         var createdAt: Long = 0L
         var updatedAt: Long = 0L
 

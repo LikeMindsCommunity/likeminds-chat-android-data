@@ -1,7 +1,6 @@
 package com.likeminds.chatinternalsdk.widget.model
 
 import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
 class _Widget_ private constructor(
@@ -14,7 +13,7 @@ class _Widget_ private constructor(
     @SerializedName("metadata")
     val metadata: JsonElement?,
     @SerializedName("_lm_meta")
-    val lmMeta: JsonElement?,
+    val lmMeta: _LMMeta_?,
     @SerializedName("created_at")
     val createdAt: Long,
     @SerializedName("updated_at")
@@ -25,7 +24,7 @@ class _Widget_ private constructor(
         private var parentEntityId: String = ""
         private var parentEntityType: String = ""
         private var metadata: JsonElement? = null
-        private var lmMeta: JsonElement? = null
+        private var lmMeta: _LMMeta_? = null
         private var createdAt: Long = 0L
         private var updatedAt: Long = 0L
 
@@ -45,7 +44,7 @@ class _Widget_ private constructor(
             this.metadata = metadata
         }
 
-        fun lmMeta(lmMeta: JsonElement?) = apply {
+        fun lmMeta(lmMeta: _LMMeta_?) = apply {
             this.lmMeta = lmMeta
         }
 

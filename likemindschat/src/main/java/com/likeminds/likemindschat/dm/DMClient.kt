@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.*
+import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.likeminds.chatinternalsdk.LMChatSDK
 import com.likeminds.chatinternalsdk.chatroom.model.TYPE_DIRECT_MESSAGE
@@ -26,6 +27,7 @@ import com.likeminds.likemindschat.user.model.MemberBlockState
 import com.likeminds.likemindschat.util.RequestUtils
 import io.reactivex.Observable
 import io.realm.Realm
+import org.json.JSONObject
 import javax.inject.Inject
 
 class DMClient @Inject constructor() : BaseClient() {
@@ -101,6 +103,20 @@ class DMClient @Inject constructor() : BaseClient() {
         validateSendDMRequest(sendDMRequest)
 
         val updatedMetadata = if (sendDMRequest.metadata != null) {
+            val replyPrivatelySourceConversation = sendDMRequest.replyPrivatelySourceConversation
+            if (replyPrivatelySourceConversation != null) {
+                sendDMRequest.metadata.put(
+                    "source_conversation",
+                    JSONObject(
+                        Gson().toJson(
+                            (ModelConverter.createConversation(
+                                replyPrivatelySourceConversation
+                            ))
+                        )
+                    )
+                )
+            }
+
             val metadataString = sendDMRequest.metadata.toString()
             JsonParser.parseString(metadataString).asJsonObject
         } else {

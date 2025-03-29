@@ -16,6 +16,7 @@ import com.likeminds.chatinternalsdk.sdk.model._ValidateUserResponse_
 import com.likeminds.chatinternalsdk.search.model.*
 import com.likeminds.chatinternalsdk.user.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
+import com.likeminds.chatinternalsdk.widget.model._LMMeta_
 import com.likeminds.chatinternalsdk.widget.model._Widget_
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
@@ -34,6 +35,7 @@ import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
 import com.likeminds.likemindschat.user.util.UserRoleUtil.getUserRole
 import com.likeminds.likemindschat.util.ResponseUtils
+import com.likeminds.likemindschat.widget.model.LMMeta
 import com.likeminds.likemindschat.widget.model.Widget
 import org.json.JSONObject
 
@@ -1345,7 +1347,7 @@ object ModelConverter {
     }
 
     // converts internal widget model map to client widget model map
-    fun convertWidgetMap(_widgetsMap_: Map<String, _Widget_>): Map<String, Widget> {
+    private fun convertWidgetMap(_widgetsMap_: Map<String, _Widget_>): Map<String, Widget> {
         return _widgetsMap_.mapValues {
             convertWidget(it.value)
         }
@@ -1359,16 +1361,27 @@ object ModelConverter {
             .parentEntityType(_widget_.parentEntityType)
             .createdAt(_widget_.createdAt)
             .updatedAt(_widget_.updatedAt)
+            .lmMeta(convertLMMeta(_widget_.lmMeta))
 
         if (_widget_.metadata?.isJsonNull == false) {
             builder.metadata(JSONObject(_widget_.metadata?.asJsonObject.toString()))
         }
 
-        if (_widget_.lmMeta?.isJsonNull == false) {
-            builder.metadata(JSONObject(_widget_.lmMeta?.asJsonObject.toString()))
+        return builder.build()
+    }
+
+    // converts internal lm meta model to client widget model
+    private fun convertLMMeta(lmMeta: _LMMeta_?): LMMeta? {
+        if (lmMeta == null) {
+            return null
         }
 
-        return builder.build()
+        return LMMeta.Builder()
+            .sourceChatroomId(lmMeta.sourceChatroomId)
+            .sourceChatroomName(lmMeta.sourceChatroomName)
+            .sourceConversation(lmMeta.sourceConversation?.let { convertConversation(it) })
+            .type(lmMeta.type)
+            .build()
     }
 
     // converts APIResponse<_GetCommunityConfiguration_> to LMResponse<GetCommunityConfiguration> model
@@ -1769,12 +1782,22 @@ object ModelConverter {
             builder.metadata(JsonParser.parseString(metadataString).asJsonObject)
         }
 
-        if (widget.lmMeta != null) {
-            val lmMetaString = widget.lmMeta.toString()
-            builder.lmMeta(JsonParser.parseString(lmMetaString).asJsonObject)
-        }
+        builder.lmMeta(createLMMeta(widget.lmMeta))
 
         return builder.build()
+    }
+
+    private fun createLMMeta(lmMeta: LMMeta?): _LMMeta_? {
+        if (lmMeta == null) {
+            return null
+        }
+
+        return _LMMeta_.Builder()
+            .sourceChatroomId(lmMeta.sourceChatroomId)
+            .sourceChatroomName(lmMeta.sourceChatroomName)
+            .sourceConversation(lmMeta.sourceConversation?.let { createConversation(it) })
+            .type(lmMeta.type)
+            .build()
     }
 
     //convert list of client log model to internal log model
@@ -2220,16 +2243,27 @@ object ModelConverter {
             .parentEntityId(widgetRO.parentEntityId)
             .createdAt(widgetRO.createdAt)
             .updatedAt(widgetRO.updatedAt)
+            .lmMeta(convertLMMetaRO(widgetRO.lmMeta))
 
         if (widgetRO.metadata != null) {
             builder.metadata(JSONObject(widgetRO.metadata.toString()))
-        }
 
-        if (widgetRO.lmMeta != null) {
-            builder.lmMeta(JSONObject(widgetRO.lmMeta.toString()))
         }
 
         return builder.build()
+    }
+
+    private fun convertLMMetaRO(lmMetaRO: LMMetaRO?): LMMeta? {
+        if (lmMetaRO == null) {
+            return null
+        }
+
+        return LMMeta.Builder()
+            .sourceChatroomId(lmMetaRO.sourceChatroomId)
+            .sourceChatroomName(lmMetaRO.sourceChatroomName)
+            .sourceConversation(convertConversationRO(lmMetaRO.sourceConversation))
+            .type(lmMetaRO.type)
+            .build()
     }
 
     fun convertGetLogsResponse(logsRO: List<LMLogRO>): GetLogsResponse {

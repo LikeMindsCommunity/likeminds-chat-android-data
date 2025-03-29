@@ -1,6 +1,7 @@
 package com.likeminds.likemindschat.dm.model
 
 import com.likeminds.likemindschat.chatroom.model.ChatRequestState
+import com.likeminds.likemindschat.conversation.model.Conversation
 import org.json.JSONObject
 
 class SendDMRequest private constructor(
@@ -8,7 +9,8 @@ class SendDMRequest private constructor(
     val chatRequestState: ChatRequestState,
     val text: String?,
     val metadata: JSONObject?,
-    val temporaryId: String?
+    val temporaryId: String?,
+    val replyPrivatelySourceConversation: Conversation?
 ) {
     class Builder {
         private var chatroomId: String = ""
@@ -16,6 +18,7 @@ class SendDMRequest private constructor(
         private var text: String? = null
         private var metadata: JSONObject? = null
         private var temporaryId: String? = null
+        private var replyPrivatelySourceConversation: Conversation? = null
 
         fun chatroomId(chatroomId: String) = apply {
             this.chatroomId = chatroomId
@@ -37,12 +40,17 @@ class SendDMRequest private constructor(
             this.temporaryId = temporaryId
         }
 
+        fun replyPrivatelySourceConversation(replyPrivatelySourceConversation: Conversation?) = apply {
+            this.replyPrivatelySourceConversation = replyPrivatelySourceConversation
+        }
+
         fun build() = SendDMRequest(
             chatroomId,
             chatRequestState,
             text,
             metadata,
-            temporaryId
+            temporaryId,
+            replyPrivatelySourceConversation
         )
     }
 
@@ -52,5 +60,6 @@ class SendDMRequest private constructor(
             .text(text)
             .metadata(metadata)
             .temporaryId(temporaryId)
+            .replyPrivatelySourceConversation(replyPrivatelySourceConversation)
     }
 }
