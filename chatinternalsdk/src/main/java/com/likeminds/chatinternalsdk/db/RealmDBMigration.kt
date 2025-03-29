@@ -131,7 +131,7 @@ class RealmDBMigration : RealmMigration {
             olderVersion++
         }
 
-        if (olderVersion == 8L) {
+        if (olderVersion == 7L) {
             val lmMetaSchema = schema.create(LM_META_RO)
                 .addField("sourceChatroomId", String::class.javaObjectType)
                 .addField("sourceChatroomName", String::class.javaObjectType)
@@ -154,4 +154,4 @@ class RealmDBMigration : RealmMigration {
 }
 
 const val DB_SCHEMA_NAME = "likeminds-chat-sdk"
-const val DB_SCHEMA_VERSION = 9L
+const val DB_SCHEMA_VERSION = 8L
