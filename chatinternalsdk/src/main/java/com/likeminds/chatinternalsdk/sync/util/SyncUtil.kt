@@ -127,7 +127,7 @@ object SyncUtil {
                 } else {
                     null
                 }
-                val lastConversationWidgetRO = ROConverter.convertWidgetRO(lastConversationWidget)
+                val lastConversationWidgetRO = ROConverter.convertWidgetRO(realm, lastConversationWidget)
 
                 val lastConversationRO = ROConverter.convertLastConversation(
                     realm,
@@ -189,7 +189,7 @@ object SyncUtil {
                         null
                     }
                     val topicConversationWidgetRO =
-                        ROConverter.convertWidgetRO(topicConversationWidget)
+                        ROConverter.convertWidgetRO(realm, topicConversationWidget)
 
                     val topicRO =
                         ROConverter.convertConversation(
@@ -267,7 +267,7 @@ object SyncUtil {
                             null
                         }
                     val lastSeenConversationWidgetRO =
-                        ROConverter.convertWidgetRO(lastSeenConversationWidget)
+                        ROConverter.convertWidgetRO(realm, lastSeenConversationWidget)
 
                     // get reply conversation for the last seen conversation and its creator from conversation_meta & user_meta
                     val lastSeenConversationReplyId = lastSeenConversation?.replyConversationId
@@ -460,7 +460,7 @@ object SyncUtil {
                     //widget data
                     val widgetId = conversation.widgetId
                     val widget = data.widgets[widgetId]
-                    val widgetRO = ROConverter.convertWidgetRO(widget)
+                    val widgetRO = ROConverter.convertWidgetRO(realm, widget)
 
                     // get reply conversation and its creator from conversation_meta & user_meta
                     val replyConversationCreator = if (conversation.replyConversationId != null) {

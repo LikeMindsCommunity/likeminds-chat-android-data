@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.*
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.likeminds.chatinternalsdk.LMChatSDK
 import com.likeminds.chatinternalsdk.chatroom.model.TYPE_DIRECT_MESSAGE
 import com.likeminds.chatinternalsdk.db.ChatDBUtil
@@ -25,6 +27,7 @@ import com.likeminds.likemindschat.user.model.MemberBlockState
 import com.likeminds.likemindschat.util.RequestUtils
 import io.reactivex.Observable
 import io.realm.Realm
+import org.json.JSONObject
 import javax.inject.Inject
 
 class DMClient @Inject constructor() : BaseClient() {
@@ -99,11 +102,34 @@ class DMClient @Inject constructor() : BaseClient() {
         RequestUtils.validate()
         validateSendDMRequest(sendDMRequest)
 
+        val updatedMetadata = if (sendDMRequest.metadata != null) {
+            val replyPrivatelySourceConversation = sendDMRequest.replyPrivatelySourceConversation
+            if (replyPrivatelySourceConversation != null) {
+                sendDMRequest.metadata.put(
+                    "source_conversation",
+                    JSONObject(
+                        Gson().toJson(
+                            (ModelConverter.createConversation(
+                                replyPrivatelySourceConversation
+                            ))
+                        )
+                    )
+                )
+            }
+
+            val metadataString = sendDMRequest.metadata.toString()
+            JsonParser.parseString(metadataString).asJsonObject
+        } else {
+            null
+        }
+
         // builds internal request model
         val request = _SendDMRequest_.Builder()
             .chatroomId(sendDMRequest.chatroomId)
             .chatRequestState(sendDMRequest.chatRequestState.value ?: 0)
             .text(sendDMRequest.text)
+            .metadata(updatedMetadata)
+            .temporaryId(sendDMRequest.temporaryId)
             .build()
 
         // calls api and processes the response accordingly
@@ -138,9 +164,20 @@ class DMClient @Inject constructor() : BaseClient() {
                 )
 
                 // save the conversation in DB
-                val conversation = body.data?.conversation
-                conversation?.let { finalConversation ->
-                    conversationDB.saveNewConversation(realm, finalConversation)
+                val data = body.data
+                data?.let { finalData ->
+                    val conversation = finalData.conversation
+
+                    //Get widget from widgetMap and add it to updatedConversation
+                    val widgetId = conversation.widgetId
+                    val widget = data.widgets[widgetId]
+
+                    //update conversation with widget
+                    val updatedConversation = conversation.toBuilder()
+                        .widget(widget)
+                        .build()
+
+                    conversationDB.saveNewConversation(realm, updatedConversation)
                 }
 
                 realm.close()

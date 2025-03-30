@@ -17,6 +17,7 @@ class RealmDBMigration : RealmMigration {
         private const val USER_CLASS = "UserRO"
         private const val LM_LOG_CLASS = "LMLogRO"
         private const val LM_SDK_META_CLASS = "LMSDKMetaRO"
+        private const val LM_META_RO = "LMMetaRO"
         private const val LM_STACK_TRACE_CLASS = "LMStackTraceRO"
     }
 
@@ -129,6 +130,18 @@ class RealmDBMigration : RealmMigration {
 
             olderVersion++
         }
+
+        if (olderVersion == 7L) {
+            val lmMetaSchema = schema.create(LM_META_RO)
+                .addField("sourceChatroomId", String::class.javaObjectType)
+                .addField("sourceChatroomName", String::class.javaObjectType)
+                .addRealmObjectField("sourceConversation", schema[CONVERSATION_CLASS]!!)
+                .addField("type", String::class.javaObjectType)
+
+            schema[WIDGET_CLASS]!!.addRealmObjectField("lmMeta", lmMetaSchema)
+
+            olderVersion++
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -141,4 +154,4 @@ class RealmDBMigration : RealmMigration {
 }
 
 const val DB_SCHEMA_NAME = "likeminds-chat-sdk"
-const val DB_SCHEMA_VERSION = 7L
+const val DB_SCHEMA_VERSION = 8L

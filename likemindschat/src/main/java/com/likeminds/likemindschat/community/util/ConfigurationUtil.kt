@@ -16,6 +16,7 @@ object ConfigurationUtil {
             ConfigurationType.NSFW_FILTERING.value -> ConfigurationType.NSFW_FILTERING
             ConfigurationType.WIDGET_METADATA.value -> ConfigurationType.WIDGET_METADATA
             ConfigurationType.GUEST_FLOW_METADATA.value -> ConfigurationType.GUEST_FLOW_METADATA
+            ConfigurationType.REPLY_PRIVATELY.value -> ConfigurationType.REPLY_PRIVATELY
             else -> ConfigurationType.NONE
         }
     }

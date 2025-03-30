@@ -7,6 +7,7 @@ class Widget private constructor(
     val parentEntityId: String,
     val parentEntityType: String,
     val metadata: JSONObject?,
+    val lmMeta: LMMeta?,
     val createdAt: Long,
     val updatedAt: Long
 ) {
@@ -15,23 +16,44 @@ class Widget private constructor(
         private var parentEntityId: String = ""
         private var parentEntityType: String = ""
         private var metadata: JSONObject? = null
+        private var lmMeta: LMMeta? = null
         private var createdAt: Long = 0L
         private var updatedAt: Long = 0L
 
-        fun id(id: String) = apply { this.id = id }
-        fun parentEntityId(parentEntityId: String) = apply { this.parentEntityId = parentEntityId }
-        fun parentEntityType(parentEntityType: String) =
-            apply { this.parentEntityType = parentEntityType }
+        fun id(id: String) = apply {
+            this.id = id
+        }
 
-        fun metadata(metadata: JSONObject?) = apply { this.metadata = metadata }
-        fun createdAt(createdAt: Long) = apply { this.createdAt = createdAt }
-        fun updatedAt(updatedAt: Long) = apply { this.updatedAt = updatedAt }
+        fun parentEntityId(parentEntityId: String) = apply {
+            this.parentEntityId = parentEntityId
+        }
+
+        fun parentEntityType(parentEntityType: String) = apply {
+            this.parentEntityType = parentEntityType
+        }
+
+        fun metadata(metadata: JSONObject?) = apply {
+            this.metadata = metadata
+        }
+
+        fun lmMeta(lmMeta: LMMeta?) = apply {
+            this.lmMeta = lmMeta
+        }
+
+        fun createdAt(createdAt: Long) = apply {
+            this.createdAt = createdAt
+        }
+
+        fun updatedAt(updatedAt: Long) = apply {
+            this.updatedAt = updatedAt
+        }
 
         fun build() = Widget(
             id,
             parentEntityId,
             parentEntityType,
             metadata,
+            lmMeta,
             createdAt,
             updatedAt
         )
@@ -42,11 +64,12 @@ class Widget private constructor(
             .parentEntityId(parentEntityId)
             .parentEntityType(parentEntityType)
             .metadata(metadata)
+            .lmMeta(lmMeta)
             .createdAt(createdAt)
             .updatedAt(updatedAt)
     }
 
     override fun toString(): String {
-        return "Widget: id -> $id metadata -> ${metadata.toString()} parentEntityType:$parentEntityType"
+        return "Widget: id -> $id metadata -> ${metadata.toString()} lmMeta -> ${lmMeta.toString()} parentEntityType:$parentEntityType"
     }
 }
