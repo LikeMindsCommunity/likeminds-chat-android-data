@@ -72,15 +72,14 @@ class ConversationClient @Inject constructor() : BaseClient() {
             .attachments(ModelConverter.createAttachments(postConversationRequest.attachments))
 
         if (postConversationRequest.metadata != null) {
-            val replyPrivatelySourceConversation = postConversationRequest.replyPrivatelySourceConversation
+            val replyPrivatelySourceConversation =
+                postConversationRequest.replyPrivatelySourceConversation
             if (replyPrivatelySourceConversation != null) {
                 postConversationRequest.metadata.put(
                     "source_conversation",
                     JSONObject(
                         Gson().toJson(
-                            (ModelConverter.createConversation(
-                                replyPrivatelySourceConversation
-                            ))
+                            ModelConverter.createConversation(replyPrivatelySourceConversation)
                         )
                     )
                 )
