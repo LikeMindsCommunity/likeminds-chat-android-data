@@ -140,6 +140,8 @@ class RealmDBMigration : RealmMigration {
 
             schema[WIDGET_CLASS]!!.addRealmObjectField("lmMeta", lmMetaSchema)
 
+            lmMetaSchema.isEmbedded = true
+
             olderVersion++
         }
     }
