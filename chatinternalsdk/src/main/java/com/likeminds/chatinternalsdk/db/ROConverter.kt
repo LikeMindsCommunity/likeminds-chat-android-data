@@ -15,6 +15,7 @@ import com.likeminds.chatinternalsdk.sync.model._ReactionMeta_
 import com.likeminds.chatinternalsdk.user.model._SDKClientInfo_
 import com.likeminds.chatinternalsdk.user.model._User_
 import com.likeminds.chatinternalsdk.utils.TimeUtil
+import com.likeminds.chatinternalsdk.widget.model._LMMeta_
 import com.likeminds.chatinternalsdk.widget.model._Widget_
 import io.realm.Realm
 import io.realm.RealmList
@@ -183,7 +184,7 @@ object ROConverter {
         )
         val pollsList = convertPolls(realm, conversation.polls as? MutableList<_Poll_>, communityId)
 
-        val widgetRO = convertWidgetRO(conversation.widget)
+        val widgetRO = convertWidgetRO(realm, conversation.widget)
 
         //Clear embedded object list if already present else calling insertToRealmOrUpdate will duplicate it
         savedAnswer?.reactions?.deleteAllFromRealm()
@@ -846,18 +847,160 @@ object ROConverter {
 
     /**
      * convert [_Widget_] to [WidgetRO]
+     * @param realm: instance of realm
      * @param widget: instance of [_Widget_] to be converted
      *
      * @return [WidgetRO]
      */
-    fun convertWidgetRO(widget: _Widget_?): WidgetRO? {
+    fun convertWidgetRO(
+        realm: Realm,
+        widget: _Widget_?
+    ): WidgetRO? {
         if (widget == null) return null
         return WidgetRO.build(widget.id) {
             parentEntityId = widget.parentEntityId
             parentEntityType = widget.parentEntityType
-            metadata = widget.metadata.toString()
+            if (widget.metadata?.isJsonNull == false) {
+                metadata = widget.metadata.asJsonObject.toString()
+            }
+            lmMeta = convertLMMetaRO(realm, widget.lmMeta)
             createdAt = widget.createdAt
             updatedAt = widget.updatedAt
+        }
+    }
+
+    /**
+     * convert [_LMMeta_] to [LMMetaRO]
+     * @param realm: instance of [Realm]
+     * @param lmMeta: instance of [_LMMeta_] to be converted
+     *
+     * @return [WidgetRO]
+     */
+    private fun convertLMMetaRO(
+        realm: Realm,
+        lmMeta: _LMMeta_?
+    ): LMMetaRO? {
+        if (lmMeta == null) return null
+        val sourceConversation = convertLMMetaSourceConversation(
+            realm,
+            lmMeta.sourceConversation
+        )
+
+        if (sourceConversation != null) {
+            realm.insertOrUpdate(sourceConversation)
+        }
+
+        return LMMetaRO.build {
+            sourceChatroomId = lmMeta.sourceChatroomId
+            sourceChatroomName = lmMeta.sourceChatroomName
+            this.sourceConversation = sourceConversation
+            type = lmMeta.type
+        }
+    }
+
+    /**
+     *
+     * convert [_Conversation_] to [ConversationRO]
+     * @param realm: instance of realm
+     * @param conversation: Conversation object to converted
+     * */
+    private fun convertLMMetaSourceConversation(
+        realm: Realm,
+        conversation: _Conversation_?
+    ) : ConversationRO? {
+        if (conversation == null) {
+            return null
+        }
+
+        val chatroomId = conversation.chatroomId ?: return null
+        val communityId = conversation.communityId ?: return null
+        val memberRO = convertMember(conversation.member, communityId) ?: return null
+
+        val savedAnswer = if (conversation.hasReactions == true ||
+            _ConversationState_.isPoll(conversation.state) ||
+            ((conversation.attachmentCount ?: 0) > 0) ||
+            conversation.replyConversationId != null
+        ) {
+            ChatDBUtil.getConversation(realm, conversation.id)
+        } else {
+            null
+        }
+
+        if (savedAnswer != null) {
+            return savedAnswer
+        }
+
+        val replyConversation = if (!conversation.replyConversationId.isNullOrEmpty()) {
+            savedAnswer?.replyConversation ?: ChatDBUtil.getConversation(
+                realm,
+                conversation.replyConversationId
+            )
+        } else {
+            null
+        }
+
+        val attachmentList = convertUpdatedAttachments(
+            chatroomId,
+            communityId,
+            conversation.attachments,
+            null
+        )
+        val reactionsList = convertReactions(
+            realm,
+            communityId,
+            conversation.reactions
+        )
+        val pollsList = convertPolls(realm, conversation.polls as? MutableList<_Poll_>, communityId)
+
+        val widgetRO = convertWidgetRO(realm, conversation.widget)
+
+        var createdEpoch = conversation.createdEpoch ?: 0L
+        createdEpoch = if (TimeUtil.isInMillis(createdEpoch)) {
+            createdEpoch
+        } else {
+            createdEpoch * 1000
+        }
+
+        return ConversationRO.build(
+            conversation.id ?: "",
+            conversation.answer,
+            conversation.state,
+            createdEpoch
+        ) {
+            this.chatroomId = chatroomId
+            this.communityId = communityId
+            this.member = memberRO
+
+            createdAt = conversation.createdAt
+            attachments = attachmentList
+            link = convertLink(chatroomId, communityId, conversation.ogTags)
+            date = conversation.date
+            isEdited = conversation.isEdited
+            replyConversationId = conversation.replyConversationId
+            if (replyConversation != null) {
+                this.replyConversation = replyConversation
+            }
+            deletedBy = conversation.deletedBy
+            attachmentCount = conversation.attachmentCount
+            attachmentsUploaded = conversation.attachmentUploaded
+            workerUUID = savedAnswer?.workerUUID ?: conversation.workerUUID
+            localSavedEpoch = conversation.localCreatedEpoch ?: 0L
+            reactions = reactionsList
+            isAnonymous = conversation.isAnonymous
+            allowAddOption = conversation.allowAddOption
+            pollType = conversation.pollType
+            pollTypeText = conversation.pollTypeText
+            submitTypeText = conversation.submitTypeText
+            expiryTime = conversation.expiryTime
+            multipleSelectNum = conversation.multipleSelectNum
+            multipleSelectState = conversation.multipleSelectState
+            polls = pollsList
+            toShowResults = conversation.toShowResults
+            pollAnswerText = conversation.pollAnswerText
+            replyChatRoomId = conversation.replyChatroomId
+            this.widgetRO = widgetRO
+            widgetId = conversation.widgetId
+            attachmentsUploadedEpoch = conversation.attachmentsUploadedEpoch
         }
     }
 

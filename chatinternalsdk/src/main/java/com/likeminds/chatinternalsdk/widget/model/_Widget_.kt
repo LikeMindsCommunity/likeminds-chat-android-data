@@ -1,6 +1,6 @@
 package com.likeminds.chatinternalsdk.widget.model
 
-import com.google.gson.JsonObject
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 
 class _Widget_ private constructor(
@@ -11,7 +11,9 @@ class _Widget_ private constructor(
     @SerializedName("parent_entity_type")
     val parentEntityType: String,
     @SerializedName("metadata")
-    val metadata: JsonObject,
+    val metadata: JsonElement?,
+    @SerializedName("_lm_meta")
+    val lmMeta: _LMMeta_?,
     @SerializedName("created_at")
     val createdAt: Long,
     @SerializedName("updated_at")
@@ -21,24 +23,45 @@ class _Widget_ private constructor(
         private var id: String = ""
         private var parentEntityId: String = ""
         private var parentEntityType: String = ""
-        private var metadata: JsonObject = JsonObject()
+        private var metadata: JsonElement? = null
+        private var lmMeta: _LMMeta_? = null
         private var createdAt: Long = 0L
         private var updatedAt: Long = 0L
 
-        fun id(id: String) = apply { this.id = id }
-        fun parentEntityId(parentEntityId: String) = apply { this.parentEntityId = parentEntityId }
-        fun parentEntityType(parentEntityType: String) =
-            apply { this.parentEntityType = parentEntityType }
+        fun id(id: String) = apply {
+            this.id = id
+        }
 
-        fun metadata(metadata: JsonObject) = apply { this.metadata = metadata }
-        fun createdAt(createdAt: Long) = apply { this.createdAt = createdAt }
-        fun updatedAt(updatedAt: Long) = apply { this.updatedAt = updatedAt }
+        fun parentEntityId(parentEntityId: String) = apply {
+            this.parentEntityId = parentEntityId
+        }
+
+        fun parentEntityType(parentEntityType: String) = apply {
+            this.parentEntityType = parentEntityType
+        }
+
+        fun metadata(metadata: JsonElement?) = apply {
+            this.metadata = metadata
+        }
+
+        fun lmMeta(lmMeta: _LMMeta_?) = apply {
+            this.lmMeta = lmMeta
+        }
+
+        fun createdAt(createdAt: Long) = apply {
+            this.createdAt = createdAt
+        }
+
+        fun updatedAt(updatedAt: Long) = apply {
+            this.updatedAt = updatedAt
+        }
 
         fun build() = _Widget_(
             id,
             parentEntityId,
             parentEntityType,
             metadata,
+            lmMeta,
             createdAt,
             updatedAt
         )
@@ -49,6 +72,7 @@ class _Widget_ private constructor(
             .parentEntityId(parentEntityId)
             .parentEntityType(parentEntityType)
             .metadata(metadata)
+            .lmMeta(lmMeta)
             .createdAt(createdAt)
             .updatedAt(updatedAt)
     }
