@@ -16,6 +16,7 @@ import com.likeminds.chatinternalsdk.sdk.model._ValidateUserResponse_
 import com.likeminds.chatinternalsdk.search.model.*
 import com.likeminds.chatinternalsdk.user.model.*
 import com.likeminds.chatinternalsdk.utils.retrofit.model.APIResponse
+import com.likeminds.chatinternalsdk.widget.model._LMMeta_
 import com.likeminds.chatinternalsdk.widget.model._Widget_
 import com.likeminds.likemindschat.LMResponse
 import com.likeminds.likemindschat.chatroom.model.*
@@ -34,6 +35,7 @@ import com.likeminds.likemindschat.search.model.*
 import com.likeminds.likemindschat.user.model.*
 import com.likeminds.likemindschat.user.util.UserRoleUtil.getUserRole
 import com.likeminds.likemindschat.util.ResponseUtils
+import com.likeminds.likemindschat.widget.model.LMMeta
 import com.likeminds.likemindschat.widget.model.Widget
 import org.json.JSONObject
 
@@ -1345,21 +1347,40 @@ object ModelConverter {
     }
 
     // converts internal widget model map to client widget model map
-    fun convertWidgetMap(_widgetsMap_: Map<String, _Widget_>): Map<String, Widget> {
+    private fun convertWidgetMap(_widgetsMap_: Map<String, _Widget_>): Map<String, Widget> {
         return _widgetsMap_.mapValues {
             convertWidget(it.value)
         }
     }
 
     // converts internal widget model to client widget model
-    fun convertWidget(_widget_: _Widget_): Widget {
-        return Widget.Builder()
+    private fun convertWidget(_widget_: _Widget_): Widget {
+        val builder = Widget.Builder()
             .id(_widget_.id)
             .parentEntityId(_widget_.parentEntityId)
             .parentEntityType(_widget_.parentEntityType)
-            .metadata(JSONObject(_widget_.metadata.toString()))
             .createdAt(_widget_.createdAt)
             .updatedAt(_widget_.updatedAt)
+            .lmMeta(convertLMMeta(_widget_.lmMeta))
+
+        if (_widget_.metadata?.isJsonNull == false) {
+            builder.metadata(JSONObject(_widget_.metadata?.asJsonObject.toString()))
+        }
+
+        return builder.build()
+    }
+
+    // converts internal lm meta model to client widget model
+    private fun convertLMMeta(lmMeta: _LMMeta_?): LMMeta? {
+        if (lmMeta == null) {
+            return null
+        }
+
+        return LMMeta.Builder()
+            .sourceChatroomId(lmMeta.sourceChatroomId)
+            .sourceChatroomName(lmMeta.sourceChatroomName)
+            .sourceConversation(lmMeta.sourceConversation?.let { convertConversation(it) })
+            .type(lmMeta.type)
             .build()
     }
 
@@ -1749,14 +1770,33 @@ object ModelConverter {
     //convert client widget model to internal widget model
     private fun createWidget(widget: Widget?): _Widget_? {
         if (widget == null) return null
-        val metadataString = widget.metadata.toString()
-        return _Widget_.Builder()
+        val builder = _Widget_.Builder()
             .id(widget.id)
             .parentEntityId(widget.parentEntityId)
             .parentEntityType(widget.parentEntityType)
-            .metadata(JsonParser.parseString(metadataString).asJsonObject)
             .createdAt(widget.createdAt)
             .updatedAt(widget.updatedAt)
+
+        if (widget.metadata != null) {
+            val metadataString = widget.metadata.toString()
+            builder.metadata(JsonParser.parseString(metadataString).asJsonObject)
+        }
+
+        builder.lmMeta(createLMMeta(widget.lmMeta))
+
+        return builder.build()
+    }
+
+    private fun createLMMeta(lmMeta: LMMeta?): _LMMeta_? {
+        if (lmMeta == null) {
+            return null
+        }
+
+        return _LMMeta_.Builder()
+            .sourceChatroomId(lmMeta.sourceChatroomId)
+            .sourceChatroomName(lmMeta.sourceChatroomName)
+            .sourceConversation(lmMeta.sourceConversation?.let { createConversation(it) })
+            .type(lmMeta.type)
             .build()
     }
 
@@ -2197,13 +2237,32 @@ object ModelConverter {
     //convert WidgetRO model to client widget model
     private fun convertWidgetRO(widgetRO: WidgetRO?): Widget? {
         if (widgetRO == null) return null
-        return Widget.Builder()
+        val builder = Widget.Builder()
             .id(widgetRO.id)
             .parentEntityType(widgetRO.parentEntityType)
             .parentEntityId(widgetRO.parentEntityId)
-            .metadata(JSONObject(widgetRO.metadata.toString()))
             .createdAt(widgetRO.createdAt)
             .updatedAt(widgetRO.updatedAt)
+            .lmMeta(convertLMMetaRO(widgetRO.lmMeta))
+
+        if (widgetRO.metadata != null) {
+            builder.metadata(JSONObject(widgetRO.metadata.toString()))
+
+        }
+
+        return builder.build()
+    }
+
+    private fun convertLMMetaRO(lmMetaRO: LMMetaRO?): LMMeta? {
+        if (lmMetaRO == null) {
+            return null
+        }
+
+        return LMMeta.Builder()
+            .sourceChatroomId(lmMetaRO.sourceChatroomId)
+            .sourceChatroomName(lmMetaRO.sourceChatroomName)
+            .sourceConversation(convertConversationRO(lmMetaRO.sourceConversation))
+            .type(lmMetaRO.type)
             .build()
     }
 

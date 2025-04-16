@@ -6,6 +6,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.work.WorkInfo
 import com.google.firebase.FirebaseApp
 import com.google.firebase.database.FirebaseDatabase
+import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.likeminds.chatinternalsdk.LMChatSDK
 import com.likeminds.chatinternalsdk.conversation.model.*
@@ -21,6 +22,7 @@ import com.likeminds.likemindschat.sdk.ModelConverter
 import com.likeminds.likemindschat.util.RequestUtils
 import io.realm.Realm
 import io.realm.RealmResults
+import org.json.JSONObject
 import javax.inject.Inject
 
 class ConversationClient @Inject constructor() : BaseClient() {
@@ -70,6 +72,19 @@ class ConversationClient @Inject constructor() : BaseClient() {
             .attachments(ModelConverter.createAttachments(postConversationRequest.attachments))
 
         if (postConversationRequest.metadata != null) {
+            val replyPrivatelySourceConversation =
+                postConversationRequest.replyPrivatelySourceConversation
+            if (replyPrivatelySourceConversation != null) {
+                postConversationRequest.metadata.put(
+                    "source_conversation",
+                    JSONObject(
+                        Gson().toJson(
+                            ModelConverter.createConversation(replyPrivatelySourceConversation)
+                        )
+                    )
+                )
+            }
+
             requestBuilder.metadata(JsonParser.parseString(postConversationRequest.metadata.toString()).asJsonObject)
         }
 
