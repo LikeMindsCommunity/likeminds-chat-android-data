@@ -93,6 +93,7 @@ class NotificationReceiver @Inject constructor(
         return query.equalTo(DbKey.FOLLOW_STATUS, true) // filter out unfollowed chatrooms
             .equalTo(DbKey.MUTE_STATUS, false) // filter out muted chatrooms
             .greaterThan(DbKey.UNSEEN_COUNT, 0)  // Ensure unseen count is greater than 0
+            .isNull(DbKey.DELETED_BY)
             .sort(
                 LAST_CONVERSATION_CREATED_EPOCH,
                 Sort.DESCENDING
